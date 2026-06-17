@@ -37,7 +37,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: isCollapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+                    mainAxisAlignment: isCollapsed ? .center : .start,
                     children: [
                       Container(
                         padding: EdgeInsets.all(4.0),

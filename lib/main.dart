@@ -7,13 +7,13 @@ import 'package:ri_rh_v2/widgets/collapsible_sidebar.dart';
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AppThemeProvider()..loadTheme()),
-      ],
-      child: const MyApp(),
-    )
-  );
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppThemeProvider()..loadTheme()),
+        ],
+        child: const MyApp(),
+      )
+    );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'RI - Recursos Humanos',
       theme: themeProvider.appTheme,
-      home: CollapsibleSidebar(child: AttendancePage(title: 'Sistema de ingreso')),
+      home: CollapsibleSidebar(child: AttendancePage()),
     );
   }
 }
