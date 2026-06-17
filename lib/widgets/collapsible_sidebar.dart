@@ -28,14 +28,14 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           // Sidebar Container
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: isCollapsed ? 60 : 240,
+            width: isCollapsed ? 70 : 240,
             color: backgroundColor,
             child: Column(
               children: [
                 const SizedBox(height: 20),
                 // Toggle Button
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: isCollapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
                     children: [
@@ -104,7 +104,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
     return Material(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
         child: ListTile(
           leading: Icon(
             icon,
