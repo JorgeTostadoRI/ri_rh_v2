@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ri_rh_v2/theme/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 class Clock extends StatefulWidget {
   const Clock({super.key});
@@ -42,20 +42,20 @@ class _ClockState extends State<Clock> {
   
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        mainAxisAlignment: .center,
-        crossAxisAlignment: .center,
-        spacing: 12,
-        children: [
-          SizedBox(
-            width: 510,
-            child: Center(
+    return SizedBox(
+      width: 700,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          mainAxisAlignment: .center,
+          crossAxisAlignment: .center,
+          spacing: 12,
+          children: [
+            Center(
               child: Text(
                 _timeString,
                 style: TextStyle(
@@ -65,15 +65,15 @@ class _ClockState extends State<Clock> {
                 ),
               ),
             ),
-          ),
-          Text(
-            formatter.format(DateTime.now()),
-            style: TextTheme.of(context).bodyMedium?.copyWith(
-              color: labelTextColor,
-              fontWeight: .w500,
+            Text(
+              formatter.format(DateTime.now()),
+              style: TextTheme.of(context).bodyMedium?.copyWith(
+                color: labelTextColor,
+                fontWeight: .w500,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

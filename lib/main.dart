@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:ri_rh_v2/pages/attendance_page.dart';
-import 'package:ri_rh_v2/theme/app_theme_provider.dart';
-import 'package:ri_rh_v2/widgets/collapsible_sidebar.dart';
+import 'package:ri_rh_v2/ui/core/attendance/widgets/attendance_screen.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
 void main() {
   runApp(
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'RI - Recursos Humanos',
       theme: themeProvider.appTheme,
-      home: CollapsibleSidebar(child: AttendancePage()),
+      home: CollapsibleSidebar(child: AttendanceScreen()),
     );
   }
 }

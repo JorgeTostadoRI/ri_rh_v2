@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ri_rh_v2/theme/app_theme_provider.dart';
-import 'package:ri_rh_v2/widgets/clock.dart';
+import 'package:ri_rh_v2/ui/core/attendance/view_models/fingerprint_button_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/attendance/widgets/fingerprint_button.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/attendance/widgets/clock.dart';
 
-class AttendancePage extends StatelessWidget {
-  const AttendancePage({super.key});
-
+class AttendanceScreen extends StatelessWidget {
+  const AttendanceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -104,30 +104,7 @@ class AttendancePage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Container(
-                            padding: EdgeInsets.all(48),
-                            decoration: BoxDecoration(
-                              border: BoxBorder.all(
-                                color: Color(0xFFFDDEB0),
-                                width: 1.6,
-                              ),
-                              gradient: LinearGradient(
-                                begin: .centerLeft,
-                                end: .centerRight,
-                                colors: [
-                                  Color(0xFFFFF8F0),
-                                  Color(0xFFFFF0DC),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: SvgPicture.asset('icons/fingerprint.svg'),
-                          ),
-                          Text(
-                            'Toca el sensor para registrar',
-                            style: TextTheme.of(context).bodyMedium?.copyWith(color: Color(0xFFC4A47A)),
-                            textAlign: .center,
-                          ),
+                          FingerprintButton(viewmodel: FingerprintButtonViewmodel()),
                           Text(
                             'Si tienes problemas con el registro, contacta a Recursos Humanos.',
                             style: TextTheme.of(context).bodySmall?.copyWith(color: Color(0xFFC4A47A)),

@@ -5,6 +5,8 @@ const Color primaryColor = Color(0xFFE87B1E);
 const Color secondaryColor = Color(0xFFFFF0DC);
 const Color headingTextColor = Color(0xFF2D1E0F);
 const Color labelTextColor = Color(0xFF9A7B5A);
+const Color successColor = Color(0xFF52C41A);
+const Color errorColor = Color(0xFFDB4444);
 
 class AppThemeProvider extends ChangeNotifier {
   bool darkMode = false;

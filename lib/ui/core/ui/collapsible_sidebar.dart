@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:ri_rh_v2/theme/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
   final Widget child;
