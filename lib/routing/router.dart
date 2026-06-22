@@ -12,7 +12,10 @@ GoRouter router() => GoRouter(
       path: Routes.ingreso,
       builder: (context, state) {
         return AsistenciaScreen(
-          viewmodel: AsistenciaViewmodel(asistenciaRepository: context.read()),
+          viewmodel: AsistenciaViewmodel(
+            asistenciaRepository: context.read(),
+            authRepository: context.read(),
+          ),
         );
       },
     ),

@@ -34,7 +34,6 @@ class ApiClient {
       _authHeader(dio);
 
       final photoBytes = await asistencia.photoFile?.readAsBytes();
-      _logger.d('photo name: ${asistencia.photoFile!.name}');
       final formData = FormData.fromMap({
         'empleado': asistencia.empleado,
         if (photoBytes != null)

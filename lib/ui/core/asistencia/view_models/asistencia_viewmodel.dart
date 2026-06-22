@@ -2,15 +2,19 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart';
+import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class AsistenciaViewmodel extends ChangeNotifier {
   AsistenciaViewmodel({
     required AsistenciaRepository asistenciaRepository,
-  }) : _asistenciaRepository = asistenciaRepository;
+    required AuthRepository authRepository,
+  }) : _asistenciaRepository = asistenciaRepository,
+      _authRepository = authRepository;
 
   AsistenciaRepository _asistenciaRepository;
+  AuthRepository _authRepository;
 
   final Logger _logger = Logger();
 
@@ -52,8 +56,11 @@ class AsistenciaViewmodel extends ChangeNotifier {
     return result;
   }
 
-  Future<Result<void>> registerManualEntry(XFile photo) async {
-    // TODO: obtener empleado a traves de credenciales
+  Future<Result<void>> registerManualEntry(String username, String password, XFile photo) async {
+    final loginResult = await _authRepository.login(username: username, password: password);
+    if (loginResult is Error) {
+      return loginResult;
+    }
 
     final asistencia = Asistencia(
       empleado: 7,
@@ -69,6 +76,8 @@ class AsistenciaViewmodel extends ChangeNotifier {
       case Error():
         _setScanResult(false);
     }
+
+    await _authRepository.logout();
     return result;
   }
 

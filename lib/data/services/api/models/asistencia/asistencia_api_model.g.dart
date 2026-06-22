@@ -9,14 +9,14 @@ part of 'asistencia_api_model.dart';
 _AsistenciaApiModel _$AsistenciaApiModelFromJson(Map<String, dynamic> json) =>
     _AsistenciaApiModel(
       id: (json['id'] as num?)?.toInt(),
-      createdAt: json['createdAt'] == null
+      createdAt: json['created_at'] == null
           ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
           ? null
-          : DateTime.parse(json['updatedAt'] as String),
+          : DateTime.parse(json['updated_at'] as String),
       type: json['type'] as String?,
-      isLate: json['isLate'] as bool?,
+      isLate: json['is_late'] as bool?,
       photoPath: json['photo'] as String?,
       empleado: (json['empleado'] as num).toInt(),
     );
@@ -24,10 +24,10 @@ _AsistenciaApiModel _$AsistenciaApiModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$AsistenciaApiModelToJson(_AsistenciaApiModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
       'type': instance.type,
-      'isLate': instance.isLate,
+      'is_late': instance.isLate,
       'photo': instance.photoPath,
       'empleado': instance.empleado,
     };

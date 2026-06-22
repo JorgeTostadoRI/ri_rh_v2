@@ -68,7 +68,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
 
   Future<Result<void>> confirmEntryHandler() async {
     setState(() => _loading = true);
-    final result = await widget.viewmodel.registerManualEntry(_image!);
+    final result = await widget.viewmodel.registerManualEntry(usernameController.text, passwordController.text, _image!);
 
     switch(result) {
       case Ok():
