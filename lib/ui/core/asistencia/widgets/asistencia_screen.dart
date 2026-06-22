@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:ri_rh_v2/ui/core/attendance/view_models/fingerprint_button_viewmodel.dart';
-import 'package:ri_rh_v2/ui/core/attendance/widgets/fingerprint_button.dart';
+import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/asistencia/widgets/fingerprint_button.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/attendance/widgets/clock.dart';
+import 'package:ri_rh_v2/ui/core/asistencia/widgets/clock.dart';
 
-class AttendanceScreen extends StatelessWidget {
-  const AttendanceScreen({super.key});
+class AsistenciaScreen extends StatelessWidget {
+  const AsistenciaScreen({
+    super.key,
+    required this.viewmodel,  
+  });
+
+  final AsistenciaViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +109,9 @@ class AttendanceScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          FingerprintButton(viewmodel: FingerprintButtonViewmodel()),
+                          FingerprintButton(
+                            viewmodel: viewmodel,
+                          ),
                           Text(
                             'Si tienes problemas con el registro, contacta a Recursos Humanos.',
                             style: TextTheme.of(context).bodySmall?.copyWith(color: Color(0xFFC4A47A)),

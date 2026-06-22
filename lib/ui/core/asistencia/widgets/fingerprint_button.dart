@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:ri_rh_v2/ui/core/attendance/view_models/fingerprint_button_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 class FingerprintButton extends StatelessWidget {
@@ -9,7 +9,7 @@ class FingerprintButton extends StatelessWidget {
     required this.viewmodel,
   });
 
-  final FingerprintButtonViewmodel viewmodel;
+  final AsistenciaViewmodel viewmodel;
   final columnSpacing = 20.0;
 
   void onTapHandler() {
