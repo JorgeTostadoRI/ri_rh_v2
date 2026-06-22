@@ -6,9 +6,7 @@ import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/routing/router.dart';
-import 'package:ri_rh_v2/ui/core/asistencia/widgets/asistencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
 void main() {
   runApp(
