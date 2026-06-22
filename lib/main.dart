@@ -9,6 +9,8 @@ import 'package:ri_rh_v2/routing/router.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
   runApp(
       MultiProvider(
         providers: [

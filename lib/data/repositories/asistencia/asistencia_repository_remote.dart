@@ -19,7 +19,9 @@ class AsistenciaRepositoryRemote implements AsistenciaRepository {
         empleado: asistencia.empleado,
       );
 
-      return _apiClient.postAsistencia(asistenciaApiModel);
+      return Result.error(Exception("Invalid"));
+
+      // return _apiClient.postAsistencia(asistenciaApiModel);
     } on Exception catch(error) {
       return Result.error(error);
     }
