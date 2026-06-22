@@ -15,13 +15,11 @@ class AsistenciaRepositoryRemote implements AsistenciaRepository {
   Future<Result<void>> createAsistencia(Asistencia asistencia) async {
     try {
       final asistenciaApiModel = AsistenciaApiModel(
-        photo: asistencia.photo,
+        photoFile: asistencia.photoFile,
         empleado: asistencia.empleado,
       );
 
-      return Result.error(Exception("Invalid"));
-
-      // return _apiClient.postAsistencia(asistenciaApiModel);
+      return _apiClient.postAsistencia(asistenciaApiModel);
     } on Exception catch(error) {
       return Result.error(error);
     }

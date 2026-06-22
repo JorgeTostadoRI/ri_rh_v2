@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
-import 'package:ri_rh_v2/ui/core/asistencia/widgets/picture_modal.dart';
+import 'package:ri_rh_v2/ui/core/asistencia/widgets/manual_entry_form.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 class FingerprintButton extends StatelessWidget {
@@ -24,7 +24,10 @@ class FingerprintButton extends StatelessWidget {
     if (context.mounted) {
       await showDialog(
         context: context,
-        builder: (context) => PictureModal(camera: cameras.first),
+        builder: (context) => ManualEntryForm(
+          camera: cameras.first,
+          viewmodel: viewmodel,
+        ),
       );
     }                
   }

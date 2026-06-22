@@ -16,7 +16,7 @@ _Asistencia _$AsistenciaFromJson(Map<String, dynamic> json) => _Asistencia(
       : DateTime.parse(json['updatedAt'] as String),
   type: json['type'] as String?,
   isLate: json['isLate'] as bool?,
-  photo: json['photo'] as String?,
+  photoPath: json['photo'] as String?,
   empleado: (json['empleado'] as num).toInt(),
 );
 
@@ -27,6 +27,6 @@ Map<String, dynamic> _$AsistenciaToJson(_Asistencia instance) =>
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'type': instance.type,
       'isLate': instance.isLate,
-      'photo': instance.photo,
+      'photo': instance.photoPath,
       'empleado': instance.empleado,
     };

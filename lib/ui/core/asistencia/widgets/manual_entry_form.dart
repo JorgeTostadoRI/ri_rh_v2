@@ -1,26 +1,31 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/result.dart';
 
-class PictureModal extends StatefulWidget {
-  const PictureModal({
+class ManualEntryForm extends StatefulWidget {
+  const ManualEntryForm({
     super.key,
     required this.camera,
+    required this.viewmodel,
   });
 
   final CameraDescription camera;
+  final AsistenciaViewmodel viewmodel;
 
   @override
-  State<PictureModal> createState() => _PictureModalState();
+  State<ManualEntryForm> createState() => _ManualEntryFormState();
 }
 
-class _PictureModalState extends State<PictureModal> {
+class _ManualEntryFormState extends State<ManualEntryForm> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   XFile? _image;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -59,6 +64,21 @@ class _PictureModalState extends State<PictureModal> {
       // If an error occurs, log the error to the console.
       print(error);
     }
+  }
+
+  Future<Result<void>> confirmEntryHandler() async {
+    setState(() => _loading = true);
+    final result = await widget.viewmodel.registerManualEntry(_image!);
+
+    switch(result) {
+      case Ok():
+        Navigator.pop(context);
+      case Error():
+        print(result.error);
+    }
+
+    setState(() => _loading = false);
+    return result;
   }
 
   @override
@@ -109,7 +129,7 @@ class _PictureModalState extends State<PictureModal> {
           return Material(
             child: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 100,),
                 color: Color(0xFFFDF6EE),
                 child: Column(
                   spacing: 20.0,
@@ -130,7 +150,7 @@ class _PictureModalState extends State<PictureModal> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
-                        spacing: 8.0,
+                        spacing: 20,
                         children: [
                           if (_image == null)
                             SizedBox(
@@ -218,7 +238,7 @@ class _PictureModalState extends State<PictureModal> {
                               ),
                               ElevatedButton(
                                 style: primaryButtonStyle,
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: usernameController.text.isNotEmpty && passwordController.text.isNotEmpty && _image != null && !_loading ? confirmEntryHandler : null,
                                 child: Row(
                                   spacing: 8,
                                   children: [

@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart';
@@ -38,13 +39,33 @@ class AsistenciaViewmodel extends ChangeNotifier {
     );
 
     final result = await _asistenciaRepository.createAsistencia(asistencia);
-    _logger.d('registerEntry => $result');
     _scanning = false;
     notifyListeners();
 
     switch(result) {
       case Ok():
         _setScanResult(true);
+        _logger.i('Asistencia registrada para empleado #${asistencia.empleado}');
+      case Error():
+        _setScanResult(false);
+    }
+    return result;
+  }
+
+  Future<Result<void>> registerManualEntry(XFile photo) async {
+    // TODO: obtener empleado a traves de credenciales
+
+    final asistencia = Asistencia(
+      empleado: 7,
+      photoFile: photo,
+    );
+
+    final result = await _asistenciaRepository.createAsistencia(asistencia);
+
+    switch(result) {
+      case Ok():
+        _setScanResult(true);
+        _logger.i('Asistencia registrada para empleado #${asistencia.empleado}');
       case Error():
         _setScanResult(false);
     }

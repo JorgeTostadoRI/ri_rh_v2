@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -14,8 +15,12 @@ abstract class AsistenciaApiModel with _$AsistenciaApiModel {
         String? type,
         bool? isLate,
 
-        // Archivo opcional, debe ser el path
-        String? photo,
+        // Archivo opcional, será el path al archivo en servidor
+        @JsonKey(name: 'photo')
+        String? photoPath,
+        // Debe ser populado para subir imagen
+        @JsonKey(includeFromJson: false, includeToJson: false)
+        XFile? photoFile,
 
         // ID del empleado
         required int empleado,
