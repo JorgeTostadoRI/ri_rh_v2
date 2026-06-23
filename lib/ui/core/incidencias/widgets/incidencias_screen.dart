@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
+import 'package:ri_rh_v2/ui/core/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/widgets/incidencia_card.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
-const List<IncidenciaCategory> incidencias = [
+const List<IncidenciaCategory> incidenciaCategories = [
   IncidenciaCategory(
     id: "permisos",
     label: "Permisos",
@@ -66,7 +67,12 @@ const List<IncidenciaCategory> incidencias = [
 ];
 
 class IncidenciasScreen extends StatelessWidget {
-  const IncidenciasScreen({super.key});
+  const IncidenciasScreen({
+    super.key,
+    required this.viewmodel,
+  });
+
+  final IncidenciasViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -110,8 +116,8 @@ class IncidenciasScreen extends StatelessWidget {
                         runSpacing: 20,
                         alignment: .start,
                         children: [
-                          for (final incidencia in incidencias)
-                            IncidenciaCard(incidencia: incidencia)
+                          for (final category in viewmodel.incidenciaCategories)
+                            IncidenciaCategoryCard(category: category)
                         ],
                       ),
                     ),

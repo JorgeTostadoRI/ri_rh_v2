@@ -6,6 +6,8 @@ import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
@@ -52,6 +54,9 @@ void main() {
               apiClient: context.read(),
             ) as AsistenciaRepository,
           ),
+          Provider(create: (context) =>
+            IncidenciasRepositoryLocal() as IncidenciasRepository,
+          ),
         ],
         child: const MyApp(),
       )
@@ -69,7 +74,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'RI - Recursos Humanos',
       theme: themeProvider.appTheme,
-      routerConfig: router(),
+      routerConfig: router(context.read()),
     );
   }
 }
