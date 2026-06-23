@@ -87,7 +87,7 @@ class FingerprintButton extends StatelessWidget {
                       end: .centerRight,
                       colors: [
                         Color(0xFFFFF8F0),
-                        Color(0xFFFFF0DC),
+                        backgroundColor,
                       ],
                     ),
                     borderRadius: BorderRadius.circular(15),

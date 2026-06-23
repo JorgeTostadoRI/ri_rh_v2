@@ -72,7 +72,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             alignment: Alignment.center,
             padding: EdgeInsets.zero,
             style: IconButton.styleFrom(
-              backgroundColor: Color(0xFFFFF0DC),
+              backgroundColor: backgroundColor,
               side: BorderSide(color: Color(0xFFFDDEB0)),
             ),
             onPressed: () => setState(() => isCollapsed = !isCollapsed),

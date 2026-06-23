@@ -71,7 +71,7 @@ class IncidenciasScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFF0DC),
+      backgroundColor: backgroundColor,
       body: Row(
         children: [
           CollapsibleSidebar(),
