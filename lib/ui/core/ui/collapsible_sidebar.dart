@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
@@ -54,12 +56,12 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           ),
           Divider(color: dividerColor),
           // Navigation Items
-          _buildNavItem(LucideIcons.clock, 'Ingreso', true),
-          _buildNavItem(LucideIcons.megaphone, 'Avisos', false),
-          _buildNavItem(LucideIcons.fileText, 'Actas', false),
-          _buildNavItem(LucideIcons.users, 'Empleados', false),
-          _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false),
-          _buildNavItem(LucideIcons.settings2, 'Automatización', false),
+          _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
+          _buildNavItem(LucideIcons.megaphone, 'Avisos', false, null),
+          _buildNavItem(LucideIcons.fileText, 'Actas', false, null),
+          _buildNavItem(LucideIcons.users, 'Empleados', false, null),
+          _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
+          _buildNavItem(LucideIcons.settings2, 'Automatización', false, null),
           const SizedBox(height: 20),
           IconButton.outlined(
             icon: Icon(
@@ -80,7 +82,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
   );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool selected) {
+  Widget _buildNavItem(IconData icon, String label, bool selected, String? route) {
     final Color textColor = Color(0xFF9A7B5A);
 
     return Material(
@@ -107,7 +109,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),
           ),
-          onTap: () {},
+          onTap: route != null ? () => context.go(route) : null,
         ),
       ),
     );

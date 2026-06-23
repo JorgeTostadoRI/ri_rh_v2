@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/widgets/asistencia_screen.dart';
+import 'package:ri_rh_v2/ui/core/incidencias/widgets/incidencias_screen.dart';
 
 GoRouter router() => GoRouter(
   initialLocation: Routes.ingreso,
@@ -18,6 +19,12 @@ GoRouter router() => GoRouter(
           ),
         );
       },
+    ),
+    GoRoute(
+      path: Routes.incidencias,
+      builder: (context, state) {
+        return IncidenciasScreen();
+      }
     ),
   ],
 );
