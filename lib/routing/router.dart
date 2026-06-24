@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/widgets/asistencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/view_models/incidencias_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/widgets/incidencias_screen.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/widgets/new_incidencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/not_found_screen.dart';
@@ -45,7 +46,13 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               return const NotFoundScreen(message: 'Categoría no encontrada');
             }
 
-            return NewIncidenciaScreen(category: incidenciasViewmodel.incidenciaCategories[categoryIndex]);
+            return NewIncidenciaScreen(
+              category: incidenciasViewmodel.incidenciaCategories[categoryIndex],
+              viewmodel: NewIncidenciaViewmodel(
+                authRepository: authRepository,
+                incidenciasRepository: context.read(),
+              ),
+            );
           }
         ),
       ],

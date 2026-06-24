@@ -42,7 +42,7 @@ void main() {
               dioFactory: baseDio,
             ),
           ),
-          Provider(create: (context) =>
+          ChangeNotifierProvider(create: (context) =>
             AuthRepositoryRemote(
               apiClient: context.read(),
               authApiClient: context.read(),
