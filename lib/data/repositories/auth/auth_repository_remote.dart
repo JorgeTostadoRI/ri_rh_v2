@@ -79,6 +79,11 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   @override
+  Future<Result<void>> loginFingerprint({required String fingerprint}) async {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<Result<void>> logout() async {
     _log.i('User logged out');
     try {

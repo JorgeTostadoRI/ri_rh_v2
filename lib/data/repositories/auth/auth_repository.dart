@@ -6,8 +6,11 @@ abstract class AuthRepository extends ChangeNotifier {
   /// Returns [Future] because it will load a stored auth state the first time.
   Future<bool> get isAuthenticated;
 
-  /// Perform login
+  /// Perform login via user credentials
   Future<Result<void>> login({required String username, required String password});
+
+  /// Perform login via user fingerprint
+  Future<Result<void>> loginFingerprint({required String fingerprint});
 
   /// Perform logout
   Future<Result<void>> logout();
