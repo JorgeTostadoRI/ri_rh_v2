@@ -23,6 +23,7 @@ class AppThemeProvider extends ChangeNotifier {
       labelStyle: TextStyle(
         color: Color(0xFFC4A47A),
         fontWeight: .w700,
+        fontFamily: 'Inter',
       ),
       border: WidgetStateInputBorder.fromMap({
         WidgetState.focused: OutlineInputBorder(
@@ -40,6 +41,45 @@ class AppThemeProvider extends ChangeNotifier {
       }),
       filled: true,
       fillColor: inputFillColor,
+    ),
+    // PRIMARY BUTTONS
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        shadowColor: primaryColor,
+        textStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: .w700,
+          height: 1.5,
+          fontFamily: 'Inter',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(16),
+        ),
+      ),
+    ),
+    // SECONDARY BUTTONS
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        foregroundColor: labelTextColor,
+        surfaceTintColor: inputFillColor,
+        textStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: .w700,
+          height: 1.5,
+          fontFamily: 'Inter',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(16),
+        ),
+        side: BorderSide(
+          color: borderColor,
+          width: 0.8,
+        ),
+      ),
     ),
   );
 
