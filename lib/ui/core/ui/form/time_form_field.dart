@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 class TimeFormField extends StatefulWidget {
   const TimeFormField({
     super.key,
+    this.controller,
     this.initialValue,
     this.onTimeSaved,
     this.validatorMessage,
@@ -13,6 +14,7 @@ class TimeFormField extends StatefulWidget {
     this.required = false,
   });
 
+  final TextEditingController? controller;
   final String? initialValue; // e.g. "14:30"
   final ValueChanged<TimeOfDay?>? onTimeSaved;
   final String? validatorMessage;
@@ -25,7 +27,8 @@ class TimeFormField extends StatefulWidget {
 
 
 class _TimeFormFieldState extends State<TimeFormField> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
+  late final bool _createdController;
   final _focusNode = FocusNode();
 
   TimeOfDay? _parseStrict(String value) {
@@ -75,7 +78,14 @@ class _TimeFormFieldState extends State<TimeFormField> {
   @override
   void initState() {
     super.initState();
-    _controller.text = widget.initialValue ?? '';
+    if (widget.controller == null) {
+      _controller = TextEditingController();
+      _controller.text = widget.initialValue ?? '';
+      _createdController = true;
+    } else {
+      _controller = widget.controller!;
+      _createdController = false;
+    }
     _controller.addListener(() {
       final parsed = _parseStrict(_controller.text);
       widget.onTimeSaved?.call(parsed);
@@ -84,7 +94,7 @@ class _TimeFormFieldState extends State<TimeFormField> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_createdController) _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }

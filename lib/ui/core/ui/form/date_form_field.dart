@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 class DateFormField extends StatefulWidget {
   const DateFormField({
     super.key,
+    this.controller,
     this.initialValue,
     this.onDateSaved,
     this.validatorMessage,
@@ -13,6 +14,7 @@ class DateFormField extends StatefulWidget {
     this.required = false,
   });
 
+  final TextEditingController? controller;
   final String? initialValue; // e.g. "04/11/23"
   final ValueChanged<DateTime?>? onDateSaved;
   final String? validatorMessage;
@@ -25,7 +27,8 @@ class DateFormField extends StatefulWidget {
 
 
 class _DateFormFieldState extends State<DateFormField> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
+  late final bool _createdController;
   final _focusNode = FocusNode();
 
   int _twoDigitYearToFull(int yy) {
@@ -102,7 +105,14 @@ class _DateFormFieldState extends State<DateFormField> {
   @override
   void initState() {
     super.initState();
-    _controller.text = widget.initialValue ?? '';
+    if (widget.controller == null) {
+      _controller = TextEditingController();
+      _controller.text = widget.initialValue ?? '';
+      _createdController = true;
+    } else {
+      _controller = widget.controller!;
+      _createdController = false;
+    }
     _controller.addListener(() {
       final parsed = _parseStrict(_controller.text);
       widget.onDateSaved?.call(parsed);
@@ -111,7 +121,7 @@ class _DateFormFieldState extends State<DateFormField> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_createdController) _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
