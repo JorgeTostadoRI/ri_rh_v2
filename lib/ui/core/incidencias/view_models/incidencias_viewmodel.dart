@@ -11,63 +11,72 @@ class IncidenciasViewmodel extends ChangeNotifier {
 
   final IncidenciasRepository _incidenciasRepository;
 
-  final List<IncidenciaCategory> incidenciaCategories = [
-  IncidenciaCategory(
-    id: "permisos",
-    label: "Permisos",
-    icon: LucideIcons.fileText,
-    description: "Solicitar permiso de ausencia justificada",
-    color: Color(0xFFE87B1E),
-    bg: Color(0xFFFFF0DC),
-  ),
-  IncidenciaCategory(
-    id: "faltas",
-    label: "Faltas",
-    icon: LucideIcons.userX,
-    description: "Registro de inasistencias",
-    color: Color(0xFFD94F3D),
-    bg: Color(0xFFFEF0EE),
-  ),
-  IncidenciaCategory(
-    id: "horas-extras",
-    label: "Horas Extras",
-    icon: LucideIcons.clock,
-    description: "Reportar tiempo adicional trabajado",
-    color: Color(0xFF2E8B57),
-    bg: Color(0xFFEDF7F1),
-  ),
-  IncidenciaCategory(
-    id: "vacaciones",
-    label: "Vacaciones",
-    icon: LucideIcons.palmtree,
-    description: "Solicitar periodo vacacional",
-    color: Color(0xFF1A7ABF),
-    bg: Color(0xFFEBF4FB),
-  ),
-  IncidenciaCategory(
-    id: "retardos",
-    label: "Retardos",
-    icon: LucideIcons.alarmClock,
-    description: "Registro de llegadas tardías",
-    color: Color(0xFFC4820A),
-    bg: Color(0xFFFEF8E7),
-  ),
-  IncidenciaCategory(
-    id: "incapacidades",
-    label: "Incapacidades / Requerimientos Judiciales",
-    icon: LucideIcons.stethoscope,
-    description:
-        "Registra tu incapacidad impartida por el IMSS o tu requerimiento por parte de un juez",
-    color: Color(0xFF1E8A9A),
-    bg: Color(0xFFEBF7F9),
-  ),
-  IncidenciaCategory(
-    id: "bajas",
-    label: "Bajas",
-    icon: LucideIcons.arrowBigDownDash,
-    description: "Registra la terminación definitiva de contrato",
-    color: Color(0xFFD94F3D),
-    bg: Color(0xFFFEF0EE),
-  ),
-];
+  List<IncidenciaCategory> get categories { 
+    return [
+      const IncidenciaCategory(
+        id: "permisos",
+        label: "Permisos",
+        icon: LucideIcons.fileText,
+        description: "Solicitar permiso de ausencia justificada",
+        color: Color(0xFFE87B1E),
+        bg: Color(0xFFFFF0DC),
+        canCreate: true,
+      ),
+      const IncidenciaCategory(
+        id: "faltas",
+        label: "Faltas",
+        icon: LucideIcons.userX,
+        description: "Registro de inasistencias",
+        color: Color(0xFFD94F3D),
+        bg: Color(0xFFFEF0EE),
+        canCreate: false,
+      ),
+      const IncidenciaCategory(
+        id: "horas-extras",
+        label: "Horas Extras",
+        icon: LucideIcons.clock,
+        description: "Reportar tiempo adicional trabajado",
+        color: Color(0xFF2E8B57),
+        bg: Color(0xFFEDF7F1),
+        canCreate: true,
+      ),
+      const IncidenciaCategory(
+        id: "vacaciones",
+        label: "Vacaciones",
+        icon: LucideIcons.palmtree,
+        description: "Solicitar periodo vacacional",
+        color: Color(0xFF1A7ABF),
+        bg: Color(0xFFEBF4FB),
+        canCreate: true,
+      ),
+      const IncidenciaCategory(
+        id: "retardos",
+        label: "Retardos",
+        icon: LucideIcons.alarmClock,
+        description: "Registro de llegadas tardías",
+        color: Color(0xFFC4820A),
+        bg: Color(0xFFFEF8E7),
+        canCreate: false,
+      ),
+      const IncidenciaCategory(
+        id: "incapacidades",
+        label: "Incapacidades",
+        icon: LucideIcons.stethoscope,
+        description:
+            "Registra tu incapacidad impartida por el IMSS",
+        color: Color(0xFF1E8A9A),
+        bg: Color(0xFFEBF7F9),
+        canCreate: true,
+      ),
+      const IncidenciaCategory(
+        id: "requerimientos-judiciales",
+        label: "Requerimientos Judiciales",
+        icon: LucideIcons.scroll,
+        description: "Registra tu requerimiento por parte de un juez",
+        color: Color(0xFFD94F3D),
+        bg: Color(0xFFFEF0EE),
+        canCreate: true,
+      ),
+    ];
+  }
 }

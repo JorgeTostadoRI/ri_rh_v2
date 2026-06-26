@@ -40,14 +40,14 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.newIncidencia,
           builder: (context, state) {
             final incidenciasViewmodel = IncidenciasViewmodel(incidenciasRepository: context.read());
-            final categoryIndex = incidenciasViewmodel.incidenciaCategories.indexWhere((e) => e.id == state.pathParameters['categoriaId']!);
+            final categoryIndex = incidenciasViewmodel.categories.indexWhere((e) => e.id == state.pathParameters['categoriaId']!);
 
             if (categoryIndex == -1) {
               return const NotFoundScreen(message: 'Categoría no encontrada');
             }
 
             return NewIncidenciaScreen(
-              category: incidenciasViewmodel.incidenciaCategories[categoryIndex],
+              category: incidenciasViewmodel.categories[categoryIndex],
               viewmodel: NewIncidenciaViewmodel(
                 authRepository: authRepository,
                 incidenciasRepository: context.read(),

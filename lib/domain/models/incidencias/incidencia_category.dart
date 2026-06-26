@@ -8,6 +8,9 @@ class IncidenciaCategory {
   final Color color;
   final Color bg;
 
+  /// Whether a user can create a new incidencia of this category
+  final bool canCreate;
+
   const IncidenciaCategory({
     required this.id,
     required this.label,
@@ -15,5 +18,6 @@ class IncidenciaCategory {
     required this.description,
     required this.color,
     required this.bg,
+    required this.canCreate,
   });
 }
