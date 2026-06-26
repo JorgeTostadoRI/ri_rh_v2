@@ -31,6 +31,7 @@ abstract class Incidencia with _$Incidencia {
         required DateTime end,
         required String reason,
         required List<IncidenciaFile> files,
+        required String categoryId,
     }) = _Incidencia;
 
     factory Incidencia.fromJson(Map<String, Object?> json) => _$IncidenciaFromJson(json);

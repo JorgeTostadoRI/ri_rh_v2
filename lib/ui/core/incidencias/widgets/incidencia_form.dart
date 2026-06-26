@@ -1,13 +1,18 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/view_models/new_incidencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/incidencias/widgets/verify_identity_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/field_switcher.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/field_label.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/time_form_field.dart';
+import 'package:ri_rh_v2/utils/result.dart';
 
 const _fieldMargin = 32.0;
 const _labelMargin = 16.0;
@@ -16,9 +21,11 @@ class IncidenciaForm extends StatefulWidget {
   const IncidenciaForm({
     super.key,
     required this.viewmodel,
+    required this.category,
   });
 
   final NewIncidenciaViewmodel viewmodel;
+  final IncidenciaCategory category;
 
   @override
   State<IncidenciaForm> createState() => _IncidenciaFormState();
@@ -66,9 +73,57 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     );
   }
 
-  void _submitForm() {
+  Future<bool> _validateAuth() async {
+    final isAuthenticated = await widget.viewmodel.isAuthenticated;
+
+    if (!isAuthenticated) {
+      final authenticated = await showDialog<Result<bool>>(
+        context: context,
+        builder: (context) => VerifyIdentityDialog(),
+        barrierDismissible: false,
+      );
+      if (authenticated == null) return false;
+
+      switch (authenticated) {
+        case Ok():
+          // If the authentication was canceled
+          if (!authenticated.value) return false;
+        case Error():
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Ha ocurrido un error con la autenticación'),
+            ),
+          );
+          return false;
+      }
+    }
+
+    return true;
+  }
+
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      widget.viewmodel.submitData();
+      final authenticated = await _validateAuth();
+      if (!authenticated) return;
+
+      final result = await widget.viewmodel.submitData(widget.category);
+      if (result is Ok) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Incidencia creada'),
+            ),
+          );
+
+          context.go(Routes.incidencias);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ha ocurrido un error'),
+          ),
+        );
+      }
     }
   }
 

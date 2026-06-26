@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -30,6 +32,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   List<PlatformFile> _files = [];
   List<PlatformFile> get files => _files;
 
+  Future<bool> get isAuthenticated => _authRepository.isAuthenticated;
+
   void onDateOptionChanged(int index) {
     _dateOption = IncidenciaDateOption.values[index];
     notifyListeners();
@@ -53,14 +57,35 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Should only be called once the form has been validated
-  Result<void> submitData() {
-    print('startDate: $_startDate');
-    print('endDate: $_endDate');
-    print('startTime: $_startTime');
-    print('endTime: $_endTime');
-    print('reason: $_reason');
-    print('files: ${_files.map((f) => f.name).toList()}');
-    return Result.ok(null);
+  /// Should only be called once the form has been validated and the user is authenticated
+  Future<Result<void>> submitData(IncidenciaCategory category) async {
+    final incidencia = Incidencia(
+      start: _constructDate(_startDate!, _startTime),
+      end: _constructDate(_endDate ?? _startDate!, _endTime),
+      reason: _reason!,
+      categoryId: category.id,
+      files: [],
+    );
+    return _incidenciasRepository.createIncidencia(incidencia);
+  }
+
+  Future<Result<void>> authenticate(String fingerprint) async {
+    return _authRepository.loginFingerprint(fingerprint: fingerprint);
+  }
+
+  DateTime _constructDate(DateTime initialDate, TimeOfDay? tod) {
+    switch (_dateOption) {
+      case IncidenciaDateOption.DATE_RANGE:
+        return initialDate;
+      case IncidenciaDateOption.HOUR_RANGE:
+        if (tod == null) throw ArgumentError('tod must not be null if _dateOption is HOUR_RANGE');
+        return DateTime(
+          initialDate.year,
+          initialDate.month,
+          initialDate.day,
+          tod.hour,
+          tod.minute,
+        );
+    }
   }
 }

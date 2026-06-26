@@ -23,6 +23,7 @@ _Incidencia _$IncidenciaFromJson(Map<String, dynamic> json) => _Incidencia(
   files: (json['files'] as List<dynamic>)
       .map((e) => IncidenciaFile.fromJson(e as Map<String, dynamic>))
       .toList(),
+  categoryId: json['category_id'] as String,
 );
 
 Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
@@ -37,6 +38,7 @@ Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,
       'files': instance.files,
+      'category_id': instance.categoryId,
     };
 
 const _$IncidenciaStateEnumMap = {

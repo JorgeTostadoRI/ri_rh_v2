@@ -49,7 +49,7 @@ class NewIncidenciaScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 40),
-                        IncidenciaForm(viewmodel: viewmodel),
+                        IncidenciaForm(viewmodel: viewmodel, category: category),
                       ],
                     ),
                   ),
