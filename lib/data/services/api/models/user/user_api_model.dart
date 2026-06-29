@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 
 part 'user_api_model.freezed.dart';
 part 'user_api_model.g.dart';
@@ -34,12 +35,6 @@ abstract class DepartamentoApiModel with _$DepartamentoApiModel {
     }) = _DepartamentoApiModel;
 
   factory DepartamentoApiModel.fromJson(Map<String, Object?> json) => _$DepartamentoApiModelFromJson(json);
-}
-
-enum Divisa {
-    MEX,
-    MXN,
-    USD
 }
 
 @freezed

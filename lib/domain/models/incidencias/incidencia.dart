@@ -6,11 +6,11 @@ part 'incidencia.freezed.dart';
 part 'incidencia.g.dart';
 
 enum IncidenciaState {
-  @JsonValue('pending')
+  @JsonValue('PE')
   pending,
-  @JsonValue('rejected')
+  @JsonValue('RE')
   rejected,
-  @JsonValue('approved')
+  @JsonValue('AP')
   approved,
 }
 
@@ -31,6 +31,8 @@ abstract class Incidencia with _$Incidencia {
         required DateTime end,
         required String reason,
         required List<IncidenciaFile> files,
+
+        @JsonKey(defaultValue: '')
         required String categoryId,
     }) = _Incidencia;
 

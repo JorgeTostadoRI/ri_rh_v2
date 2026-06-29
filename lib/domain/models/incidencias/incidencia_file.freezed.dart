@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$IncidenciaFile implements DiagnosticableTreeMixin {
 
- int? get id; DateTime? get createdAt; DateTime? get updatedAt; String get filepath;
+ int? get id; DateTime? get createdAt; DateTime? get updatedAt;@JsonKey(name: 'file') String get filepath;@JsonKey(includeFromJson: false, includeToJson: false) PlatformFile? get file;
 /// Create a copy of IncidenciaFile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $IncidenciaFileCopyWith<IncidenciaFile> get copyWith => _$IncidenciaFileCopyWith
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IncidenciaFile'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('filepath', filepath));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('filepath', filepath))..add(DiagnosticsProperty('file', file));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IncidenciaFile&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.filepath, filepath) || other.filepath == filepath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IncidenciaFile&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.filepath, filepath) || other.filepath == filepath)&&(identical(other.file, file) || other.file == file));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,filepath);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,filepath,file);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IncidenciaFile(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, filepath: $filepath)';
+  return 'IncidenciaFile(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, filepath: $filepath, file: $file)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $IncidenciaFileCopyWith<$Res>  {
   factory $IncidenciaFileCopyWith(IncidenciaFile value, $Res Function(IncidenciaFile) _then) = _$IncidenciaFileCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, String filepath
+ int? id, DateTime? createdAt, DateTime? updatedAt,@JsonKey(name: 'file') String filepath,@JsonKey(includeFromJson: false, includeToJson: false) PlatformFile? file
 });
 
 
@@ -72,13 +72,14 @@ class _$IncidenciaFileCopyWithImpl<$Res>
 
 /// Create a copy of IncidenciaFile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? filepath = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? filepath = null,Object? file = freezed,}) {
   return _then(IncidenciaFile(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,filepath: null == filepath ? _self.filepath : filepath // ignore: cast_nullable_to_non_nullable
-as String,
+as String,file: freezed == file ? _self.file : file // ignore: cast_nullable_to_non_nullable
+as PlatformFile?,
   ));
 }
 
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String filepath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt, @JsonKey(name: 'file')  String filepath, @JsonKey(includeFromJson: false, includeToJson: false)  PlatformFile? file)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _IncidenciaFile() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath,_that.file);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String filepath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt, @JsonKey(name: 'file')  String filepath, @JsonKey(includeFromJson: false, includeToJson: false)  PlatformFile? file)  $default,) {final _that = this;
 switch (_that) {
 case _IncidenciaFile():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath,_that.file);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String filepath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt, @JsonKey(name: 'file')  String filepath, @JsonKey(includeFromJson: false, includeToJson: false)  PlatformFile? file)?  $default,) {final _that = this;
 switch (_that) {
 case _IncidenciaFile() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath,_that.file);case _:
   return null;
 
 }
@@ -219,13 +220,14 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.filepath);case _:
 @JsonSerializable()
 
 class _IncidenciaFile with DiagnosticableTreeMixin implements IncidenciaFile {
-  const _IncidenciaFile({this.id, this.createdAt, this.updatedAt, required this.filepath});
+  const _IncidenciaFile({this.id, this.createdAt, this.updatedAt, @JsonKey(name: 'file') required this.filepath, @JsonKey(includeFromJson: false, includeToJson: false) this.file});
   factory _IncidenciaFile.fromJson(Map<String, dynamic> json) => _$IncidenciaFileFromJson(json);
 
 @override final  int? id;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
-@override final  String filepath;
+@override@JsonKey(name: 'file') final  String filepath;
+@override@JsonKey(includeFromJson: false, includeToJson: false) final  PlatformFile? file;
 
 /// Create a copy of IncidenciaFile
 /// with the given fields replaced by the non-null parameter values.
@@ -241,21 +243,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IncidenciaFile'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('filepath', filepath));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('filepath', filepath))..add(DiagnosticsProperty('file', file));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IncidenciaFile&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.filepath, filepath) || other.filepath == filepath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IncidenciaFile&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.filepath, filepath) || other.filepath == filepath)&&(identical(other.file, file) || other.file == file));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,filepath);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,filepath,file);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IncidenciaFile(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, filepath: $filepath)';
+  return 'IncidenciaFile(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, filepath: $filepath, file: $file)';
 }
 
 
@@ -266,7 +268,7 @@ abstract mixin class _$IncidenciaFileCopyWith<$Res> implements $IncidenciaFileCo
   factory _$IncidenciaFileCopyWith(_IncidenciaFile value, $Res Function(_IncidenciaFile) _then) = __$IncidenciaFileCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, String filepath
+ int? id, DateTime? createdAt, DateTime? updatedAt,@JsonKey(name: 'file') String filepath,@JsonKey(includeFromJson: false, includeToJson: false) PlatformFile? file
 });
 
 
@@ -283,13 +285,14 @@ class __$IncidenciaFileCopyWithImpl<$Res>
 
 /// Create a copy of IncidenciaFile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? filepath = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? filepath = null,Object? file = freezed,}) {
   return _then(_IncidenciaFile(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,filepath: null == filepath ? _self.filepath : filepath // ignore: cast_nullable_to_non_nullable
-as String,
+as String,file: freezed == file ? _self.file : file // ignore: cast_nullable_to_non_nullable
+as PlatformFile?,
   ));
 }
 

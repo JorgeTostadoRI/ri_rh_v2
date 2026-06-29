@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,7 +13,10 @@ abstract class IncidenciaFile with _$IncidenciaFile {
         DateTime? createdAt,
         DateTime? updatedAt,
 
+        @JsonKey(name: 'file')
         required String filepath,
+        @JsonKey(includeFromJson: false, includeToJson: false)
+        PlatformFile? file,
     }) = _IncidenciaFile;
 
     factory IncidenciaFile.fromJson(Map<String, Object?> json) => _$IncidenciaFileFromJson(json);

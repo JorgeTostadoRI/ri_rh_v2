@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Incidencia implements DiagnosticableTreeMixin {
 
- int? get id; DateTime? get createdAt; DateTime? get updatedAt; IncidenciaState? get state; int? get revisor; int? get solicitor; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files; String get categoryId;
+ int? get id; DateTime? get createdAt; DateTime? get updatedAt; IncidenciaState? get state; int? get revisor; int? get solicitor; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files;@JsonKey(defaultValue: '') String get categoryId;
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,7 +55,7 @@ abstract mixin class $IncidenciaCopyWith<$Res>  {
   factory $IncidenciaCopyWith(Incidencia value, $Res Function(Incidencia) _then) = _$IncidenciaCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, int? revisor, int? solicitor, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, String categoryId
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, int? revisor, int? solicitor, DateTime start, DateTime end, String reason, List<IncidenciaFile> files,@JsonKey(defaultValue: '') String categoryId
 });
 
 
@@ -170,7 +170,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  String categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Incidencia() when $default != null:
 return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
@@ -191,7 +191,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  String categoryId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)  $default,) {final _that = this;
 switch (_that) {
 case _Incidencia():
 return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
@@ -211,7 +211,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  String categoryId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)?  $default,) {final _that = this;
 switch (_that) {
 case _Incidencia() when $default != null:
 return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
@@ -226,7 +226,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 @JsonSerializable()
 
 class _Incidencia with DiagnosticableTreeMixin implements Incidencia {
-  const _Incidencia({this.id, this.createdAt, this.updatedAt, this.state, this.revisor, this.solicitor, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, required this.categoryId}): _files = files;
+  const _Incidencia({this.id, this.createdAt, this.updatedAt, this.state, this.revisor, this.solicitor, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, @JsonKey(defaultValue: '') required this.categoryId}): _files = files;
   factory _Incidencia.fromJson(Map<String, dynamic> json) => _$IncidenciaFromJson(json);
 
 @override final  int? id;
@@ -245,7 +245,7 @@ class _Incidencia with DiagnosticableTreeMixin implements Incidencia {
   return EqualUnmodifiableListView(_files);
 }
 
-@override final  String categoryId;
+@override@JsonKey(defaultValue: '') final  String categoryId;
 
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
@@ -286,7 +286,7 @@ abstract mixin class _$IncidenciaCopyWith<$Res> implements $IncidenciaCopyWith<$
   factory _$IncidenciaCopyWith(_Incidencia value, $Res Function(_Incidencia) _then) = __$IncidenciaCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, int? revisor, int? solicitor, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, String categoryId
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, int? revisor, int? solicitor, DateTime start, DateTime end, String reason, List<IncidenciaFile> files,@JsonKey(defaultValue: '') String categoryId
 });
 
 
