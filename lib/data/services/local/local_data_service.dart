@@ -2,6 +2,8 @@ import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 
 class LocalDataService {
+  bool isAuthenticated = false;
+
   List<Departamento> getDepartamentos() {
     return [
       Departamento(

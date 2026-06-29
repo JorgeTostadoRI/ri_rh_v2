@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.da
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
+import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
@@ -33,8 +34,11 @@ List<SingleChildWidget> get _sharedProviders {
 
 List<SingleChildWidget> get providersLocal {
   return [
+    Provider.value(value: LocalDataService()),
     ChangeNotifierProvider(create:(context) =>
-      AuthRepositoryDev() as AuthRepository,
+      AuthRepositoryDev(
+        localDataService: context.read(),
+      ) as AuthRepository,
     ),
     Provider(create: (context) =>
       AsistenciaRepositoryLocal() as AsistenciaRepository
