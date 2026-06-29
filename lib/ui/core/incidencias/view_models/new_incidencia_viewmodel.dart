@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.da
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -64,12 +65,20 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
 
   /// Should only be called once the form has been validated and the user is authenticated
   Future<Result<void>> submitData(IncidenciaCategory category) async {
+    final user = _authRepository.getCurrentUser();
+
+    final incidenciaFiles = _files.map((f) => IncidenciaFile(
+      filepath: '',
+      file: f,
+    )).toList();
+
     final incidencia = Incidencia(
       start: _constructDate(_startDate!, _startTime),
       end: _constructDate(_endDate ?? _startDate!, _endTime),
       reason: _reason!,
+      solicitor: user!.id,
       categoryId: category.id,
-      files: [],
+      files: incidenciaFiles,
     );
     return _incidenciasRepository.createIncidencia(incidencia);
   }

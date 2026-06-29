@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository_dev.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
@@ -74,6 +75,11 @@ List<SingleChildWidget> get providersRemote {
       AsistenciaRepositoryRemote(
         apiClient: context.read(),
       ) as AsistenciaRepository,
+    ),
+    Provider(create: (context) =>
+      IncidenciasRepositoryRemote(
+        apiClient: context.read(),
+      ) as IncidenciasRepository,
     ),
     ..._sharedProviders,
   ];
