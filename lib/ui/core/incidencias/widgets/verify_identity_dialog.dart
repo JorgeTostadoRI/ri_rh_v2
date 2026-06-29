@@ -1,10 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/ui/core/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-class VerifyIdentityDialog extends StatelessWidget {
-  const VerifyIdentityDialog({super.key});
+class VerifyIdentityDialog extends StatefulWidget {
+  const VerifyIdentityDialog({
+    super.key,
+    required this.viewmodel,
+  });
+
+  final NewIncidenciaViewmodel viewmodel;
+
+  @override
+  State<VerifyIdentityDialog> createState() => _VerifyIdentityDialogState();
+}
+
+class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
+  void _onResult() {
+    if (widget.viewmodel.login.completed) {
+      widget.viewmodel.login.clearResult();
+      Navigator.pop(context, const Result.ok(true));
+    }
+    if (widget.viewmodel.login.error) {
+      widget.viewmodel.login.clearResult();
+      Navigator.pop(context, Result.error(Exception('Error')));
+    }
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    widget.viewmodel.login.addListener(_onResult);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +77,19 @@ class VerifyIdentityDialog extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context, Result.ok(true));
-                  },
-                  icon: Icon(LucideIcons.fingerprintPattern),
-                  label: Text(
-                    'Escanear huella',
-                  ),
+                child: ListenableBuilder(
+                  listenable: widget.viewmodel.login,
+                  builder: (context, _) {
+                    return ElevatedButton.icon(
+                      onPressed: () {
+                        widget.viewmodel.login.execute('fingerprint');
+                      },
+                      icon: Icon(LucideIcons.fingerprintPattern),
+                      label: Text(
+                        'Escanear huella',
+                      ),
+                    );
+                  }
                 ),
               ),
             ],

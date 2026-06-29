@@ -79,7 +79,9 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     if (!isAuthenticated) {
       final authenticated = await showDialog<Result<bool>>(
         context: context,
-        builder: (context) => VerifyIdentityDialog(),
+        builder: (context) => VerifyIdentityDialog(
+          viewmodel: widget.viewmodel,
+        ),
         barrierDismissible: false,
       );
       if (authenticated == null) return false;

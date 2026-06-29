@@ -5,16 +5,21 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.da
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
+import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class NewIncidenciaViewmodel extends ChangeNotifier {
   NewIncidenciaViewmodel({
     required this._authRepository,
     required this._incidenciasRepository,
-  });
+  }) {
+    login = Command1<void, String>(_login);
+  }
 
   AuthRepository _authRepository;
   IncidenciasRepository _incidenciasRepository;
+
+  late Command1<void, String> login;
 
   IncidenciaDateOption _dateOption = IncidenciaDateOption.DATE_RANGE;
   IncidenciaDateOption get dateOption => _dateOption;
@@ -69,7 +74,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     return _incidenciasRepository.createIncidencia(incidencia);
   }
 
-  Future<Result<void>> authenticate(String fingerprint) async {
+  Future<Result<void>> _login(String fingerprint) async {
     return _authRepository.loginFingerprint(fingerprint: fingerprint);
   }
 
