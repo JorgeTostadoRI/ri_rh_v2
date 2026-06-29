@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/asistencia/widgets/asistencia_screen.dart';
+import 'package:ri_rh_v2/ui/core/auth/login/viewmodels/login_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/auth/login/widgets/login_screen.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/incidencias/widgets/incidencias_screen.dart';
@@ -15,6 +18,14 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
   debugLogDiagnostics: true,
   refreshListenable: authRepository,
   routes: [
+    GoRoute(
+      path: Routes.login,
+      builder: (context, state) {
+        return LoginScreen(
+          viewmodel: LoginViewmodel(authRepository: context.read()),
+        );
+      }
+    ),
     GoRoute(
       path: Routes.ingreso,
       builder: (context, state) {
