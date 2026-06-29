@@ -64,10 +64,10 @@ class LocalDataService {
     final produccion = getDepartamentos().firstWhere((e) => e.nombre == 'Produccion');
     return User(
       id: 21,
-      username: 'pedrosuarez',
+      username: 'peposuarez',
       nombre: 'Pedro Suarez',
       telefono: '6864349090',
-      correo: 'pedrosuarez@local.com',
+      correo: 'peposuarez@local.com',
       rol: 'Operador',
       departamento: produccion,
       departamentosPermitidos: [produccion],

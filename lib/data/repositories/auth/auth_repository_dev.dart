@@ -1,6 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class AuthRepositoryDev extends AuthRepository {
@@ -34,5 +35,12 @@ class AuthRepositoryDev extends AuthRepository {
     _localDataService.isAuthenticated = false;
     _logger.d('logged out');
     return const Result.ok(null);
+  }
+
+  @override
+  User? getCurrentUser() {
+    final authenticated = _localDataService.isAuthenticated;
+    if (!authenticated) return null;
+    return _localDataService.getUser();
   }
 }
