@@ -7,6 +7,8 @@ import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository_remo
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository_dev.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
+import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
@@ -46,6 +48,11 @@ List<SingleChildWidget> get providersLocal {
     ),
     Provider(create: (context) =>
       IncidenciasRepositoryLocal() as IncidenciasRepository,
+    ),
+    Provider(create: (context) =>
+      AvisosRepositoryLocal(
+        localDataService: context.read(),
+      ) as AvisosRepository,
     ),
     ..._sharedProviders,
   ];

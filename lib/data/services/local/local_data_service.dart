@@ -1,3 +1,4 @@
+import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 
@@ -74,5 +75,40 @@ class LocalDataService {
       liderPermitido: false,
       empleadoId: 21,
     );
+  }
+
+  List<Aviso> getAvisos() {
+    final today = DateTime.now().copyWith(
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    final yesterday = today.subtract(const Duration(days: 1));
+    final dayBeforeYesterday = yesterday.subtract(const Duration(days: 1));
+    return [
+      Aviso(
+        id: 1,
+        createdAt: dayBeforeYesterday,
+        updatedAt: dayBeforeYesterday,
+        content: 'Reunión general a las 10:00 AM en sala A',
+        showAt: yesterday,
+      ),
+      Aviso(
+        id: 2,
+        createdAt: yesterday,
+        updatedAt: yesterday,
+        content: 'Recuerda actualizar tu expediente digital',
+        showAt: today,
+      ),
+      Aviso(
+        id: 3,
+        createdAt: yesterday,
+        updatedAt: yesterday,
+        content: 'Siguiente lunes será día festivo',
+        showAt: today,
+      ),
+    ];
   }
 }
