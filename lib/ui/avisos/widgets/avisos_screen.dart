@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_calendar.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_list_view.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
 class AvisosScreen extends StatelessWidget {
-  const AvisosScreen({super.key});
+  const AvisosScreen({
+    super.key,
+    required this.viewmodel,
+  });
+
+  final AvisosViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +87,12 @@ class AvisosScreen extends StatelessWidget {
                       children: [
                         Flexible(
                           flex: 1,
-                          child: AvisosCalendar(),
+                          child: AvisosCalendar(viewmodel: viewmodel),
                         ),
                         Flexible(
                           flex: 1,
                           fit: .tight,
-                          child: AvisosListView(),
+                          child: AvisosListView(viewmodel: viewmodel),
                         ),
                       ],
                     ),

@@ -1,43 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/box_container.dart';
 
 class AvisosListView extends StatelessWidget {
   const AvisosListView({
     super.key,
+    required this.viewmodel,
   });
+
+  final AvisosViewmodel viewmodel;
+
+  String formatAvisosAmountText(int amount) {
+    if (amount == 0) {
+      return 'No hay avisos programados';
+    } else if (amount == 1) {
+      return '1 aviso programado';
+    } else {
+      return '$amount avisos programados';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final formatter = DateFormat("d 'de' MMMM");
     return BoxContainer(
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          Text(
-            'Avisos para el 30 de junio',
-            style: TextStyle(
-              color: headingTextColor,
-              fontFamily: 'Inter',
-              fontSize: 20,
-              fontWeight: .w700,
-              height: 1.4,
-            ),
+          ListenableBuilder(
+            listenable: viewmodel,
+            builder: (context, _) {
+              return Text(
+                'Avisos para el ${formatter.format(viewmodel.focusedDay)}',
+                style: TextStyle(
+                  color: headingTextColor,
+                  fontFamily: 'Inter',
+                  fontSize: 20,
+                  fontWeight: .w700,
+                  height: 1.4,
+                ),
+              );
+            }
           ),
-          Text(
-            '2 avisos programados',
-            style: TextTheme.of(context).titleSmall,
+          ListenableBuilder(
+            listenable: viewmodel.load,
+            builder: (context, _) {
+              if (viewmodel.load.running) {
+                return Text(
+                  'Cargando avisos...',
+                  style: TextTheme.of(context).titleSmall,
+                );
+              }
+
+              return Text(
+                formatAvisosAmountText(viewmodel.avisos.length),
+                style: TextTheme.of(context).titleSmall,
+              );
+            }
           ),
           const SizedBox(height: 32),
           SizedBox(
             height: 300,
-            child: ListView(
-              children: [
-                AvisoCard(content: 'Reunión general a las 10:00 AM en sala A'),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: AvisoCard(content: 'Recuerda actualizar tu expediente digital'),
-                ),
-              ],
+            child: ListenableBuilder(
+              listenable: viewmodel.load,
+              builder: (context, _) {
+                if (viewmodel.load.running) {
+                  return Center(
+                    child: CircularProgressIndicator(color: primaryColor),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: viewmodel.avisos.length,
+                  itemBuilder: (context, index) {
+                    final aviso = viewmodel.avisos[index];
+                    if (index == 0) {
+                      return AvisoCard(content: aviso.content);
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: AvisoCard(content: aviso.content),
+                    );
+                  }
+                );
+              }
             ),
           ),
         ],

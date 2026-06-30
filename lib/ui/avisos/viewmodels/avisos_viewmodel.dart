@@ -1,0 +1,80 @@
+import 'dart:collection';
+
+import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
+import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/utils/command.dart';
+import 'package:ri_rh_v2/utils/result.dart';
+import 'package:table_calendar/table_calendar.dart';
+
+class AvisosViewmodel extends ChangeNotifier {
+  AvisosViewmodel({
+    required this._avisosRepository,
+  }) {
+    final today = DateTime.now();
+    _focusedDay = today;
+    _selectedDay = today;
+    load = Command1(_load)..execute(today);
+  }
+
+  final AvisosRepository _avisosRepository;
+
+  final Logger _logger = Logger();
+
+  late Command1<void, DateTime> load;
+
+  late DateTime _focusedDay;
+  DateTime get focusedDay => _focusedDay;
+
+  DateTime get firstDay => DateTime(2026, 6, 1);
+  DateTime get lastDay => DateTime.now().add(const Duration(days: 365));
+
+  late DateTime _selectedDay;
+
+  final LinkedHashMap<DateTime, List<Aviso>> _avisosCache = LinkedHashMap(
+    equals: isSameDay,
+  );
+  List<Aviso> _avisos = [];
+  List<Aviso> get avisos => _avisos;
+
+  void onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    _selectedDay = selectedDay;
+    _focusedDay = focusedDay;
+    load.execute(selectedDay);
+    notifyListeners();
+  }
+
+  bool selectedDayPredicate(DateTime day) {
+    return isSameDay(_selectedDay, day);
+  }
+
+  Future<Result<void>> _load(DateTime day) async {
+    final isoString = _toShortIso8601String(day);
+    if (_avisosCache[day] == null) {
+      final result = await _avisosRepository.getAvisos(query: day);
+
+      switch (result) {
+        case Ok():
+          _avisosCache[day] = result.value;
+          _logger.d('Cached avisos for $isoString');
+        case Error():
+          _logger.w('Error obtaining avisos for $isoString', error: result.error);
+          _avisosCache[day] = [];
+      }
+      _avisos = _avisosCache[day]!;
+      notifyListeners();
+      return result;
+    } else {
+      _avisos = _avisosCache[day]!;
+      notifyListeners();
+      return const Result.ok(null);
+    }
+  }
+
+  String _toShortIso8601String(DateTime date) {
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day';
+  }
+}
