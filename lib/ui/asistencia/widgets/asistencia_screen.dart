@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
-import 'package:ri_rh_v2/ui/core/asistencia/widgets/fingerprint_button.dart';
+import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/asistencia/widgets/clock.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
 class AsistenciaScreen extends StatelessWidget {

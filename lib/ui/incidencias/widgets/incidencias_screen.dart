@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ri_rh_v2/ui/core/incidencias/view_models/incidencias_viewmodel.dart';
-import 'package:ri_rh_v2/ui/core/incidencias/widgets/incidencia_card.dart';
+import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_card.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
