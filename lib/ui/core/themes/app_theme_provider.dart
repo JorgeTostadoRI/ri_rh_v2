@@ -97,6 +97,10 @@ class AppThemeProvider extends ChangeNotifier {
         ),
       ),
     ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      foregroundColor: Colors.white,
+      backgroundColor: primaryColor,
+    ),
   );
 
   void toggleBrightness(bool value) {
