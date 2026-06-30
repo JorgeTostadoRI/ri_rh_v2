@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
-import 'package:ri_rh_v2/ui/core/auth/login/viewmodels/login_viewmodel.dart';
+import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/field_label.dart';

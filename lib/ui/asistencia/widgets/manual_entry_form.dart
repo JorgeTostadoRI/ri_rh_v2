@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:ri_rh_v2/ui/core/asistencia/view_models/asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 

@@ -57,7 +57,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           Divider(color: dividerColor),
           // Navigation Items
           _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
-          _buildNavItem(LucideIcons.megaphone, 'Avisos', false, null),
+          _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
           _buildNavItem(LucideIcons.fileText, 'Actas', false, null),
           _buildNavItem(LucideIcons.users, 'Empleados', false, null),
           _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),

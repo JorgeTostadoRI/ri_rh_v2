@@ -5,5 +5,6 @@ abstract final class Routes {
   static const ingreso = '/ingreso';
   static const incidencias = '/incidencias';
   static const newIncidencia = ':categoriaId/new';
+  static const avisos = '/avisos';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.id}/new';
 }

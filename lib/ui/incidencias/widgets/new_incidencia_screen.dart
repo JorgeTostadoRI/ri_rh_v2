@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
-import 'package:ri_rh_v2/ui/core/incidencias/view_models/new_incidencia_viewmodel.dart';
-import 'package:ri_rh_v2/ui/core/incidencias/widgets/incidencia_form.dart';
+import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_form.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
