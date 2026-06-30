@@ -19,6 +19,22 @@ class AppThemeProvider extends ChangeNotifier {
     colorSchemeSeed: primaryColor,
     brightness: darkMode ? Brightness.dark : Brightness.light,
     fontFamily: 'Inter',
+    textTheme: TextTheme(
+      headlineLarge: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 30,
+        fontWeight: .w900,
+        height: 1.2,
+      ),
+      titleSmall: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 14,
+        fontWeight: .w500,
+        height: 1.42,
+      ),
+    ),
     inputDecorationTheme: InputDecorationTheme(
       labelStyle: TextStyle(
         color: Color(0xFFC4A47A),

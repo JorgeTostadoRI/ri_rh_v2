@@ -40,11 +40,7 @@ class NewIncidenciaScreen extends StatelessWidget {
                             AppBackButton(),
                             Text(
                               'Nueva Incidencia - ${category.label}',
-                              style: TextTheme.of(context).displayLarge?.copyWith(
-                                color: headingTextColor,
-                                fontSize: 48,
-                                fontWeight: .w900,
-                              ),
+                              style: TextTheme.of(context).headlineLarge,
                             ),
                           ],
                         ),
