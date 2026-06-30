@@ -87,7 +87,7 @@ class FingerprintButton extends StatelessWidget {
                       end: .centerRight,
                       colors: [
                         Color(0xFFFFF8F0),
-                        Color(0xFFFFF0DC),
+                        backgroundColor,
                       ],
                     ),
                     borderRadius: BorderRadius.circular(15),
@@ -130,7 +130,7 @@ class FingerprintButton extends StatelessWidget {
                 style: TextTheme.of(context).bodyMedium?.copyWith(color: viewmodel.scanning ? primaryColor : Color(0xFFC4A47A)),
                 textAlign: .center,
               ),
-              // if (viewmodel.manualEntryEnabled)
+              if (viewmodel.manualEntryEnabled)
                 TextButton(
                   onPressed: () => onPressedRegistroManualHandler(context),
                   style: TextButton.styleFrom(

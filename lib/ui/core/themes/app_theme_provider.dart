@@ -7,16 +7,81 @@ const Color headingTextColor = Color(0xFF2D1E0F);
 const Color labelTextColor = Color(0xFF9A7B5A);
 const Color successColor = Color(0xFF52C41A);
 const Color errorColor = Color(0xFFDB4444);
+const Color backgroundColor = Color(0xFFFFF0DC);
+const Color borderColor = Color(0xFFF5E8D8);
+const Color inputFillColor = Color(0xFFFDFBF7);
 
 class AppThemeProvider extends ChangeNotifier {
   bool darkMode = false;
 
   ThemeData get appTheme => ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: primaryColor,
-        brightness: darkMode ? Brightness.dark : Brightness.light,
+    useMaterial3: true,
+    colorSchemeSeed: primaryColor,
+    brightness: darkMode ? Brightness.dark : Brightness.light,
+    fontFamily: 'Inter',
+    inputDecorationTheme: InputDecorationTheme(
+      labelStyle: TextStyle(
+        color: Color(0xFFC4A47A),
+        fontWeight: .w700,
         fontFamily: 'Inter',
-      );
+      ),
+      border: WidgetStateInputBorder.fromMap({
+        WidgetState.focused: OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor, width: 0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        WidgetState.error: OutlineInputBorder(
+          borderSide: BorderSide(color: errorColor, width: 0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        WidgetState.any: OutlineInputBorder(
+          borderSide: BorderSide(color: borderColor, width: 0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
+      }),
+      filled: true,
+      fillColor: inputFillColor,
+    ),
+    // PRIMARY BUTTONS
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        shadowColor: primaryColor,
+        textStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: .w700,
+          height: 1.5,
+          fontFamily: 'Inter',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(16),
+        ),
+      ),
+    ),
+    // SECONDARY BUTTONS
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        foregroundColor: labelTextColor,
+        surfaceTintColor: inputFillColor,
+        textStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: .w700,
+          height: 1.5,
+          fontFamily: 'Inter',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(16),
+        ),
+        side: BorderSide(
+          color: borderColor,
+          width: 0.8,
+        ),
+      ),
+    ),
+  );
 
   void toggleBrightness(bool value) {
     darkMode = value;
