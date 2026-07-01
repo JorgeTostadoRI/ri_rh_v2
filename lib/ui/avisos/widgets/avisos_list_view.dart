@@ -72,7 +72,7 @@ class AvisosListView extends StatelessWidget {
           SizedBox(
             height: 300,
             child: ListenableBuilder(
-              listenable: viewmodel.load,
+              listenable: viewmodel,
               builder: (context, _) {
                 if (viewmodel.load.running) {
                   return Center(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/aviso_form_dialog.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_calendar.dart';
@@ -7,7 +8,7 @@ import 'package:ri_rh_v2/ui/avisos/widgets/avisos_list_view.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
-class AvisosScreen extends StatelessWidget {
+class AvisosScreen extends StatefulWidget {
   const AvisosScreen({
     super.key,
     required this.viewmodel,
@@ -16,15 +17,56 @@ class AvisosScreen extends StatelessWidget {
   final AvisosViewmodel viewmodel;
 
   @override
+  State<AvisosScreen> createState() => _AvisosScreenState();
+}
+
+class _AvisosScreenState extends State<AvisosScreen> {
+  void _onCreate() {
+    if (widget.viewmodel.create.completed) {
+      widget.viewmodel.create.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Se ha creado el aviso'),
+        ),
+      );
+    }
+
+    if (widget.viewmodel.create.error) {
+      widget.viewmodel.create.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se ha podido crear el aviso, vuelva a intentarlo'),
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.viewmodel.create.addListener(_onCreate);
+  }
+
+  @override
+  void didUpdateWidget(covariant AvisosScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.viewmodel.create.removeListener(_onCreate);
+    widget.viewmodel.create.addListener(_onCreate);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await showDialog(
+          final aviso = await showDialog<Aviso>(
             context: context,
-            builder: (context) => AvisoFormDialog(),
+            builder: (context) => AvisoFormDialog(day: widget.viewmodel.focusedDay),
           );
+          if (aviso != null) {
+            widget.viewmodel.create.execute(aviso);
+          }
         },
         tooltip: 'Agregar aviso',
         child: Icon(LucideIcons.plus),
@@ -93,12 +135,12 @@ class AvisosScreen extends StatelessWidget {
                       children: [
                         Flexible(
                           flex: 1,
-                          child: AvisosCalendar(viewmodel: viewmodel),
+                          child: AvisosCalendar(viewmodel: widget.viewmodel),
                         ),
                         Flexible(
                           flex: 1,
                           fit: .tight,
-                          child: AvisosListView(viewmodel: viewmodel),
+                          child: AvisosListView(viewmodel: widget.viewmodel),
                         ),
                       ],
                     ),

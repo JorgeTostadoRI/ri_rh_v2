@@ -45,7 +45,6 @@ class AvisosRepositoryLocal extends AvisosRepository {
       attachment: aviso.attachmentFile?.path,
       attachmentFile: null,
     );
-    await Future.delayed(const Duration(seconds: 3));
     _avisos.add(result);
     return Result.ok(result);
   }

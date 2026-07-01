@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
@@ -16,6 +17,7 @@ class AvisosViewmodel extends ChangeNotifier {
     _focusedDay = today;
     _selectedDay = today;
     load = Command1(_load)..execute(today);
+    create = Command1(_create);
   }
 
   final AvisosRepository _avisosRepository;
@@ -23,6 +25,8 @@ class AvisosViewmodel extends ChangeNotifier {
   final Logger _logger = Logger();
 
   late Command1<void, DateTime> load;
+
+  late Command1<void, Aviso> create;
 
   late DateTime _focusedDay;
   DateTime get focusedDay => _focusedDay;
@@ -70,6 +74,19 @@ class AvisosViewmodel extends ChangeNotifier {
       notifyListeners();
       return const Result.ok(null);
     }
+  }
+
+  Future<Result<void>> _create(Aviso aviso) async {
+    final result = await _avisosRepository.createAviso(aviso);
+    switch (result) {
+      case Ok():
+        _avisos.add(result.value);
+        _avisosCache[_focusedDay] = _avisos;
+      case Error():
+        _logger.e('Error creating aviso', error: result.error);
+    }
+    notifyListeners();
+    return result;
   }
 
   String _toShortIso8601String(DateTime date) {
