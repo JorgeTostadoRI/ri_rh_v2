@@ -11,12 +11,42 @@ class AvisosRepositoryLocal extends AvisosRepository {
 
   final LocalDataService _localDataService;
 
+  int _sequentialId = 0;
+  bool _initialized = false;
+  final _avisos = List<Aviso>.empty(growable: true);
+
+  void _initializeData() {
+    var avisos = _localDataService.getAvisos();
+    _avisos.addAll(avisos);
+    _sequentialId = _avisos.last.id ?? 0;
+    _initialized = true;
+  }
+
   @override
   Future<Result<List<Aviso>>> getAvisos({DateTime? query}) async {
-    var avisos = _localDataService.getAvisos();
+    if (!_initialized) {
+      _initializeData();
+    }
+
+    // copy the list
+    List<Aviso> avisos = _avisos.toList();
     if (query != null) {
       avisos = avisos.where((e) => isSameDay(e.showAt, query)).toList();
     }
     return Result.ok(avisos);
+  }
+
+  @override
+  Future<Result<Aviso>> createAviso(Aviso aviso) async {
+    final result = aviso.copyWith(
+      id: _sequentialId++,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      attachment: aviso.attachmentFile?.path,
+      attachmentFile: null,
+    );
+    await Future.delayed(const Duration(seconds: 3));
+    _avisos.add(result);
+    return Result.ok(result);
   }
 }

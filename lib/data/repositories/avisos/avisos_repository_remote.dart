@@ -14,4 +14,9 @@ class AvisosRepositoryRemote extends AvisosRepository {
   Future<Result<List<Aviso>>> getAvisos({DateTime? query}) async {
     return _apiClient.getAvisos(query: query);
   }
+
+  @override
+  Future<Result<Aviso>> createAviso(Aviso aviso) async {
+    return _apiClient.postAviso(aviso);
+  }
 }
