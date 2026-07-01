@@ -57,12 +57,12 @@ class AvisosViewmodel extends ChangeNotifier {
       switch (result) {
         case Ok():
           _avisosCache[day] = result.value;
+          _avisos = _avisosCache[day]!;
           _logger.d('Cached avisos for $isoString');
         case Error():
+          _avisos = [];
           _logger.w('Error obtaining avisos for $isoString', error: result.error);
-          _avisosCache[day] = [];
       }
-      _avisos = _avisosCache[day]!;
       notifyListeners();
       return result;
     } else {

@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository_dev.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
@@ -41,18 +42,18 @@ List<SingleChildWidget> get providersLocal {
     ChangeNotifierProvider(create:(context) =>
       AuthRepositoryDev(
         localDataService: context.read(),
-      ) as AuthRepository,
+      ) as AuthRepository
     ),
     Provider(create: (context) =>
       AsistenciaRepositoryLocal() as AsistenciaRepository
     ),
     Provider(create: (context) =>
-      IncidenciasRepositoryLocal() as IncidenciasRepository,
+      IncidenciasRepositoryLocal() as IncidenciasRepository
     ),
     Provider(create: (context) =>
       AvisosRepositoryLocal(
         localDataService: context.read(),
-      ) as AvisosRepository,
+      ) as AvisosRepository
     ),
     ..._sharedProviders,
   ];
@@ -76,17 +77,22 @@ List<SingleChildWidget> get providersRemote {
         apiClient: context.read(),
         authApiClient: context.read(),
         sharedPreferencesService: context.read(),
-      ) as AuthRepository,
+      ) as AuthRepository
     ),
     Provider(create: (context) =>
       AsistenciaRepositoryRemote(
         apiClient: context.read(),
-      ) as AsistenciaRepository,
+      ) as AsistenciaRepository
     ),
     Provider(create: (context) =>
       IncidenciasRepositoryRemote(
         apiClient: context.read(),
-      ) as IncidenciasRepository,
+      ) as IncidenciasRepository
+    ),
+    Provider(create: (context) =>
+      AvisosRepositoryRemote(
+        apiClient: context.read(),
+      ) as AvisosRepository
     ),
     ..._sharedProviders,
   ];

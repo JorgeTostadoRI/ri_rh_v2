@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/box_container.dart';
@@ -54,6 +55,13 @@ class AvisosListView extends StatelessWidget {
                 );
               }
 
+              if (viewmodel.load.error) {
+                return Text(
+                  'No se han podido cargar los avisos',
+                  style: TextTheme.of(context).titleSmall,
+                );
+              }
+
               return Text(
                 formatAvisosAmountText(viewmodel.avisos.length),
                 style: TextTheme.of(context).titleSmall,
@@ -69,6 +77,16 @@ class AvisosListView extends StatelessWidget {
                 if (viewmodel.load.running) {
                   return Center(
                     child: CircularProgressIndicator(color: primaryColor),
+                  );
+                }
+
+                if (viewmodel.load.error) {
+                  return Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () => viewmodel.load.execute(viewmodel.focusedDay),
+                      icon: Icon(LucideIcons.rotateCcw),
+                      label: Text('Reintentar'),
+                    ),
                   );
                 }
 
