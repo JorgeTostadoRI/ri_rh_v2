@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/image_picker.dart';
 
 class AvisoFormDialog extends StatefulWidget {
@@ -77,10 +76,9 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
                     fontWeight: .w900,
                   ),
                 ),
-                SizedBox(
+                ImagePicker(
                   width: 380,
-                  height: 96,
-                  child: ImagePicker(),
+                  height: 95,
                 ),
               ],
             ),
