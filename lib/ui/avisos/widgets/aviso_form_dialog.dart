@@ -36,6 +36,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
         content: _content.value.text,
         showAt: widget.day,
         attachmentFile: _image,
+        attachment: null,
       );
     } else {
       return Aviso(
@@ -125,6 +126,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
                   ImagePicker(
                     width: 380,
                     height: 95,
+                    initialValue: widget.aviso?.attachment,
                     onChanged: _onChangedImageHandler,
                   ),
                 ],

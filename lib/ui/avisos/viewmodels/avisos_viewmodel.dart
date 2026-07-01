@@ -99,8 +99,8 @@ class AvisosViewmodel extends ChangeNotifier {
     final result = await _avisosRepository.editAviso(aviso);
     switch (result) {
       case Ok():
-        _avisos.removeWhere((search) => search.id == aviso.id);
-        _avisos.add(aviso);
+        _avisos.removeWhere((search) => search.id == result.value.id);
+        _avisos.add(result.value);
         _avisosCache[_focusedDay] = _avisos;
       case Error():
         _logger.e('Error editing aviso', error: result.error);

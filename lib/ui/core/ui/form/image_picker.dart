@@ -3,16 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
+// TODO: in the future handle UInt8List instead of PlatformFile
+
 class ImagePicker extends StatefulWidget {
   const ImagePicker({
     super.key,
     this.width,
     this.height,
+    this.initialValue,
     this.onChanged,
   });
 
   final double? width;
   final double? height;
+  final String? initialValue;
   final void Function(PlatformFile?)? onChanged;
 
   @override
@@ -21,6 +25,7 @@ class ImagePicker extends StatefulWidget {
 
 class _ImagePickerState extends State<ImagePicker> {
   PlatformFile? _selectedFile;
+  late String? _imagePath;
 
   bool _hovering = false;
 
@@ -45,6 +50,9 @@ class _ImagePickerState extends State<ImagePicker> {
 
   void _updateFile(PlatformFile? file) {
     setState(() => _selectedFile = file);
+    if (_imagePath != null) {
+      setState(() => _imagePath = null);
+    }
     if (widget.onChanged != null) widget.onChanged!(file);
   }
 
@@ -108,6 +116,27 @@ class _ImagePickerState extends State<ImagePicker> {
   }
 
   Widget _imagePreview() {
+    if (_selectedFile != null) {
+      return Image.memory(
+        _selectedFile!.bytes!,
+        fit: .cover,
+        repeat: .noRepeat,
+        width: widget.width,
+        height: widget.height,
+      );
+    } else if (_imagePath != null) {
+      return Image.network(
+        _imagePath!,
+        fit: .cover,
+        repeat: .noRepeat,
+        width: widget.width,
+        height: widget.height,
+      );
+    }
+    return SizedBox(width: widget.width, height: widget.height);
+  }
+
+  Widget _imageContainer() {
     return SizedBox(
       width: widget.width,
       height: widget.height,
@@ -116,13 +145,7 @@ class _ImagePickerState extends State<ImagePicker> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.memory(
-              _selectedFile!.bytes!,
-              fit: .cover,
-              repeat: .noRepeat,
-              width: widget.width,
-              height: widget.height,
-            ),
+            child: _imagePreview(),
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
@@ -153,6 +176,12 @@ class _ImagePickerState extends State<ImagePicker> {
       ),
     );
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _imagePath = widget.initialValue;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -161,11 +190,11 @@ class _ImagePickerState extends State<ImagePicker> {
       onExit: (_) => setState(() => _hovering = false),
       child: Builder(
         builder: (context) {
-          if (_selectedFile == null) {
+          if (_selectedFile == null && _imagePath == null) {
             return _noFileContainer();
           }
       
-          return _imagePreview();
+          return _imageContainer();
         }
       ),
     );

@@ -100,6 +100,17 @@ class _AvisoCardState extends State<AvisoCard> {
                 ],
               ],
             ),
+            if (widget.aviso.attachment != null)
+              ClipRRect(
+                borderRadius: BorderRadiusGeometry.circular(16),
+                child: Image.network(
+                  widget.aviso.attachment!,
+                  width: double.infinity,
+                  height: 150,
+                  fit: .cover,
+                  repeat: .noRepeat,
+                ),
+              ),
           ],
         ),
       ),
