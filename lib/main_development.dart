@@ -17,7 +17,7 @@ void main() {
   usePathUrlStrategy();
   initializeDateFormatting('es_ES', null).then((_) {    
     findSystemLocale().then((_) {
-      runApp(MultiProvider(providers: providersRemote, child: const MainApp()));
+      runApp(MultiProvider(providers: providersLocal, child: const MainApp()));
     });
   });
 }
