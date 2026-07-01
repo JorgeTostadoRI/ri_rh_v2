@@ -32,14 +32,17 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             child: Row(
               mainAxisAlignment: isCollapsed ? .center : .start,
               children: [
-                Container(
-                  padding: EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                InkWell(
+                  onTap: () => context.go(Routes.login),
+                  child: Container(
+                    padding: EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    child: SvgPicture.asset('icons/layout_grid.svg', width: 30, height: 30),
                   ),
-                  child: SvgPicture.asset('icons/layout_grid.svg', width: 30, height: 30),
                 ),
                 if (!isCollapsed) ...[
                   const SizedBox(width: 10),
