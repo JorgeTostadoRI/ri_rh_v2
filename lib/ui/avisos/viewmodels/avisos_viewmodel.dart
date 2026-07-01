@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/utils/command.dart';
+import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -54,7 +55,7 @@ class AvisosViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> _load(DateTime day) async {
-    final isoString = _toShortIso8601String(day);
+    final isoString = day.toShortIsoString();
     if (_avisosCache[day] == null) {
       final result = await _avisosRepository.getAvisos(query: day);
 
@@ -87,11 +88,5 @@ class AvisosViewmodel extends ChangeNotifier {
     }
     notifyListeners();
     return result;
-  }
-
-  String _toShortIso8601String(DateTime date) {
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    return '${date.year}-$month-$day';
   }
 }

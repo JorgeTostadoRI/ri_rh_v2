@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -118,7 +119,7 @@ class ApiClient {
       final Map<String, dynamic> queryParams = {};
       if (query != null) {
         queryParams.addAll({
-          'show_at': '${query.year}-${query.month.toString().padLeft(2, '0')}-${query.day.toString().padLeft(2, '0')}',
+          'show_at': query.toShortIsoString(),
         });
       }
       final response = await dio.get(
@@ -147,7 +148,7 @@ class ApiClient {
 
       final formData = FormData.fromMap({
         'content': aviso.content,
-        'show_at': '${aviso.showAt.year}-${aviso.showAt.month.toString().padLeft(2, '0')}-${aviso.showAt.day.toString().padLeft(2, '0')}',
+        'show_at': aviso.showAt.toShortIsoString(),
         if (aviso.attachmentFile != null)
           'attachment': MultipartFile.fromBytes(
             aviso.attachmentFile!.bytes!,
