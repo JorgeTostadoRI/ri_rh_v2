@@ -48,4 +48,10 @@ class AvisosRepositoryLocal extends AvisosRepository {
     _avisos.add(result);
     return Result.ok(result);
   }
+
+  @override
+  Future<Result<void>> deleteAviso(int id) async {
+    _avisos.removeWhere((aviso) => aviso.id == id);
+    return const Result.ok(null);
+  }
 }

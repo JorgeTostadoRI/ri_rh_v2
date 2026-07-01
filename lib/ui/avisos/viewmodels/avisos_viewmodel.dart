@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
@@ -19,6 +18,7 @@ class AvisosViewmodel extends ChangeNotifier {
     _selectedDay = today;
     load = Command1(_load)..execute(today);
     create = Command1(_create);
+    delete = Command1(_delete);
   }
 
   final AvisosRepository _avisosRepository;
@@ -28,6 +28,8 @@ class AvisosViewmodel extends ChangeNotifier {
   late Command1<void, DateTime> load;
 
   late Command1<void, Aviso> create;
+
+  late Command1<void, int> delete;
 
   late DateTime _focusedDay;
   DateTime get focusedDay => _focusedDay;
@@ -85,6 +87,19 @@ class AvisosViewmodel extends ChangeNotifier {
         _avisosCache[_focusedDay] = _avisos;
       case Error():
         _logger.e('Error creating aviso', error: result.error);
+    }
+    notifyListeners();
+    return result;
+  }
+
+  Future<Result<void>> _delete(int id) async {
+    final result = await _avisosRepository.deleteAviso(id);
+    switch (result) {
+      case Ok():
+        _avisos.removeWhere((aviso) => aviso.id == id);
+        _avisosCache[_focusedDay] = _avisos;
+      case Error():
+        _logger.e('Error deleting aviso', error: result.error);
     }
     notifyListeners();
     return result;

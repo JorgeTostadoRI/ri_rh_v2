@@ -169,4 +169,21 @@ class ApiClient {
       dio.close();
     }
   }
+
+  Future<Result<void>> deleteAviso(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.delete('/api/rh/avisos/$id/');
+      return Result.ok(null);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
 }

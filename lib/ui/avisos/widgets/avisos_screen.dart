@@ -41,10 +41,31 @@ class _AvisosScreenState extends State<AvisosScreen> {
     }
   }
 
+  void _onDelete() {
+    if (widget.viewmodel.delete.completed) {
+      widget.viewmodel.delete.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Se ha eliminado el aviso'),
+        ),
+      );
+    }
+
+    if (widget.viewmodel.delete.error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se pudo eliminar el aviso'),
+        ),
+      );
+      widget.viewmodel.delete.clearResult();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     widget.viewmodel.create.addListener(_onCreate);
+    widget.viewmodel.delete.addListener(_onDelete);
   }
 
   @override
@@ -52,6 +73,8 @@ class _AvisosScreenState extends State<AvisosScreen> {
     super.didUpdateWidget(oldWidget);
     widget.viewmodel.create.removeListener(_onCreate);
     widget.viewmodel.create.addListener(_onCreate);
+    widget.viewmodel.delete.removeListener(_onDelete);
+    widget.viewmodel.delete.addListener(_onDelete);
   }
 
   @override

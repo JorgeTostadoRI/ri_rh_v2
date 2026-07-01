@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/box_container.dart';
@@ -22,6 +23,10 @@ class AvisosListView extends StatelessWidget {
     } else {
       return '$amount avisos programados';
     }
+  }
+
+  void _onDeleteHandler(int id) {
+    viewmodel.delete.execute(id);
   }
 
   @override
@@ -96,11 +101,17 @@ class AvisosListView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final aviso = viewmodel.avisos[index];
                     if (index == 0) {
-                      return AvisoCard(content: aviso.content);
+                      return AvisoCard(
+                        aviso: aviso,
+                        onDelete: _onDeleteHandler,
+                      );
                     }
                     return Padding(
                       padding: const EdgeInsets.only(top: 16.0),
-                      child: AvisoCard(content: aviso.content),
+                      child: AvisoCard(
+                        aviso: aviso,
+                        onDelete: _onDeleteHandler,
+                      ),
                     );
                   }
                 );
@@ -116,12 +127,12 @@ class AvisosListView extends StatelessWidget {
 class AvisoCard extends StatefulWidget {
   const AvisoCard({
     super.key,
-    required this.content,
-    this.attachment,
+    required this.aviso,
+    required this.onDelete,
   });
 
-  final String content;
-  final String? attachment;
+  final Aviso aviso;
+  final void Function(int id) onDelete;
 
   @override
   State<AvisoCard> createState() => _AvisoCardState();
@@ -167,7 +178,7 @@ class _AvisoCardState extends State<AvisoCard> {
                 ),
                 Expanded(
                   child: Text(
-                    widget.content,
+                    widget.aviso.content,
                     style: TextStyle(
                       color: headingTextColor,
                       fontSize: 14,
@@ -187,7 +198,7 @@ class _AvisoCardState extends State<AvisoCard> {
                   IconButton(
                     iconSize: 16,
                     tooltip: 'Eliminar',
-                    onPressed: () {},
+                    onPressed: () => widget.onDelete(widget.aviso.id!),
                     icon: Icon(LucideIcons.trash),
                   ),
                 ],
