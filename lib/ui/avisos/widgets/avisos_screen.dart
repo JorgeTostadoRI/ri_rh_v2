@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
+import 'package:ri_rh_v2/ui/avisos/widgets/aviso_form_dialog.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_calendar.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_list_view.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -19,7 +20,12 @@ class AvisosScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          await showDialog(
+            context: context,
+            builder: (context) => AvisoFormDialog(),
+          );
+        },
         tooltip: 'Agregar aviso',
         child: Icon(LucideIcons.plus),
       ),
