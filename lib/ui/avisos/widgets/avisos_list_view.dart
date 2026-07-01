@@ -152,13 +152,16 @@ class AvisoCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                content,
-                style: TextStyle(
-                  color: headingTextColor,
-                  fontSize: 14,
-                  fontWeight: .w700,
-                  height: 1.625,
+              Expanded(
+                child: Text(
+                  content,
+                  style: TextStyle(
+                    color: headingTextColor,
+                    fontSize: 14,
+                    fontWeight: .w700,
+                    height: 1.625,
+                    overflow: .ellipsis,
+                  ),
                 ),
               ),
             ],
