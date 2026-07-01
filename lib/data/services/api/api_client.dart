@@ -139,4 +139,33 @@ class ApiClient {
       dio.close();
     }
   }
+
+  Future<Result<Aviso>> postAviso(Aviso aviso) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final formData = FormData.fromMap({
+        'content': aviso.content,
+        'show_at': '${aviso.showAt.year}-${aviso.showAt.month.toString().padLeft(2, '0')}-${aviso.showAt.day.toString().padLeft(2, '0')}',
+        if (aviso.attachmentFile != null)
+          'attachment': MultipartFile.fromBytes(
+            aviso.attachmentFile!.bytes!,
+            filename: aviso.attachmentFile!.name,
+            contentType: getMediaTypeFromExtension(aviso.attachmentFile!.extension!),
+          ),
+      });
+      final response = await dio.post('/api/rh/avisos/', data: formData);
+      final result = Aviso.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
 }
