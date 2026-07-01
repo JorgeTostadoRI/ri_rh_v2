@@ -70,7 +70,24 @@ class AuthRepositoryRemote extends AuthRepository {
           // Set auth status
           _isAuthenticated = true;
           _authToken = result.value.token;
-          _currentUser = User.fromJson(result.value.user.toJson());
+          _currentUser = User(
+            id: result.value.user.id,
+            username: result.value.user.username,
+            nombre: result.value.user.nombre,
+            telefono: result.value.user.telefono,
+            correo: result.value.user.correo,
+            rol: result.value.user.rol,
+            departamento: Departamento(
+              id: result.value.user.departamento.id,
+              nombre: result.value.user.departamento.nombre,
+              descripcion: result.value.user.departamento.descripcion,
+              presupuesto: double.parse(result.value.user.departamento.presupuesto),
+              divisa: result.value.user.departamento.divisa,
+            ),
+            departamentosPermitidos: [],
+            liderPermitido: result.value.user.liderPermitido,
+            empleadoId: result.value.user.empleadoId,
+          );
           // Store in Shared preferences
           return await _sharedPreferencesService.saveToken(result.value.token);
         case Error<LoginResponse>():
