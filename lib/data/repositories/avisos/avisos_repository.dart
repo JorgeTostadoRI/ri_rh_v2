@@ -8,6 +8,9 @@ abstract class AvisosRepository {
   /// Crear aviso
   Future<Result<Aviso>> createAviso(Aviso aviso);
 
+  /// Editar aviso
+  Future<Result<Aviso>> editAviso(Aviso aviso);
+
   /// Borrar aviso
   Future<Result<void>> deleteAviso(int id);
 }

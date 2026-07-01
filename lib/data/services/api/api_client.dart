@@ -170,6 +170,34 @@ class ApiClient {
     }
   }
 
+  Future<Result<Aviso>> patchAviso(Aviso aviso) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final formData = FormData.fromMap({
+        'content': aviso.content,
+        'show_at': aviso.showAt.toShortIsoString(),
+        'attachment': aviso.attachmentFile == null ? null : MultipartFile.fromBytes(
+          aviso.attachmentFile!.bytes!,
+          filename: aviso.attachmentFile!.name,
+          contentType: getMediaTypeFromExtension(aviso.attachmentFile!.extension!),
+        ),
+      });
+      final response = await dio.patch('/api/rh/avisos/${aviso.id}/', data: formData);
+      final result = Aviso.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<Result<void>> deleteAviso(int id) async {
     final dio = _dioFactory();
     try {

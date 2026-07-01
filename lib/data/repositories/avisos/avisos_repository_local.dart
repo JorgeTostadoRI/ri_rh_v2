@@ -50,6 +50,24 @@ class AvisosRepositoryLocal extends AvisosRepository {
   }
 
   @override
+  Future<Result<Aviso>> editAviso(Aviso aviso) async {
+    if (aviso.id == null) {
+      return Result.error(Exception('Aviso must have an id'));
+    }
+    final index = _avisos.indexWhere((search) => search.id == aviso.id);
+    if (index == -1) {
+      return Result.error(Exception('Aviso not found'));
+    }
+    final result = aviso.copyWith(
+      updatedAt: DateTime.now(),
+      attachment: aviso.attachmentFile?.path,
+      attachmentFile: null,
+    );
+    _avisos[index] = result;
+    return Result.ok(aviso);
+  }
+
+  @override
   Future<Result<void>> deleteAviso(int id) async {
     _avisos.removeWhere((aviso) => aviso.id == id);
     return const Result.ok(null);

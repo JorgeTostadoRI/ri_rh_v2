@@ -18,6 +18,7 @@ class AvisosViewmodel extends ChangeNotifier {
     _selectedDay = today;
     load = Command1(_load)..execute(today);
     create = Command1(_create);
+    edit = Command1(_edit);
     delete = Command1(_delete);
   }
 
@@ -28,6 +29,8 @@ class AvisosViewmodel extends ChangeNotifier {
   late Command1<void, DateTime> load;
 
   late Command1<void, Aviso> create;
+
+  late Command1<void, Aviso> edit;
 
   late Command1<void, int> delete;
 
@@ -87,6 +90,20 @@ class AvisosViewmodel extends ChangeNotifier {
         _avisosCache[_focusedDay] = _avisos;
       case Error():
         _logger.e('Error creating aviso', error: result.error);
+    }
+    notifyListeners();
+    return result;
+  }
+
+  Future<Result<void>> _edit(Aviso aviso) async {
+    final result = await _avisosRepository.editAviso(aviso);
+    switch (result) {
+      case Ok():
+        _avisos.removeWhere((search) => search.id == aviso.id);
+        _avisos.add(aviso);
+        _avisosCache[_focusedDay] = _avisos;
+      case Error():
+        _logger.e('Error editing aviso', error: result.error);
     }
     notifyListeners();
     return result;

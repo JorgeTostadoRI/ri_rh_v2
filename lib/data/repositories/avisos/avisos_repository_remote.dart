@@ -21,6 +21,11 @@ class AvisosRepositoryRemote extends AvisosRepository {
   }
 
   @override
+  Future<Result<Aviso>> editAviso(Aviso aviso) async {
+    return _apiClient.patchAviso(aviso);
+  }
+
+  @override
   Future<Result<void>> deleteAviso(int id) async {
     return _apiClient.deleteAviso(id);
   }

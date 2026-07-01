@@ -41,6 +41,26 @@ class _AvisosScreenState extends State<AvisosScreen> {
     }
   }
 
+  void _onEdit() {
+    if (widget.viewmodel.edit.completed) {
+      widget.viewmodel.edit.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Se ha actualizado el aviso'),
+        ),
+      );
+    }
+
+    if (widget.viewmodel.edit.error) {
+      widget.viewmodel.edit.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se pudo actualizar el aviso, vuelva a intentarlo'),
+        ),
+      );
+    }
+  }
+
   void _onDelete() {
     if (widget.viewmodel.delete.completed) {
       widget.viewmodel.delete.clearResult();
@@ -65,6 +85,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
   void initState() {
     super.initState();
     widget.viewmodel.create.addListener(_onCreate);
+    widget.viewmodel.edit.addListener(_onEdit);
     widget.viewmodel.delete.addListener(_onDelete);
   }
 
@@ -73,8 +94,12 @@ class _AvisosScreenState extends State<AvisosScreen> {
     super.didUpdateWidget(oldWidget);
     widget.viewmodel.create.removeListener(_onCreate);
     widget.viewmodel.create.addListener(_onCreate);
+
     widget.viewmodel.delete.removeListener(_onDelete);
     widget.viewmodel.delete.addListener(_onDelete);
+    
+    widget.viewmodel.edit.removeListener(_onEdit);
+    widget.viewmodel.edit.addListener(_onEdit);
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
+import 'package:ri_rh_v2/ui/avisos/widgets/aviso_form_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/box_container.dart';
 import 'package:ri_rh_v2/ui/core/ui/hoverable.dart';
@@ -23,6 +24,10 @@ class AvisosListView extends StatelessWidget {
     } else {
       return '$amount avisos programados';
     }
+  }
+
+  void _onUpdateHandler(Aviso aviso) {
+    viewmodel.edit.execute(aviso);
   }
 
   void _onDeleteHandler(int id) {
@@ -103,6 +108,7 @@ class AvisosListView extends StatelessWidget {
                     if (index == 0) {
                       return AvisoCard(
                         aviso: aviso,
+                        onUpdate: _onUpdateHandler,
                         onDelete: _onDeleteHandler,
                       );
                     }
@@ -110,6 +116,7 @@ class AvisosListView extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 16.0),
                       child: AvisoCard(
                         aviso: aviso,
+                        onUpdate: _onUpdateHandler,
                         onDelete: _onDeleteHandler,
                       ),
                     );
@@ -128,10 +135,12 @@ class AvisoCard extends StatefulWidget {
   const AvisoCard({
     super.key,
     required this.aviso,
+    required this.onUpdate,
     required this.onDelete,
   });
 
   final Aviso aviso;
+  final void Function(Aviso aviso) onUpdate;
   final void Function(int id) onDelete;
 
   @override
@@ -192,7 +201,20 @@ class _AvisoCardState extends State<AvisoCard> {
                   IconButton(
                     iconSize: 16,
                     tooltip: 'Editar',
-                    onPressed: () {},
+                    onPressed: () async {
+                      final updatedAviso = await showDialog<Aviso>(
+                        context: context,
+                        builder: (context) {
+                          return AvisoFormDialog(
+                            aviso: widget.aviso,
+                            day: widget.aviso.showAt,
+                          );
+                        }
+                      );
+                      if (updatedAviso != null) {
+                        widget.onUpdate(updatedAviso);
+                      }
+                    },
                     icon: Icon(LucideIcons.pen),
                   ),
                   IconButton(

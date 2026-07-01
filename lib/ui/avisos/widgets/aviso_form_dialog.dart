@@ -7,9 +7,11 @@ import 'package:ri_rh_v2/ui/core/ui/form/image_picker.dart';
 class AvisoFormDialog extends StatefulWidget {
   const AvisoFormDialog({
     super.key,
+    this.aviso,
     required this.day,
   });
 
+  final Aviso? aviso;
   final DateTime day;
 
   @override
@@ -23,23 +25,37 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      final aviso = Aviso(
+      final aviso = _constructAviso();
+      Navigator.pop(context, aviso);
+    }
+  }
+
+  Aviso _constructAviso() {
+    if (_isEdit) {
+      return widget.aviso!.copyWith(
         content: _content.value.text,
         showAt: widget.day,
         attachmentFile: _image,
       );
-      Navigator.pop(context, aviso);
+    } else {
+      return Aviso(
+        content: _content.value.text,
+        showAt: widget.day,
+        attachmentFile: _image,
+      );
     }
   }
 
   void _onChangedImageHandler(PlatformFile? file) {
     setState(() => _image = file);
   }
+
+  bool get _isEdit => widget.aviso != null;
   
   @override
   void initState() {
     super.initState();
-    _content = TextEditingController();
+    _content = TextEditingController(text: widget.aviso?.content);
   }
 
   @override
@@ -70,7 +86,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
             crossAxisAlignment: .start,
             children: [
               Text(
-                'Nuevo aviso',
+                _isEdit ? 'Editar aviso' : 'Nuevo aviso',
                 style: TextTheme.of(context).headlineSmall,
               ),
               Column(
@@ -118,7 +134,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
                 child: ElevatedButton.icon(
                   onPressed: _submitForm,
                   icon: Icon(LucideIcons.check),
-                  label: Text('Guardar aviso')
+                  label: Text(_isEdit ? 'Actualizar aviso' : 'Guardar aviso')
                 ),
               ),
             ],
