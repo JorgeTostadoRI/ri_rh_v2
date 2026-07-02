@@ -3,20 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
+import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class AsistenciaViewmodel extends ChangeNotifier {
   AsistenciaViewmodel({
-    required AsistenciaRepository asistenciaRepository,
-    required AuthRepository authRepository,
-  }) : _asistenciaRepository = asistenciaRepository,
-      _authRepository = authRepository;
+    required this._asistenciaRepository,
+    required this._authRepository,
+    required this._avisosRepository,
+  }) {
+    load = Command0(_load)..execute();
+  }
 
-  AsistenciaRepository _asistenciaRepository;
-  AuthRepository _authRepository;
+  final AsistenciaRepository _asistenciaRepository;
+  final AuthRepository _authRepository;
+  final AvisosRepository _avisosRepository;
 
   final Logger _logger = Logger();
+
+  late final Command0 load;
 
   final List<String> _fingerNames = ['índice', 'medio', 'anular', 'meñique', 'pulgar'];
   int _fingerIndex = 0;
@@ -30,6 +38,9 @@ class AsistenciaViewmodel extends ChangeNotifier {
 
   bool _manualEntryEnabled = false;
   bool get manualEntryEnabled => _manualEntryEnabled;
+
+  List<Aviso> _motds = [];
+  List<Aviso> get motds => _motds;
 
   Future<Result<void>> registerEntry() async {
     _scanning = true;
@@ -107,5 +118,17 @@ class AsistenciaViewmodel extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: 10));
     _manualEntryEnabled = false;
     notifyListeners();
+  }
+
+  Future<Result<void>> _load() async {
+    final result = await _avisosRepository.getAvisos(query: DateTime.now());
+    switch (result) {
+      case Ok():
+        _motds = result.value;
+      case Error():
+        _logger.w('Failed to get messages of the day', error: result.error);
+    }
+    notifyListeners();
+    return result;
   }
 }

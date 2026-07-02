@@ -32,8 +32,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       builder: (context, state) {
         return AsistenciaScreen(
           viewmodel: AsistenciaViewmodel(
-            asistenciaRepository: context.read(),
             authRepository: context.read(),
+            asistenciaRepository: context.read(),
+            avisosRepository: context.read(),
           ),
         );
       },

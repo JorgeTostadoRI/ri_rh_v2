@@ -83,6 +83,27 @@ class AppThemeProvider extends ChangeNotifier {
         fontWeight: .w500,
         height: 1.2,
       ),
+      bodyLarge: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 16,
+        fontWeight: .w500,
+        height: 1.5,
+      ),
+      bodyMedium: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 14,
+        fontWeight: .w500,
+        height: 1.42,
+      ),
+      bodySmall: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 12,
+        fontWeight: .w500,
+        height: 1.33,
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       labelStyle: TextStyle(
