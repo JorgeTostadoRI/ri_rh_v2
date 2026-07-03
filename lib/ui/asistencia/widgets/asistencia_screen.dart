@@ -17,7 +17,7 @@ class AsistenciaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0x20FDDEB0),
+      backgroundColor: backgroundColor,
       body: Row(
         children: [
           CollapsibleSidebar(),
