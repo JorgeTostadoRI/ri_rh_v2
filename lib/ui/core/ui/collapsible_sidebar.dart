@@ -41,7 +41,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
-                    child: SvgPicture.asset('icons/layout_grid.svg', width: 30, height: 30),
+                    child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
                   ),
                 ),
                 if (!isCollapsed) ...[
