@@ -51,6 +51,8 @@ dependencies:
   mime: ^2.0.0
   http_parser: ^4.1.2
   table_calendar: ^3.2.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
