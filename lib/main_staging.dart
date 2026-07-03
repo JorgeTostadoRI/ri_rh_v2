@@ -3,7 +3,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:intl/intl_browser.dart';
 
 import 'config/dependencies.dart';
 import 'main.dart';
@@ -16,8 +15,6 @@ void main() {
 
   usePathUrlStrategy();
   initializeDateFormatting('es_ES', null).then((_) {    
-    findSystemLocale().then((_) {
-      runApp(MultiProvider(providers: providersRemote, child: const MainApp()));
-    });
+    runApp(MultiProvider(providers: providersRemote, child: const MainApp()));
   });
 }
