@@ -19,6 +19,92 @@ class AppThemeProvider extends ChangeNotifier {
     colorSchemeSeed: primaryColor,
     brightness: darkMode ? Brightness.dark : Brightness.light,
     fontFamily: 'Inter',
+    textTheme: TextTheme(
+      headlineLarge: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 30,
+        fontWeight: .w900,
+        height: 1.2,
+      ),
+      headlineMedium: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 26,
+        fontWeight: .w900,
+        height: 1.2,
+      ),
+      headlineSmall: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 20,
+        fontWeight: .w900,
+        height: 1.4,
+      ),
+      titleLarge: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 18,
+        fontWeight: .w500,
+        height: 1.2,
+      ),
+      titleMedium: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 16,
+        fontWeight: .w500,
+        height: 1.2,
+      ),
+      titleSmall: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 14,
+        fontWeight: .w500,
+        height: 1.42,
+      ),
+      labelLarge: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 14,
+        fontWeight: .w500,
+        height: 1.2,
+      ),
+      labelMedium: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 12,
+        fontWeight: .w500,
+        height: 1.2,
+      ),
+      labelSmall: TextStyle(
+        color: labelTextColor,
+        fontFamily: 'Inter',
+        fontSize: 11,
+        fontWeight: .w500,
+        height: 1.2,
+      ),
+      bodyLarge: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 16,
+        fontWeight: .w500,
+        height: 1.5,
+      ),
+      bodyMedium: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 14,
+        fontWeight: .w500,
+        height: 1.42,
+      ),
+      bodySmall: TextStyle(
+        color: headingTextColor,
+        fontFamily: 'Inter',
+        fontSize: 12,
+        fontWeight: .w500,
+        height: 1.33,
+      ),
+    ),
     inputDecorationTheme: InputDecorationTheme(
       labelStyle: TextStyle(
         color: Color(0xFFC4A47A),
@@ -80,6 +166,10 @@ class AppThemeProvider extends ChangeNotifier {
           width: 0.8,
         ),
       ),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      foregroundColor: Colors.white,
+      backgroundColor: primaryColor,
     ),
   );
 

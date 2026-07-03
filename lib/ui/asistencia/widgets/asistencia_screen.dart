@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/motd_list.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
@@ -16,7 +17,7 @@ class AsistenciaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0x20FDDEB0),
+      backgroundColor: backgroundColor,
       body: Row(
         children: [
           CollapsibleSidebar(),
@@ -57,6 +58,7 @@ class AsistenciaScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 32),
                               Clock(),
+                              MotdList(viewmodel: viewmodel),
                             ],
                           ),
                         ),

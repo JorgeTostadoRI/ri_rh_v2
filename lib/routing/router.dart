@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
@@ -7,6 +6,7 @@ import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/asistencia_screen.dart';
 import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/auth/login/widgets/login_screen.dart';
+import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
@@ -32,8 +32,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       builder: (context, state) {
         return AsistenciaScreen(
           viewmodel: AsistenciaViewmodel(
-            asistenciaRepository: context.read(),
             authRepository: context.read(),
+            asistenciaRepository: context.read(),
+            avisosRepository: context.read(),
           ),
         );
       },
@@ -72,7 +73,11 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     GoRoute(
       path: Routes.avisos,
       builder: (context, state) {
-        return const AvisosScreen();
+        return AvisosScreen(
+          viewmodel: AvisosViewmodel(
+            avisosRepository: context.read(),
+          ),
+        );
       },
     ),
   ],

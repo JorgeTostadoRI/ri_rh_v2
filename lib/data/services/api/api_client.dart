@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
+import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -105,6 +106,109 @@ class ApiClient {
       return Result.error(e);
     } on Exception catch (e) {
       _logger.e('Exception posting incidencia', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // AVISOS
+  Future<Result<List<Aviso>>> getAvisos({DateTime? query}) async {
+    final dio = _dioFactory();
+    try {
+      final Map<String, dynamic> queryParams = {};
+      if (query != null) {
+        queryParams.addAll({
+          'show_at': query.toShortIsoString(),
+        });
+      }
+      final response = await dio.get(
+        '/api/rh/avisos/',
+        queryParameters: queryParams,
+      );
+      final result = (response.data as List)
+        .map((json) => Aviso.fromJson(json))
+        .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<Aviso>> postAviso(Aviso aviso) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final formData = FormData.fromMap({
+        'content': aviso.content,
+        'show_at': aviso.showAt.toShortIsoString(),
+        if (aviso.attachmentFile != null)
+          'attachment': MultipartFile.fromBytes(
+            aviso.attachmentFile!.bytes!,
+            filename: aviso.attachmentFile!.name,
+            contentType: getMediaTypeFromExtension(aviso.attachmentFile!.extension!),
+          ),
+      });
+      final response = await dio.post('/api/rh/avisos/', data: formData);
+      final result = Aviso.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<Aviso>> patchAviso(Aviso aviso) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final formData = FormData.fromMap({
+        'content': aviso.content,
+        'show_at': aviso.showAt.toShortIsoString(),
+        'attachment': aviso.attachmentFile == null ? null : MultipartFile.fromBytes(
+          aviso.attachmentFile!.bytes!,
+          filename: aviso.attachmentFile!.name,
+          contentType: getMediaTypeFromExtension(aviso.attachmentFile!.extension!),
+        ),
+      });
+      final response = await dio.patch('/api/rh/avisos/${aviso.id}/', data: formData);
+      final result = Aviso.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> deleteAviso(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.delete('/api/rh/avisos/$id/');
+      return Result.ok(null);
+    } on DioException catch (e) {
+      _logger.e('DioException getting avisos', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
       return Result.error(e);
     } finally {
       dio.close();

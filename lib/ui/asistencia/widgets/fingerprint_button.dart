@@ -60,7 +60,7 @@ class FingerprintButton extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: SvgPicture.asset('icons/scan_success.svg'),
+                  child: SvgPicture.asset('assets/icons/scan_success.svg'),
                 ),
                 Text(
                   '¡Entrada registrada exitosamente!',
@@ -92,7 +92,7 @@ class FingerprintButton extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: SvgPicture.asset('icons/scan_failure.svg')
+                  child: SvgPicture.asset('assets/icons/scan_failure.svg')
                 ),
                 Text(
                   'No se identifico tu huella, prueba con el dedo ${viewmodel.fingerName}',
@@ -123,7 +123,7 @@ class FingerprintButton extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: SvgPicture.asset('icons/fingerprint.svg'),
+                child: SvgPicture.asset('assets/icons/fingerprint.svg'),
               ),
               Text(
                 viewmodel.scanning ? 'Leyendo huella...' : 'Toca el sensor para registrar',

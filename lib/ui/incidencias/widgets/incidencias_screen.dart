@@ -33,17 +33,13 @@ class IncidenciasScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Incidencias',
-                          style: TextTheme.of(context).displayLarge?.copyWith(
-                            color: headingTextColor,
+                          style: TextTheme.of(context).headlineLarge?.copyWith(
                             fontSize: 48,
-                            fontWeight: .w900,
                           ),
                         ),
                         Text(
                           'Selecciona el tipo de incidencia que deseas registrar.',
-                          style: TextTheme.of(context).labelLarge?.copyWith(
-                            color: labelTextColor,
-                          ),
+                          style: TextTheme.of(context).titleSmall,
                         ),
                       ],
                     ),

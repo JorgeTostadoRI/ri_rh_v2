@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -13,5 +14,7 @@ void main() {
   Logger.level = Level.all;
 
   usePathUrlStrategy();
-  runApp(MultiProvider(providers: providersRemote, child: const MainApp()));
+  initializeDateFormatting('es_ES', null).then((_) {    
+    runApp(MultiProvider(providers: providersRemote, child: const MainApp()));
+  });
 }
