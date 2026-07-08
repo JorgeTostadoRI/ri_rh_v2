@@ -53,6 +53,8 @@ dependencies:
   table_calendar: ^3.2.0
   flutter_localizations:
     sdk: flutter
+  zk_finger:
+    git: https://github.com/JorgeTostadoRI/zk_finger
 
 dev_dependencies:
   flutter_test:

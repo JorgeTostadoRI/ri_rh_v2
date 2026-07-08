@@ -4,6 +4,7 @@ import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/login_request/login_request.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/login_response/login_response.dart';
+import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -11,17 +12,17 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
-    required ApiClient apiClient,
-    required AuthApiClient authApiClient,
-    required SharedPreferencesService sharedPreferencesService,
-  }) : _apiClient = apiClient,
-       _authApiClient = authApiClient,
-       _sharedPreferencesService = sharedPreferencesService {
+    required this._apiClient,
+    required this._authApiClient,
+    required this._fingerScanService,
+    required this._sharedPreferencesService,
+  }) {
     _apiClient.authHeaderProvider = _authHeaderProvider;
   }
 
   final AuthApiClient _authApiClient;
   final ApiClient _apiClient;
+  final FingerScanService _fingerScanService;
   final SharedPreferencesService _sharedPreferencesService;
 
   bool? _isAuthenticated;
