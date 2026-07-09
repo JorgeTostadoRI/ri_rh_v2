@@ -15,6 +15,8 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_lo
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
+import 'package:ri_rh_v2/data/services/device_auth_service.dart';
+import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_dev.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service_factory.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
@@ -34,12 +36,17 @@ Dio _dioClient() {
 List<SingleChildWidget> get _sharedProviders {
   return [
     ChangeNotifierProvider(create: (_) => AppThemeProvider()..loadTheme()),
+    Provider(create: (_) => DeviceAuthService()),
   ];
 }
 
 List<SingleChildWidget> get providersLocal {
+  final fingerScanService = FingerScanDev();
+  fingerScanService.init();
+
   return [
     Provider.value(value: LocalDataService()),
+    Provider.value(value: fingerScanService),
     ChangeNotifierProvider(create:(context) =>
       AuthRepositoryDev(
         localDataService: context.read(),

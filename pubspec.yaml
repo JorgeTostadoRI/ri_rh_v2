@@ -55,6 +55,8 @@ dependencies:
     sdk: flutter
   zk_finger:
     git: https://github.com/JorgeTostadoRI/zk_finger
+  flutter_secure_storage: ^10.3.1
+  cryptography: ^2.9.0
 
 dev_dependencies:
   flutter_test:
