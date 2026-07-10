@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -207,6 +208,24 @@ class ApiClient {
     } on DioException catch (e) {
       _logger.e('DioException getting avisos', error: e.response);
       return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception getting avisos', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // HUELLAS
+  Future<Result<List<HuellaApiModel>>> getHuellas() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/huellas/');
+      final result = (response.data as List)
+      .map((json) => HuellaApiModel.fromJson(json))
+      .toList();
+      return Result.ok(result);
     } on Exception catch (e) {
       _logger.e('Exception getting avisos', error: e);
       return Result.error(e);
