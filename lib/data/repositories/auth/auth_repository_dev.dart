@@ -24,7 +24,7 @@ class AuthRepositoryDev extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginFingerprint({required String fingerprint}) async {
+  Future<Result<void>> loginViaChallenge(String username) async {
     _localDataService.isAuthenticated = true;
     _logger.d('logged in');
     return const Result.ok(null);

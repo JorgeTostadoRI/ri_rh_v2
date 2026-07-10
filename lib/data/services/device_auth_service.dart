@@ -37,4 +37,20 @@ class DeviceAuthService {
     // Already initialized a keypair before.
     return null;
   }
+
+  /// Signs a payload using the device's private key
+  Future<String> signPayload(String payload) async {
+    String? privKeyBase64 = await _storage.read(key: _keyName);
+    if (privKeyBase64 == null) {
+      throw Exception('Device not initialized, ensure device was initialized');
+    }
+
+    final privKeyBytes = base64.decode(privKeyBase64);
+    
+    // Reconstruct keypair
+    final keyPair = await _algorithm.newKeyPairFromSeed(privKeyBytes);
+    final signature = await _algorithm.signString(payload, keyPair: keyPair);
+
+    return base64.encode(signature.bytes);
+  }
 }

@@ -10,8 +10,8 @@ abstract class AuthRepository extends ChangeNotifier {
   /// Perform login via user credentials
   Future<Result<void>> login({required String username, required String password});
 
-  /// Perform login via user fingerprint
-  Future<Result<void>> loginFingerprint({required String fingerprint});
+  /// Perform login via auth challenge
+  Future<Result<void>> loginViaChallenge(String username);
 
   /// Perform logout
   Future<Result<void>> logout();

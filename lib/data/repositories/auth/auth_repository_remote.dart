@@ -2,9 +2,11 @@ import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
+import 'package:ri_rh_v2/data/services/api/models/auth/challenge/auth_challenge.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/login_request/login_request.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/login_response/login_response.dart';
-import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
+import 'package:ri_rh_v2/data/services/api/models/auth/verify_challenge/verify_challenge_request.dart';
+import 'package:ri_rh_v2/data/services/device_auth_service.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -14,16 +16,16 @@ class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
     required this._apiClient,
     required this._authApiClient,
-    required this._fingerScanService,
     required this._sharedPreferencesService,
+    required this._deviceAuthService,
   }) {
     _apiClient.authHeaderProvider = _authHeaderProvider;
   }
 
   final AuthApiClient _authApiClient;
   final ApiClient _apiClient;
-  final FingerScanService _fingerScanService;
   final SharedPreferencesService _sharedPreferencesService;
+  final DeviceAuthService _deviceAuthService;
 
   bool? _isAuthenticated;
   String? _authToken;
@@ -67,33 +69,11 @@ class AuthRepositoryRemote extends AuthRepository {
       );
       switch (result) {
         case Ok<LoginResponse>():
-          _log.i('User logged in');
-          // Set auth status
-          _isAuthenticated = true;
-          _authToken = result.value.token;
-          _currentUser = User(
-            id: result.value.user.id,
-            username: result.value.user.username,
-            nombre: result.value.user.nombre,
-            telefono: result.value.user.telefono,
-            correo: result.value.user.correo,
-            rol: result.value.user.rol,
-            departamento: Departamento(
-              id: result.value.user.departamento.id,
-              nombre: result.value.user.departamento.nombre,
-              descripcion: result.value.user.departamento.descripcion,
-              presupuesto: double.parse(result.value.user.departamento.presupuesto),
-              divisa: result.value.user.departamento.divisa,
-            ),
-            departamentosPermitidos: [],
-            liderPermitido: result.value.user.liderPermitido,
-            empleadoId: result.value.user.empleadoId,
-          );
-          // Store in Shared preferences
-          return await _sharedPreferencesService.saveToken(result.value.token);
+          _log.i('User logged in via password');
+          return _saveCredentials(result.value);
         case Error<LoginResponse>():
           _log.w('Error logging in', error: result.error);
-          return Result.error(result.error);
+          return result;
       }
     } finally {
       notifyListeners();
@@ -101,46 +81,27 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginFingerprint({required String fingerprint}) async {
+  Future<Result<void>> loginViaChallenge(String username) async {
     try {
-      // TODO: connect to fingerprint auth
-      const username = String.fromEnvironment('username');
-      const password = String.fromEnvironment('password');
-      final result = await _authApiClient.login(
-        LoginRequest(
-          username: username,
-          password: password,
-        ),
-      );
+      final challengeRes = await _authApiClient.createChallenge();
+      switch (challengeRes) {
+        case Ok():
+          break;
+        case Error():
+          _log.w('Error logging in', error: challengeRes.error);
+          return Result.error(challengeRes.error);
+      }
+
+      final request = await _generateVerifyRequest(challengeRes.value, username);
+      _log.d('Generated challenge verification request: $request');
+      final result = await _authApiClient.verifyChallenge(request);
       switch (result) {
-        case Ok<LoginResponse>():
-          _log.i('User logged in');
-          // Set auth status
-          _isAuthenticated = true;
-          _authToken = result.value.token;
-          final user = result.value.user;
-          _currentUser = User(
-            id: user.id,
-            username: user.username,
-            nombre: user.nombre,
-            telefono: user.telefono,
-            correo: user.correo,
-            rol: user.rol,
-            departamento: Departamento(
-              id: user.departamento.id,
-              nombre: user.departamento.nombre,
-              descripcion: user.departamento.descripcion,
-              presupuesto: double.parse(user.departamento.presupuesto),
-              divisa: user.departamento.divisa,
-            ),
-            departamentosPermitidos: [],
-            liderPermitido: user.liderPermitido,
-          );
-          // Store in Shared preferences
-          return await _sharedPreferencesService.saveToken(result.value.token);
-        case Error<LoginResponse>():
+        case Ok():
+          _log.i('User logged in via fingerprint');
+          return _saveCredentials(result.value);
+        case Error():
           _log.w('Error logging in', error: result.error);
-          return Result.error(result.error);
+          return result;
       }
     } finally {
       notifyListeners();
@@ -174,4 +135,43 @@ class AuthRepositoryRemote extends AuthRepository {
 
   String? _authHeaderProvider() =>
       _authToken != null ? 'Token $_authToken' : null;
+
+  Future<VerifyChallengeRequest> _generateVerifyRequest(AuthChallenge challenge, String username) async {
+    final signature = await _deviceAuthService.signPayload(challenge.nonce);
+
+    final verifyRequest = VerifyChallengeRequest(
+      authSessionId: challenge.authSessionId,
+      deviceId: const String.fromEnvironment('device_id'),
+      nonce: challenge.nonce,
+      signature: signature,
+      username: username,
+    );
+    return verifyRequest;
+  }
+
+  Future<Result<void>> _saveCredentials(LoginResponse login) async {
+    // Set auth status
+    _isAuthenticated = true;
+    _authToken = login.token;
+    _currentUser = User(
+      id: login.user.id,
+      username: login.user.username,
+      nombre: login.user.nombre,
+      telefono: login.user.telefono,
+      correo: login.user.correo,
+      rol: login.user.rol,
+      departamento: Departamento(
+        id: login.user.departamento.id,
+        nombre: login.user.departamento.nombre,
+        descripcion: login.user.departamento.descripcion,
+        presupuesto: double.parse(login.user.departamento.presupuesto),
+        divisa: login.user.departamento.divisa,
+      ),
+      departamentosPermitidos: [],
+      liderPermitido: login.user.liderPermitido,
+      empleadoId: login.user.empleadoId,
+    );
+    // Store in Shared preferences
+    return await _sharedPreferencesService.saveToken(login.token);
+  }
 }

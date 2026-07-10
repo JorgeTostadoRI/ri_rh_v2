@@ -83,8 +83,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     return _incidenciasRepository.createIncidencia(incidencia);
   }
 
-  Future<Result<void>> _login(String fingerprint) async {
-    return _authRepository.loginFingerprint(fingerprint: fingerprint);
+  Future<Result<void>> _login(String username) async {
+    return _authRepository.loginViaChallenge(username);
   }
 
   DateTime _constructDate(DateTime initialDate, TimeOfDay? tod) {
