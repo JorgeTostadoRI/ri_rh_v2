@@ -44,7 +44,7 @@ class FingerScanServiceImpl extends FingerScanService {
   @override
   void add(Uint8List template, int fid) {
     if (_sdk.cache.identify(template).successful) {
-      _logger.d('ignoring template, already registered');
+      // ignore, already registered
       return;
     }
     _sdk.cache.add(template, fid);

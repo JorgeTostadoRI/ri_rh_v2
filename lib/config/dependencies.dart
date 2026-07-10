@@ -113,6 +113,7 @@ List<SingleChildWidget> get providersRemote {
     Provider(create: (context) =>
       FingerprintRepositoryRemote(
         fingerScanService: context.read(),
+        apiClient: context.read(),
       ) as FingerprintRepository
     ),
   ];
