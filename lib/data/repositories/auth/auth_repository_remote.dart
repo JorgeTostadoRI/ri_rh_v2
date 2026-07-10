@@ -93,11 +93,10 @@ class AuthRepositoryRemote extends AuthRepository {
       }
 
       final request = await _generateVerifyRequest(challengeRes.value, username);
-      _log.d('Generated challenge verification request: $request');
       final result = await _authApiClient.verifyChallenge(request);
       switch (result) {
         case Ok():
-          _log.i('User logged in via fingerprint');
+          _log.i('User logged in via challenge');
           return _saveCredentials(result.value);
         case Error():
           _log.w('Error logging in', error: result.error);

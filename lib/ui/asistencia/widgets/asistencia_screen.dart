@@ -6,13 +6,24 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
-class AsistenciaScreen extends StatelessWidget {
+class AsistenciaScreen extends StatefulWidget {
   const AsistenciaScreen({
     super.key,
     required this.viewmodel,  
   });
 
   final AsistenciaViewmodel viewmodel;
+
+  @override
+  State<AsistenciaScreen> createState() => _AsistenciaScreenState();
+}
+
+class _AsistenciaScreenState extends State<AsistenciaScreen> {
+  @override
+  void dispose() {
+    widget.viewmodel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +69,7 @@ class AsistenciaScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 32),
                               Clock(),
-                              MotdList(viewmodel: viewmodel),
+                              MotdList(viewmodel: widget.viewmodel),
                             ],
                           ),
                         ),
@@ -117,7 +128,7 @@ class AsistenciaScreen extends StatelessWidget {
                                   ],
                                 ),
                                 FingerprintButton(
-                                  viewmodel: viewmodel,
+                                  viewmodel: widget.viewmodel,
                                 ),
                                 Text(
                                   'Si tienes problemas con el registro, contacta a Recursos Humanos.',

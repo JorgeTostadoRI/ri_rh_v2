@@ -35,6 +35,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             authRepository: context.read(),
             asistenciaRepository: context.read(),
             avisosRepository: context.read(),
+            fingerprintRepository: context.read(),
           ),
         );
       },

@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
-import 'package:ri_rh_v2/data/services/device_auth_service.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
 import 'package:ri_rh_v2/routing/router.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
