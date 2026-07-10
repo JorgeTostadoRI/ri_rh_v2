@@ -10,4 +10,10 @@ class FingerScanDev extends FingerScanService {
   void dispose() {
     // TODO: implement dispose
   }
+
+  @override
+  Stream<String> captureStream() {
+    // TODO: implement captureStream
+    throw UnimplementedError();
+  }
 }

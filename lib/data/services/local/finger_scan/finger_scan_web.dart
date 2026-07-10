@@ -13,4 +13,10 @@ class FingerScanServiceImpl extends FingerScanService {
   void dispose() {
     _logger.d('Disposed mock FingerScanService');
   }
+
+  @override
+  Stream<String> captureStream() {
+    // TODO: implement captureStream
+    throw UnimplementedError();
+  }
 }

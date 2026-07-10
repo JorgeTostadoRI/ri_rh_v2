@@ -4,4 +4,7 @@ abstract class FingerScanService {
 
   /// Disposes of the scanner's resources and terminates the SDK
   void dispose();
+
+  /// A stream which captures fingerprint templates.
+  Stream<String> captureStream();
 }

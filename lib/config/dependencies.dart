@@ -10,6 +10,8 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
@@ -45,6 +47,7 @@ List<SingleChildWidget> get providersLocal {
   fingerScanService.init();
 
   return [
+    ..._sharedProviders,
     Provider.value(value: LocalDataService()),
     Provider.value(value: fingerScanService),
     ChangeNotifierProvider(create:(context) =>
@@ -63,7 +66,6 @@ List<SingleChildWidget> get providersLocal {
         localDataService: context.read(),
       ) as AvisosRepository
     ),
-    ..._sharedProviders,
   ];
 }
 
@@ -72,6 +74,7 @@ List<SingleChildWidget> get providersRemote {
   fingerScanService.init();
 
   return [
+    ..._sharedProviders,
     Provider(create: (context) => SharedPreferencesService()),
     Provider.value(value: fingerScanService),
     Provider(create: (context) =>
@@ -88,8 +91,8 @@ List<SingleChildWidget> get providersRemote {
       AuthRepositoryRemote(
         apiClient: context.read(),
         authApiClient: context.read(),
-        fingerScanService: context.read(),
         sharedPreferencesService: context.read(),
+        deviceAuthService: context.read(),
       ) as AuthRepository
     ),
     Provider(create: (context) =>
@@ -107,6 +110,10 @@ List<SingleChildWidget> get providersRemote {
         apiClient: context.read(),
       ) as AvisosRepository
     ),
-    ..._sharedProviders,
+    Provider(create: (context) =>
+      FingerprintRepositoryRemote(
+        fingerScanService: context.read(),
+      ) as FingerprintRepository
+    ),
   ];
 }
