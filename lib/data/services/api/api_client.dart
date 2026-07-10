@@ -39,7 +39,7 @@ class ApiClient {
 
       final photoBytes = await asistencia.photoFile?.readAsBytes();
       final formData = FormData.fromMap({
-        'empleado': asistencia.empleado,
+        'usuario': asistencia.usuario,
         if (photoBytes != null)
           'photo': MultipartFile.fromBytes(
             photoBytes,

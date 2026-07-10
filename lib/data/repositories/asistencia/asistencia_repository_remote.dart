@@ -16,7 +16,7 @@ class AsistenciaRepositoryRemote implements AsistenciaRepository {
     try {
       final asistenciaApiModel = AsistenciaApiModel(
         photoFile: asistencia.photoFile,
-        empleado: asistencia.empleado,
+        usuario: asistencia.usuario,
       );
 
       return _apiClient.postAsistencia(asistenciaApiModel);

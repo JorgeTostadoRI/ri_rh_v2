@@ -22,9 +22,8 @@ abstract class Asistencia with _$Asistencia {
         @JsonKey(includeFromJson: false, includeToJson: false)
         XFile? photoFile,
 
-        // ID del empleado
-        // TODO: cambiar por Empleado
-        required int empleado,
+        // ID del usuario
+        required int usuario,
     }) = _Asistencia;
 
     factory Asistencia.fromJson(Map<String, Object?> json) => _$AsistenciaFromJson(json);
