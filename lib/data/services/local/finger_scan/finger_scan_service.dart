@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 abstract class FingerScanService {
   /// Initializes the scanner SDK and cache
   void init();
@@ -6,5 +8,16 @@ abstract class FingerScanService {
   void dispose();
 
   /// A stream which captures fingerprint templates.
-  Stream<String> captureStream();
+  Stream<Uint8List> captureStream();
+
+  /// Identify a fingerprint [template].
+  /// 
+  /// Returns the fingerprint ID that was identified with the template.
+  int identify(Uint8List template);
+
+  /// Add a fingerprint [template] to the cache associated to the given [fid].
+  void add(Uint8List template, int fid);
+
+  /// Clear the cache.
+  void clear();
 }
