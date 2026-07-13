@@ -125,3 +125,9 @@ flutter:
         - asset: fonts/Inter-VariableFont_opsz,wght.ttf
         - asset: fonts/Inter-Italic-VariableFont_opsz,wght.ttf
           style: italic
+    - family: RobotoMono
+      fonts:
+        - asset: fonts/RobotoMono-VariableFont_wght.ttf
+        - asset: fonts/RobotoMono-Italic-VariableFont_wght.ttf
+          style: italic
+

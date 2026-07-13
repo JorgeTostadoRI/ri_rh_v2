@@ -62,6 +62,7 @@ class _ClockState extends State<Clock> {
                   color: primaryColor,
                   fontSize: 108,
                   fontWeight: .w900,
+                  fontFamily: 'RobotoMono',
                 ),
               ),
             ),
