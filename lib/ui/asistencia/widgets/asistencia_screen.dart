@@ -19,6 +19,25 @@ class AsistenciaScreen extends StatefulWidget {
 }
 
 class _AsistenciaScreenState extends State<AsistenciaScreen> {
+  void _onResult() {
+    if (widget.viewmodel.register.completed || widget.viewmodel.register.error) {
+      Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.viewmodel.register.addListener(_onResult);
+  }
+
+  @override
+  void didUpdateWidget(covariant AsistenciaScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.viewmodel.register.removeListener(_onResult);
+    widget.viewmodel.register.addListener(_onResult);
+  }
+
   @override
   void dispose() {
     widget.viewmodel.dispose();

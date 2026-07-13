@@ -66,7 +66,6 @@ class AsistenciaViewmodel extends ChangeNotifier {
     final user = _fingerprintRepository.matchFingerprintToUser(template);
     if (user == null) {
       _setNextFingerRetry();
-      Future.delayed(const Duration(seconds: 2), () => register.clearResult());
       return Result.error(Exception('Failed to match fingerprint'));
     }
 
@@ -93,7 +92,6 @@ class AsistenciaViewmodel extends ChangeNotifier {
     }
 
     await _authRepository.logout();
-    Future.delayed(const Duration(seconds: 2), () => register.clearResult());
     return result;
   }
 
