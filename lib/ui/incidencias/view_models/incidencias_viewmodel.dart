@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
-import 'package:ri_rh_v2/utils/result.dart';
 
 class IncidenciasViewmodel extends ChangeNotifier {
-  IncidenciasViewmodel({
-    required IncidenciasRepository incidenciasRepository,
-  }) : _incidenciasRepository = incidenciasRepository;
-
-  final IncidenciasRepository _incidenciasRepository;
-
   List<IncidenciaCategory> get categories { 
     return [
       const IncidenciaCategory(

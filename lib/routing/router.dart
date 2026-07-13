@@ -44,16 +44,14 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       path: Routes.incidencias,
       builder: (context, state) {
         return IncidenciasScreen(
-          viewmodel: IncidenciasViewmodel(
-            incidenciasRepository: context.read(),
-          ),
+          viewmodel: IncidenciasViewmodel(),
         );
       },
       routes: [
         GoRoute(
           path: Routes.newIncidencia,
           builder: (context, state) {
-            final incidenciasViewmodel = IncidenciasViewmodel(incidenciasRepository: context.read());
+            final incidenciasViewmodel = IncidenciasViewmodel();
             final categoryIndex = incidenciasViewmodel.categories.indexWhere((e) => e.id == state.pathParameters['categoriaId']!);
 
             if (categoryIndex == -1) {
@@ -65,6 +63,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               viewmodel: NewIncidenciaViewmodel(
                 authRepository: authRepository,
                 incidenciasRepository: context.read(),
+                fingerprintRepository: context.read(),
               ),
             );
           }

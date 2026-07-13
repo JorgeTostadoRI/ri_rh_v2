@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
@@ -13,14 +18,27 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   NewIncidenciaViewmodel({
     required this._authRepository,
     required this._incidenciasRepository,
+    required this._fingerprintRepository,
   }) {
-    login = Command1<void, String>(_login);
+    login = Command1(_login);
+
+    _capturesSub = _fingerprintRepository.capture()
+    .listen(
+      (template) => login.execute(template),
+      onError: (e) {
+        _log.e('Capture stream error', error: e);
+      }
+    );
   }
 
-  AuthRepository _authRepository;
-  IncidenciasRepository _incidenciasRepository;
+  final AuthRepository _authRepository;
+  final IncidenciasRepository _incidenciasRepository;
+  final FingerprintRepository _fingerprintRepository;
+  final Logger _log = Logger();
 
-  late Command1<void, String> login;
+  late Command1<void, Uint8List> login;
+
+  late final StreamSubscription<Uint8List> _capturesSub;
 
   IncidenciaDateOption _dateOption = IncidenciaDateOption.DATE_RANGE;
   IncidenciaDateOption get dateOption => _dateOption;
@@ -39,6 +57,12 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   List<PlatformFile> get files => _files;
 
   Future<bool> get isAuthenticated => _authRepository.isAuthenticated;
+
+  @override
+  void dispose() {
+    _capturesSub.cancel();
+    super.dispose();
+  }
 
   void onDateOptionChanged(int index) {
     _dateOption = IncidenciaDateOption.values[index];
@@ -80,11 +104,26 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
       categoryId: category.id,
       files: incidenciaFiles,
     );
-    return _incidenciasRepository.createIncidencia(incidencia);
+    final incidenciaResult = await _incidenciasRepository.createIncidencia(incidencia);
+    switch (incidenciaResult) {
+      case Ok():
+        break;
+      case Error():
+        _log.w('Failed to create incidencia');
+    }
+
+    _authRepository.logout();
+    return incidenciaResult;
   }
 
-  Future<Result<void>> _login(String username) async {
-    return _authRepository.loginViaChallenge(username);
+  Future<Result<void>> _login(Uint8List template) async {
+    final userinfo = _fingerprintRepository.matchFingerprintToUser(template);
+    if (userinfo == null) {
+      _log.w('Failed to match fingerprint');
+      return Result.error(Exception('Failed to match fingerprint'));
+    }
+
+    return _authRepository.loginViaChallenge(userinfo.username);
   }
 
   DateTime _constructDate(DateTime initialDate, TimeOfDay? tod) {
