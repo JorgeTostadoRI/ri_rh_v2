@@ -1,9 +1,11 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/manual_entry_form.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/result.dart';
 
 class FingerprintButton extends StatelessWidget {
   const FingerprintButton({
@@ -57,7 +59,10 @@ class FingerprintButton extends StatelessWidget {
                 child: SvgPicture.asset('assets/icons/scan_success.svg'),
               ),
               Text(
-                '¡Entrada registrada exitosamente!',
+                switch ((viewmodel.register.result! as Ok<Asistencia>).value.type!) {
+                  AsistenciaType.entry => '¡Entrada registrada exitosamente!',
+                  AsistenciaType.exit => '¡Salida registrada exitosamente!'
+                },
                 style: TextTheme.of(context).bodyMedium?.copyWith(color: successColor),
                 textAlign: .center,
               ),

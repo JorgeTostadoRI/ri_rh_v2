@@ -39,19 +39,13 @@ class AsistenciaViewmodel extends ChangeNotifier {
   final Logger _logger = Logger();
 
   late final Command0 load;
-  late final Command1<void, Uint8List>  register;
+  late final Command1<Asistencia, Uint8List>  register;
 
   final List<String> _fingerNames = ['índice', 'medio', 'anular', 'meñique', 'pulgar'];
   int _fingerIndex = 0;
   String get fingerName => _fingerNames[_fingerIndex];
 
   late final StreamSubscription<Uint8List> _capturesSub;
-
-  bool _scanning = false;
-  bool get scanning => _scanning;
-
-  bool? _scanResult;
-  bool? get scanResult => _scanResult;
 
   bool _manualEntryEnabled = false;
   bool get manualEntryEnabled => _manualEntryEnabled;
@@ -68,7 +62,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<Result<void>> _register(Uint8List template) async {
+  Future<Result<Asistencia>> _register(Uint8List template) async {
     final user = _fingerprintRepository.matchFingerprintToUser(template);
     if (user == null) {
       _setNextFingerRetry();
@@ -95,7 +89,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
         if (!_disposed) notifyListeners();
         _logger.i('Attendance registered for ${user.username}');
       case Error():
-        _logger.w('Failed to register attendance');
+        _logger.w('Failed to register attendance', error: result.error);
     }
 
     await _authRepository.logout();
