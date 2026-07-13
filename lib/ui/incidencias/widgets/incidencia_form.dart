@@ -155,6 +155,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     _endDateController.dispose();
     _startTimeController.dispose();
     _endTimeController.dispose();
+    widget.viewmodel.dispose();
     super.dispose();
   }
 

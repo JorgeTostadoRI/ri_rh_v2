@@ -18,7 +18,7 @@ _AsistenciaApiModel _$AsistenciaApiModelFromJson(Map<String, dynamic> json) =>
       type: json['type'] as String?,
       isLate: json['is_late'] as bool?,
       photoPath: json['photo'] as String?,
-      empleado: (json['empleado'] as num).toInt(),
+      usuario: (json['usuario'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AsistenciaApiModelToJson(_AsistenciaApiModel instance) =>
@@ -29,5 +29,5 @@ Map<String, dynamic> _$AsistenciaApiModelToJson(_AsistenciaApiModel instance) =>
       'type': instance.type,
       'is_late': instance.isLate,
       'photo': instance.photoPath,
-      'empleado': instance.empleado,
+      'usuario': instance.usuario,
     };

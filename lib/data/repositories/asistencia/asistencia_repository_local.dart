@@ -4,12 +4,12 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 class AsistenciaRepositoryLocal extends AsistenciaRepository {
   int _sequentialId = 0;
-  String _asistenciaType = 'in';
+  AsistenciaType _asistenciaType = AsistenciaType.entry;
 
   final _asistencias = List<Asistencia>.empty(growable: true);
 
   @override
-  Future<Result<void>> createAsistencia(Asistencia asistencia) async {
+  Future<Result<Asistencia>> createAsistencia(Asistencia asistencia) async {
     final asistenciaWithId = asistencia.copyWith(
       id: _sequentialId++,
       createdAt: DateTime.now(),
@@ -19,12 +19,12 @@ class AsistenciaRepositoryLocal extends AsistenciaRepository {
     );
     _asistencias.add(asistenciaWithId);
 
-    if (_asistenciaType == 'in') {
-      _asistenciaType = 'out';
+    if (_asistenciaType == AsistenciaType.entry) {
+      _asistenciaType = AsistenciaType.exit;
     } else {
-      _asistenciaType = 'in';
+      _asistenciaType = AsistenciaType.entry;
     }
 
-    return const Result.ok(null);
+    return Result.ok(asistenciaWithId);
   }
 }

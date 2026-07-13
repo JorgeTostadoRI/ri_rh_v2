@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
 import 'package:ri_rh_v2/routing/router.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/main_development.dart' as development;
@@ -13,8 +16,36 @@ void main() {
   development.main();
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  late final AppLifecycleListener _lifecycleListener;
+
+  void _cleanUpFingerScanner() {
+    Provider.of<FingerScanService>(context, listen: false).dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycleListener = AppLifecycleListener(
+      onExitRequested: () async {
+        _cleanUpFingerScanner();
+        return AppExitResponse.exit;
+      }
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener.dispose();
+    super.dispose();
+  }
 
   // This widget is the root of your application.
   @override

@@ -17,17 +17,19 @@ class AuthRepositoryDev extends AuthRepository {
   Future<bool> get isAuthenticated => Future.value(_localDataService.isAuthenticated);
 
   @override
-  Future<Result<void>> login({required String username, required String password}) async {
+  Future<Result<User>> login({required String username, required String password}) async {
     _localDataService.isAuthenticated = true;
     _logger.d('logged in');
-    return const Result.ok(null);
+    final user = _localDataService.getUser();
+    return Result.ok(user);
   }
 
   @override
-  Future<Result<void>> loginFingerprint({required String fingerprint}) async {
+  Future<Result<User>> loginViaChallenge(String username) async {
     _localDataService.isAuthenticated = true;
     _logger.d('logged in');
-    return const Result.ok(null);
+    final user = _localDataService.getUser();
+    return Result.ok(user);
   }
 
   @override

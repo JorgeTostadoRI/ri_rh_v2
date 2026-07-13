@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/image_preview.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -162,7 +163,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
                             SizedBox(
                               width: 400,
                               height: 350,
-                              child: Image.network(_image!.path),
+                              child: ImagePreview(image: _image!),
                             ),
                           Align(
                             alignment: .topStart,

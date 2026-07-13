@@ -10,11 +10,17 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
+import 'package:ri_rh_v2/data/services/device_auth_service.dart';
+import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_dev.dart';
+import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service_factory.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -33,12 +39,17 @@ Dio _dioClient() {
 List<SingleChildWidget> get _sharedProviders {
   return [
     ChangeNotifierProvider(create: (_) => AppThemeProvider()..loadTheme()),
+    Provider(create: (_) => DeviceAuthService()),
   ];
 }
 
 List<SingleChildWidget> get providersLocal {
   return [
+    ..._sharedProviders,
     Provider.value(value: LocalDataService()),
+    Provider(create: (context) =>
+      FingerScanDev() as FingerScanService,
+    ),
     ChangeNotifierProvider(create:(context) =>
       AuthRepositoryDev(
         localDataService: context.read(),
@@ -55,13 +66,20 @@ List<SingleChildWidget> get providersLocal {
         localDataService: context.read(),
       ) as AvisosRepository
     ),
-    ..._sharedProviders,
+    Provider(create: (context) =>
+      FingerprintRepositoryLocal() as FingerprintRepository
+    ),
   ];
 }
 
 List<SingleChildWidget> get providersRemote {
+  final fingerScanService = getFingerScanService();
+  fingerScanService.init();
+
   return [
+    ..._sharedProviders,
     Provider(create: (context) => SharedPreferencesService()),
+    Provider.value(value: fingerScanService),
     Provider(create: (context) =>
       AuthApiClient(
         dioFactory: _dioClient,
@@ -77,6 +95,7 @@ List<SingleChildWidget> get providersRemote {
         apiClient: context.read(),
         authApiClient: context.read(),
         sharedPreferencesService: context.read(),
+        deviceAuthService: context.read(),
       ) as AuthRepository
     ),
     Provider(create: (context) =>
@@ -94,6 +113,11 @@ List<SingleChildWidget> get providersRemote {
         apiClient: context.read(),
       ) as AvisosRepository
     ),
-    ..._sharedProviders,
+    Provider(create: (context) =>
+      FingerprintRepositoryRemote(
+        fingerScanService: context.read(),
+        apiClient: context.read(),
+      ) as FingerprintRepository
+    ),
   ];
 }

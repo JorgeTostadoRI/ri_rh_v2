@@ -14,10 +14,10 @@ _Asistencia _$AsistenciaFromJson(Map<String, dynamic> json) => _Asistencia(
   updatedAt: json['updated_at'] == null
       ? null
       : DateTime.parse(json['updated_at'] as String),
-  type: json['type'] as String?,
+  type: $enumDecodeNullable(_$AsistenciaTypeEnumMap, json['type']),
   isLate: json['is_late'] as bool?,
   photoPath: json['photo'] as String?,
-  empleado: (json['empleado'] as num).toInt(),
+  usuario: (json['usuario'] as num).toInt(),
 );
 
 Map<String, dynamic> _$AsistenciaToJson(_Asistencia instance) =>
@@ -25,8 +25,13 @@ Map<String, dynamic> _$AsistenciaToJson(_Asistencia instance) =>
       'id': instance.id,
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
-      'type': instance.type,
+      'type': _$AsistenciaTypeEnumMap[instance.type],
       'is_late': instance.isLate,
       'photo': instance.photoPath,
-      'empleado': instance.empleado,
+      'usuario': instance.usuario,
     };
+
+const _$AsistenciaTypeEnumMap = {
+  AsistenciaType.entry: 'in',
+  AsistenciaType.exit: 'exit',
+};

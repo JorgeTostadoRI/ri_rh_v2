@@ -23,8 +23,8 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
       Navigator.pop(context, const Result.ok(true));
     }
     if (widget.viewmodel.login.error) {
+      Navigator.pop(context, Result<bool>.error((widget.viewmodel.login.result as Error).error));
       widget.viewmodel.login.clearResult();
-      Navigator.pop(context, Result.error(Exception('Error')));
     }
   }
   
@@ -35,12 +35,20 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
   }
 
   @override
+  void didUpdateWidget(covariant VerifyIdentityDialog oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.viewmodel.login.removeListener(_onResult);
+    widget.viewmodel.login.addListener(_onResult);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       constraints: BoxConstraints(maxWidth: 384, maxHeight: 384),
       contentPadding: EdgeInsets.all(32),
       backgroundColor: Colors.white,
       content: Column(
+        mainAxisSize: .min,
         children: [
           Container(
             width: 80,
@@ -73,28 +81,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
               height: 1.4
             ),
           ),
-          const SizedBox(height: 32),
-          Row(
-            children: [
-              Expanded(
-                child: ListenableBuilder(
-                  listenable: widget.viewmodel.login,
-                  builder: (context, _) {
-                    return ElevatedButton.icon(
-                      onPressed: () {
-                        widget.viewmodel.login.execute('fingerprint');
-                      },
-                      icon: Icon(LucideIcons.fingerprintPattern),
-                      label: Text(
-                        'Escanear huella',
-                      ),
-                    );
-                  }
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 40),
           Row(
             children: [
               Expanded(

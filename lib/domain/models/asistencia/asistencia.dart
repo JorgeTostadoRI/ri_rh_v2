@@ -5,6 +5,21 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'asistencia.freezed.dart';
 part 'asistencia.g.dart';
 
+enum AsistenciaType {
+  @JsonValue('in')
+  entry,
+  @JsonValue('exit')
+  exit;
+
+  factory AsistenciaType.fromString(String value) {
+    return switch (value) {
+      'in' => AsistenciaType.entry,
+      'out' => AsistenciaType.exit,
+      _ => throw Exception('Invalid value for AsistenciaType')
+    };
+  }
+}
+
 @freezed
 abstract class Asistencia with _$Asistencia {
     const factory Asistencia({
@@ -12,7 +27,7 @@ abstract class Asistencia with _$Asistencia {
         int? id,
         DateTime? createdAt,
         DateTime? updatedAt,
-        String? type,
+        AsistenciaType? type,
         bool? isLate,
 
         // Archivo opcional, será el path al archivo en servidor
@@ -22,9 +37,8 @@ abstract class Asistencia with _$Asistencia {
         @JsonKey(includeFromJson: false, includeToJson: false)
         XFile? photoFile,
 
-        // ID del empleado
-        // TODO: cambiar por Empleado
-        required int empleado,
+        // ID del usuario
+        required int usuario,
     }) = _Asistencia;
 
     factory Asistencia.fromJson(Map<String, Object?> json) => _$AsistenciaFromJson(json);

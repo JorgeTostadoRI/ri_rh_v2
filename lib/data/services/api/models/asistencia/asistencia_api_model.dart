@@ -22,8 +22,8 @@ abstract class AsistenciaApiModel with _$AsistenciaApiModel {
         @JsonKey(includeFromJson: false, includeToJson: false)
         XFile? photoFile,
 
-        // ID del empleado
-        required int empleado,
+        // ID del usuario
+        required int usuario,
     }) = _AsistenciaApiModel;
 
     factory AsistenciaApiModel.fromJson(Map<String, Object?> json) => _$AsistenciaApiModelFromJson(json);

@@ -53,6 +53,11 @@ dependencies:
   table_calendar: ^3.2.0
   flutter_localizations:
     sdk: flutter
+  zk_finger:
+    git: https://github.com/JorgeTostadoRI/zk_finger
+  flutter_secure_storage: ^10.3.1
+  cryptography: ^2.9.0
+  camera_windows: ^0.2.6+4
 
 dev_dependencies:
   flutter_test:
@@ -120,3 +125,9 @@ flutter:
         - asset: fonts/Inter-VariableFont_opsz,wght.ttf
         - asset: fonts/Inter-Italic-VariableFont_opsz,wght.ttf
           style: italic
+    - family: RobotoMono
+      fonts:
+        - asset: fonts/RobotoMono-VariableFont_wght.ttf
+        - asset: fonts/RobotoMono-Italic-VariableFont_wght.ttf
+          style: italic
+
