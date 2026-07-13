@@ -43,7 +43,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
 
   late final Command0 load;
   late final Command1<void, Uint8List> scanFingerprint;
-  late final Command1<Asistencia, XFile>  register;
+  late final Command1<Asistencia, XFile?>  register;
 
   final List<String> _fingerNames = ['índice', 'medio', 'anular', 'meñique', 'pulgar'];
   int _fingerIndex = 0;
@@ -79,7 +79,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
     return const Result.ok(null);
   }
 
-  Future<Result<Asistencia>> _register(XFile photo) async {
+  Future<Result<Asistencia>> _register(XFile? photo) async {
     final loggedIn = await _authRepository.loginViaChallenge(_userinfo!.username);
     switch(loggedIn) {
       case Ok():

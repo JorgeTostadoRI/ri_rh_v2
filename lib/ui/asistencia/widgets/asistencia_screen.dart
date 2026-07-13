@@ -5,7 +5,6 @@ import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/motd_list.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
-import 'package:ri_rh_v2/ui/core/ui/camera_dialog.dart';
 
 class AsistenciaScreen extends StatefulWidget {
   const AsistenciaScreen({
@@ -20,6 +19,9 @@ class AsistenciaScreen extends StatefulWidget {
 }
 
 class _AsistenciaScreenState extends State<AsistenciaScreen> {
+  CameraController? _controller;
+  late Future<List<CameraDescription>> _getAvailableCameras;
+
   void _onRegisterResult() {
     if (widget.viewmodel.register.completed || widget.viewmodel.register.error) {
       Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
@@ -29,18 +31,24 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   Future<void> _onScanResult() async {
     if (widget.viewmodel.scanFingerprint.completed) {
       widget.viewmodel.scanFingerprint.clearResult();
-      final cameras = await availableCameras();
+      final cameras = await _getAvailableCameras;
+      await _initializeCameraController(cameras[0]);
 
       if (mounted) {
-        final imageFile = await showDialog<XFile>(
-          context: context,
-          builder: (context) {
-            return CameraDialog(camera: cameras[0]);
+        if (_controller != null) {
+          try {
+            final imageFile = await _controller!.takePicture();
+            widget.viewmodel.register.execute(imageFile);
+          } on CameraException {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('No se pudo capturar imagen, se registrará asistencia sin imagen'),
+              ),
+            );
+            widget.viewmodel.register.execute(null);
           }
-        );
-
-        if (imageFile != null) {
-          widget.viewmodel.register.execute(imageFile);
+        } else {
+          widget.viewmodel.register.execute(null);
         }
       }
     }
@@ -50,11 +58,24 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
     }
   }
 
+  Future<void> _initializeCameraController(CameraDescription camera) async {
+    if (_controller == null) {
+      _controller = CameraController(
+        camera,
+        ResolutionPreset.medium,
+      );
+      await _controller!.initialize();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     widget.viewmodel.register.addListener(_onRegisterResult);
     widget.viewmodel.scanFingerprint.addListener(_onScanResult);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getAvailableCameras = availableCameras();
+    });
   }
 
   @override
@@ -70,6 +91,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   @override
   void dispose() {
     widget.viewmodel.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
