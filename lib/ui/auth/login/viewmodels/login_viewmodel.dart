@@ -22,8 +22,12 @@ class LoginViewmodel {
       username: username,
       password: password,
     );
-    if (result is Error<void>) {
-      _logger.e('Login failed', error: result.error);
+
+    switch (result) {
+      case Ok():
+        break;
+      case Error():
+        _logger.w('Login failed', error: result.error);
     }
     return result;
   }

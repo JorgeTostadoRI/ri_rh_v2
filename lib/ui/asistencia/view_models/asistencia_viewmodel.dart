@@ -104,13 +104,16 @@ class AsistenciaViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> registerManualEntry(String username, String password, XFile photo) async {
-    final loginResult = await _authRepository.login(username: username, password: password);
-    if (loginResult is Error) {
-      return loginResult;
+    final user = await _authRepository.login(username: username, password: password);
+    switch (user) {
+      case Ok():
+        break;
+      case Error():
+        return Result.error(user.error);
     }
 
     final asistencia = Asistencia(
-      usuario: 21,
+      usuario: user.value.id,
       photoFile: photo,
     );
 

@@ -8,10 +8,10 @@ abstract class AuthRepository extends ChangeNotifier {
   Future<bool> get isAuthenticated;
 
   /// Perform login via user credentials
-  Future<Result<void>> login({required String username, required String password});
+  Future<Result<User>> login({required String username, required String password});
 
   /// Perform login via auth challenge
-  Future<Result<void>> loginViaChallenge(String username);
+  Future<Result<User>> loginViaChallenge(String username);
 
   /// Perform logout
   Future<Result<void>> logout();

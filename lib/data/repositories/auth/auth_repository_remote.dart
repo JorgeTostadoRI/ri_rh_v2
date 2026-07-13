@@ -59,7 +59,7 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> login({
+  Future<Result<User>> login({
     required String username,
     required String password,
   }) async {
@@ -73,7 +73,7 @@ class AuthRepositoryRemote extends AuthRepository {
           return _saveCredentials(result.value);
         case Error<LoginResponse>():
           _log.w('Error logging in', error: result.error);
-          return result;
+          return Result.error(result.error);
       }
     } finally {
       notifyListeners();
@@ -81,14 +81,14 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginViaChallenge(String username) async {
+  Future<Result<User>> loginViaChallenge(String username) async {
     try {
       final challengeRes = await _authApiClient.createChallenge();
       switch (challengeRes) {
         case Ok():
           break;
         case Error():
-          _log.w('Error logging in', error: challengeRes.error);
+          _log.w('Failed to create challenge', error: challengeRes.error);
           return Result.error(challengeRes.error);
       }
 
@@ -100,7 +100,7 @@ class AuthRepositoryRemote extends AuthRepository {
           return _saveCredentials(result.value);
         case Error():
           _log.w('Error logging in', error: result.error);
-          return result;
+          return Result.error(result.error);
       }
     } finally {
       notifyListeners();
@@ -148,7 +148,7 @@ class AuthRepositoryRemote extends AuthRepository {
     return verifyRequest;
   }
 
-  Future<Result<void>> _saveCredentials(LoginResponse login) async {
+  Future<Result<User>> _saveCredentials(LoginResponse login) async {
     // Set auth status
     _isAuthenticated = true;
     _authToken = login.token;
@@ -171,6 +171,19 @@ class AuthRepositoryRemote extends AuthRepository {
       empleadoId: login.user.empleadoId,
     );
     // Store in Shared preferences
-    return await _sharedPreferencesService.saveToken(login.token);
+    final savedToken = await _sharedPreferencesService.saveToken(login.token);
+    switch (savedToken) {
+      case Ok():
+        return Result.ok(_currentUser!);
+      case Error():
+        _reset();
+        return Result.error(savedToken.error);
+    }
+  }
+
+  void _reset() {
+    _isAuthenticated = false;
+    _authToken = null;
+    _currentUser = null;
   }
 }
