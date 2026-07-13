@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/auth/login/widgets/login_screen.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_screen.dart';
+import 'package:ri_rh_v2/ui/core/ui/main_scaffold.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
@@ -19,66 +20,73 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
   debugLogDiagnostics: true,
   refreshListenable: authRepository,
   routes: [
-    GoRoute(
-      path: Routes.login,
-      builder: (context, state) {
-        return LoginScreen(
-          viewmodel: LoginViewmodel(authRepository: context.read()),
-        );
-      }
-    ),
-    GoRoute(
-      path: Routes.ingreso,
-      builder: (context, state) {
-        return AsistenciaScreen(
-          viewmodel: AsistenciaViewmodel(
-            authRepository: context.read(),
-            asistenciaRepository: context.read(),
-            avisosRepository: context.read(),
-            fingerprintRepository: context.read(),
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      path: Routes.incidencias,
-      builder: (context, state) {
-        return IncidenciasScreen(
-          viewmodel: IncidenciasViewmodel(),
-        );
+    ShellRoute(
+      builder: (context, state, child) {
+        return MainScaffold(child: child);
       },
       routes: [
         GoRoute(
-          path: Routes.newIncidencia,
+          path: Routes.login,
           builder: (context, state) {
-            final incidenciasViewmodel = IncidenciasViewmodel();
-            final categoryIndex = incidenciasViewmodel.categories.indexWhere((e) => e.id == state.pathParameters['categoriaId']!);
-
-            if (categoryIndex == -1) {
-              return const NotFoundScreen(message: 'Categoría no encontrada');
-            }
-
-            return NewIncidenciaScreen(
-              category: incidenciasViewmodel.categories[categoryIndex],
-              viewmodel: NewIncidenciaViewmodel(
-                authRepository: authRepository,
-                incidenciasRepository: context.read(),
-                fingerprintRepository: context.read(),
-              ),
+            return LoginScreen(
+              viewmodel: LoginViewmodel(authRepository: context.read()),
             );
           }
         ),
+        GoRoute(
+          path: Routes.ingreso,
+          builder: (context, state) {
+            return AsistenciaScreen(
+              viewmodel: AsistenciaViewmodel(
+                authRepository: context.read(),
+                asistenciaRepository: context.read(),
+                avisosRepository: context.read(),
+                fingerprintRepository: context.read(),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: Routes.incidencias,
+          builder: (context, state) {
+            return IncidenciasScreen(
+              viewmodel: IncidenciasViewmodel(),
+            );
+          },
+          routes: [
+            GoRoute(
+              path: Routes.newIncidencia,
+              builder: (context, state) {
+                final incidenciasViewmodel = IncidenciasViewmodel();
+                final categoryIndex = incidenciasViewmodel.categories.indexWhere((e) => e.id == state.pathParameters['categoriaId']!);
+
+                if (categoryIndex == -1) {
+                  return const NotFoundScreen(message: 'Categoría no encontrada');
+                }
+
+                return NewIncidenciaScreen(
+                  category: incidenciasViewmodel.categories[categoryIndex],
+                  viewmodel: NewIncidenciaViewmodel(
+                    authRepository: authRepository,
+                    incidenciasRepository: context.read(),
+                    fingerprintRepository: context.read(),
+                  ),
+                );
+              }
+            ),
+          ],
+        ),
+        GoRoute(
+          path: Routes.avisos,
+          builder: (context, state) {
+            return AvisosScreen(
+              viewmodel: AvisosViewmodel(
+                avisosRepository: context.read(),
+              ),
+            );
+          },
+        ),
       ],
-    ),
-    GoRoute(
-      path: Routes.avisos,
-      builder: (context, state) {
-        return AvisosScreen(
-          viewmodel: AvisosViewmodel(
-            avisosRepository: context.read(),
-          ),
-        );
-      },
     ),
   ],
 );
