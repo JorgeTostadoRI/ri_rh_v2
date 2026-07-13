@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Asistencia implements DiagnosticableTreeMixin {
 
- int? get id; DateTime? get createdAt; DateTime? get updatedAt; String? get type; bool? get isLate;@JsonKey(name: 'photo') String? get photoPath;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get photoFile; int get usuario;
+ int? get id; DateTime? get createdAt; DateTime? get updatedAt; AsistenciaType? get type; bool? get isLate;@JsonKey(name: 'photo') String? get photoPath;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get photoFile; int get usuario;
 /// Create a copy of Asistencia
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,7 +55,7 @@ abstract mixin class $AsistenciaCopyWith<$Res>  {
   factory $AsistenciaCopyWith(Asistencia value, $Res Function(Asistencia) _then) = _$AsistenciaCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, String? type, bool? isLate,@JsonKey(name: 'photo') String? photoPath,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, int usuario
+ int? id, DateTime? createdAt, DateTime? updatedAt, AsistenciaType? type, bool? isLate,@JsonKey(name: 'photo') String? photoPath,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, int usuario
 });
 
 
@@ -78,7 +78,7 @@ id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String?,isLate: freezed == isLate ? _self.isLate : isLate // ignore: cast_nullable_to_non_nullable
+as AsistenciaType?,isLate: freezed == isLate ? _self.isLate : isLate // ignore: cast_nullable_to_non_nullable
 as bool?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,photoFile: freezed == photoFile ? _self.photoFile : photoFile // ignore: cast_nullable_to_non_nullable
 as XFile?,usuario: null == usuario ? _self.usuario : usuario // ignore: cast_nullable_to_non_nullable
@@ -167,7 +167,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  AsistenciaType? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Asistencia() when $default != null:
 return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate,_that.photoPath,_that.photoFile,_that.usuario);case _:
@@ -188,7 +188,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  AsistenciaType? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)  $default,) {final _that = this;
 switch (_that) {
 case _Asistencia():
 return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate,_that.photoPath,_that.photoFile,_that.usuario);case _:
@@ -208,7 +208,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  AsistenciaType? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)?  $default,) {final _that = this;
 switch (_that) {
 case _Asistencia() when $default != null:
 return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate,_that.photoPath,_that.photoFile,_that.usuario);case _:
@@ -229,7 +229,7 @@ class _Asistencia with DiagnosticableTreeMixin implements Asistencia {
 @override final  int? id;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
-@override final  String? type;
+@override final  AsistenciaType? type;
 @override final  bool? isLate;
 @override@JsonKey(name: 'photo') final  String? photoPath;
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  XFile? photoFile;
@@ -274,7 +274,7 @@ abstract mixin class _$AsistenciaCopyWith<$Res> implements $AsistenciaCopyWith<$
   factory _$AsistenciaCopyWith(_Asistencia value, $Res Function(_Asistencia) _then) = __$AsistenciaCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, String? type, bool? isLate,@JsonKey(name: 'photo') String? photoPath,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, int usuario
+ int? id, DateTime? createdAt, DateTime? updatedAt, AsistenciaType? type, bool? isLate,@JsonKey(name: 'photo') String? photoPath,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, int usuario
 });
 
 
@@ -297,7 +297,7 @@ id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String?,isLate: freezed == isLate ? _self.isLate : isLate // ignore: cast_nullable_to_non_nullable
+as AsistenciaType?,isLate: freezed == isLate ? _self.isLate : isLate // ignore: cast_nullable_to_non_nullable
 as bool?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,photoFile: freezed == photoFile ? _self.photoFile : photoFile // ignore: cast_nullable_to_non_nullable
 as XFile?,usuario: null == usuario ? _self.usuario : usuario // ignore: cast_nullable_to_non_nullable
