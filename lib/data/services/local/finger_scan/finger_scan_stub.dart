@@ -17,23 +17,21 @@ class FingerScanServiceImpl extends FingerScanService {
 
   @override
   Stream<Uint8List> captureStream() {
-    // TODO: implement captureStream
     throw UnimplementedError(_errorMessage);
   }
 
   @override
   int identify(Uint8List template) {
-    // TODO: implement identify
-    throw UnimplementedError();
+    throw UnimplementedError(_errorMessage);
   }
 
   @override
   void add(Uint8List template, int fid) {
-    // TODO: implement add
+    throw UnimplementedError(_errorMessage);
   }
 
   @override
   void clear() {
-    // TODO: implement clear
+    throw UnimplementedError(_errorMessage);
   }
 }

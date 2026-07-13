@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
+import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
@@ -43,13 +44,12 @@ List<SingleChildWidget> get _sharedProviders {
 }
 
 List<SingleChildWidget> get providersLocal {
-  final fingerScanService = FingerScanDev();
-  fingerScanService.init();
-
   return [
     ..._sharedProviders,
     Provider.value(value: LocalDataService()),
-    Provider.value(value: fingerScanService),
+    Provider(create: (context) =>
+      FingerScanDev() as FingerScanService,
+    ),
     ChangeNotifierProvider(create:(context) =>
       AuthRepositoryDev(
         localDataService: context.read(),
@@ -65,6 +65,9 @@ List<SingleChildWidget> get providersLocal {
       AvisosRepositoryLocal(
         localDataService: context.read(),
       ) as AvisosRepository
+    ),
+    Provider(create: (context) =>
+      FingerprintRepositoryLocal() as FingerprintRepository
     ),
   ];
 }
