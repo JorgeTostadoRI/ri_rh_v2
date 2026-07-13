@@ -1,9 +1,11 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/motd_list.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
+import 'package:ri_rh_v2/ui/core/ui/camera_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
 
 class AsistenciaScreen extends StatefulWidget {
@@ -19,23 +21,51 @@ class AsistenciaScreen extends StatefulWidget {
 }
 
 class _AsistenciaScreenState extends State<AsistenciaScreen> {
-  void _onResult() {
+  void _onRegisterResult() {
     if (widget.viewmodel.register.completed || widget.viewmodel.register.error) {
       Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
+    }
+  }
+
+  Future<void> _onScanResult() async {
+    if (widget.viewmodel.scanFingerprint.completed) {
+      widget.viewmodel.scanFingerprint.clearResult();
+      final cameras = await availableCameras();
+
+      if (mounted) {
+        final imageFile = await showDialog<XFile>(
+          context: context,
+          builder: (context) {
+            return CameraDialog(camera: cameras[0]);
+          }
+        );
+
+        if (imageFile != null) {
+          widget.viewmodel.register.execute(imageFile);
+        }
+      }
+    }
+
+    if (widget.viewmodel.scanFingerprint.error) {
+      Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.scanFingerprint.clearResult());
     }
   }
 
   @override
   void initState() {
     super.initState();
-    widget.viewmodel.register.addListener(_onResult);
+    widget.viewmodel.register.addListener(_onRegisterResult);
+    widget.viewmodel.scanFingerprint.addListener(_onScanResult);
   }
 
   @override
   void didUpdateWidget(covariant AsistenciaScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    widget.viewmodel.register.removeListener(_onResult);
-    widget.viewmodel.register.addListener(_onResult);
+    widget.viewmodel.register.removeListener(_onRegisterResult);
+    widget.viewmodel.register.addListener(_onRegisterResult);
+
+    widget.viewmodel.scanFingerprint.removeListener(_onScanResult);
+    widget.viewmodel.scanFingerprint.addListener(_onScanResult);
   }
 
   @override

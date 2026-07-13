@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
+import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -21,10 +22,12 @@ class AsistenciaViewmodel extends ChangeNotifier {
     required this._fingerprintRepository,
   }) {
     load = Command0(_load)..execute();
+    scanFingerprint = Command1(_scanFingerprint);
     register = Command1(_register);
+
     _capturesSub = _fingerprintRepository.capture()
     .listen(
-      (template) => register.execute(template),
+      (template) => scanFingerprint.execute(template),
       onError: (e) {
         _logger.e('Capture stream error', error: e);
       }
@@ -39,7 +42,8 @@ class AsistenciaViewmodel extends ChangeNotifier {
   final Logger _logger = Logger();
 
   late final Command0 load;
-  late final Command1<Asistencia, Uint8List>  register;
+  late final Command1<void, Uint8List> scanFingerprint;
+  late final Command1<Asistencia, XFile>  register;
 
   final List<String> _fingerNames = ['índice', 'medio', 'anular', 'meñique', 'pulgar'];
   int _fingerIndex = 0;
@@ -49,6 +53,8 @@ class AsistenciaViewmodel extends ChangeNotifier {
 
   bool _manualEntryEnabled = false;
   bool get manualEntryEnabled => _manualEntryEnabled;
+
+  UserInfo? _userinfo;
 
   List<Aviso> _motds = [];
   List<Aviso> get motds => _motds;
@@ -62,14 +68,19 @@ class AsistenciaViewmodel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<Result<Asistencia>> _register(Uint8List template) async {
-    final user = _fingerprintRepository.matchFingerprintToUser(template);
-    if (user == null) {
+  Future<Result<void>> _scanFingerprint(Uint8List template) async {
+    final userinfo = _fingerprintRepository.matchFingerprintToUser(template);
+    if (userinfo == null) {
       _setNextFingerRetry();
       return Result.error(Exception('Failed to match fingerprint'));
     }
 
-    final loggedIn = await _authRepository.loginViaChallenge(user.username);
+    _userinfo = userinfo;
+    return const Result.ok(null);
+  }
+
+  Future<Result<Asistencia>> _register(XFile photo) async {
+    final loggedIn = await _authRepository.loginViaChallenge(_userinfo!.username);
     switch(loggedIn) {
       case Ok():
         break;
@@ -78,7 +89,8 @@ class AsistenciaViewmodel extends ChangeNotifier {
     }
 
     final result = await _asistenciaRepository.createAsistencia(Asistencia(
-      usuario: user.id,
+      usuario: _userinfo!.id,
+      photoFile: photo,
     ));
 
     switch(result) {
@@ -86,7 +98,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
         _fingerIndex = 0;
         _manualEntryEnabled = false;
         if (!_disposed) notifyListeners();
-        _logger.i('Attendance registered for ${user.username}');
+        _logger.i('Attendance registered for ${_userinfo!.username}');
       case Error():
         _logger.w('Failed to register attendance', error: result.error);
     }
