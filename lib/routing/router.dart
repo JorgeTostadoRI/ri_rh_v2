@@ -9,6 +9,8 @@ import 'package:ri_rh_v2/ui/auth/login/widgets/login_screen.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/main_scaffold.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/empleados_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
@@ -85,6 +87,16 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               ),
             );
           },
+        ),
+        GoRoute(
+          path: Routes.empleados,
+          builder: (context, state) {
+            final viewmodel = EmpleadosViewmodel(empleadosRepository: context.read());
+
+            return EmpleadosScreen(
+              viewmodel: viewmodel,
+            );
+          }
         ),
       ],
     ),
