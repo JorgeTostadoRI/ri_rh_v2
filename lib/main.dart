@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   late final AppLifecycleListener _lifecycleListener;
+  late final GoRouter _router;
 
   void _cleanUpFingerScanner() {
     Provider.of<FingerScanService>(context, listen: false).dispose();
@@ -39,6 +41,7 @@ class _MainAppState extends State<MainApp> {
         return AppExitResponse.exit;
       }
     );
+    _router = router(context.read());
   }
 
   @override
@@ -74,7 +77,7 @@ class _MainAppState extends State<MainApp> {
 
         return const Locale('en');
       },
-      routerConfig: router(context.read()),
+      routerConfig: _router,
     );
   }
 }
