@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 class EmpleadoCard extends StatelessWidget {
@@ -101,7 +103,9 @@ class EmpleadoCard extends StatelessWidget {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.go(Routes.expedienteOfEmpleado(empleado));
+                    },
                     child: Text('Ver Expediente', style: TextStyle(fontSize: 12)),
                   ),
                   OutlinedButton(

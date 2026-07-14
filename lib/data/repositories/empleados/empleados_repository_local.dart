@@ -26,4 +26,16 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
     final empleados = _empleados.toList();
     return Result.ok(empleados);
   }
+
+  @override
+  Future<Result<Empleado>> getEmpleado(int id) async {
+    if (!_initialized) _initializeData();
+
+    final index = _empleados.indexWhere((emp) => emp.id == id);
+    if (index == -1) {
+      return Result.error(Exception('Not found'));
+    }
+
+    return Result.ok(_empleados[index]);
+  }
 }
