@@ -20,4 +20,7 @@ abstract class FingerScanService {
 
   /// Clear the cache.
   void clear();
+
+  /// Merges three fingerprint templates into one.
+  Uint8List merge(Uint8List template1, Uint8List template2, Uint8List template3);
 }

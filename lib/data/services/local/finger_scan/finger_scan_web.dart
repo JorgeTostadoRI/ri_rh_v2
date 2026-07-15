@@ -29,4 +29,9 @@ class FingerScanServiceImpl extends FingerScanService {
 
   @override
   void clear() {}
+
+  @override
+  Uint8List merge(Uint8List template1, Uint8List template2, Uint8List template3) {
+    return template3;
+  }
 }

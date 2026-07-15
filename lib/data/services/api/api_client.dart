@@ -238,6 +238,41 @@ class ApiClient {
     }
   }
 
+  Future<Result<HuellaApiModel>> postHuella(HuellaApiModel huella) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/huellas/', data: huella.toJson());
+      final result = HuellaApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException posting huella', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception posting huella', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> deleteHuella(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.delete('/api/rh/huellas/$id/');
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      _logger.e('DioException deleting huella', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception deleting huella', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // EMPLEADOS
   Future<Result<Empleado>> getEmpleado(int id) async {
     final dio = _dioFactory();

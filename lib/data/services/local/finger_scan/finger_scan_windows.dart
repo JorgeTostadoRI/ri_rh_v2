@@ -12,22 +12,29 @@ class FingerScanServiceImpl extends FingerScanService {
   ZKDevice? _device;
   Timer? _timer;
   late final StreamController<Uint8List> _controller;
+  bool _initialized = false;
 
   @override
   void init() {
-    _sdk = ZKFinger();
-    _controller = StreamController<Uint8List>.broadcast(
-      onListen: _connectDevice,
-      onCancel: _closeDevice,
-    );
-    _logger.d('Initialized FingerScanService');
+    if (!_initialized) {
+      _sdk = ZKFinger();
+      _controller = StreamController<Uint8List>.broadcast(
+        onListen: _connectDevice,
+        onCancel: _closeDevice,
+      );
+      _logger.d('Initialized FingerScanService');
+      _initialized = true;
+    }
   }
 
   @override
   Future<void> dispose() async {
-    await _controller.close();
-    _sdk.terminate();
-    _logger.d('Disposed FingerScanService');
+    if (_initialized) {
+      await _controller.close();
+      _sdk.terminate();
+      _initialized = false;
+      _logger.d('Disposed FingerScanService');
+    }
   }
 
   @override
@@ -53,6 +60,12 @@ class FingerScanServiceImpl extends FingerScanService {
   @override
   void clear() {
     _sdk.cache.clear();
+  }
+
+  @override
+  Uint8List merge(Uint8List template1, Uint8List template2, Uint8List template3) {
+    final mergedTempl = _sdk.cache.merge(template1, template2, template3);
+    return mergedTempl;
   }
 
   void _tick(_) {

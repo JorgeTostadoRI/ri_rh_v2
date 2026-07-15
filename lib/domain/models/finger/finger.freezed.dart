@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Finger implements DiagnosticableTreeMixin {
 
- int get id; Hand get hand; FingerName get fingerName; bool get scanned;
+ int get id; int get user; Hand get hand; FingerName get fingerName; bool get scanned;
 /// Create a copy of Finger
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,21 +27,21 @@ $FingerCopyWith<Finger> get copyWith => _$FingerCopyWithImpl<Finger>(this as Fin
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Finger'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('hand', hand))..add(DiagnosticsProperty('fingerName', fingerName))..add(DiagnosticsProperty('scanned', scanned));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('hand', hand))..add(DiagnosticsProperty('fingerName', fingerName))..add(DiagnosticsProperty('scanned', scanned));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Finger&&(identical(other.id, id) || other.id == id)&&(identical(other.hand, hand) || other.hand == hand)&&(identical(other.fingerName, fingerName) || other.fingerName == fingerName)&&(identical(other.scanned, scanned) || other.scanned == scanned));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Finger&&(identical(other.id, id) || other.id == id)&&(identical(other.user, user) || other.user == user)&&(identical(other.hand, hand) || other.hand == hand)&&(identical(other.fingerName, fingerName) || other.fingerName == fingerName)&&(identical(other.scanned, scanned) || other.scanned == scanned));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,hand,fingerName,scanned);
+int get hashCode => Object.hash(runtimeType,id,user,hand,fingerName,scanned);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Finger(id: $id, hand: $hand, fingerName: $fingerName, scanned: $scanned)';
+  return 'Finger(id: $id, user: $user, hand: $hand, fingerName: $fingerName, scanned: $scanned)';
 }
 
 
@@ -52,7 +52,7 @@ abstract mixin class $FingerCopyWith<$Res>  {
   factory $FingerCopyWith(Finger value, $Res Function(Finger) _then) = _$FingerCopyWithImpl;
 @useResult
 $Res call({
- int id, Hand hand, FingerName fingerName, bool scanned
+ int id, int user, Hand hand, FingerName fingerName, bool scanned
 });
 
 
@@ -69,9 +69,10 @@ class _$FingerCopyWithImpl<$Res>
 
 /// Create a copy of Finger
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? hand = null,Object? fingerName = null,Object? scanned = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? user = null,Object? hand = null,Object? fingerName = null,Object? scanned = null,}) {
   return _then(Finger(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as int,hand: null == hand ? _self.hand : hand // ignore: cast_nullable_to_non_nullable
 as Hand,fingerName: null == fingerName ? _self.fingerName : fingerName // ignore: cast_nullable_to_non_nullable
 as FingerName,scanned: null == scanned ? _self.scanned : scanned // ignore: cast_nullable_to_non_nullable
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  Hand hand,  FingerName fingerName,  bool scanned)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int user,  Hand hand,  FingerName fingerName,  bool scanned)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Finger() when $default != null:
-return $default(_that.id,_that.hand,_that.fingerName,_that.scanned);case _:
+return $default(_that.id,_that.user,_that.hand,_that.fingerName,_that.scanned);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.hand,_that.fingerName,_that.scanned);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  Hand hand,  FingerName fingerName,  bool scanned)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int user,  Hand hand,  FingerName fingerName,  bool scanned)  $default,) {final _that = this;
 switch (_that) {
 case _Finger():
-return $default(_that.id,_that.hand,_that.fingerName,_that.scanned);case _:
+return $default(_that.id,_that.user,_that.hand,_that.fingerName,_that.scanned);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.hand,_that.fingerName,_that.scanned);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  Hand hand,  FingerName fingerName,  bool scanned)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int user,  Hand hand,  FingerName fingerName,  bool scanned)?  $default,) {final _that = this;
 switch (_that) {
 case _Finger() when $default != null:
-return $default(_that.id,_that.hand,_that.fingerName,_that.scanned);case _:
+return $default(_that.id,_that.user,_that.hand,_that.fingerName,_that.scanned);case _:
   return null;
 
 }
@@ -216,10 +217,11 @@ return $default(_that.id,_that.hand,_that.fingerName,_that.scanned);case _:
 
 
 class _Finger with DiagnosticableTreeMixin implements Finger {
-  const _Finger({required this.id, required this.hand, required this.fingerName, required this.scanned});
+  const _Finger({this.id = 0, required this.user, required this.hand, required this.fingerName, required this.scanned});
   
 
-@override final  int id;
+@override@JsonKey() final  int id;
+@override final  int user;
 @override final  Hand hand;
 @override final  FingerName fingerName;
 @override final  bool scanned;
@@ -235,21 +237,21 @@ _$FingerCopyWith<_Finger> get copyWith => __$FingerCopyWithImpl<_Finger>(this, _
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Finger'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('hand', hand))..add(DiagnosticsProperty('fingerName', fingerName))..add(DiagnosticsProperty('scanned', scanned));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('hand', hand))..add(DiagnosticsProperty('fingerName', fingerName))..add(DiagnosticsProperty('scanned', scanned));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Finger&&(identical(other.id, id) || other.id == id)&&(identical(other.hand, hand) || other.hand == hand)&&(identical(other.fingerName, fingerName) || other.fingerName == fingerName)&&(identical(other.scanned, scanned) || other.scanned == scanned));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Finger&&(identical(other.id, id) || other.id == id)&&(identical(other.user, user) || other.user == user)&&(identical(other.hand, hand) || other.hand == hand)&&(identical(other.fingerName, fingerName) || other.fingerName == fingerName)&&(identical(other.scanned, scanned) || other.scanned == scanned));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,hand,fingerName,scanned);
+int get hashCode => Object.hash(runtimeType,id,user,hand,fingerName,scanned);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Finger(id: $id, hand: $hand, fingerName: $fingerName, scanned: $scanned)';
+  return 'Finger(id: $id, user: $user, hand: $hand, fingerName: $fingerName, scanned: $scanned)';
 }
 
 
@@ -260,7 +262,7 @@ abstract mixin class _$FingerCopyWith<$Res> implements $FingerCopyWith<$Res> {
   factory _$FingerCopyWith(_Finger value, $Res Function(_Finger) _then) = __$FingerCopyWithImpl;
 @override @useResult
 $Res call({
- int id, Hand hand, FingerName fingerName, bool scanned
+ int id, int user, Hand hand, FingerName fingerName, bool scanned
 });
 
 
@@ -277,9 +279,10 @@ class __$FingerCopyWithImpl<$Res>
 
 /// Create a copy of Finger
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? hand = null,Object? fingerName = null,Object? scanned = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? user = null,Object? hand = null,Object? fingerName = null,Object? scanned = null,}) {
   return _then(_Finger(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as int,hand: null == hand ? _self.hand : hand // ignore: cast_nullable_to_non_nullable
 as Hand,fingerName: null == fingerName ? _self.fingerName : fingerName // ignore: cast_nullable_to_non_nullable
 as FingerName,scanned: null == scanned ? _self.scanned : scanned // ignore: cast_nullable_to_non_nullable

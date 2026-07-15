@@ -17,5 +17,10 @@ abstract class FingerprintRepository {
   /// Searches fingerprints belonging to a user.
   Future<Result<List<Finger>>> getFingerprintsOfUser(int id);
 
+  /// Deletes a fingerprint with the given ID.
   Future<Result<void>> deleteFingerprint(int id);
+
+  /// Adds a new fingerprint registration for the given [finger].
+  /// [templates] must at least contain three items or an exception will be thrown.
+  Future<Result<Finger>> enroll(Finger finger, List<Uint8List> templates);
 }

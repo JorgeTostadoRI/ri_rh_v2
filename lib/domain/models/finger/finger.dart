@@ -19,6 +19,11 @@ enum Hand {
         throw Exception('Unrecognized value for Hand');
     }
   }
+
+  String get apiValue => switch(this) {
+    Hand.right => 'r',
+    Hand.left => 'l',
+  };
 }
 
 enum FingerName {
@@ -45,12 +50,22 @@ enum FingerName {
         throw Exception('Unrecognized value for FingerName');
     }
   }
+
+  String get apiValue => switch(this) {
+    FingerName.thumb => 'thumb',
+    FingerName.pointer => 'index',
+    FingerName.middle => 'middle',
+    FingerName.ring => 'ring',
+    FingerName.pinky => 'pinky',
+  };
 }
 
 @freezed
 abstract class Finger with _$Finger {
   const factory Finger({
-    required int id,
+    @Default(0)
+    int id,
+    required int user,
     required Hand hand,
     required FingerName fingerName,
     required bool scanned,

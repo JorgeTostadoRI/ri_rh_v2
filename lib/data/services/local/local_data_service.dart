@@ -64,19 +64,8 @@ class LocalDataService {
   }
 
   User getUser() {
-    final produccion = getDepartamentos().firstWhere((e) => e.nombre == 'Produccion');
-    return User(
-      id: 21,
-      username: 'peposuarez',
-      nombre: 'Pedro Suarez',
-      telefono: '6864349090',
-      correo: 'peposuarez@local.com',
-      rol: 'Operador',
-      departamento: produccion,
-      departamentosPermitidos: [produccion],
-      liderPermitido: false,
-      empleadoId: 21,
-    );
+    final users = getUsers();
+    return users[2]; // Pedro Juarez
   }
 
   List<Aviso> getAvisos() {
@@ -229,6 +218,84 @@ class LocalDataService {
         salarioDiario: 500.0,
         antiguedad: 2,
         estatus: EmpleadoEstatus.activo,
+      ),
+    ];
+  }
+
+  List<User> getUsers() {
+    final departamentos = getDepartamentos();
+    return [
+      User(
+        id: 1,
+        username: 'danielfernandez',
+        nombre: 'Daniel Fernandez',
+        telefono: '555-0101',
+        correo: 'daniel-f@local.com',
+        rol: 'Operador',
+        departamento: departamentos[11],
+        departamentosPermitidos: [departamentos[11]],
+        liderPermitido: false,
+        empleadoId: 1,
+      ),
+      User(
+        id: 2,
+        username: 'carlagomez',
+        nombre: 'Carla Gomez',
+        telefono: '555-0102',
+        correo: 'carla-g@local.com',
+        rol: 'Lider',
+        departamento: departamentos[11],
+        departamentosPermitidos: [departamentos[11]],
+        liderPermitido: true,
+        empleadoId: 2,
+      ),
+      User(
+        id: 3,
+        username: 'pedrojuarez',
+        nombre: 'Pedro Juarez',
+        telefono: '555-0103',
+        correo: 'pedro-j@local.com',
+        rol: 'Operador',
+        departamento: departamentos[11],
+        departamentosPermitidos: [departamentos[11]],
+        liderPermitido: false,
+        empleadoId: 3,
+      ),
+      User(
+        id: 4,
+        username: 'anamartinez',
+        nombre: 'Ana Martinez',
+        telefono: '555-0104',
+        correo: 'ana-m@local.com',
+        rol: 'Lider',
+        departamento: departamentos[12],
+        departamentosPermitidos: [departamentos[12]],
+        liderPermitido: true,
+        empleadoId: 4,
+      ),
+      User(
+        id: 5,
+        username: 'luisrodriguez',
+        nombre: 'Luis Rodriguez',
+        telefono: '555-0105',
+        correo: 'luis-r@local.com',
+        rol: 'Operador',
+        departamento: departamentos[1],
+        departamentosPermitidos: [departamentos[1]],
+        liderPermitido: false,
+        empleadoId: 5,
+      ),
+      User(
+        id: 6,
+        username: 'sofialopez',
+        nombre: 'Sofia Lopez',
+        telefono: '555-0106',
+        correo: 'sofia-l@local.com',
+        rol: 'Lider',
+        departamento: departamentos[5],
+        departamentosPermitidos: [departamentos[5]],
+        liderPermitido: true,
+        empleadoId: 6,
       ),
     ];
   }

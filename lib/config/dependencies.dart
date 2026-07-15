@@ -70,7 +70,9 @@ List<SingleChildWidget> get providersLocal {
       ) as AvisosRepository
     ),
     Provider(create: (context) =>
-      FingerprintRepositoryLocal() as FingerprintRepository
+      FingerprintRepositoryLocal(
+        localDataService: context.read(),
+      ) as FingerprintRepository
     ),
     Provider(create: (context) =>
       EmpleadosRepositoryLocal(

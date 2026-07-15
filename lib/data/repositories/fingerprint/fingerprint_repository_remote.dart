@@ -57,14 +57,54 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   }
 
   @override
-  Future<Result<List<Finger>>> getFingerprintsOfUser(int id) {
-    // TODO: implement getFingerprintsOfUser
-    throw UnimplementedError();
+  Future<Result<List<Finger>>> getFingerprintsOfUser(int id) async {
+    final getResult = await _apiClient.getHuellas();
+    switch (getResult) {
+      case Error():
+        return Result.error(getResult.error);
+      case Ok():
+        // TODO: use query param
+        final huellas = getResult.value.where((huella) => huella.usuario == id);
+        final fingers = huellas.map((huella) => Finger(
+          id: huella.id!,
+          user: huella.usuario,
+          hand: Hand.fromString(huella.hand),
+          fingerName: FingerName.fromString(huella.finger),
+          scanned: true,
+        )).toList();
+        return Result.ok(fingers);
+    }
   }
 
   @override
-  Future<Result<void>> deleteFingerprint(int id) {
-    // TODO: implement deleteFingerprint
-    throw UnimplementedError();
+  Future<Result<void>> deleteFingerprint(int id) async {
+    return await _apiClient.deleteHuella(id);
+  }
+
+  @override
+  Future<Result<Finger>> enroll(Finger finger, List<Uint8List> templates) async {
+    if (templates.length < 3) {
+      throw Exception('3 templates are needed for enrollment');
+    }
+
+    final merged = _fingerScanService.merge(templates[0], templates[1], templates[2]);
+    final huella = HuellaApiModel(
+      template: base64.encode(merged),
+      hand: finger.hand.apiValue,
+      finger: finger.fingerName.apiValue,
+      usuario: finger.user,
+    );
+    final postResult = await _apiClient.postHuella(huella);
+    switch (postResult) {
+      case Error():
+        return Result.error(postResult.error);
+      case Ok():
+        _fingerScanService.add(merged, huella.id!);
+        final fingerWithValues = finger.copyWith(
+          id: postResult.value.id!,
+          scanned: true,
+        );
+        return Result.ok(fingerWithValues);
+    }
   }
 }
