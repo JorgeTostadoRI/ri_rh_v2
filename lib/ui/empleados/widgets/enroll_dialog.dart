@@ -28,6 +28,13 @@ class _EnrollDialogState extends State<EnrollDialog> {
     }
   }
 
+  String get countsLeftText {
+    if (widget.viewmodel.captureCount == 1) {
+      return 'Coloca tu dedo en el lector de huella ${widget.viewmodel.captureCount} vez más.';
+    }
+    return 'Coloca tu dedo en el lector de huella ${widget.viewmodel.captureCount} veces más.';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +62,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
       contentPadding: EdgeInsets.all(32),
       backgroundColor: Colors.white,
       content: Column(
+        spacing: 24,
         mainAxisSize: .min,
         children: [
           Container(
@@ -70,7 +78,6 @@ class _EnrollDialogState extends State<EnrollDialog> {
               size: 44,
             ),
           ),
-          const SizedBox(height: 24),
           Text(
             'Escaneo de Huella',
             style: TextStyle(
@@ -114,39 +121,52 @@ class _EnrollDialogState extends State<EnrollDialog> {
                 );
               }
 
-              return Text(
-                'Coloca tu dedo en el lector de huella ${widget.viewmodel.captureCount} veces más.',
-                style: TextStyle(
-                  color: labelTextColor,
-                  fontSize: 14,
-                  height: 1.4
-                ),
+              final captureCount = widget.viewmodel.captureCount;
+              return Column(
+                spacing: 32,
+                mainAxisSize: .min,
+                children: [
+                  Text('Presiona tu dedo 3 veces sobre el escaneador para capturar tu huella.', textAlign: .center,),
+                  Row(
+                    spacing: 12,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .center,
+                    children: [
+                      _EnrollmentStatusIcon(success: captureCount < 3),
+                      _EnrollmentStatusIcon(success: captureCount < 2),
+                      _EnrollmentStatusIcon(success: captureCount < 1),
+                    ],
+                  ),
+                ],
               );
             }
           ),
-          const SizedBox(height: 40),
-          Row(
-            children: [
-              Expanded(
-                child: ListenableBuilder(
-                  listenable: widget.viewmodel.enroll,
-                  builder: (context, _) {
-                    if (widget.viewmodel.enroll.running || widget.viewmodel.enroll.completed) {
-                      return SizedBox.shrink();
-                    }
-
-                    return OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('Cancelar'),
-                    );
-                  }
-                ),
-              ),
-            ],
-          ),
         ],
+      ),
+    );
+  }
+}
+
+class _EnrollmentStatusIcon extends StatelessWidget {
+  const _EnrollmentStatusIcon({
+    required this.success,
+  });
+
+  final bool success;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: success ? statusSuccessBgColor : backgroundColor,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        LucideIcons.fingerprintPattern,
+        size: 20,
+        color: success ? statusSuccessColor : primaryColor,
       ),
     );
   }

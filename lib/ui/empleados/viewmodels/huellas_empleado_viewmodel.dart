@@ -42,8 +42,10 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     _selectedFinger = selection;
     _log.d('Set selected finger to $_selectedFinger');
   }
+  /// Sets the currently selected finger to null and clears the saved template captures.
   void clearSelectedFinger() {
     _selectedFinger = null;
+    _captures.clear();
     _log.d('Cleared finger selection');
   }
 
