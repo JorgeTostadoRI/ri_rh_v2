@@ -22,6 +22,7 @@ enum EmpleadoEstatus {
 abstract class Empleado with _$Empleado {
   const factory Empleado({
     int? id,
+    required int usuario,
     // Datos generales
     @JsonKey(name: 'nombre_completo')
     required String nombre,

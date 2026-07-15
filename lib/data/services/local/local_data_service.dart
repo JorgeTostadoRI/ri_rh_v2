@@ -118,6 +118,7 @@ class LocalDataService {
     return [
       Empleado(
         id: 1,
+        usuario: 1,
         nombre: 'Daniel Fernandez',
         fechaNacimiento: DateTime(1990, 6, 3),
         clabeInterbancaria: 'TEST',
@@ -136,6 +137,7 @@ class LocalDataService {
       ),
       Empleado(
         id: 2,
+        usuario: 2,
         nombre: 'Carla Gomez',
         fechaNacimiento: DateTime(1986, 10, 21),
         clabeInterbancaria: 'TEST',
@@ -154,6 +156,7 @@ class LocalDataService {
       ),
       Empleado(
         id: 3,
+        usuario: 3,
         nombre: 'Pedro Juarez',
         fechaNacimiento: DateTime(2001, 8, 10),
         clabeInterbancaria: 'TEST',
@@ -172,24 +175,7 @@ class LocalDataService {
       ),
       Empleado(
         id: 4,
-        nombre: 'Ana Martinez',
-        fechaNacimiento: DateTime(1994, 3, 3),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Carlos Godinez',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.universidad,
-        montoRetencionInfonavit: 0.0,
-        puesto: 4,
-        salarioDiario: 480.0,
-        antiguedad: 3,
-        estatus: EmpleadoEstatus.finiquitado,
-      ),
-      Empleado(
-        id: 4,
+        usuario: 4,
         nombre: 'Ana Martinez',
         fechaNacimiento: DateTime(1994, 3, 3),
         clabeInterbancaria: 'TEST',
@@ -208,6 +194,7 @@ class LocalDataService {
       ),
       Empleado(
         id: 5,
+        usuario: 5,
         nombre: 'Luis Rodriguez',
         fechaNacimiento: DateTime(1989, 3, 25),
         clabeInterbancaria: 'TEST',
@@ -226,6 +213,7 @@ class LocalDataService {
       ),
       Empleado(
         id: 6,
+        usuario: 6,
         nombre: 'Sofia Lopez',
         fechaNacimiento: DateTime(2003, 5, 12),
         clabeInterbancaria: 'TEST',
