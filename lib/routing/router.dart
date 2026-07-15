@@ -11,8 +11,10 @@ import 'package:ri_rh_v2/ui/avisos/widgets/avisos_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/main_scaffold.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/expediente_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleados_screen.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/expediente_screen.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/huellas_empleado_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
@@ -105,7 +107,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               builder: (context, state) {
                 final empleadoId = int.tryParse(state.pathParameters['empleadoId']!);
                 if (empleadoId == null) {
-                  return const NotFoundScreen(message: 'ID de empleado no válido');
+                  return const NotFoundScreen(message: 'Empleado no encontrado');
                 }
 
                 return ExpedienteScreen(
@@ -114,7 +116,26 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     empleadosRepository: context.read(),
                   ),
                 );
-              }
+              },
+              routes: [
+                GoRoute(
+                  path: Routes.huellas,
+                  builder: (context, state) {
+                    final empleadoId = int.tryParse(state.pathParameters['empleadoId']!);
+                    if (empleadoId == null) {
+                      return const NotFoundScreen(message: 'Empleado no encontrado');
+                    }
+
+                    return HuellasEmpleadoScreen(
+                      viewmodel: HuellasEmpleadoViewmodel(
+                        empleadoId: empleadoId,
+                        empleadosRepository: context.read(),
+                        fingerprintRepository: context.read(),
+                      ),
+                    );
+                  }
+                ),
+              ],
             ),
           ],
         ),
