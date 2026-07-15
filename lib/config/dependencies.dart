@@ -12,6 +12,7 @@ import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_remote.dart';
@@ -125,6 +126,11 @@ List<SingleChildWidget> get providersRemote {
         fingerScanService: context.read(),
         apiClient: context.read(),
       ) as FingerprintRepository
+    ),
+    Provider(create: (context) =>
+      EmpleadosRepositoryRemote(
+        apiClient: context.read(),
+      ) as EmpleadosRepository,
     ),
   ];
 }

@@ -19,11 +19,10 @@ _Empleado _$EmpleadoFromJson(Map<String, dynamic> json) => _Empleado(
   curp: json['curp'] as String,
   numeroSeguroSocial: json['numero_seguro_social'] as String,
   direccionCompleta: json['direccion_completa'] as String,
-  montoRetencionInfonavit: (json['monto_retencion_infonavit'] as num)
-      .toDouble(),
+  montoRetencionInfonavit: _doubleFromJson(json['monto_retencion_infonavit']),
   puesto: (json['puesto'] as num).toInt(),
   estatus: $enumDecode(_$EmpleadoEstatusEnumMap, json['estatus']),
-  salarioDiario: (json['salario_diario'] as num).toDouble(),
+  salarioDiario: _doubleFromJson(json['salario_diario']),
   antiguedad: (json['antiguedad'] as num?)?.toInt(),
   diasVacaciones: (json['dias_vacaciones'] as num?)?.toInt(),
   fechaAlta: json['fecha_alta'] == null
@@ -113,6 +112,6 @@ const _$EscolaridadEnumMap = {
 
 const _$EmpleadoEstatusEnumMap = {
   EmpleadoEstatus.activo: 'activo',
-  EmpleadoEstatus.procesoFiniquito: 'procesoFiniquito',
+  EmpleadoEstatus.procesoFiniquito: 'proceso_finiquito',
   EmpleadoEstatus.finiquitado: 'finiquitado',
 };

@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
@@ -226,8 +227,50 @@ class ApiClient {
       .map((json) => HuellaApiModel.fromJson(json))
       .toList();
       return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException getting huellas', error: e.response);
+      return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception getting avisos', error: e);
+      _logger.e('Exception getting huellas', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // EMPLEADOS
+  Future<Result<Empleado>> getEmpleado(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/empleados/$id/');
+      final result = Empleado.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException retrieving empleado', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception retrieving empleado', error: e);
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<List<Empleado>>> getEmpleados() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/empleados/');
+      final result = (response.data as List)
+      .map((json) => Empleado.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      _logger.e('DioException listing empleados', error: e.response);
+      return Result.error(e);
+    } on Exception catch (e) {
+      _logger.e('Exception listing empleados', error: e);
       return Result.error(e);
     } finally {
       dio.close();

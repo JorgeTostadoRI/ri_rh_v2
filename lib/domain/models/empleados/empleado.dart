@@ -14,6 +14,7 @@ enum Escolaridad {
 
 enum EmpleadoEstatus {
   activo,
+  @JsonValue('proceso_finiquito')
   procesoFiniquito,
   finiquitado;
 }
@@ -35,10 +36,12 @@ abstract class Empleado with _$Empleado {
     required String curp,
     required String numeroSeguroSocial,
     required String direccionCompleta,
+    @JsonKey(fromJson: _doubleFromJson)
     required double montoRetencionInfonavit,
     // Datos de empleo
     required int puesto,
     required EmpleadoEstatus estatus,
+    @JsonKey(fromJson: _doubleFromJson)
     required double salarioDiario,
     int? antiguedad,
     int? diasVacaciones,
@@ -71,4 +74,9 @@ abstract class Empleado with _$Empleado {
   }) = _Empleado;
 
   factory Empleado.fromJson(Map<String, Object?> json) => _$EmpleadoFromJson(json);
+}
+
+double _doubleFromJson(dynamic value) {
+  if (value is num) return value.toDouble(); // Handles normal numbers
+  return double.parse(value.toString()); // Handles "12.34" strings
 }
