@@ -61,4 +61,10 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
     // TODO: implement getFingerprintsOfUser
     throw UnimplementedError();
   }
+
+  @override
+  Future<Result<void>> deleteFingerprint(int id) {
+    // TODO: implement deleteFingerprint
+    throw UnimplementedError();
+  }
 }

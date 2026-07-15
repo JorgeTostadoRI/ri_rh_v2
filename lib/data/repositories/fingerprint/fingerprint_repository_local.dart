@@ -64,4 +64,15 @@ class FingerprintRepositoryLocal extends FingerprintRepository {
     )).toList();
     return Result.ok(fingers);
   }
+
+  @override
+  Future<Result<void>> deleteFingerprint(int id) async {
+    final index = _huellas.indexWhere((huella) => huella.id! == id);
+    if (index == -1) {
+      return Result.error(Exception('Not found'));
+    }
+
+    _huellas.removeAt(index);
+    return Result.ok(null);
+  }
 }

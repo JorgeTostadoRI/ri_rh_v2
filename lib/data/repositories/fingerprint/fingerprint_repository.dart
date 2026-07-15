@@ -16,4 +16,6 @@ abstract class FingerprintRepository {
 
   /// Searches fingerprints belonging to a user.
   Future<Result<List<Finger>>> getFingerprintsOfUser(int id);
+
+  Future<Result<void>> deleteFingerprint(int id);
 }

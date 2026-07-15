@@ -14,6 +14,7 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     required this._fingerprintRepository,
   }) {
     load = Command1(_load)..execute(empleadoId);
+    delete = Command1(_delete);
     _fingers = _generateFingersList();
   }
 
@@ -23,17 +24,18 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
 
   final Logger _log = Logger();
   late final Command1<void, int> load;
+  late final Command1<void, Finger> delete;
   late final Empleado _empleado;
   Empleado get empleado => _empleado;
   List<Finger> _fingers = [];
   List<Finger> get rightHandFingers => _fingers.where((finger) => finger.hand == Hand.right).toList();
   List<Finger> get leftHandFingers => _fingers.where((finger) => finger.hand == Hand.left).toList();
 
-  Future<Result<void>> _load(int id) async {
-    final empleadoResult = await _empleadosRepository.getEmpleado(id);
+  Future<Result<void>> _load(int empleadoId) async {
+    final empleadoResult = await _empleadosRepository.getEmpleado(empleadoId);
     switch (empleadoResult) {
       case Error():
-        _log.w('Failed to load empleado #$id');
+        _log.w('Failed to load empleado #$empleadoId');
         return Result.error(empleadoResult.error);
       case Ok():
         _empleado = empleadoResult.value;
@@ -42,7 +44,7 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     final fingersResult = await _fingerprintRepository.getFingerprintsOfUser(_empleado.usuario);
     switch (fingersResult) {
       case Error():
-        _log.w('Failed to load huellas of empleado #$id');
+        _log.w('Failed to load huellas of empleado #$empleadoId');
         return Result.error(fingersResult.error);
       case Ok():
         for (final finger in fingersResult.value) {
@@ -55,6 +57,21 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
 
     notifyListeners();
     return const Result.ok(null);
+  }
+
+  Future<Result<void>> _delete(Finger finger) async {
+    final result = await _fingerprintRepository.deleteFingerprint(finger.id);
+    switch (result) {
+      case Error():
+        _log.w('Failed to delete fingerprint', error: result.error);
+      case Ok():
+        final index = _fingers.indexOf(finger);
+        _fingers[index] = finger.copyWith(id: 0, scanned: false);
+        _log.i('Deleted Finger#${finger.id}');
+        notifyListeners();
+    }
+
+    return result;
   }
 
   List<Finger> _generateFingersList() {

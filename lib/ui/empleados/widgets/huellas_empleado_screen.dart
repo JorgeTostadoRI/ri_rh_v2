@@ -74,15 +74,27 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                   spacing: 24,
                   children: [
                     Flexible(
-                      child: _HandCard(
-                        title: 'Mano izquierda',
-                        fingers: viewmodel.leftHandFingers,
+                      child: ListenableBuilder(
+                        listenable: viewmodel.delete,
+                        builder: (context, _) {
+                          return _HandCard(
+                            title: 'Mano izquierda',
+                            fingers: viewmodel.leftHandFingers,
+                            onDelete: (finger) => viewmodel.delete.execute(finger),
+                          );
+                        }
                       ),
                     ),
                     Flexible(
-                      child: _HandCard(
-                        title: 'Mano derecha',
-                        fingers: viewmodel.rightHandFingers,
+                      child: ListenableBuilder(
+                        listenable: viewmodel.delete,
+                        builder: (context, _) {
+                          return _HandCard(
+                            title: 'Mano derecha',
+                            fingers: viewmodel.rightHandFingers,
+                            onDelete: (finger) => viewmodel.delete.execute(finger),
+                          );
+                        }
                       ),
                     ),
                   ],
@@ -101,10 +113,12 @@ class _HandCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.fingers,
+    required this.onDelete,
   });
 
   final String title;
   final List<Finger> fingers;
+  final void Function(Finger finger) onDelete;
 
   int get _count {
     int count = 0;
@@ -126,7 +140,7 @@ class _HandCard extends StatelessWidget {
             Text(title, style: TextTheme.of(context).headlineSmall),
             Text('$_count de 5 huellas escaneadas'),
             for (final finger in fingers)
-              _FingerStatus(finger: finger, onDelete: (finger) {}),
+              _FingerStatus(finger: finger, onDelete: onDelete),
           ],
         ),
       ),
