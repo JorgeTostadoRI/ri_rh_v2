@@ -23,7 +23,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
 
   void _listener() {
     if (widget.viewmodel.enroll.completed) {
-      widget.viewmodel.enroll.clearResult();
+      Future.delayed(const Duration(seconds: 1), () => widget.viewmodel.enroll.clearResult());
       Navigator.pop(context);
     }
   }
@@ -96,6 +96,16 @@ class _EnrollDialogState extends State<EnrollDialog> {
               if (widget.viewmodel.enroll.running) {
                 return Text(
                   'Registrando la huella, espere un momento...',
+                  style: TextStyle(
+                    color: labelTextColor,
+                    fontSize: 14,
+                    height: 1.4
+                  ),
+                );
+              }
+              if (widget.viewmodel.enroll.completed) {
+                return Text(
+                  'Se registró la huella exitosamente.',
                   style: TextStyle(
                     color: labelTextColor,
                     fontSize: 14,

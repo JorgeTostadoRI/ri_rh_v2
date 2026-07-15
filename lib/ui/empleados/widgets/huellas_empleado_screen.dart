@@ -97,7 +97,7 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                   children: [
                     Flexible(
                       child: ListenableBuilder(
-                        listenable: viewmodel.delete,
+                        listenable: Listenable.merge([viewmodel.delete, viewmodel.enroll]),
                         builder: (context, _) {
                           return _HandCard(
                             title: 'Mano izquierda',
@@ -110,7 +110,7 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                     ),
                     Flexible(
                       child: ListenableBuilder(
-                        listenable: viewmodel.delete,
+                        listenable: Listenable.merge([viewmodel.delete, viewmodel.enroll]),
                         builder: (context, _) {
                           return _HandCard(
                             title: 'Mano derecha',
