@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
@@ -14,8 +17,8 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     required this._fingerprintRepository,
   }) {
     load = Command1(_load)..execute(empleadoId);
+    enroll = Command1(_enroll);
     delete = Command1(_delete);
-    _fingers = _generateFingersList();
   }
 
   final int empleadoId;
@@ -24,12 +27,36 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
 
   final Logger _log = Logger();
   late final Command1<void, int> load;
+  late final Command1<void, Finger> enroll;
   late final Command1<void, Finger> delete;
+
   late final Empleado _empleado;
   Empleado get empleado => _empleado;
-  List<Finger> _fingers = [];
+
+  late List<Finger> _fingers;
   List<Finger> get rightHandFingers => _fingers.where((finger) => finger.hand == Hand.right).toList();
   List<Finger> get leftHandFingers => _fingers.where((finger) => finger.hand == Hand.left).toList();
+
+  Finger? _selectedFinger;
+  set selectedFinger(Finger selection) {
+    _selectedFinger = selection;
+    _log.d('Set selected finger to $_selectedFinger');
+  }
+  void clearSelectedFinger() {
+    _selectedFinger = null;
+    _log.d('Cleared finger selection');
+  }
+
+  final List<Uint8List> _captures = List.empty(growable: true);
+  int get captureCount => 3 - _captures.length;
+  StreamSubscription<Uint8List> get capturesSub {
+    return _fingerprintRepository.capture()
+    .take(3) // Only listen for 3 captures
+    .listen(
+      onCaptureData,
+      onDone: () => enroll.execute(_selectedFinger!),
+    );
+  }
 
   Future<Result<void>> _load(int empleadoId) async {
     final empleadoResult = await _empleadosRepository.getEmpleado(empleadoId);
@@ -39,6 +66,7 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
         return Result.error(empleadoResult.error);
       case Ok():
         _empleado = empleadoResult.value;
+        _fingers = _generateFingersList();
     }
 
     final fingersResult = await _fingerprintRepository.getFingerprintsOfUser(_empleado.usuario);
@@ -59,6 +87,21 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     return const Result.ok(null);
   }
 
+  Future<Result<Finger>> _enroll(Finger finger) async {
+    final result = await _fingerprintRepository.enroll(finger, _captures);
+    switch (result) {
+      case Error():
+        _log.w('Failed to enroll fingerprint', error: result.error);
+      case Ok():
+        final index = _fingers.indexOf(finger);
+        _fingers[index] = result.value;
+    }
+
+    _captures.clear();
+    notifyListeners();
+    return result;
+  }
+
   Future<Result<void>> _delete(Finger finger) async {
     final result = await _fingerprintRepository.deleteFingerprint(finger.id);
     switch (result) {
@@ -74,18 +117,32 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     return result;
   }
 
+  // Call after _empleado has been set
   List<Finger> _generateFingersList() {
     return [
-      Finger(id: 0, hand: Hand.left, fingerName: FingerName.thumb, scanned: false),
-      Finger(id: 0, hand: Hand.left, fingerName: FingerName.pointer, scanned: false),
-      Finger(id: 0, hand: Hand.left, fingerName: FingerName.middle, scanned: false),
-      Finger(id: 0, hand: Hand.left, fingerName: FingerName.ring, scanned: false),
-      Finger(id: 0, hand: Hand.left, fingerName: FingerName.pinky, scanned: false),
-      Finger(id: 0, hand: Hand.right, fingerName: FingerName.thumb, scanned: false),
-      Finger(id: 0, hand: Hand.right, fingerName: FingerName.pointer, scanned: false),
-      Finger(id: 0, hand: Hand.right, fingerName: FingerName.middle, scanned: false),
-      Finger(id: 0, hand: Hand.right, fingerName: FingerName.ring, scanned: false),
-      Finger(id: 0, hand: Hand.right, fingerName: FingerName.pinky, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.thumb, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.pointer, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.middle, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.ring, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.pinky, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.thumb, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.pointer, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.middle, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.ring, scanned: false),
+      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.pinky, scanned: false),
     ];
+  }
+
+  void onCaptureData(Uint8List template) {
+    // Validate that this finger has not been registered previously
+    if (_captures.isEmpty) {
+      final match = _fingerprintRepository.matchFingerprintToUser(template) != null;
+      if (match) {
+        throw Exception('This fingerprint is already registered');
+      }
+    }
+
+    _captures.add(template);
+    notifyListeners();
   }
 }

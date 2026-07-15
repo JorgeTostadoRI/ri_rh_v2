@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/delete_fingerprint_dialog.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/enroll_dialog.dart';
 
 class HuellasEmpleadoScreen extends StatelessWidget {
   const HuellasEmpleadoScreen({
@@ -15,6 +15,28 @@ class HuellasEmpleadoScreen extends StatelessWidget {
   });
 
   final HuellasEmpleadoViewmodel viewmodel;
+
+  Future<void> onAddHandler(BuildContext context, Finger finger) async {
+    viewmodel.selectedFinger = finger;
+    await showDialog(
+      context: context,
+      builder: (context) => EnrollDialog(viewmodel: viewmodel), 
+    ) ?? false;
+    viewmodel.clearSelectedFinger();
+  }
+
+  Future<void> onDeleteHandler(BuildContext context, Finger finger) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => const DeleteFingerprintDialog(),
+    ) ?? false;
+    switch (confirmed) {
+      case true:
+        viewmodel.delete.execute(finger);
+      case false:
+        viewmodel.clearSelectedFinger();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +102,8 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                           return _HandCard(
                             title: 'Mano izquierda',
                             fingers: viewmodel.leftHandFingers,
-                            onDelete: (finger) => viewmodel.delete.execute(finger),
+                            onAdd: onAddHandler,
+                            onDelete: onDeleteHandler,
                           );
                         }
                       ),
@@ -92,7 +115,8 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                           return _HandCard(
                             title: 'Mano derecha',
                             fingers: viewmodel.rightHandFingers,
-                            onDelete: (finger) => viewmodel.delete.execute(finger),
+                            onAdd: onAddHandler,
+                            onDelete: onDeleteHandler,
                           );
                         }
                       ),
@@ -110,15 +134,16 @@ class HuellasEmpleadoScreen extends StatelessWidget {
 
 class _HandCard extends StatelessWidget {
   const _HandCard({
-    super.key,
     required this.title,
     required this.fingers,
+    required this.onAdd,
     required this.onDelete,
   });
 
   final String title;
   final List<Finger> fingers;
-  final void Function(Finger finger) onDelete;
+  final void Function(BuildContext context, Finger finger) onAdd;
+  final void Function(BuildContext context, Finger finger) onDelete;
 
   int get _count {
     int count = 0;
@@ -140,7 +165,11 @@ class _HandCard extends StatelessWidget {
             Text(title, style: TextTheme.of(context).headlineSmall),
             Text('$_count de 5 huellas escaneadas'),
             for (final finger in fingers)
-              _FingerStatus(finger: finger, onDelete: onDelete),
+              _FingerStatus(
+                finger: finger,
+                onAdd: onAdd,
+                onDelete: onDelete,
+              ),
           ],
         ),
       ),
@@ -150,13 +179,14 @@ class _HandCard extends StatelessWidget {
 
 class _FingerStatus extends StatelessWidget {
   const _FingerStatus({
-    super.key,
     required this.finger,
+    required this.onAdd,
     required this.onDelete,
   });
 
   final Finger finger;
-  final void Function(Finger finger) onDelete;
+  final void Function(BuildContext context, Finger finger) onAdd;
+  final void Function(BuildContext context, Finger finger) onDelete;
 
   String get nameOfFinger {
     return switch(finger.fingerName) {
@@ -198,13 +228,8 @@ class _FingerStatus extends StatelessWidget {
         ),
         GestureDetector(
           onTap: finger.scanned
-            ? () async {
-              final confirmed = await showDialog(
-                context: context,
-                builder: (context) => const DeleteFingerprintDialog(),
-              ) ?? false;
-              if (confirmed) onDelete(finger);
-            } : () {},
+            ? () => onDelete(context, finger)
+            : () => onAdd(context, finger),
           child: StatusChip(
             type: finger.scanned ? StatusChipType.success : StatusChipType.failure,
             label: finger.scanned ? 'ESCANEADO' : 'PENDIENTE',

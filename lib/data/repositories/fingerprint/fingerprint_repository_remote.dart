@@ -78,7 +78,16 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
 
   @override
   Future<Result<void>> deleteFingerprint(int id) async {
-    return await _apiClient.deleteHuella(id);
+    final result = await _apiClient.deleteHuella(id);
+    switch (result) {
+      case Error():
+        _log.w('Failed to delete fingerprint', error: result.error);
+        return result;
+      case Ok():
+        _fidMap.remove(id);
+        _fingerScanService.delete(id);
+        return result;
+    }
   }
 
   @override
@@ -99,7 +108,8 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
       case Error():
         return Result.error(postResult.error);
       case Ok():
-        _fingerScanService.add(merged, huella.id!);
+        _fingerScanService.add(merged, postResult.value.id!);
+        _fidMap[postResult.value.id!] = (postResult.value.usuario, postResult.value.userInfo!.username);
         final fingerWithValues = finger.copyWith(
           id: postResult.value.id!,
           scanned: true,

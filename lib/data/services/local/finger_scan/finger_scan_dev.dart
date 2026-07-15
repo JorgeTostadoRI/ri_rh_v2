@@ -25,6 +25,11 @@ class FingerScanDev extends FingerScanService {
   }
 
   @override
+  void delete(int fid) {
+    throw UnimplementedError();
+  }
+
+  @override
   void clear() {
     throw UnimplementedError();
   }

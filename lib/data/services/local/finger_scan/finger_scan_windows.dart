@@ -58,6 +58,11 @@ class FingerScanServiceImpl extends FingerScanService {
   }
 
   @override
+  void delete(int fid) {
+    _sdk.cache.delete(fid);
+  }
+
+  @override
   void clear() {
     _sdk.cache.clear();
   }
