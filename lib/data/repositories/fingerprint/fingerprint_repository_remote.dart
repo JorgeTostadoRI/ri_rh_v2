@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.da
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
+import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class FingerprintRepositoryRemote extends FingerprintRepository {
@@ -53,5 +54,11 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
           _fidMap[huella.id!] = (huella.userInfo!.id, huella.userInfo!.username);
         }
     }
+  }
+
+  @override
+  Future<Result<List<Finger>>> getFingerprintsOfUser(int id) {
+    // TODO: implement getFingerprintsOfUser
+    throw UnimplementedError();
   }
 }

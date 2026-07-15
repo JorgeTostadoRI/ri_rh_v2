@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/domain/models/finger/finger.dart';
+import 'package:ri_rh_v2/utils/result.dart';
 
 abstract class FingerprintRepository {
   /// Captured fingerprint templates will be added through the stream.
@@ -11,4 +13,7 @@ abstract class FingerprintRepository {
 
   /// Loads the fingerprint data from the server onto the cache.
   Future<void> loadFingerprints();
+
+  /// Searches fingerprints belonging to a user.
+  Future<Result<List<Finger>>> getFingerprintsOfUser(int id);
 }
