@@ -59,6 +59,27 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   @override
+  Future<bool> get isRH async {
+    if (_isAuthenticated == null) {
+      _log.d('awaiting for authentication status');
+      await _fetch();
+    }
+
+    final authenticated = _isAuthenticated ?? false;
+    if (!authenticated) {
+      _log.d('not authenticated');
+      return false;
+    }
+
+    _log.d('authenticated, checking departamentos...');
+    final departamentoNames = _currentUser!.departamentosPermitidos.map((dep) => dep.nombre).toList();
+    _log.d(departamentoNames);
+    final hasDepartamentoRH = departamentoNames.contains('Recursos Humanos');
+    _log.d('isRH: $hasDepartamentoRH');
+    return hasDepartamentoRH;
+  }
+
+  @override
   Future<Result<User>> login({
     required String username,
     required String password,
