@@ -104,19 +104,12 @@ class AvisosListView extends StatelessWidget {
                   itemCount: viewmodel.avisos.length,
                   itemBuilder: (context, index) {
                     final aviso = viewmodel.avisos[index];
-                    if (index == 0) {
-                      return AvisoCard(
-                        aviso: aviso,
-                        onUpdate: _onUpdateHandler,
-                        onDelete: _onDeleteHandler,
-                      );
-                    }
                     return Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
+                      padding: index != 0 ? const EdgeInsets.only(top: 16.0) : EdgeInsets.zero,
                       child: AvisoCard(
                         aviso: aviso,
-                        onUpdate: _onUpdateHandler,
-                        onDelete: _onDeleteHandler,
+                        onUpdate: viewmodel.hasPermissions ? _onUpdateHandler : null,
+                        onDelete: viewmodel.hasPermissions ? _onDeleteHandler : null,
                       ),
                     );
                   }

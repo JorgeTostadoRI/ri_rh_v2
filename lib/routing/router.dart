@@ -88,6 +88,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             return AvisosScreen(
               viewmodel: AvisosViewmodel(
                 avisosRepository: context.read(),
+                authRepository: context.read(),
               ),
             );
           },

@@ -105,18 +105,27 @@ class _AvisosScreenState extends State<AvisosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final aviso = await showDialog<Aviso>(
-            context: context,
-            builder: (context) => AvisoFormDialog(day: widget.viewmodel.focusedDay),
-          );
-          if (aviso != null) {
-            widget.viewmodel.create.execute(aviso);
+      floatingActionButton: ListenableBuilder(
+        listenable: widget.viewmodel,
+        builder: (context, _) {
+          if (!widget.viewmodel.hasPermissions) {
+            return SizedBox.shrink();
           }
-        },
-        tooltip: 'Agregar aviso',
-        child: Icon(LucideIcons.plus),
+          
+          return FloatingActionButton(
+            onPressed: () async {
+              final aviso = await showDialog<Aviso>(
+                context: context,
+                builder: (context) => AvisoFormDialog(day: widget.viewmodel.focusedDay),
+              );
+              if (aviso != null) {
+                widget.viewmodel.create.execute(aviso);
+              }
+            },
+            tooltip: 'Agregar aviso',
+            child: Icon(LucideIcons.plus),
+          );
+        }
       ),
       body: SingleChildScrollView(
         child: Container(
