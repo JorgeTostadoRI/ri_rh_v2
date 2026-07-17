@@ -62,7 +62,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
           _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
           _buildNavItem(LucideIcons.fileText, 'Actas', false, null),
-          _buildNavItem(LucideIcons.users, 'Empleados', false, null),
+          _buildNavItem(LucideIcons.users, 'Empleados', false, Routes.empleados),
           _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
           _buildNavItem(LucideIcons.settings2, 'Automatización', false, null),
           const SizedBox(height: 20),

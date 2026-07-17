@@ -11,6 +11,13 @@ const Color backgroundColor = Color(0xFFFFF0DC);
 const Color borderColor = Color(0xFFF5E8D8);
 const Color inputFillColor = Color(0xFFFDFBF7);
 
+const Color statusSuccessBgColor = Color(0xFFDCFCE7);
+const Color statusWarningBgColor = Color(0xFFFFEDD4);
+const Color statusFailureBgColor = Color(0xFFFFE2E2);
+const Color statusSuccessColor = Color(0xFF00A63E);
+const Color statusWarningColor = Color(0xFFF54900);
+const Color statusFailureColor = Color(0xFFE7000B);
+
 class AppThemeProvider extends ChangeNotifier {
   bool darkMode = false;
 

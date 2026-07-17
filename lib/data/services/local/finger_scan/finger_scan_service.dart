@@ -18,6 +18,12 @@ abstract class FingerScanService {
   /// Add a fingerprint [template] to the cache associated to the given [fid].
   void add(Uint8List template, int fid);
 
+  /// Delete fingerprint template with the given [fid].
+  void delete(int fid);
+
   /// Clear the cache.
   void clear();
+
+  /// Merges three fingerprint templates into one.
+  Uint8List merge(Uint8List template1, Uint8List template2, Uint8List template3);
 }

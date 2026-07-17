@@ -1,5 +1,7 @@
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
+import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
+import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 
 class LocalDataService {
@@ -62,19 +64,8 @@ class LocalDataService {
   }
 
   User getUser() {
-    final produccion = getDepartamentos().firstWhere((e) => e.nombre == 'Produccion');
-    return User(
-      id: 21,
-      username: 'peposuarez',
-      nombre: 'Pedro Suarez',
-      telefono: '6864349090',
-      correo: 'peposuarez@local.com',
-      rol: 'Operador',
-      departamento: produccion,
-      departamentosPermitidos: [produccion],
-      liderPermitido: false,
-      empleadoId: 21,
-    );
+    final users = getUsers();
+    return users[2]; // Pedro Juarez
   }
 
   List<Aviso> getAvisos() {
@@ -108,6 +99,238 @@ class LocalDataService {
         updatedAt: yesterday,
         content: 'Siguiente lunes será día festivo',
         showAt: today,
+      ),
+    ];
+  }
+
+  List<Empleado> getEmpleados() {
+    return [
+      Empleado(
+        id: 1,
+        usuario: 1,
+        nombre: 'Daniel Fernandez',
+        fechaNacimiento: DateTime(1990, 6, 3),
+        clabeInterbancaria: 'TEST',
+        numeroContacto: 'Martin Fernandez',
+        contactoEmergencia: '1234567890',
+        rfc: 'DF20342039',
+        curp: 'DF2034OFOK2039',
+        numeroSeguroSocial: '1234567890',
+        direccionCompleta: 'Av Noexiste 1234',
+        escolaridad: Escolaridad.preparatoria,
+        montoRetencionInfonavit: 0.0,
+        puesto: 1,
+        salarioDiario: 450.0,
+        antiguedad: 2,
+        estatus: EmpleadoEstatus.activo,
+      ),
+      Empleado(
+        id: 2,
+        usuario: 2,
+        nombre: 'Carla Gomez',
+        fechaNacimiento: DateTime(1986, 10, 21),
+        clabeInterbancaria: 'TEST',
+        numeroContacto: 'Maria Gomez',
+        contactoEmergencia: '1234567890',
+        rfc: 'DF20342039',
+        curp: 'DF2034OFOK2039',
+        numeroSeguroSocial: '1234567890',
+        direccionCompleta: 'Av Noexiste 1234',
+        escolaridad: Escolaridad.universidad,
+        montoRetencionInfonavit: 0.0,
+        puesto: 2,
+        salarioDiario: 650.0,
+        antiguedad: 4,
+        estatus: EmpleadoEstatus.activo,
+      ),
+      Empleado(
+        id: 3,
+        usuario: 3,
+        nombre: 'Pedro Juarez',
+        fechaNacimiento: DateTime(2001, 8, 10),
+        clabeInterbancaria: 'TEST',
+        numeroContacto: 'Andrea Cruz',
+        contactoEmergencia: '1234567890',
+        rfc: 'DF20342039',
+        curp: 'DF2034OFOK2039',
+        numeroSeguroSocial: '1234567890',
+        direccionCompleta: 'Av Noexiste 1234',
+        escolaridad: Escolaridad.universidad,
+        montoRetencionInfonavit: 0.0,
+        puesto: 3,
+        salarioDiario: 520.0,
+        antiguedad: 2,
+        estatus: EmpleadoEstatus.procesoFiniquito,
+      ),
+      Empleado(
+        id: 4,
+        usuario: 4,
+        nombre: 'Ana Martinez',
+        fechaNacimiento: DateTime(1994, 3, 3),
+        clabeInterbancaria: 'TEST',
+        numeroContacto: 'Carlos Godinez',
+        contactoEmergencia: '1234567890',
+        rfc: 'DF20342039',
+        curp: 'DF2034OFOK2039',
+        numeroSeguroSocial: '1234567890',
+        direccionCompleta: 'Av Noexiste 1234',
+        escolaridad: Escolaridad.universidad,
+        montoRetencionInfonavit: 0.0,
+        puesto: 4,
+        salarioDiario: 480.0,
+        antiguedad: 3,
+        estatus: EmpleadoEstatus.finiquitado,
+      ),
+      Empleado(
+        id: 5,
+        usuario: 5,
+        nombre: 'Luis Rodriguez',
+        fechaNacimiento: DateTime(1989, 3, 25),
+        clabeInterbancaria: 'TEST',
+        numeroContacto: 'Ramon Rodriguez',
+        contactoEmergencia: '1234567890',
+        rfc: 'DF20342039',
+        curp: 'DF2034OFOK2039',
+        numeroSeguroSocial: '1234567890',
+        direccionCompleta: 'Av Noexiste 1234',
+        escolaridad: Escolaridad.preparatoria,
+        montoRetencionInfonavit: 0.0,
+        puesto: 5,
+        salarioDiario: 580.0,
+        antiguedad: 5,
+        estatus: EmpleadoEstatus.activo,
+      ),
+      Empleado(
+        id: 6,
+        usuario: 6,
+        nombre: 'Sofia Lopez',
+        fechaNacimiento: DateTime(2003, 5, 12),
+        clabeInterbancaria: 'TEST',
+        numeroContacto: 'Daniela Lopez',
+        contactoEmergencia: '1234567890',
+        rfc: 'DF20342039',
+        curp: 'DF2034OFOK2039',
+        numeroSeguroSocial: '1234567890',
+        direccionCompleta: 'Av Noexiste 1234',
+        escolaridad: Escolaridad.universidad,
+        montoRetencionInfonavit: 0.0,
+        puesto: 6,
+        salarioDiario: 500.0,
+        antiguedad: 2,
+        estatus: EmpleadoEstatus.activo,
+      ),
+    ];
+  }
+
+  List<User> getUsers() {
+    final departamentos = getDepartamentos();
+    return [
+      User(
+        id: 1,
+        username: 'danielfernandez',
+        nombre: 'Daniel Fernandez',
+        telefono: '555-0101',
+        correo: 'daniel-f@local.com',
+        rol: 'Operador',
+        departamento: departamentos[11],
+        departamentosPermitidos: [departamentos[11]],
+        liderPermitido: false,
+        empleadoId: 1,
+      ),
+      User(
+        id: 2,
+        username: 'carlagomez',
+        nombre: 'Carla Gomez',
+        telefono: '555-0102',
+        correo: 'carla-g@local.com',
+        rol: 'Lider',
+        departamento: departamentos[11],
+        departamentosPermitidos: [departamentos[11]],
+        liderPermitido: true,
+        empleadoId: 2,
+      ),
+      User(
+        id: 3,
+        username: 'pedrojuarez',
+        nombre: 'Pedro Juarez',
+        telefono: '555-0103',
+        correo: 'pedro-j@local.com',
+        rol: 'Operador',
+        departamento: departamentos[11],
+        departamentosPermitidos: [departamentos[11]],
+        liderPermitido: false,
+        empleadoId: 3,
+      ),
+      User(
+        id: 4,
+        username: 'anamartinez',
+        nombre: 'Ana Martinez',
+        telefono: '555-0104',
+        correo: 'ana-m@local.com',
+        rol: 'Lider',
+        departamento: departamentos[12],
+        departamentosPermitidos: [departamentos[12]],
+        liderPermitido: true,
+        empleadoId: 4,
+      ),
+      User(
+        id: 5,
+        username: 'luisrodriguez',
+        nombre: 'Luis Rodriguez',
+        telefono: '555-0105',
+        correo: 'luis-r@local.com',
+        rol: 'Operador',
+        departamento: departamentos[1],
+        departamentosPermitidos: [departamentos[1]],
+        liderPermitido: false,
+        empleadoId: 5,
+      ),
+      User(
+        id: 6,
+        username: 'sofialopez',
+        nombre: 'Sofia Lopez',
+        telefono: '555-0106',
+        correo: 'sofia-l@local.com',
+        rol: 'Lider',
+        departamento: departamentos[5],
+        departamentosPermitidos: [departamentos[5]],
+        liderPermitido: true,
+        empleadoId: 6,
+      ),
+    ];
+  }
+
+  List<Puesto> getPuestos() {
+    return [
+      Puesto(
+        id: 1,
+        nombre: 'Operador de Maquinaria',
+        tipo: TipoPuesto.directo,
+      ),
+      Puesto(
+        id: 2,
+        nombre: 'Supervisor de Línea',
+        tipo: TipoPuesto.directo,
+      ),
+      Puesto(
+        id: 3,
+        nombre: 'Control de Calidad',
+        tipo: TipoPuesto.directo,
+      ),
+      Puesto(
+        id: 4,
+        nombre: 'Logística',
+        tipo: TipoPuesto.directo,
+      ),
+      Puesto(
+        id: 5,
+        nombre: 'Mantenimiento',
+        tipo: TipoPuesto.directo,
+      ),
+      Puesto(
+        id: 6,
+        nombre: 'Recursos Humanos',
+        tipo: TipoPuesto.administrativo,
       ),
     ];
   }
