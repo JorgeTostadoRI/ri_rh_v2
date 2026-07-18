@@ -61,19 +61,15 @@ class AuthRepositoryRemote extends AuthRepository {
   @override
   Future<bool> get isRH async {
     if (_isAuthenticated == null) {
-      _log.d('awaiting for authentication status');
       await _fetch();
     }
 
     final authenticated = _isAuthenticated ?? false;
     if (!authenticated) {
-      _log.d('not authenticated');
       return false;
     }
 
-    _log.d('authenticated, checking departamentos...');
     final departamentoNames = _currentUser!.departamentosPermitidos.map((dep) => dep.nombre).toList();
-    _log.d(departamentoNames);
     final hasDepartamentoRH = departamentoNames.contains('Recursos Humanos');
     _log.d('isRH: $hasDepartamentoRH');
     return hasDepartamentoRH;
@@ -180,6 +176,7 @@ class AuthRepositoryRemote extends AuthRepository {
       telefono: login.user.telefono,
       correo: login.user.correo,
       rol: login.user.rol,
+      // TODO: map all DepartamentoApiModel to Departamento
       departamento: Departamento(
         id: login.user.departamento.id,
         nombre: login.user.departamento.nombre,
@@ -187,7 +184,15 @@ class AuthRepositoryRemote extends AuthRepository {
         presupuesto: double.parse(login.user.departamento.presupuesto),
         divisa: login.user.departamento.divisa,
       ),
-      departamentosPermitidos: [],
+      departamentosPermitidos: login.user.departamentosPermitidos.map(
+        (dep) => Departamento(
+          id: dep.id,
+          nombre: dep.nombre,
+          descripcion: dep.descripcion,
+          presupuesto: double.parse(dep.presupuesto),
+          divisa: dep.divisa,
+        ),
+      ).toList(),
       liderPermitido: login.user.liderPermitido,
       empleadoId: login.user.empleadoId,
     );
