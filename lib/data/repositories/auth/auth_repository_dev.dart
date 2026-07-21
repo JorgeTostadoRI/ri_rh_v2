@@ -33,6 +33,7 @@ class AuthRepositoryDev extends AuthRepository {
       final matchedUser = _localDataService.getUsers().firstWhere((user) => user.username == username);
       _logger.d('logged in');
       _currentUser = matchedUser;
+      notifyListeners();
       return Result.ok(_currentUser!);
     } on StateError {
       return Result.error(Exception('Invalid credentials'));
@@ -55,6 +56,7 @@ class AuthRepositoryDev extends AuthRepository {
   Future<Result<void>> logout() async {
     _currentUser = null;
     _logger.d('logged out');
+    notifyListeners();
     return const Result.ok(null);
   }
 
