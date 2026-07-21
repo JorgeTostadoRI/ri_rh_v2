@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
@@ -19,6 +21,9 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final isAuthenticated = context.watch<AuthRepository>().isAuthenticated;
+    final isRH = context.watch<AuthRepository>().isRH;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       width: isCollapsed ? 70 : 240,
@@ -32,17 +37,54 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             child: Row(
               mainAxisAlignment: isCollapsed ? .center : .start,
               children: [
-                InkWell(
-                  onTap: () => context.go(Routes.login),
-                  child: Container(
-                    padding: EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                    ),
-                    child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
-                  ),
+                FutureBuilder(
+                  future: isAuthenticated,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasData) {
+                        // is authenticated
+                        if (snapshot.data!) {
+                          return InkWell(
+                            mouseCursor: SystemMouseCursors.click,
+                            onTap: () => context.go(Routes.home),
+                            child: Container(
+                              padding: EdgeInsets.all(4.0),
+                              decoration: BoxDecoration(
+                                color: primaryColor,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
+                            ),
+                          );
+                        } else {
+                          return InkWell(
+                            mouseCursor: SystemMouseCursors.click,
+                            onTap: () => context.go(Routes.login),
+                            child: Container(
+                              padding: EdgeInsets.all(4.0),
+                              decoration: BoxDecoration(
+                                color: primaryColor,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
+                            ),
+                          );
+                        }
+                      }
+                    }
+
+                    return Container(
+                      padding: EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
+                    );
+                  }
                 ),
                 if (!isCollapsed) ...[
                   const SizedBox(width: 10),
@@ -59,12 +101,34 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           ),
           Divider(color: dividerColor),
           // Navigation Items
-          _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
-          _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
-          _buildNavItem(LucideIcons.fileText, 'Actas', false, null),
-          _buildNavItem(LucideIcons.users, 'Empleados', false, Routes.empleados),
-          _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
-          _buildNavItem(LucideIcons.settings2, 'Automatización', false, null),
+          FutureBuilder(
+            future: isRH,
+            builder: (context, snapshot) {
+              // RH user sidebar
+              if (snapshot.hasData) {
+                if (snapshot.data == true) {
+                  return Column(
+                    children: [
+                      _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
+                      _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
+                      _buildNavItem(LucideIcons.fileText, 'Actas', false, null),
+                      _buildNavItem(LucideIcons.users, 'Empleados', false, Routes.empleados),
+                      _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
+                      _buildNavItem(LucideIcons.settings2, 'Automatización', false, null),
+                    ],
+                  );
+                }
+              }
+
+              return Column(
+                children: [
+                  _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
+                  _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
+                  _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
+                ],
+              );
+            },
+          ),
           const SizedBox(height: 20),
           IconButton.outlined(
             icon: Icon(

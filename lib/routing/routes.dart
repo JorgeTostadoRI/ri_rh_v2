@@ -2,6 +2,7 @@ import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 
 abstract final class Routes {
+  static const home = '/';
   static const login = '/login';
   static const ingreso = '/ingreso';
   static const incidencias = '/incidencias';
