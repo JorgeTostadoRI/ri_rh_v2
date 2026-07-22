@@ -8,7 +8,7 @@ part of 'empleado.dart';
 
 _Empleado _$EmpleadoFromJson(Map<String, dynamic> json) => _Empleado(
   id: (json['id'] as num?)?.toInt(),
-  usuario: (json['usuario'] as num).toInt(),
+  usuario: (json['usuario'] as num?)?.toInt() ?? 0,
   nombre: json['nombre_completo'] as String,
   fechaNacimiento: DateTime.parse(json['fecha_nacimiento'] as String),
   escolaridad: $enumDecode(_$EscolaridadEnumMap, json['escolaridad']),
