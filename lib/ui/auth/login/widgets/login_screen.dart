@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/field_label.dart';
@@ -19,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _username = TextEditingController();
   final _password = TextEditingController();
+  bool showPassword = false;
 
   void _onResult() {
     if (widget.viewmodel.login.completed) {
@@ -76,7 +78,16 @@ class _LoginScreenState extends State<LoginScreen> {
               FieldLabel(labelText: 'Contraseña', required: true),
               TextField(
                 controller: _password,
-                obscureText: true,
+                obscureText: !showPassword,
+                decoration: InputDecoration(
+                  suffixIcon: InkWell(
+                    onTap: () => setState(() => showPassword = !showPassword),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Icon(showPassword ? LucideIcons.eyeOff : LucideIcons.eye),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               Align(
