@@ -23,7 +23,6 @@ class _EnrollDialogState extends State<EnrollDialog> {
 
   void _listener() {
     if (widget.viewmodel.enroll.completed) {
-      Future.delayed(const Duration(seconds: 1), () => widget.viewmodel.enroll.clearResult());
       Navigator.pop(context);
     }
   }
@@ -88,16 +87,50 @@ class _EnrollDialogState extends State<EnrollDialog> {
             ),
           ),
           ListenableBuilder(
-            listenable: widget.viewmodel,
+            listenable: Listenable.merge([
+              widget.viewmodel,
+              widget.viewmodel.enroll,
+              widget.viewmodel.capture,
+            ]),
             builder: (context, _) {
+              if (widget.viewmodel.capture.error) {
+                return Column(
+                  spacing: 20,
+                  mainAxisSize: .min,
+                  children: [
+                    Text(
+                      widget.viewmodel.capture.result.toString(),
+                      style: TextStyle(color: errorColor),
+                    ),
+                    Text(
+                      'Ha ocurrido un error con la captura, por favor vuelva a intentarlo.',
+                      style: TextStyle(
+                        color: labelTextColor,
+                        fontSize: 14,
+                        height: 1.4
+                      ),
+                    ),
+                  ],
+                ); 
+              }
               if (widget.viewmodel.enroll.error) {
-                return Text(
-                  'Ha ocurrido un error con el registro, por favor vuelva a intentarlo.',
-                  style: TextStyle(
-                    color: labelTextColor,
-                    fontSize: 14,
-                    height: 1.4
-                  ),
+                return Column(
+                  spacing: 20,
+                  mainAxisSize: .min,
+                  children: [
+                    Text(
+                      widget.viewmodel.enroll.result.toString(),
+                      style: TextStyle(color: errorColor),
+                    ),
+                    Text(
+                      'Ha ocurrido un error con el registro, por favor vuelva a intentarlo.',
+                      style: TextStyle(
+                        color: labelTextColor,
+                        fontSize: 14,
+                        height: 1.4
+                      ),
+                    ),
+                  ],
                 ); 
               }
               if (widget.viewmodel.enroll.running) {
