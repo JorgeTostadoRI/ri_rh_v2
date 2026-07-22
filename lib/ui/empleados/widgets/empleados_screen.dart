@@ -63,7 +63,7 @@ class EmpleadosScreen extends StatelessWidget {
                     crossAxisCount: 2,
                     mainAxisSpacing: 24,
                     crossAxisSpacing: 24,
-                    mainAxisExtent: 310,
+                    mainAxisExtent: 350,
                   ),
                   itemBuilder: (context, index) {
                     return EmpleadoCard(

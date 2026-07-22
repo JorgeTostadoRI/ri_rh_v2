@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -67,11 +68,12 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
                         ),
                       ],
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(LucideIcons.pen),
-                      label: Text('Editar')
-                    ),
+                    if (kDebugMode)
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(LucideIcons.pen),
+                        label: Text('Editar')
+                      ),
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -135,7 +137,6 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
 
 class _DataCard extends StatelessWidget {
   const _DataCard({
-    super.key,
     required this.icon,
     required this.title,
     this.children = const <Widget>[],
@@ -176,7 +177,6 @@ class _DataCard extends StatelessWidget {
 
 class _IconContainer extends StatelessWidget {
   const _IconContainer({
-    super.key,
     required this.icon,
   });
 
