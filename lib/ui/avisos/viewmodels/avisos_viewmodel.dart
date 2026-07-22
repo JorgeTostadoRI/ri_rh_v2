@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -12,6 +13,7 @@ import 'package:table_calendar/table_calendar.dart';
 class AvisosViewmodel extends ChangeNotifier {
   AvisosViewmodel({
     required this._avisosRepository,
+    required this._authRepository,
   }) {
     final today = DateTime.now();
     _focusedDay = today;
@@ -23,6 +25,7 @@ class AvisosViewmodel extends ChangeNotifier {
   }
 
   final AvisosRepository _avisosRepository;
+  final AuthRepository _authRepository;
 
   final Logger _logger = Logger();
 
@@ -48,6 +51,9 @@ class AvisosViewmodel extends ChangeNotifier {
   List<Aviso> _avisos = [];
   List<Aviso> get avisos => _avisos;
 
+  bool _hasPermissions = false;
+  bool get hasPermissions => _hasPermissions;
+
   void onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     _selectedDay = selectedDay;
     _focusedDay = focusedDay;
@@ -60,6 +66,8 @@ class AvisosViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> _load(DateTime day) async {
+    _hasPermissions = await _authRepository.isRH;
+
     final isoString = day.toShortIsoString();
     if (_avisosCache[day] == null) {
       final result = await _avisosRepository.getAvisos(query: day);

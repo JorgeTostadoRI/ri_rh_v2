@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
@@ -15,6 +16,8 @@ import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart
 import 'package:ri_rh_v2/ui/empleados/widgets/empleados_screen.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/expediente_screen.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/huellas_empleado_screen.dart';
+import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
+import 'package:ri_rh_v2/ui/home/widgets/home_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
@@ -22,15 +25,24 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/new_incidencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/not_found_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.ingreso,
+  initialLocation: Routes.home,
   debugLogDiagnostics: true,
   refreshListenable: authRepository,
+  redirect: _redirect,
   routes: [
     ShellRoute(
       builder: (context, state, child) {
         return MainScaffold(child: child);
       },
       routes: [
+        GoRoute(
+          path: Routes.home,
+          builder: (context, state) {
+            return HomeScreen(
+              viewmodel: HomeViewmodel(authRepository: context.read()),
+            );
+          }
+        ),
         GoRoute(
           path: Routes.login,
           builder: (context, state) {
@@ -88,6 +100,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             return AvisosScreen(
               viewmodel: AvisosViewmodel(
                 avisosRepository: context.read(),
+                authRepository: context.read(),
               ),
             );
           },
@@ -143,3 +156,49 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     ),
   ],
 );
+
+Future<String?> _redirect(BuildContext context, GoRouterState state) async {
+  final loggedIn = await context.read<AuthRepository>().isAuthenticated;
+  final isRH = await context.read<AuthRepository>().isRH;
+  final loggingIn = state.matchedLocation == Routes.login;
+  
+  // redirect if the user is not logged in and trying to access a protected route
+  if (!loggedIn) {
+    if (_requiresLogin(state.uri.toString())) {
+      return Routes.login;
+    }
+    return null;
+  }
+
+  // if the user is logged in but still on the login page, send them to
+  // the home page
+  if (loggingIn) {
+    return Routes.home;
+  }
+
+  if (_requiresRole(state.uri.toString()) && !isRH) {
+    return Routes.home;
+  }
+
+  // no need to redirect at all
+  return null;
+}
+
+bool _requiresLogin(String location) {
+  final uri = Uri.parse(location);
+  final path = uri.path;
+
+  if (path == Routes.home) return true;
+  if (path.startsWith(Routes.empleados)) return true;
+
+  return false;
+}
+
+bool _requiresRole(String location) {
+  final uri = Uri.parse(location);
+  final path = uri.path;
+
+  if (path.startsWith(Routes.empleados)) return true;
+
+  return false;
+}

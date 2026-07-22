@@ -12,37 +12,56 @@ class AuthRepositoryDev extends AuthRepository {
   final LocalDataService _localDataService;
 
   final Logger _logger = Logger();
+  User? _currentUser;
 
   @override
-  Future<bool> get isAuthenticated => Future.value(_localDataService.isAuthenticated);
+  Future<bool> get isAuthenticated => Future.value(_currentUser != null);
+
+  @override
+  Future<bool> get isRH async {
+    if (_currentUser == null) {
+      return false;
+    }
+
+    final departamentos = _currentUser!.departamentosPermitidos.map((dep) => dep.nombre).toSet();
+    return departamentos.contains('Recursos Humanos');
+  }
 
   @override
   Future<Result<User>> login({required String username, required String password}) async {
-    _localDataService.isAuthenticated = true;
-    _logger.d('logged in');
-    final user = _localDataService.getUser();
-    return Result.ok(user);
+    try {
+      final matchedUser = _localDataService.getUsers().firstWhere((user) => user.username == username);
+      _logger.d('logged in');
+      _currentUser = matchedUser;
+      notifyListeners();
+      return Result.ok(_currentUser!);
+    } on StateError {
+      return Result.error(Exception('Invalid credentials'));
+    }
   }
 
   @override
   Future<Result<User>> loginViaChallenge(String username) async {
-    _localDataService.isAuthenticated = true;
-    _logger.d('logged in');
-    final user = _localDataService.getUser();
-    return Result.ok(user);
+    try {
+      final matchedUser = _localDataService.getUsers().firstWhere((user) => user.username == username);
+      _logger.d('logged in');
+      _currentUser = matchedUser;
+      return Result.ok(_currentUser!);
+    } on StateError {
+      return Result.error(Exception('Failed challenge'));
+    }
   }
 
   @override
   Future<Result<void>> logout() async {
-    _localDataService.isAuthenticated = false;
+    _currentUser = null;
     _logger.d('logged out');
+    notifyListeners();
     return const Result.ok(null);
   }
 
   @override
   User? getCurrentUser() {
-    final authenticated = _localDataService.isAuthenticated;
-    if (!authenticated) return null;
-    return _localDataService.getUser();
+    return _currentUser;
   }
 }

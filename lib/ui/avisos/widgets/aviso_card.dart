@@ -14,8 +14,8 @@ class AvisoCard extends StatefulWidget {
   });
 
   final Aviso aviso;
-  final void Function(Aviso aviso) onUpdate;
-  final void Function(int id) onDelete;
+  final void Function(Aviso aviso)? onUpdate;
+  final void Function(int id)? onDelete;
 
   @override
   State<AvisoCard> createState() => _AvisoCardState();
@@ -72,31 +72,33 @@ class _AvisoCardState extends State<AvisoCard> {
                   ),
                 ),
                 if (_hovering) ...[
-                  IconButton(
-                    iconSize: 16,
-                    tooltip: 'Editar',
-                    onPressed: () async {
-                      final updatedAviso = await showDialog<Aviso>(
-                        context: context,
-                        builder: (context) {
-                          return AvisoFormDialog(
-                            aviso: widget.aviso,
-                            day: widget.aviso.showAt,
-                          );
+                  if (widget.onUpdate != null)
+                    IconButton(
+                      iconSize: 16,
+                      tooltip: 'Editar',
+                      onPressed: () async {
+                        final updatedAviso = await showDialog<Aviso>(
+                          context: context,
+                          builder: (context) {
+                            return AvisoFormDialog(
+                              aviso: widget.aviso,
+                              day: widget.aviso.showAt,
+                            );
+                          }
+                        );
+                        if (updatedAviso != null) {
+                          widget.onUpdate!(updatedAviso);
                         }
-                      );
-                      if (updatedAviso != null) {
-                        widget.onUpdate(updatedAviso);
-                      }
-                    },
-                    icon: Icon(LucideIcons.pen),
-                  ),
-                  IconButton(
-                    iconSize: 16,
-                    tooltip: 'Eliminar',
-                    onPressed: () => widget.onDelete(widget.aviso.id!),
-                    icon: Icon(LucideIcons.trash),
-                  ),
+                      },
+                      icon: Icon(LucideIcons.pen),
+                    ),
+                  if (widget.onDelete != null)
+                    IconButton(
+                      iconSize: 16,
+                      tooltip: 'Eliminar',
+                      onPressed: () => widget.onDelete!(widget.aviso.id!),
+                      icon: Icon(LucideIcons.trash),
+                    ),
                 ],
               ],
             ),

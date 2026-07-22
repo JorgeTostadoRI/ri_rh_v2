@@ -5,8 +5,6 @@ import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 
 class LocalDataService {
-  bool isAuthenticated = false;
-
   List<Departamento> getDepartamentos() {
     return [
       Departamento(
@@ -61,11 +59,6 @@ class LocalDataService {
         id: 13, nombre: 'Planeacion', descripcion: 'Planeacion', presupuesto: 1791.25, divisa: Divisa.USD,
       ),
     ];
-  }
-
-  User getUser() {
-    final users = getUsers();
-    return users[2]; // Pedro Juarez
   }
 
   List<Aviso> getAvisos() {
