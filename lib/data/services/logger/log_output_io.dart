@@ -13,8 +13,6 @@ Future<LogOutput> getLogOutput() async {
   final fileOutput = AdvancedFileOutput(
     path: logsDir,
     maxRotatedFilesCount: 10,
-    fileHeader: '---LOGS START---',
-    fileFooter: '---LOGS END---',
     writeImmediately: [
       Level.warning,
       Level.error,

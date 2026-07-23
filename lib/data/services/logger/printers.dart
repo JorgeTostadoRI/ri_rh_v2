@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:logger/logger.dart';
 
+/// Output a simple message.
+/// ```
+/// [WARN] 2026-07-23T13:53:09.004428 | Login failed | ERROR: Exception: Invalid credentials
+/// ```
 class CustomSimplePrinter extends LogPrinter {
   static final levelPrefixes = {
     Level.trace: '[TRACE]',
@@ -48,5 +52,61 @@ class CustomSimplePrinter extends LogPrinter {
     } else {
       return finalMessage.toString();
     }
+  }
+}
+
+/// Outputs a [LogEvent] in JSON:
+/// ```
+/// {"level"="debug","msg"="hi there" "time"="2015-03-26T01:27:38-04:00" username="johndoe" number=8}
+/// ```
+class LogJsonPrinter extends LogPrinter {
+  static final levelPrefixes = {
+    Level.trace: 'trace',
+    Level.debug: 'debug',
+    Level.info: 'info',
+    Level.warning: 'warning',
+    Level.error: 'error',
+    Level.fatal: 'fatal',
+  };
+
+  static final redactedKeys = {
+    'password',
+    'phone',
+    'creditcard',
+    'credit_card',
+    'token',
+    'api_token',
+    'nss',
+    'curp',
+    'rfc',
+  };
+
+  @override
+  List<String> log(LogEvent event) {
+    final Map<String, dynamic> output = {
+      'level': levelPrefixes[event.level],
+      'time': event.time.toIso8601String(),
+    };
+    if (event.message is String) {
+      output.addAll({'msg': event.message});
+    } else if (event.message is Map) {
+      event.message.entries.forEach((entry) {
+        if (redactedKeys.contains(entry.key)) {
+          output.addAll({entry.key: "[REDACTED]"});
+          return;
+        }
+
+        output.addAll({entry.key: entry.value});
+      });
+    }
+    if (event.error != null) {
+      output.addAll({'error': '${event.error}'});
+    }
+    if (event.stackTrace != null) {
+      output.addAll({'stacktrace': '${event.stackTrace}'});
+    }
+
+    final encoder = const JsonEncoder.withIndent(null);
+    return [encoder.convert(output)];
   }
 }

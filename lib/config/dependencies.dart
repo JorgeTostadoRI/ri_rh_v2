@@ -48,7 +48,7 @@ List<SingleChildWidget> get _sharedProviders {
 }
 
 Future<List<SingleChildWidget>> get providersLocal async {
-  await LogManager.init(debug: false);
+  await LogManager.init();
 
   return [
     ..._sharedProviders,

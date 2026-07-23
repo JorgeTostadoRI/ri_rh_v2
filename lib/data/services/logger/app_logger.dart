@@ -105,7 +105,7 @@ class LogManager {
       // This will only output in platforms that use dart.io
       final fileLogger = Logger(
         filter: filter,
-        printer: CustomSimplePrinter(colors: false),
+        printer: LogJsonPrinter(),
         output: logOutput,
         level: level,
       );
