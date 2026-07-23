@@ -24,37 +24,40 @@ class EmpleadoCard extends StatelessWidget {
           mainAxisAlignment: .start,
           mainAxisSize: .min,
           children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
+            Column(
+              crossAxisAlignment: .start,
               children: [
-                Column(
+                Row(
+                  mainAxisAlignment: .spaceBetween,
                   crossAxisAlignment: .start,
                   children: [
-                    Text(
-                      empleado.nombre,
-                      style: TextTheme.of(context).headlineSmall,
+                    Expanded(
+                      child: Text(
+                        empleado.nombre,
+                        style: TextTheme.of(context).headlineSmall,
+                      ),
                     ),
-                    Row(
-                      spacing: 6,
-                      mainAxisAlignment: .start,
-                      children: [
-                        Icon(
-                          LucideIcons.briefcase,
-                          color: primaryColor,
-                        ),
-                        // TODO: obtener nombre de puesto
-                        Text(
-                          '${empleado.puesto}',
-                          style: TextTheme.of(context).labelMedium?.copyWith(
-                            color: primaryColor,
-                            fontWeight: .w700,
-                          ),
-                        ),
-                      ],
+                    _StatusChip(status: empleado.estatus),
+                  ],
+                ),
+                Row(
+                  spacing: 6,
+                  mainAxisAlignment: .start,
+                  children: [
+                    Icon(
+                      LucideIcons.briefcase,
+                      color: primaryColor,
+                    ),
+                    // TODO: obtener nombre de puesto
+                    Text(
+                      '${empleado.puesto}',
+                      style: TextTheme.of(context).labelMedium?.copyWith(
+                        color: primaryColor,
+                        fontWeight: .w700,
+                      ),
                     ),
                   ],
                 ),
-                _StatusChip(status: empleado.estatus),
               ],
             ),
             const SizedBox(height: 24),
@@ -88,7 +91,7 @@ class EmpleadoCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            Spacer(),
             Container(
               padding: const EdgeInsets.only(top: 24),
               decoration: BoxDecoration(
@@ -109,7 +112,13 @@ class EmpleadoCard extends StatelessWidget {
                     child: Text('Ver Expediente', style: TextStyle(fontSize: 12)),
                   ),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Esta funcionalidad no se encuentra disponible.'),
+                        ),
+                      );
+                    },
                     child: Text('Estadísticas', style: TextStyle(fontSize: 12)),
                   ),
                 ],
@@ -124,7 +133,6 @@ class EmpleadoCard extends StatelessWidget {
 
 class _StatusChip extends StatelessWidget {
   const _StatusChip({
-    super.key,
     required this.status,
   });
 
@@ -177,7 +185,6 @@ class _StatusChip extends StatelessWidget {
 
 class _AttributeLabel extends StatelessWidget {
   const _AttributeLabel({
-    super.key,
     required this.name,
     required this.icon,
     required this.value,

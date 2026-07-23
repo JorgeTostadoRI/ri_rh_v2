@@ -23,6 +23,8 @@ class HuellasEmpleadoScreen extends StatelessWidget {
       builder: (context) => EnrollDialog(viewmodel: viewmodel), 
     ) ?? false;
     viewmodel.clearSelectedFinger();
+    viewmodel.enroll.clearResult();
+    viewmodel.capture.clearResult();
   }
 
   Future<void> onDeleteHandler(BuildContext context, Finger finger) async {

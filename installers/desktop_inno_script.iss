@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "RI Recursos Humanos"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.1.1"
 #define MyAppPublisher "RNTV Comercializadora de Componentes Industriales"
 #define MyAppExeName "ri_rh_v2.exe"
 
@@ -32,7 +32,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\installers
-OutputBaseFilename=ri_rh_v0.1.0_setup
+OutputBaseFilename=ri_rh_v{#MyAppVersion}_setup
 SolidCompression=yes
 WizardStyle=modern dynamic
 

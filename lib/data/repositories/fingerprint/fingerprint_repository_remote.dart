@@ -93,28 +93,32 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   @override
   Future<Result<Finger>> enroll(Finger finger, List<Uint8List> templates) async {
     if (templates.length < 3) {
-      throw Exception('3 templates are needed for enrollment');
+      return Result.error(Exception('3 templates are needed for enrollment'));
     }
 
-    final merged = _fingerScanService.merge(templates[0], templates[1], templates[2]);
-    final huella = HuellaApiModel(
-      template: base64.encode(merged),
-      hand: finger.hand.apiValue,
-      finger: finger.fingerName.apiValue,
-      usuario: finger.user,
-    );
-    final postResult = await _apiClient.postHuella(huella);
-    switch (postResult) {
-      case Error():
-        return Result.error(postResult.error);
-      case Ok():
-        _fingerScanService.add(merged, postResult.value.id!);
-        _fidMap[postResult.value.id!] = (postResult.value.usuario, postResult.value.userInfo!.username);
-        final fingerWithValues = finger.copyWith(
-          id: postResult.value.id!,
-          scanned: true,
-        );
-        return Result.ok(fingerWithValues);
+    try {
+      final merged = _fingerScanService.merge(templates[0], templates[1], templates[2]);
+      final huella = HuellaApiModel(
+        template: base64.encode(merged),
+        hand: finger.hand.apiValue,
+        finger: finger.fingerName.apiValue,
+        usuario: finger.user,
+      );
+      final postResult = await _apiClient.postHuella(huella);
+      switch (postResult) {
+        case Error():
+          return Result.error(postResult.error);
+        case Ok():
+          _fingerScanService.add(merged, postResult.value.id!);
+          _fidMap[postResult.value.id!] = (postResult.value.usuario, postResult.value.userInfo!.username);
+          final fingerWithValues = finger.copyWith(
+            id: postResult.value.id!,
+            scanned: true,
+          );
+          return Result.ok(fingerWithValues);
+      }
+    } catch (e) {
+      return Result.error(Exception(e.toString()));
     }
   }
 }

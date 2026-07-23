@@ -17,6 +17,7 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     required this._fingerprintRepository,
   }) {
     load = Command1(_load)..execute(empleadoId);
+    capture = Command1(_capture);
     enroll = Command1(_enroll);
     delete = Command1(_delete);
   }
@@ -27,6 +28,7 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
 
   final Logger _log = Logger();
   late final Command1<void, int> load;
+  late final Command1<void, Uint8List> capture;
   late final Command1<void, Finger> enroll;
   late final Command1<void, Finger> delete;
 
@@ -55,8 +57,11 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     return _fingerprintRepository.capture()
     .take(3) // Only listen for 3 captures
     .listen(
-      onCaptureData,
+      (Uint8List template) => capture.execute(template),
       onDone: () => enroll.execute(_selectedFinger!),
+      onError: (Object e) {
+        _log.e('Failed to capture fingerprint', error: e);
+      },
     );
   }
 
@@ -135,16 +140,18 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     ];
   }
 
-  void onCaptureData(Uint8List template) {
+  Future<Result<void>> _capture(Uint8List template) async {
     // Validate that this finger has not been registered previously
     if (_captures.isEmpty) {
       final match = _fingerprintRepository.matchFingerprintToUser(template) != null;
       if (match) {
-        throw Exception('This fingerprint is already registered');
+        _captures.clear();
+        return Result.error(Exception('This fingerprint is already registered'));
       }
     }
 
     _captures.add(template);
     notifyListeners();
+    return Result.ok(null);
   }
 }

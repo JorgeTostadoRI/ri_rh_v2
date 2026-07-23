@@ -9,18 +9,18 @@ class EmpleadosViewmodel extends ChangeNotifier {
   EmpleadosViewmodel({
     required this._empleadosRepository,
   }) {
-    load = Command0(_load)..execute();
+    load = Command1(_load)..execute(null);
   }
 
   final EmpleadosRepository _empleadosRepository;
 
   final Logger _log = Logger();
-  late final Command0 load;
+  late final Command1<void, String?> load;
 
   List<Empleado> _empleados = [];
   List<Empleado> get empleados => _empleados;
 
-  Future<Result<void>> _load() async {
+  Future<Result<void>> _load(String? search) async {
     final result = await _empleadosRepository.getEmpleados();
     switch (result) {
       case Error():
@@ -28,6 +28,9 @@ class EmpleadosViewmodel extends ChangeNotifier {
         _empleados = [];
       case Ok():
         _empleados = result.value;
+        if (search != null && search.isNotEmpty) {
+          _empleados = _empleados.where((emp) => emp.nombre.toLowerCase().contains(search.toLowerCase())).toList();
+        }
     }
     notifyListeners();
     return result;

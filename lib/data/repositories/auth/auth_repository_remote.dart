@@ -71,7 +71,6 @@ class AuthRepositoryRemote extends AuthRepository {
 
     final departamentoNames = _currentUser!.departamentosPermitidos.map((dep) => dep.nombre).toList();
     final hasDepartamentoRH = departamentoNames.contains('Recursos Humanos');
-    _log.d('isRH: $hasDepartamentoRH');
     return hasDepartamentoRH;
   }
 
