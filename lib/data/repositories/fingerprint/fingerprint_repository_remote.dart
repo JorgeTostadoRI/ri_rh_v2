@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class FingerprintRepositoryRemote extends FingerprintRepository {
   FingerprintRepositoryRemote({
+    required this._log,
     required this._fingerScanService,
     required this._apiClient,
   });
@@ -18,7 +19,7 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   final FingerScanService _fingerScanService;
   final ApiClient _apiClient;
 
-  final Logger _log = Logger();
+  final AppLogger _log;
 
   final Map<int, (int, String)> _fidMap = {};
 
@@ -45,7 +46,7 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
     _initialized = true;
     switch (result) {
       case Error():
-        _log.w('Failed to obtain fingerprints from API');
+        _log.warning('FingerprintRepository | Failed to obtain fingerprints from API');
         return;
       case Ok():
         for (final huella in result.value) {
@@ -81,7 +82,7 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
     final result = await _apiClient.deleteHuella(id);
     switch (result) {
       case Error():
-        _log.w('Failed to delete fingerprint', error: result.error);
+        _log.warning('FingerprintRepository | Failed to delete fingerprint', error: result.error);
         return result;
       case Ok():
         _fidMap.remove(id);

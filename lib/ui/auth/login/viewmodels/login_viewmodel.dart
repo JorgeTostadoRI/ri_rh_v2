@@ -1,10 +1,11 @@
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class LoginViewmodel {
   LoginViewmodel({
+    required this._log,
     required this._authRepository,
   }) {
     login = Command1<void, (String username, String password)>(_login);
@@ -12,7 +13,7 @@ class LoginViewmodel {
 
   final AuthRepository _authRepository;
 
-  final Logger _logger = Logger();
+  final AppLogger _log;
 
   late Command1 login;
 
@@ -27,7 +28,7 @@ class LoginViewmodel {
       case Ok():
         break;
       case Error():
-        _logger.w('Login failed', error: result.error);
+        _log.warning('LoginViewmodel | Login failed', error: result.error);
     }
     return result;
   }

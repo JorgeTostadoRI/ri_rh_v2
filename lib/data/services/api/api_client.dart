@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
@@ -14,14 +14,17 @@ import 'package:ri_rh_v2/utils/result.dart';
 typedef AuthHeaderProvider = String? Function();
 
 class ApiClient {
-  ApiClient({Dio Function()? dioFactory})
-      : _dioFactory = dioFactory ?? (() => Dio());
+  ApiClient({
+    required this._log,
+    Dio Function()? dioFactory,
+  })
+    : _dioFactory = dioFactory ?? (() => Dio());
 
   final Dio Function() _dioFactory;
 
   AuthHeaderProvider? _authHeaderProvider;
 
-  final Logger _logger = Logger();
+  final AppLogger _log;
 
   set authHeaderProvider(AuthHeaderProvider authHeaderProvider) {
     _authHeaderProvider = authHeaderProvider;
@@ -50,18 +53,12 @@ class ApiClient {
           )
       });
       final response = await dio.post('/api/rh/asistencias/', data: formData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final asistencia = AsistenciaApiModel.fromJson(response.data);
-        return Result.ok(asistencia);
-      } else {
-        _logger.e('Invalid response', error: response.data);
-        return Result.error(HttpException("Invalid response"));
-      }
+      return Result.ok(AsistenciaApiModel.fromJson(response.data));
     } on DioException catch (e) {
-      _logger.e('DioException posting asistencia', error: e.response);
+      _log.error('ApiClient | DioException posting asistencia', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception posting asistencia', error: e);
+      _log.error('ApiClient | Exception posting asistencia', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -100,14 +97,14 @@ class ApiClient {
         );
         return Result.ok(result);
       } else {
-        _logger.e('Invalid response', error: response.data);
+        _log.error('ApiClient | Invalid response', error: response.data);
         return Result.error(HttpException("Invalid response"));
       }
     } on DioException catch (e) {
-      _logger.e('DioException posting incidencia', error: e.response);
+      _log.error('ApiClient | DioException posting incidencia', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception posting incidencia', error: e);
+      _log.error('ApiClient | Exception posting incidencia', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -133,10 +130,10 @@ class ApiClient {
         .toList();
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException getting avisos', error: e.response);
+      _log.error('ApiClient | DioException getting avisos', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception getting avisos', error: e);
+      _log.error('ApiClient | Exception getting avisos', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -162,10 +159,10 @@ class ApiClient {
       final result = Aviso.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException getting avisos', error: e.response);
+      _log.error('ApiClient | DioException getting avisos', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception getting avisos', error: e);
+      _log.error('ApiClient | Exception getting avisos', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -190,10 +187,10 @@ class ApiClient {
       final result = Aviso.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException getting avisos', error: e.response);
+      _log.error('ApiClient | DioException getting avisos', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception getting avisos', error: e);
+      _log.error('ApiClient | Exception getting avisos', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -207,10 +204,10 @@ class ApiClient {
       await dio.delete('/api/rh/avisos/$id/');
       return Result.ok(null);
     } on DioException catch (e) {
-      _logger.e('DioException getting avisos', error: e.response);
+      _log.error('ApiClient | DioException getting avisos', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception getting avisos', error: e);
+      _log.error('ApiClient | Exception getting avisos', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -228,10 +225,10 @@ class ApiClient {
       .toList();
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException getting huellas', error: e.response);
+      _log.error('ApiClient | DioException getting huellas', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception getting huellas', error: e);
+      _log.error('ApiClient | Exception getting huellas', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -246,10 +243,10 @@ class ApiClient {
       final result = HuellaApiModel.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException posting huella', error: e.response);
+      _log.error('ApiClient | DioException posting huella', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception posting huella', error: e);
+      _log.error('ApiClient | Exception posting huella', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -263,10 +260,10 @@ class ApiClient {
       await dio.delete('/api/rh/huellas/$id/');
       return const Result.ok(null);
     } on DioException catch (e) {
-      _logger.e('DioException deleting huella', error: e.response);
+      _log.error('ApiClient | DioException deleting huella', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception deleting huella', error: e);
+      _log.error('ApiClient | Exception deleting huella', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -282,10 +279,10 @@ class ApiClient {
       final result = Empleado.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException retrieving empleado', error: e.response);
+      _log.error('ApiClient | DioException retrieving empleado', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception retrieving empleado', error: e);
+      _log.error('ApiClient | Exception retrieving empleado', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -302,10 +299,10 @@ class ApiClient {
       .toList();
       return Result.ok(result);
     } on DioException catch (e) {
-      _logger.e('DioException listing empleados', error: e.response);
+      _log.error('ApiClient | DioException listing empleados', error: e.response);
       return Result.error(e);
     } on Exception catch (e) {
-      _logger.e('Exception listing empleados', error: e);
+      _log.error('ApiClient | Exception listing empleados', error: e);
       return Result.error(e);
     } finally {
       dio.close();

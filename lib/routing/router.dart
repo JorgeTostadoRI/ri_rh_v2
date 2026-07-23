@@ -47,7 +47,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.login,
           builder: (context, state) {
             return LoginScreen(
-              viewmodel: LoginViewmodel(authRepository: context.read()),
+              viewmodel: LoginViewmodel(
+                log: context.read(),
+                authRepository: context.read(),
+              ),
             );
           }
         ),
@@ -56,6 +59,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           builder: (context, state) {
             return AsistenciaScreen(
               viewmodel: AsistenciaViewmodel(
+                log: context.read(),
                 authRepository: context.read(),
                 asistenciaRepository: context.read(),
                 avisosRepository: context.read(),
@@ -85,7 +89,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 return NewIncidenciaScreen(
                   category: incidenciasViewmodel.categories[categoryIndex],
                   viewmodel: NewIncidenciaViewmodel(
-                    authRepository: authRepository,
+                    log: context.read(),
+                    authRepository: context.read(),
                     incidenciasRepository: context.read(),
                     fingerprintRepository: context.read(),
                   ),
@@ -99,6 +104,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           builder: (context, state) {
             return AvisosScreen(
               viewmodel: AvisosViewmodel(
+                log: context.read(),
                 avisosRepository: context.read(),
                 authRepository: context.read(),
               ),

@@ -1,9 +1,9 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -12,6 +12,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 class AvisosViewmodel extends ChangeNotifier {
   AvisosViewmodel({
+    required this._log,
     required this._avisosRepository,
     required this._authRepository,
   }) {
@@ -24,10 +25,9 @@ class AvisosViewmodel extends ChangeNotifier {
     delete = Command1(_delete);
   }
 
+  final AppLogger _log;
   final AvisosRepository _avisosRepository;
   final AuthRepository _authRepository;
-
-  final Logger _logger = Logger();
 
   late Command1<void, DateTime> load;
 
@@ -76,10 +76,10 @@ class AvisosViewmodel extends ChangeNotifier {
         case Ok():
           _avisosCache[day] = result.value;
           _avisos = _avisosCache[day]!;
-          _logger.d('Cached avisos for $isoString');
+          _log.debug('AvisosViewmodel | Cached avisos for $isoString');
         case Error():
           _avisos = [];
-          _logger.w('Error obtaining avisos for $isoString', error: result.error);
+          _log.warning('AvisosViewmodel | Error obtaining avisos for $isoString', error: result.error);
       }
       notifyListeners();
       return result;
@@ -97,7 +97,7 @@ class AvisosViewmodel extends ChangeNotifier {
         _avisos.add(result.value);
         _avisosCache[_focusedDay] = _avisos;
       case Error():
-        _logger.e('Error creating aviso', error: result.error);
+        _log.error('AvisosViewmodel | Error creating aviso', error: result.error);
     }
     notifyListeners();
     return result;
@@ -111,7 +111,7 @@ class AvisosViewmodel extends ChangeNotifier {
         _avisos.add(result.value);
         _avisosCache[_focusedDay] = _avisos;
       case Error():
-        _logger.e('Error editing aviso', error: result.error);
+        _log.error('AvisosViewmodel | Error editing aviso', error: result.error);
     }
     notifyListeners();
     return result;
@@ -124,7 +124,7 @@ class AvisosViewmodel extends ChangeNotifier {
         _avisos.removeWhere((aviso) => aviso.id == id);
         _avisosCache[_focusedDay] = _avisos;
       case Error():
-        _logger.e('Error deleting aviso', error: result.error);
+        _log.error('AvisosViewmodel | Error deleting aviso', error: result.error);
     }
     notifyListeners();
     return result;

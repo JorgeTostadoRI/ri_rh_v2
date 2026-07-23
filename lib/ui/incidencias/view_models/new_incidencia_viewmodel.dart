@@ -3,10 +3,10 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
@@ -16,6 +16,7 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 class NewIncidenciaViewmodel extends ChangeNotifier {
   NewIncidenciaViewmodel({
+    required this._log,
     required this._authRepository,
     required this._incidenciasRepository,
     required this._fingerprintRepository,
@@ -26,15 +27,15 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     .listen(
       (template) => login.execute(template),
       onError: (e) {
-        _log.e('Capture stream error', error: e);
+        _log.error('NewIncidenciaViewmodel | Capture stream error', error: e);
       }
     );
   }
 
+  final AppLogger _log;
   final AuthRepository _authRepository;
   final IncidenciasRepository _incidenciasRepository;
   final FingerprintRepository _fingerprintRepository;
-  final Logger _log = Logger();
 
   late Command1<void, Uint8List> login;
 
@@ -109,7 +110,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
       case Ok():
         break;
       case Error():
-        _log.w('Failed to create incidencia');
+        _log.warning('NewIncidenciaViewmodel | Failed to create incidencia', error: incidenciaResult.error);
     }
 
     _authRepository.logout();
@@ -119,7 +120,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   Future<Result<void>> _login(Uint8List template) async {
     final userinfo = _fingerprintRepository.matchFingerprintToUser(template);
     if (userinfo == null) {
-      _log.w('Failed to match fingerprint');
+      _log.warning('NewIncidenciaViewmodel | Failed to match fingerprint');
       return Result.error(Exception('Failed to match fingerprint'));
     }
 

@@ -1,8 +1,15 @@
 import 'dart:typed_data';
 
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+
 import 'finger_scan_service.dart';
 
 class FingerScanServiceImpl extends FingerScanService {
+  FingerScanServiceImpl({
+    required this._log,
+  });
+  
+  final AppLogger _log;
   final _errorMessage = 'This is a stub, not a real implementation of FingerScanService';
 
   @override

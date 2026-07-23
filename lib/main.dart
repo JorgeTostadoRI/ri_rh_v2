@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/routing/router.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/main_development.dart' as development;
@@ -45,6 +46,7 @@ class _MainAppState extends State<MainApp> {
       onExitRequested: () async {
         _cleanUpFingerScanner();
         await _logout();
+        await LogManager.close();
         return AppExitResponse.exit;
       }
     );

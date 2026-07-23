@@ -1,19 +1,23 @@
 import 'dart:typed_data';
 
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 
 class FingerScanServiceImpl extends FingerScanService {
-  final Logger _logger = Logger();
+  FingerScanServiceImpl({
+    required this._log,
+  });
+
+  final AppLogger _log;
 
   @override
   void init() {
-    _logger.d('Initialized mock FingerScanService');
+    _log.debug('FingerScanService | Initialized');
   }
 
   @override
   void dispose() {
-    _logger.d('Disposed mock FingerScanService');
+    _log.debug('FingerScanService | Disposed');
   }
 
   @override

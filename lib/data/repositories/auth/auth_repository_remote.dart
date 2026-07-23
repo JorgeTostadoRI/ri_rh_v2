@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
@@ -7,6 +6,7 @@ import 'package:ri_rh_v2/data/services/api/models/auth/login_request/login_reque
 import 'package:ri_rh_v2/data/services/api/models/auth/login_response/login_response.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/verify_challenge/verify_challenge_request.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -14,6 +14,7 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
+    required this._log,
     required this._apiClient,
     required this._authApiClient,
     required this._sharedPreferencesService,
@@ -22,6 +23,7 @@ class AuthRepositoryRemote extends AuthRepository {
     _apiClient.authHeaderProvider = _authHeaderProvider;
   }
 
+  final AppLogger _log;
   final AuthApiClient _authApiClient;
   final ApiClient _apiClient;
   final SharedPreferencesService _sharedPreferencesService;
@@ -30,7 +32,6 @@ class AuthRepositoryRemote extends AuthRepository {
   bool? _isAuthenticated;
   String? _authToken;
   User? _currentUser;
-  final _log = Logger();
 
   /// Fetch token from shared preferences
   Future<void> _fetch() async {
@@ -40,8 +41,8 @@ class AuthRepositoryRemote extends AuthRepository {
         _authToken = result.value;
         _isAuthenticated = result.value != null;
       case Error<String?>():
-        _log.e(
-          'Failed to fech Token from SharedPreferences',
+        _log.error(
+          'AuthRepository | Failed to fech Token from SharedPreferences',
           error: result.error,
         );
     }
@@ -85,10 +86,10 @@ class AuthRepositoryRemote extends AuthRepository {
       );
       switch (result) {
         case Ok<LoginResponse>():
-          _log.i('User logged in via password');
+          _log.info('AuthRepository | User logged in via password');
           return _saveCredentials(result.value);
         case Error<LoginResponse>():
-          _log.w('Error logging in', error: result.error);
+          _log.warning('AuthRepository | Error logging in', error: result.error);
           return Result.error(result.error);
       }
     } finally {
@@ -104,7 +105,7 @@ class AuthRepositoryRemote extends AuthRepository {
         case Ok():
           break;
         case Error():
-          _log.w('Failed to create challenge', error: challengeRes.error);
+          _log.warning('AuthRepository | Failed to create challenge', error: challengeRes.error);
           return Result.error(challengeRes.error);
       }
 
@@ -112,10 +113,10 @@ class AuthRepositoryRemote extends AuthRepository {
       final result = await _authApiClient.verifyChallenge(request);
       switch (result) {
         case Ok():
-          _log.i('User logged in via challenge');
+          _log.info('AuthRepository | User logged in via challenge');
           return _saveCredentials(result.value);
         case Error():
-          _log.w('Error logging in', error: result.error);
+          _log.warning('AuthRepository | Error logging in', error: result.error);
           return Result.error(result.error);
       }
     } finally {
@@ -125,12 +126,12 @@ class AuthRepositoryRemote extends AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
-    _log.i('User logged out');
+    _log.info('AuthRepository | User logged out');
     try {
       // Clear stored auth token
       final result = await _sharedPreferencesService.saveToken(null);
       if (result is Error<void>) {
-        _log.f('Failed to clear stored auth token');
+        _log.fatal('AuthRepository | Failed to clear stored auth token');
       }
 
       // Clear token in ApiClient

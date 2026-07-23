@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:zk_finger/zk_finger.dart';
 
 class FingerScanServiceImpl extends FingerScanService {
-  final Logger _logger = Logger();
+  FingerScanServiceImpl({
+    required this._log,
+  });
+
+  final AppLogger _log;
 
   late final ZKFinger _sdk;
   ZKDevice? _device;
@@ -22,7 +26,7 @@ class FingerScanServiceImpl extends FingerScanService {
         onListen: _connectDevice,
         onCancel: _closeDevice,
       );
-      _logger.d('Initialized FingerScanService');
+      _log.debug('FingerScanService | Initialized');
       _initialized = true;
     }
   }
@@ -33,7 +37,7 @@ class FingerScanServiceImpl extends FingerScanService {
       await _controller.close();
       _sdk.terminate();
       _initialized = false;
-      _logger.d('Disposed FingerScanService');
+      _log.debug('FingerScanService | Disposed');
     }
   }
 
@@ -80,7 +84,7 @@ class FingerScanServiceImpl extends FingerScanService {
 
     final capture = _device!.captureFingerprint();
     if (capture != null) {
-      _logger.d('Captured a fingerprint');
+      _log.debug('FingerScanService | Captured a fingerprint');
       _controller.add(capture.template);
     }
   }
@@ -92,7 +96,7 @@ class FingerScanServiceImpl extends FingerScanService {
     _device = _sdk.openDevice();
 
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-    _logger.d('Connected device, listening for fingerprints...');
+    _log.debug('FingerScanService | Connected device, listening for fingerprints...');
   }
 
   void _closeDevice() {
@@ -100,6 +104,6 @@ class FingerScanServiceImpl extends FingerScanService {
     _timer = null;
     _device?.close();
     _device = null;
-    _logger.d('Disconnected device');
+    _log.debug('FingerScanService | Disconnected device');
   }
 }

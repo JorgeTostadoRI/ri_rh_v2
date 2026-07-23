@@ -3,12 +3,12 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -16,6 +16,7 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 class AsistenciaViewmodel extends ChangeNotifier {
   AsistenciaViewmodel({
+    required this._log,
     required this._asistenciaRepository,
     required this._authRepository,
     required this._avisosRepository,
@@ -29,17 +30,16 @@ class AsistenciaViewmodel extends ChangeNotifier {
     .listen(
       (template) => scanFingerprint.execute(template),
       onError: (e) {
-        _logger.e('Capture stream error', error: e);
+        _log.error('AsistenciaViewmodel | Capture stream error', error: e);
       }
     );
   }
 
+  final AppLogger _log;
   final AsistenciaRepository _asistenciaRepository;
   final AuthRepository _authRepository;
   final AvisosRepository _avisosRepository;
   final FingerprintRepository _fingerprintRepository;
-
-  final Logger _logger = Logger();
 
   late final Command0 load;
   late final Command1<void, Uint8List> scanFingerprint;
@@ -98,9 +98,9 @@ class AsistenciaViewmodel extends ChangeNotifier {
         _fingerIndex = 0;
         _manualEntryEnabled = false;
         if (!_disposed) notifyListeners();
-        _logger.i('Attendance registered for ${_userinfo!.username}');
+        _log.info('AsistenciaViewmodel | Attendance registered for ${_userinfo!.username}');
       case Error():
-        _logger.w('Failed to register attendance', error: result.error);
+        _log.warning('AsistenciaViewmodel | Failed to register attendance', error: result.error);
     }
 
     await _authRepository.logout();
@@ -128,9 +128,9 @@ class AsistenciaViewmodel extends ChangeNotifier {
         _fingerIndex = 0;
         _manualEntryEnabled = false;
         if (!_disposed) notifyListeners();
-        _logger.i('Attendance registered for $username');
+        _log.info('AsistenciaViewmodel | Attendance registered for $username');
       case Error():
-        _logger.w('Failed to register attendance');
+        _log.warning('AsistenciaViewmodel | Failed to register attendance');
     }
 
     await _authRepository.logout();
@@ -163,7 +163,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
       case Ok():
         _motds = result.value;
       case Error():
-        _logger.w('Failed to get messages of the day', error: result.error);
+        _log.warning('AsistenciaViewmodel | Failed to get messages of the day', error: result.error);
     }
 
     if (!_disposed) {

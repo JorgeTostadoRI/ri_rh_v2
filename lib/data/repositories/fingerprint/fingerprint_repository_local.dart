@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:logger/logger.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class FingerprintRepositoryLocal extends FingerprintRepository {
   FingerprintRepositoryLocal({
+    required this._log,
     required this._localDataService,
   });
 
   final LocalDataService _localDataService;
 
-  final Logger _log = Logger();
+  final AppLogger _log;
 
   final List<HuellaApiModel> _huellas = [
     HuellaApiModel(
@@ -42,7 +43,7 @@ class FingerprintRepositoryLocal extends FingerprintRepository {
   
   @override
   Stream<Uint8List> capture() {
-    _log.d('Listening for fingerprint captures');
+    _log.debug('FingerprintRepository | Listening for fingerprint captures');
     return Stream<Uint8List>.periodic(
       const Duration(seconds: 30),
       (_) => utf8.encode('1,danielfernandez,r,index'),
