@@ -1,7 +1,14 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:ri_rh_v2/config/assets.dart';
+import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
+import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
+import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 
 class LocalDataService {
@@ -325,6 +332,77 @@ class LocalDataService {
         nombre: 'Recursos Humanos',
         tipo: TipoPuesto.administrativo,
       ),
+      Puesto(
+        id: 7,
+        nombre: 'Practicante',
+        tipo: TipoPuesto.directo,
+      ),
     ];
+  }
+
+  List<Universidad> getUniversidades() {
+    return [
+      Universidad(
+        id: 1,
+        nombre: 'Universidad Cimarrones',
+        direccion: 'Porfirio Diaz C.P. 1234',
+        numeroContacto: '556-0101',
+      ),
+      Universidad(
+        id: 2,
+        nombre: 'Universidad Bufalos',
+        direccion: 'Olmecas 542 C.P. 1234',
+        numeroContacto: '556-0102',
+      ),
+      Universidad(
+        id: 3,
+        nombre: 'Universidad Tlacuaches',
+        direccion: 'Aztecas C.P. 1234',
+        numeroContacto: '556-0103',
+      ),
+    ];
+  }
+
+  Future<List<Practicante>> getPracticantes() async {
+    final universidades = getUniversidades();
+    final puestos = getPuestos();
+
+    final json = await _loadStringAsset(Assets.practicantes);
+    final practicantes = json
+    .map<PracticanteApiModel>(PracticanteApiModel.fromJson)
+    .map<Practicante>((apiPracticante) => Practicante(
+      id: apiPracticante.id,
+      type: apiPracticante.type,
+      name: apiPracticante.name,
+      salary: apiPracticante.salary,
+      university: universidades.firstWhere((uni) => uni.id == apiPracticante.universityRef),
+      puesto: puestos.firstWhere((puesto) => puesto.id == apiPracticante.puestoRef),
+      fechaNacimiento: apiPracticante.fechaNacimiento,
+      clabeInterbancaria: apiPracticante.clabeInterbancaria,
+      numeroContacto: apiPracticante.numeroContacto,
+      contactoEmergencia: apiPracticante.contactoEmergencia,
+      curp: apiPracticante.curp,
+      rfc: apiPracticante.rfc,
+      nss: apiPracticante.nss,
+      direccion: apiPracticante.direccion,
+      ineUrl: apiPracticante.ineUrl,
+      actaNacimientoUrl: apiPracticante.actaNacimientoUrl,
+      estadoCuentaUrl: apiPracticante.estadoCuentaUrl,
+      curpUrl: apiPracticante.curpUrl,
+      rfcUrl: apiPracticante.rfcUrl,
+      nssUrl: apiPracticante.nssUrl,
+      domicilioUrl: apiPracticante.domicilioUrl,
+      cartaPresentacionUrl: apiPracticante.cartaPresentacionUrl,
+      cvUrl: apiPracticante.cvUrl,
+      registeredAt: apiPracticante.registeredAt,
+      terminatedAt: apiPracticante.terminatedAt,
+    ))
+    .toList();
+    return practicantes;
+  }
+
+  Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {
+    final localData = await rootBundle.loadString(asset);
+    return (json.decode(localData) as List).cast<Map<String, dynamic>>();
   }
 }

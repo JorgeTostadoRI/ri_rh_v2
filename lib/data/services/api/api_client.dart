@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
+import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -307,5 +310,78 @@ class ApiClient {
     } finally {
       dio.close();
     }
+  }
+
+  // PRACTICANTES
+  Future<Result<List<PracticanteApiModel>>> getPracticantes() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/PracticantesResidentes');
+      final result = (response.data as List)
+      .map((json) => PracticanteApiModel.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // UNIVERSIDADES
+  Future<Result<List<Universidad>>> getUniversidades() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/Universidad');
+      final result = (response.data as List)
+      .map((json) => Universidad.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // PUESTOS
+  Future<Result<List<Puesto>>> getPuestos() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('api/rh/puesto');
+      final result = (response.data as List)
+      .map((json) => Puesto.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+}
+
+class ApiException implements Exception {
+  final String message;
+  final int statusCode;
+
+  const ApiException(this.message, this.statusCode);
+
+  @override
+  String toString() {
+    return 'ApiException: [$statusCode] $message';
+  }
+
+  factory ApiException.fromDioException(DioException e) {
+    return ApiException(e.response?.data?.toString() ?? 'No message provided', e.response?.statusCode ?? 0);
   }
 }
