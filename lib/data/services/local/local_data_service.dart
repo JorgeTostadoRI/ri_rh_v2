@@ -370,33 +370,10 @@ class LocalDataService {
     final json = await _loadStringAsset(Assets.practicantes);
     final practicantes = json
     .map<PracticanteApiModel>(PracticanteApiModel.fromJson)
-    .map<Practicante>((apiPracticante) => Practicante(
-      id: apiPracticante.id,
-      status: apiPracticante.status,
-      type: apiPracticante.type,
-      name: apiPracticante.name,
-      salary: apiPracticante.salary,
-      university: universidades.firstWhere((uni) => uni.id == apiPracticante.universityRef),
-      puesto: puestos.firstWhere((puesto) => puesto.id == apiPracticante.puestoRef),
-      fechaNacimiento: apiPracticante.fechaNacimiento,
-      clabeInterbancaria: apiPracticante.clabeInterbancaria,
-      numeroContacto: apiPracticante.numeroContacto,
-      contactoEmergencia: apiPracticante.contactoEmergencia,
-      curp: apiPracticante.curp,
-      rfc: apiPracticante.rfc,
-      nss: apiPracticante.nss,
-      direccion: apiPracticante.direccion,
-      ineUrl: apiPracticante.ineUrl,
-      actaNacimientoUrl: apiPracticante.actaNacimientoUrl,
-      estadoCuentaUrl: apiPracticante.estadoCuentaUrl,
-      curpUrl: apiPracticante.curpUrl,
-      rfcUrl: apiPracticante.rfcUrl,
-      nssUrl: apiPracticante.nssUrl,
-      domicilioUrl: apiPracticante.domicilioUrl,
-      cartaPresentacionUrl: apiPracticante.cartaPresentacionUrl,
-      cvUrl: apiPracticante.cvUrl,
-      registeredAt: apiPracticante.registeredAt,
-      terminatedAt: apiPracticante.terminatedAt,
+    .map<Practicante>((apiPracticante) => Practicante.fromApiModel(
+      model: apiPracticante,
+      universidades: universidades,
+      puestos: puestos,
     ))
     .toList();
     return practicantes;
