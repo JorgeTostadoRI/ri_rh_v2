@@ -14,5 +14,5 @@ abstract class Universidad with _$Universidad {
     required String numeroContacto,
   }) = _Universidad;
 
-  factory Universidad.fromJson(Map<String, Object> json) => _$UniversidadFromJson(json);
+  factory Universidad.fromJson(Map<String, Object?> json) => _$UniversidadFromJson(json);
 }

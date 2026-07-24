@@ -10,6 +10,7 @@ abstract class Departamento with _$Departamento {
         required int id,
         required String nombre,
         required String descripcion,
+        @JsonKey(fromJson: _doubleFromJson)
         required double presupuesto,
         required Divisa divisa,
         Lider? lider,
@@ -34,4 +35,9 @@ abstract class Lider with _$Lider {
     }) = _Lider;
 
   factory Lider.fromJson(Map<String, Object?> json) => _$LiderFromJson(json);
+}
+
+double _doubleFromJson(dynamic value) {
+  if (value is num) return value.toDouble(); // Handles normal numbers
+  return double.parse(value.toString()); // Handles "12.34" strings
 }

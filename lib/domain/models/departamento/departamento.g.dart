@@ -11,7 +11,7 @@ _Departamento _$DepartamentoFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       nombre: json['nombre'] as String,
       descripcion: json['descripcion'] as String,
-      presupuesto: (json['presupuesto'] as num).toDouble(),
+      presupuesto: _doubleFromJson(json['presupuesto']),
       divisa: $enumDecode(_$DivisaEnumMap, json['divisa']),
       lider: json['lider'] == null
           ? null

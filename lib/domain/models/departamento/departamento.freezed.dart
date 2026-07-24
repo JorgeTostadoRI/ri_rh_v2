@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Departamento implements DiagnosticableTreeMixin {
 
- int get id; String get nombre; String get descripcion; double get presupuesto; Divisa get divisa; Lider? get lider;
+ int get id; String get nombre; String get descripcion;@JsonKey(fromJson: _doubleFromJson) double get presupuesto; Divisa get divisa; Lider? get lider;
 /// Create a copy of Departamento
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,7 +55,7 @@ abstract mixin class $DepartamentoCopyWith<$Res>  {
   factory $DepartamentoCopyWith(Departamento value, $Res Function(Departamento) _then) = _$DepartamentoCopyWithImpl;
 @useResult
 $Res call({
- int id, String nombre, String descripcion, double presupuesto, Divisa divisa, Lider? lider
+ int id, String nombre, String descripcion,@JsonKey(fromJson: _doubleFromJson) double presupuesto, Divisa divisa, Lider? lider
 });
 
 
@@ -177,7 +177,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nombre,  String descripcion,  double presupuesto,  Divisa divisa,  Lider? lider)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nombre,  String descripcion, @JsonKey(fromJson: _doubleFromJson)  double presupuesto,  Divisa divisa,  Lider? lider)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Departamento() when $default != null:
 return $default(_that.id,_that.nombre,_that.descripcion,_that.presupuesto,_that.divisa,_that.lider);case _:
@@ -198,7 +198,7 @@ return $default(_that.id,_that.nombre,_that.descripcion,_that.presupuesto,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nombre,  String descripcion,  double presupuesto,  Divisa divisa,  Lider? lider)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nombre,  String descripcion, @JsonKey(fromJson: _doubleFromJson)  double presupuesto,  Divisa divisa,  Lider? lider)  $default,) {final _that = this;
 switch (_that) {
 case _Departamento():
 return $default(_that.id,_that.nombre,_that.descripcion,_that.presupuesto,_that.divisa,_that.lider);case _:
@@ -218,7 +218,7 @@ return $default(_that.id,_that.nombre,_that.descripcion,_that.presupuesto,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nombre,  String descripcion,  double presupuesto,  Divisa divisa,  Lider? lider)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nombre,  String descripcion, @JsonKey(fromJson: _doubleFromJson)  double presupuesto,  Divisa divisa,  Lider? lider)?  $default,) {final _that = this;
 switch (_that) {
 case _Departamento() when $default != null:
 return $default(_that.id,_that.nombre,_that.descripcion,_that.presupuesto,_that.divisa,_that.lider);case _:
@@ -233,13 +233,13 @@ return $default(_that.id,_that.nombre,_that.descripcion,_that.presupuesto,_that.
 @JsonSerializable()
 
 class _Departamento with DiagnosticableTreeMixin implements Departamento {
-  const _Departamento({required this.id, required this.nombre, required this.descripcion, required this.presupuesto, required this.divisa, this.lider});
+  const _Departamento({required this.id, required this.nombre, required this.descripcion, @JsonKey(fromJson: _doubleFromJson) required this.presupuesto, required this.divisa, this.lider});
   factory _Departamento.fromJson(Map<String, dynamic> json) => _$DepartamentoFromJson(json);
 
 @override final  int id;
 @override final  String nombre;
 @override final  String descripcion;
-@override final  double presupuesto;
+@override@JsonKey(fromJson: _doubleFromJson) final  double presupuesto;
 @override final  Divisa divisa;
 @override final  Lider? lider;
 
@@ -282,7 +282,7 @@ abstract mixin class _$DepartamentoCopyWith<$Res> implements $DepartamentoCopyWi
   factory _$DepartamentoCopyWith(_Departamento value, $Res Function(_Departamento) _then) = __$DepartamentoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nombre, String descripcion, double presupuesto, Divisa divisa, Lider? lider
+ int id, String nombre, String descripcion,@JsonKey(fromJson: _doubleFromJson) double presupuesto, Divisa divisa, Lider? lider
 });
 
 
