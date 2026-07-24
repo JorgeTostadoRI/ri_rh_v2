@@ -23,6 +23,8 @@ import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dar
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/new_incidencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/not_found_screen.dart';
+import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/practicantes_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
   initialLocation: Routes.home,
@@ -158,6 +160,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             ),
           ],
         ),
+        GoRoute(
+          path: Routes.practicantes,
+          builder: (context, state) {
+            return PracticantesScreen(
+              viewmodel: PracticantesViewmodel(
+                log: context.read(),
+                practicantesRepository: context.read(),
+              ),
+            );
+          },
+        ),
       ],
     ),
   ],
@@ -196,6 +209,7 @@ bool _requiresLogin(String location) {
 
   if (path == Routes.home) return true;
   if (path.startsWith(Routes.empleados)) return true;
+  if (path.startsWith(Routes.practicantes)) return true;
 
   return false;
 }
@@ -205,6 +219,7 @@ bool _requiresRole(String location) {
   final path = uri.path;
 
   if (path.startsWith(Routes.empleados)) return true;
+  if (path.startsWith(Routes.practicantes)) return true;
 
   return false;
 }

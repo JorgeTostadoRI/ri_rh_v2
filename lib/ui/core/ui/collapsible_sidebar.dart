@@ -109,12 +109,11 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                 if (snapshot.data == true) {
                   return Column(
                     children: [
-                      _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
-                      _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
-                      _buildNavItem(LucideIcons.fileText, 'Actas', false, null),
-                      _buildNavItem(LucideIcons.users, 'Empleados', false, Routes.empleados),
-                      _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
-                      _buildNavItem(LucideIcons.settings2, 'Automatización', false, null),
+                      _buildNavItem(LucideIcons.clock, 'Ingreso', Routes.ingreso),
+                      _buildNavItem(LucideIcons.megaphone, 'Avisos', Routes.avisos),
+                      _buildNavItem(LucideIcons.users, 'Empleados', Routes.empleados),
+                      _buildNavItem(LucideIcons.school, 'Practicantes', Routes.practicantes),
+                      _buildNavItem(LucideIcons.alertCircle, 'Incidencias', Routes.incidencias),
                     ],
                   );
                 }
@@ -122,9 +121,9 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
 
               return Column(
                 children: [
-                  _buildNavItem(LucideIcons.clock, 'Ingreso', false, Routes.ingreso),
-                  _buildNavItem(LucideIcons.megaphone, 'Avisos', false, Routes.avisos),
-                  _buildNavItem(LucideIcons.alertCircle, 'Incidencias', false, Routes.incidencias),
+                  _buildNavItem(LucideIcons.clock, 'Ingreso', Routes.ingreso),
+                  _buildNavItem(LucideIcons.megaphone, 'Avisos', Routes.avisos),
+                  _buildNavItem(LucideIcons.alertCircle, 'Incidencias', Routes.incidencias),
                 ],
               );
             },
@@ -149,8 +148,11 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
   );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool selected, String? route) {
+  Widget _buildNavItem(IconData icon, String label, String route) {
+    final state = GoRouterState.of(context);
+    final fullPath = state.fullPath ?? '';
     final Color textColor = Color(0xFF9A7B5A);
+    final selected = fullPath.startsWith(route);
 
     return Material(
       color: Colors.white,
@@ -176,7 +178,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),
           ),
-          onTap: route != null ? () => context.go(route) : null,
+          onTap: () => context.go(route),
         ),
       ),
     );

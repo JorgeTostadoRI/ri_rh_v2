@@ -19,6 +19,9 @@ import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_re
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
+import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
@@ -48,7 +51,7 @@ List<SingleChildWidget> get _sharedProviders {
 }
 
 Future<List<SingleChildWidget>> get providersLocal async {
-  await LogManager.init();
+  await LogManager.init(debug: true);
 
   return [
     ..._sharedProviders,
@@ -85,11 +88,16 @@ Future<List<SingleChildWidget>> get providersLocal async {
         localDataService: context.read(),
       ) as EmpleadosRepository
     ),
+    Provider(create: (context) =>
+      PracticantesRepositoryLocal(
+        localDataService: context.read(),
+      ) as PracticantesRepository
+    ),
   ];
 }
 
 Future<List<SingleChildWidget>> get providersRemote async {
-  await LogManager.init(debug: false);
+  await LogManager.init();
   final fingerScanService = getFingerScanService(LogManager.logger);
   fingerScanService.init();
 
@@ -148,6 +156,12 @@ Future<List<SingleChildWidget>> get providersRemote async {
       EmpleadosRepositoryRemote(
         apiClient: context.read(),
       ) as EmpleadosRepository,
+    ),
+    Provider(create: (context) =>
+      PracticantesRepositoryRemote(
+        log: context.read(),
+        apiClient: context.read(),
+      ) as PracticantesRepository
     ),
   ];
 }

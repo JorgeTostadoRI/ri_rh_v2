@@ -1,5 +1,6 @@
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
+import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 
 abstract final class Routes {
   static const home = '/';
@@ -10,8 +11,12 @@ abstract final class Routes {
   static const avisos = '/avisos';
   static const empleados = '/empleados';
   static const expedienteEmpleado = ':empleadoId';
-  static const huellas = '/huellas';
+  static const huellas = 'huellas';
+  static const practicantes = '/practicantes';
+  static const expedientePracticante = ':practicanteId';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.id}/new';
   static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.id}';
-  static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.id}/huellas';
+  static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.id}/$huellas';
+  static String expedienteOfPracticante(Practicante practicante) => '$practicantes/${practicante.id}';
+  static String huellasOfPracticante(Practicante practicante) => '$practicantes/${practicante.id}/$huellas';
 }
