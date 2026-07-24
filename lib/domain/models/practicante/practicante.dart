@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 
 part 'practicante.freezed.dart';
 
@@ -26,6 +27,7 @@ abstract class Practicante with _$Practicante {
     required String rfc,
     required String nss,
     required String direccion,
+    User? user,
 
     // Documents
     String? ineUrl,

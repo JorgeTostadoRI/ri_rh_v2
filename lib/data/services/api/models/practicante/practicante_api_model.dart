@@ -22,7 +22,7 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     required double salary,
     @JsonKey(name: 'universidad')
     required int universityRef,
-
+    @JsonKey(name: 'puesto')
     required int puestoRef,
     required DateTime fechaNacimiento,
     required String clabeInterbancaria,
@@ -30,10 +30,12 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     required String contactoEmergencia,
     required String curp,
     required String rfc,
-    @JsonKey(name: 'numeroSeguroSocial')
+    @JsonKey(name: 'numero_seguro_social')
     required String nss,
     @JsonKey(name: 'direccion_completa')
     required String direccion,
+    @JsonKey(defaultValue: 0, name: 'usuario')
+    required int userRef,
 
     // Documents
     @JsonKey(name: 'identificacion_oficial')

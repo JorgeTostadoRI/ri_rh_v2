@@ -10,8 +10,6 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
 
   final LocalDataService _localDataService;
 
-  
-
   @override
   Future<Result<List<Practicante>>> getPracticantes() async {
     final practicantes = await _localDataService.getPracticantes();

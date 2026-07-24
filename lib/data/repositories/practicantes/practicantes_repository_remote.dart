@@ -53,6 +53,7 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
       final practicantes = resultPracticantes.value
       .map((apiPracticante) => Practicante(
         id: apiPracticante.id,
+        status: apiPracticante.status,
         type: apiPracticante.type,
         name: apiPracticante.name,
         salary: apiPracticante.salary,
@@ -78,7 +79,7 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
         registeredAt: apiPracticante.registeredAt,
         terminatedAt: apiPracticante.terminatedAt,
       )).toList();
-      return Result.ok(practicantes);          
+      return Result.ok(practicantes);
     } on Exception catch (e) {
       _log.error('PracticantesRepository | Error getting practicantes', error: e);
       return Result.error(e);

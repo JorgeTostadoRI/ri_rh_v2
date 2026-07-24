@@ -372,6 +372,7 @@ class LocalDataService {
     .map<PracticanteApiModel>(PracticanteApiModel.fromJson)
     .map<Practicante>((apiPracticante) => Practicante(
       id: apiPracticante.id,
+      status: apiPracticante.status,
       type: apiPracticante.type,
       name: apiPracticante.name,
       salary: apiPracticante.salary,
