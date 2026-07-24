@@ -21,32 +21,17 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
   @override
   Future<Result<List<Practicante>>> getPracticantes() async {
     try {
-      if (_cachedPuestos == null) {
-        final resultPuestos = await _apiClient.getPuestos();
-        switch (resultPuestos) {
-          case Error():
-            return Result.error(resultPuestos.error);
-          case Ok():
-        }
+      await Future.wait([_cachePuestos(), _cacheUniversidades()]);
+    } on Exception catch (e) {
+      _log.warning('Failed to cache dependencies for practicantes', error: e);
+      return Result.error(e);
+    }
 
-        _cachedPuestos = resultPuestos.value;
-      }
-
-      if (_cachedUniversidades == null) {
-        final resultUniversidades = await _apiClient.getUniversidades();
-        switch (resultUniversidades) {
-          case Error():
-            return Result.error(resultUniversidades.error);
-          case Ok():
-        }
-
-        _cachedUniversidades = resultUniversidades.value;
-      }
-
+    try {
       final resultPracticantes = await _apiClient.getPracticantes();
       switch (resultPracticantes) {
         case Error():
-          _log.warning('PracticantesRepository | Failed to get practicantes', error: resultPracticantes.error);
+          _log.warning('Failed to fetch practicantes', error: resultPracticantes.error);
           return Result.error(resultPracticantes.error);
         case Ok():
       }
@@ -58,8 +43,62 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
       )).toList();
       return Result.ok(practicantes);
     } on Exception catch (e) {
-      _log.error('PracticantesRepository | Error getting practicantes', error: e);
+      _log.error('Failed mapping practicantes', error: e);
       return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<Practicante>> getPracticante(int id) async {
+    try {
+      await Future.wait([_cachePuestos(), _cacheUniversidades()]);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+
+    try {
+      final resultPracticante = await _apiClient.getPracticante(id);
+      switch (resultPracticante) {
+        case Error():
+          _log.warning('Failed to fetch practicante with ID $id', error: resultPracticante.error);
+          return Result.error(resultPracticante.error);
+        case Ok():
+      }
+      final practicante = Practicante.fromApiModel(
+        model: resultPracticante.value,
+        puestos: _cachedPuestos!,
+        universidades: _cachedUniversidades!,
+      );
+      return Result.ok(practicante);
+    } on Exception catch (e) {
+      _log.error('Failed mapping practicante with ID $id', error: e);
+      return Result.error(e);
+    }
+  }
+
+  Future<void> _cachePuestos() async {
+    if (_cachedPuestos == null) {
+      final resultPuestos = await _apiClient.getPuestos();
+      switch (resultPuestos) {
+        case Error():
+          throw resultPuestos.error;
+        case Ok():
+      }
+
+      _cachedPuestos = resultPuestos.value;
+    }
+  }
+
+  Future<void> _cacheUniversidades() async {
+    if (_cachedUniversidades == null) {
+      final resultUniversidades = await _apiClient.getUniversidades();
+      switch (resultUniversidades) {
+        case Error():
+          throw resultUniversidades.error;
+        case Ok():
+      }
+
+      _cachedUniversidades = resultUniversidades.value;
     }
   }
 }

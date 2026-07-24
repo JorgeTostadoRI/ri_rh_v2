@@ -10,9 +10,31 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
 
   final LocalDataService _localDataService;
 
+  List<Practicante>? _cachedPracticantes = [];
+
   @override
   Future<Result<List<Practicante>>> getPracticantes() async {
     final practicantes = await _localDataService.getPracticantes();
+    _cachedPracticantes = practicantes;
     return Result.ok(practicantes);
+  }
+
+  @override
+  Future<Result<Practicante>> getPracticante(int id) async {
+    if (_cachedPracticantes == null) {
+      final resultPracticantes = await getPracticantes();
+      switch (resultPracticantes) {
+        case Error():
+          return Result.error(resultPracticantes.error);
+        case Ok():
+      }
+    }
+
+    final index = _cachedPracticantes!.indexWhere((practicante) => practicante.id == id);
+    if (index == -1) {
+      return Result.error(Exception('Practicante not found'));
+    }
+
+    return Result.ok(_cachedPracticantes![index]);
   }
 }

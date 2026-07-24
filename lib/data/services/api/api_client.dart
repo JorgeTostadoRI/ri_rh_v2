@@ -328,6 +328,22 @@ class ApiClient {
     }
   }
 
+  Future<Result<PracticanteApiModel>> getPracticante(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/PracticantesResidentes/$id/');
+      final result = PracticanteApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // UNIVERSIDADES
   Future<Result<List<Universidad>>> getUniversidades() async {
     final dio = _dioFactory();
