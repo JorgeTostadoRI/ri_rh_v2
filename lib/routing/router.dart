@@ -116,10 +116,11 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         GoRoute(
           path: Routes.empleados,
           builder: (context, state) {
-            final viewmodel = EmpleadosViewmodel(empleadosRepository: context.read());
-
             return EmpleadosScreen(
-              viewmodel: viewmodel,
+              viewmodel: EmpleadosViewmodel(
+                log: context.read(),
+                empleadosRepository: context.read(),
+              ),
             );
           },
           routes: [

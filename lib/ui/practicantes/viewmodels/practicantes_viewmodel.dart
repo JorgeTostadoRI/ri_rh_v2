@@ -28,6 +28,7 @@ class PracticantesViewmodel extends ChangeNotifier {
     final resultPracticantes = await _practicantesRepository.getPracticantes();
     switch (resultPracticantes) {
       case Error():
+        _log.warning('Failed to fetch practicantes', error: resultPracticantes.error);
         return Result.error(resultPracticantes.error);
       case Ok():
     }

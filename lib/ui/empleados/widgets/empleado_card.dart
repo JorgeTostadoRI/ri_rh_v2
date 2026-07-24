@@ -48,9 +48,8 @@ class EmpleadoCard extends StatelessWidget {
                       LucideIcons.briefcase,
                       color: primaryColor,
                     ),
-                    // TODO: obtener nombre de puesto
                     Text(
-                      '${empleado.puesto}',
+                      empleado.puesto.nombre,
                       style: TextTheme.of(context).labelMedium?.copyWith(
                         color: primaryColor,
                         fontWeight: .w700,
@@ -72,7 +71,7 @@ class EmpleadoCard extends StatelessWidget {
                       child: _AttributeLabel(
                         name: 'SALARIO DIARIO',
                         icon: LucideIcons.dollarSign,
-                        value: empleado.salarioDiario.toString(),
+                        value: empleado.salario.toString(),
                       ),
                     ),
                     Flexible(
@@ -87,7 +86,7 @@ class EmpleadoCard extends StatelessWidget {
                 _AttributeLabel(
                   name: 'NSS (SEGURO SOCIAL)',
                   icon: LucideIcons.hospital,
-                  value: empleado.numeroSeguroSocial,
+                  value: empleado.nss,
                 ),
               ],
             ),

@@ -82,7 +82,7 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                           children: [
                             Icon(LucideIcons.briefcase, color: primaryColor, size: 14),
                             Text(
-                              '${empleado.puesto}',
+                              empleado.puesto.nombre,
                               style: TextTheme.of(context).labelMedium?.copyWith(
                                 color: primaryColor,
                                 fontWeight: .w700,

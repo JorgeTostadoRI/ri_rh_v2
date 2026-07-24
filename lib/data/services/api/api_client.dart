@@ -2,14 +2,15 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
-import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -274,38 +275,34 @@ class ApiClient {
   }
 
   // EMPLEADOS
-  Future<Result<Empleado>> getEmpleado(int id) async {
+  Future<Result<EmpleadoApiModel>> getEmpleado(int id) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
       final response = await dio.get('/api/rh/empleados/$id/');
-      final result = Empleado.fromJson(response.data);
+      final result = EmpleadoApiModel.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
-      _log.error('ApiClient | DioException retrieving empleado', error: e.response);
-      return Result.error(e);
+      return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
-      _log.error('ApiClient | Exception retrieving empleado', error: e);
       return Result.error(e);
     } finally {
       dio.close();
     }
   }
 
-  Future<Result<List<Empleado>>> getEmpleados() async {
+  Future<Result<List<EmpleadoApiModel>>> getEmpleados() async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
       final response = await dio.get('/api/rh/empleados/');
       final result = (response.data as List)
-      .map((json) => Empleado.fromJson(json))
+      .map((json) => EmpleadoApiModel.fromJson(json))
       .toList();
       return Result.ok(result);
     } on DioException catch (e) {
-      _log.error('ApiClient | DioException listing empleados', error: e.response);
-      return Result.error(e);
+      return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
-      _log.error('ApiClient | Exception listing empleados', error: e);
       return Result.error(e);
     } finally {
       dio.close();
@@ -317,7 +314,7 @@ class ApiClient {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('/api/rh/PracticantesResidentes');
+      final response = await dio.get('/api/rh/PracticantesResidentes/');
       final result = (response.data as List)
       .map((json) => PracticanteApiModel.fromJson(json))
       .toList();
@@ -336,7 +333,7 @@ class ApiClient {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('/api/rh/Universidad');
+      final response = await dio.get('/api/rh/Universidad/');
       final result = (response.data as List)
       .map((json) => Universidad.fromJson(json))
       .toList();
@@ -355,9 +352,28 @@ class ApiClient {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('api/rh/puesto');
+      final response = await dio.get('/api/rh/puesto/');
       final result = (response.data as List)
       .map((json) => Puesto.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // USUARIOS
+  Future<Result<List<User>>> getUsers() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/usuarios/obtener-todos-usuarios-simple/');
+      final result = (response.data as List)
+      .map((json) => User.fromJson(json))
       .toList();
       return Result.ok(result);
     } on DioException catch (e) {

@@ -13,15 +13,15 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   bool _initialized = false;
   final List<Empleado> _empleados = List.empty(growable: true);
 
-  void _initializeData() {
-    final empleados = _localDataService.getEmpleados();
+  Future<void> _initializeData() async {
+    final empleados = await _localDataService.getEmpleados();
     _empleados.addAll(empleados);
     _initialized = true;
   }
 
   @override
   Future<Result<List<Empleado>>> getEmpleados() async {
-    if (!_initialized) _initializeData();
+    if (!_initialized) await _initializeData();
 
     final empleados = _empleados.toList();
     return Result.ok(empleados);
@@ -29,7 +29,7 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
 
   @override
   Future<Result<Empleado>> getEmpleado(int id) async {
-    if (!_initialized) _initializeData();
+    if (!_initialized) await _initializeData();
 
     final index = _empleados.indexWhere((emp) => emp.id == id);
     if (index == -1) {

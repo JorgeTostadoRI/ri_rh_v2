@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_card.dart';
+import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class PracticantesScreen extends StatefulWidget {
   const PracticantesScreen({
@@ -96,6 +95,7 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                 if (widget.viewmodel.search.error) {
                   return Center(
                     child: Column(
+                      spacing: 32,
                       mainAxisSize: .min,
                       children: [
                         const Text('No se pudieron cargar los practicantes'),
@@ -131,25 +131,5 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
         ),
       ),
     );
-  }
-}
-
-class Debouncer {
-  final int milliseconds;
-  VoidCallback? action;
-  Timer? _timer;
-
-  Debouncer({required this.milliseconds});
-
-  void run(VoidCallback action) {
-    // Cancel the previous timer if it's still active
-    _timer?.cancel();
-
-    // Start a new timer
-    _timer = Timer(Duration(milliseconds: milliseconds), action);
-  }
-
-  void dispose() {
-    _timer?.cancel();
   }
 }

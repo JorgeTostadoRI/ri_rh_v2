@@ -154,6 +154,7 @@ Future<List<SingleChildWidget>> get providersRemote async {
     ),
     Provider(create: (context) =>
       EmpleadosRepositoryRemote(
+        log: context.read(),
         apiClient: context.read(),
       ) as EmpleadosRepository,
     ),

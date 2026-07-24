@@ -76,7 +76,7 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
         _fingers = _generateFingersList();
     }
 
-    final fingersResult = await _fingerprintRepository.getFingerprintsOfUser(_empleado.usuario);
+    final fingersResult = await _fingerprintRepository.getFingerprintsOfUser(_empleado.user?.id ?? 0);
     switch (fingersResult) {
       case Error():
         _log.w('Failed to load huellas of empleado #$empleadoId');
@@ -127,16 +127,16 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
   // Call after _empleado has been set
   List<Finger> _generateFingersList() {
     return [
-      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.thumb, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.pointer, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.middle, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.ring, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.left, fingerName: FingerName.pinky, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.thumb, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.pointer, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.middle, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.ring, scanned: false),
-      Finger(user: _empleado.usuario, hand: Hand.right, fingerName: FingerName.pinky, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.thumb, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.pointer, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.middle, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.ring, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.pinky, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.thumb, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.pointer, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.middle, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.ring, scanned: false),
+      Finger(user: _empleado.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.pinky, scanned: false),
     ];
   }
 

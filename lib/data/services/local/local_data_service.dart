@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:ri_rh_v2/config/assets.dart';
+import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
@@ -103,123 +104,19 @@ class LocalDataService {
     ];
   }
 
-  List<Empleado> getEmpleados() {
-    return [
-      Empleado(
-        id: 1,
-        usuario: 1,
-        nombre: 'Daniel Fernandez',
-        fechaNacimiento: DateTime(1990, 6, 3),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Martin Fernandez',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.preparatoria,
-        montoRetencionInfonavit: 0.0,
-        puesto: 1,
-        salarioDiario: 450.0,
-        antiguedad: 2,
-        estatus: EmpleadoEstatus.activo,
-      ),
-      Empleado(
-        id: 2,
-        usuario: 2,
-        nombre: 'Carla Gomez',
-        fechaNacimiento: DateTime(1986, 10, 21),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Maria Gomez',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.universidad,
-        montoRetencionInfonavit: 0.0,
-        puesto: 2,
-        salarioDiario: 650.0,
-        antiguedad: 4,
-        estatus: EmpleadoEstatus.activo,
-      ),
-      Empleado(
-        id: 3,
-        usuario: 3,
-        nombre: 'Pedro Juarez',
-        fechaNacimiento: DateTime(2001, 8, 10),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Andrea Cruz',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.universidad,
-        montoRetencionInfonavit: 0.0,
-        puesto: 3,
-        salarioDiario: 520.0,
-        antiguedad: 2,
-        estatus: EmpleadoEstatus.procesoFiniquito,
-      ),
-      Empleado(
-        id: 4,
-        usuario: 4,
-        nombre: 'Ana Martinez',
-        fechaNacimiento: DateTime(1994, 3, 3),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Carlos Godinez',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.universidad,
-        montoRetencionInfonavit: 0.0,
-        puesto: 4,
-        salarioDiario: 480.0,
-        antiguedad: 3,
-        estatus: EmpleadoEstatus.finiquitado,
-      ),
-      Empleado(
-        id: 5,
-        usuario: 5,
-        nombre: 'Luis Rodriguez',
-        fechaNacimiento: DateTime(1989, 3, 25),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Ramon Rodriguez',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.preparatoria,
-        montoRetencionInfonavit: 0.0,
-        puesto: 5,
-        salarioDiario: 580.0,
-        antiguedad: 5,
-        estatus: EmpleadoEstatus.activo,
-      ),
-      Empleado(
-        id: 6,
-        usuario: 6,
-        nombre: 'Sofia Lopez',
-        fechaNacimiento: DateTime(2003, 5, 12),
-        clabeInterbancaria: 'TEST',
-        numeroContacto: 'Daniela Lopez',
-        contactoEmergencia: '1234567890',
-        rfc: 'DF20342039',
-        curp: 'DF2034OFOK2039',
-        numeroSeguroSocial: '1234567890',
-        direccionCompleta: 'Av Noexiste 1234',
-        escolaridad: Escolaridad.universidad,
-        montoRetencionInfonavit: 0.0,
-        puesto: 6,
-        salarioDiario: 500.0,
-        antiguedad: 2,
-        estatus: EmpleadoEstatus.activo,
-      ),
-    ];
+  Future<List<Empleado>> getEmpleados() async {
+    final users = getUsers();
+    final puestos = getPuestos();
+
+    final json = await _loadStringAsset(Assets.empleados);
+    final empleados = json
+    .map<EmpleadoApiModel>(EmpleadoApiModel.fromJson)
+    .map<Empleado>((apiEmpleado) => Empleado.fromApiModel(
+      model: apiEmpleado,
+      users: users,
+      puestos: puestos,
+    )).toList();
+    return empleados;
   }
 
   List<User> getUsers() {
