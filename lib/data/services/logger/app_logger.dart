@@ -31,7 +31,7 @@ class AppLogger {
 
   void error(String message, {Object? error, StackTrace? stackTrace}) {
     for (final logger in _loggers) {
-      logger.w(message, error: error, stackTrace: stackTrace);
+      logger.e(message, error: error, stackTrace: stackTrace);
     }
   }
 
