@@ -15,8 +15,8 @@ abstract final class Routes {
   static const practicantes = '/practicantes';
   static const expedientePracticante = ':practicanteId';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.id}/new';
-  static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.id}';
-  static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.id}/$huellas';
+  static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}';
+  static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}/$huellas';
   static String expedienteOfPracticante(Practicante practicante) => '$practicantes/${practicante.id}';
   static String huellasOfPracticante(Practicante practicante) => '$practicantes/${practicante.id}/$huellas';
 }

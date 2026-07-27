@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
-import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
-class EmpleadoCard extends StatelessWidget {
-  const EmpleadoCard({
+class BaseEmpleadoCard extends StatelessWidget {
+  const BaseEmpleadoCard({
     super.key,
-    required this.empleado,
+    required this.baseEmpleado,
+    required this.statusChip,
+    required this.onExpedientePressed,
   });
 
-  final Empleado empleado;
+  final BaseEmpleado baseEmpleado;
+  final Widget statusChip;
+  final void Function() onExpedientePressed;
+
 
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat.yMMMd();
     return Card(
       color: Colors.white,
       margin: EdgeInsets.zero,
@@ -33,11 +38,11 @@ class EmpleadoCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        empleado.nombre,
+                        baseEmpleado.nombre,
                         style: TextTheme.of(context).headlineSmall,
                       ),
                     ),
-                    _StatusChip(status: empleado.estatus),
+                    statusChip,
                   ],
                 ),
                 Row(
@@ -48,11 +53,13 @@ class EmpleadoCard extends StatelessWidget {
                       LucideIcons.briefcase,
                       color: primaryColor,
                     ),
-                    Text(
-                      empleado.puesto.nombre,
-                      style: TextTheme.of(context).labelMedium?.copyWith(
-                        color: primaryColor,
-                        fontWeight: .w700,
+                    Expanded(
+                      child: Text(
+                        baseEmpleado.puesto.nombre,
+                        style: TextTheme.of(context).labelMedium?.copyWith(
+                          color: primaryColor,
+                          fontWeight: .w700,
+                        ),
                       ),
                     ),
                   ],
@@ -71,14 +78,14 @@ class EmpleadoCard extends StatelessWidget {
                       child: _AttributeLabel(
                         name: 'SALARIO DIARIO',
                         icon: LucideIcons.dollarSign,
-                        value: empleado.salario.toString(),
+                        value: baseEmpleado.salario.toString(),
                       ),
                     ),
                     Flexible(
                       child: _AttributeLabel(
-                        name: 'ANTIGUEDAD',
+                        name: 'REGISTRADO EN',
                         icon: LucideIcons.calendar,
-                        value: '${empleado.antiguedad} años',
+                        value: dateFormat.format(baseEmpleado.registradoEn!),
                       )
                     ),
                   ],
@@ -86,7 +93,7 @@ class EmpleadoCard extends StatelessWidget {
                 _AttributeLabel(
                   name: 'NSS (SEGURO SOCIAL)',
                   icon: LucideIcons.hospital,
-                  value: empleado.nss,
+                  value: baseEmpleado.nss,
                 ),
               ],
             ),
@@ -105,9 +112,7 @@ class EmpleadoCard extends StatelessWidget {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      context.go(Routes.expedienteOfEmpleado(empleado));
-                    },
+                    onPressed: onExpedientePressed,
                     child: Text('Ver Expediente', style: TextStyle(fontSize: 12)),
                   ),
                   OutlinedButton(
@@ -126,58 +131,6 @@ class EmpleadoCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({
-    required this.status,
-  });
-
-  final EmpleadoEstatus status;
-
-  Color get backgroundColor {
-    return switch (status) {
-      EmpleadoEstatus.activo => const Color(0xFFDCFCE7),
-      EmpleadoEstatus.procesoFiniquito => const Color(0xFFFFEDD4),
-      EmpleadoEstatus.finiquitado => const Color(0xFFFFE2E2),
-    };
-  }
-
-  Color get textColor {
-    return switch (status) {
-      EmpleadoEstatus.activo => const Color(0xFF00A63E),
-      EmpleadoEstatus.procesoFiniquito => const Color(0xFFF54900),
-      EmpleadoEstatus.finiquitado => const Color(0xFFE7000B),
-    };
-  }
-
-  String get statusString {
-    return switch (status) {
-      EmpleadoEstatus.activo => 'ACTIVO',
-      EmpleadoEstatus.procesoFiniquito => 'EN PROCESO DE FINIQUITO',
-      EmpleadoEstatus.finiquitado => 'FINIQUITADO',
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      backgroundColor: backgroundColor,
-      side: BorderSide.none,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
-      label: Text(
-        statusString,
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: .w900,
-          height: 1.5,
-          color: textColor,
-        ),
-      )
     );
   }
 }

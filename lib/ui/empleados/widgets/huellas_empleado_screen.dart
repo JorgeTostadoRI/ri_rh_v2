@@ -75,14 +75,14 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                       crossAxisAlignment: .start,
                       children: [
                         Text('COLABORADOR', style: TextTheme.of(context).labelSmall?.copyWith(fontWeight: .w900)),
-                        Text(empleado.nombre, style: TextTheme.of(context).headlineSmall),
+                        Text(empleado.base.nombre, style: TextTheme.of(context).headlineSmall),
                         Row(
                           spacing: 6,
                           mainAxisSize: .min,
                           children: [
                             Icon(LucideIcons.briefcase, color: primaryColor, size: 14),
                             Text(
-                              empleado.puesto.nombre,
+                              empleado.base.puesto.nombre,
                               style: TextTheme.of(context).labelMedium?.copyWith(
                                 color: primaryColor,
                                 fontWeight: .w700,

@@ -63,7 +63,7 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
                           crossAxisAlignment: .start,
                           children: [
                             Text('Expediente Digital', style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
-                            Text(empleado.nombre, style: TextTheme.of(context).titleSmall),
+                            Text(empleado.base.nombre, style: TextTheme.of(context).titleSmall),
                           ],
                         ),
                       ],

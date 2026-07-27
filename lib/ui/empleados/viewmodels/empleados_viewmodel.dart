@@ -33,7 +33,7 @@ class EmpleadosViewmodel extends ChangeNotifier {
       case Ok():
         _empleados = result.value;
         if (searchText.isNotEmpty) {
-          _empleados = _empleados.where((emp) => emp.nombre.toLowerCase().contains(searchText.toLowerCase())).toList();
+          _empleados = _empleados.where((emp) => emp.base.nombre.toLowerCase().contains(searchText.toLowerCase())).toList();
         }
     }
     notifyListeners();

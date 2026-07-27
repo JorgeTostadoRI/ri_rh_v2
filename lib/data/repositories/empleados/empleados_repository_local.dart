@@ -31,7 +31,7 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   Future<Result<Empleado>> getEmpleado(int id) async {
     if (!_initialized) await _initializeData();
 
-    final index = _empleados.indexWhere((emp) => emp.id == id);
+    final index = _empleados.indexWhere((emp) => emp.base.id == id);
     if (index == -1) {
       return Result.error(Exception('Not found'));
     }

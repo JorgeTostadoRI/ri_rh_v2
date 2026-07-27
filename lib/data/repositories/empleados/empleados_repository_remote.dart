@@ -24,7 +24,7 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
   @override
   Future<Result<Empleado>> getEmpleado(int id) async {
     if (!isEmpleadosCacheExpired) {
-      final index = _cachedEmpleados!.indexWhere((emp) => emp.id == id);
+      final index = _cachedEmpleados!.indexWhere((emp) => emp.base.id == id);
       if (index == -1) {
         return Result.error(Exception('Empleado not found'));
       }

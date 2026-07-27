@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
-import 'package:ri_rh_v2/ui/empleados/widgets/empleado_card.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/empleado_status_chip.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class EmpleadosScreen extends StatefulWidget {
@@ -117,8 +120,11 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                     mainAxisExtent: 350,
                   ),
                   itemBuilder: (context, index) {
-                    return EmpleadoCard(
-                      empleado: widget.viewmodel.empleados[index],
+                    final empleado = widget.viewmodel.empleados[index];
+                    return BaseEmpleadoCard(
+                      baseEmpleado: empleado.base,
+                      statusChip: EmpleadoStatusChip(status: empleado.estatus),
+                      onExpedientePressed: () => context.go(Routes.expedienteOfEmpleado(empleado)),
                     );
                   },
                 );
