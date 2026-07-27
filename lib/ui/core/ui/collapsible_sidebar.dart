@@ -128,7 +128,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
               );
             },
           ),
-          const SizedBox(height: 20),
+          Spacer(),
           IconButton.outlined(
             icon: Icon(
               isCollapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios,

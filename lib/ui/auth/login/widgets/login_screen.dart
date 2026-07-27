@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/field_label.dart';
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   bool showPassword = false;
+  late final Future<PackageInfo> packageInfoFuture;
 
   void _onResult() {
     if (widget.viewmodel.login.completed) {
@@ -41,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    packageInfoFuture = PackageInfo.fromPlatform();
     widget.viewmodel.login.addListener(_onResult);
   }
 
@@ -111,6 +114,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text('Ingresar'),
                     );
                   }
+                ),
+              ),
+              Align(
+                alignment: .bottomEnd,
+                child: FutureBuilder(
+                  future: packageInfoFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SizedBox.shrink();
+                    }
+                    if (snapshot.hasError) {
+                      return SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 24.0),
+                      child: Text(
+                        'v${snapshot.data!.version}',
+                        style: TextTheme.of(context).labelSmall,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
