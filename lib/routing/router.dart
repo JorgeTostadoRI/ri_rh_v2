@@ -11,11 +11,11 @@ import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/main_scaffold.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
-import 'package:ri_rh_v2/ui/empleados/viewmodels/expediente_viewmodel.dart';
-import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleados_screen.dart';
-import 'package:ri_rh_v2/ui/empleados/widgets/expediente_screen.dart';
-import 'package:ri_rh_v2/ui/empleados/widgets/huellas_empleado_screen.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/empleado_expediente_screen.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/empleado_huellas_screen.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/widgets/home_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
@@ -136,8 +136,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                   return const NotFoundScreen(message: 'Empleado no encontrado');
                 }
 
-                return ExpedienteScreen(
-                  viewmodel: ExpedienteViewmodel(
+                return EmpleadoExpedienteScreen(
+                  viewmodel: EmpleadoExpedienteViewmodel(
                     empleadoId: empleadoId,
                     empleadosRepository: context.read(),
                   ),
@@ -152,8 +152,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                       return const NotFoundScreen(message: 'Empleado no encontrado');
                     }
 
-                    return HuellasEmpleadoScreen(
-                      viewmodel: HuellasEmpleadoViewmodel(
+                    return EmpleadoHuellasScreen(
+                      viewmodel: EmpleadoHuellasViewmodel(
                         empleadoId: empleadoId,
                         log: context.read(),
                         empleadosRepository: context.read(),

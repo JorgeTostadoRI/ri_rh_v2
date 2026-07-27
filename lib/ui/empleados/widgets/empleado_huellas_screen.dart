@@ -5,16 +5,16 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/hand_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/delete_fingerprint_dialog.dart';
-import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/enroll_dialog.dart';
 
-class HuellasEmpleadoScreen extends StatelessWidget {
-  const HuellasEmpleadoScreen({
+class EmpleadoHuellasScreen extends StatelessWidget {
+  const EmpleadoHuellasScreen({
     super.key,
     required this.viewmodel,
   });
 
-  final HuellasEmpleadoViewmodel viewmodel;
+  final EmpleadoHuellasViewmodel viewmodel;
 
   Future<void> onAddHandler(BuildContext context, Finger finger) async {
     if (finger.user <= 0) {

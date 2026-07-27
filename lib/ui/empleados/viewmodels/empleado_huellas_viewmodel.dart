@@ -10,8 +10,8 @@ import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-class HuellasEmpleadoViewmodel extends ChangeNotifier {
-  HuellasEmpleadoViewmodel({
+class EmpleadoHuellasViewmodel extends ChangeNotifier {
+  EmpleadoHuellasViewmodel({
     required this.empleadoId,
     required this._log,
     required this._empleadosRepository,

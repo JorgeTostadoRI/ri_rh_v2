@@ -4,22 +4,22 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
-import 'package:ri_rh_v2/ui/empleados/viewmodels/expediente_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 
-class ExpedienteScreen extends StatefulWidget {
-  const ExpedienteScreen({
+class EmpleadoExpedienteScreen extends StatefulWidget {
+  const EmpleadoExpedienteScreen({
     super.key,
     required this.viewmodel,
   });
 
-  final ExpedienteViewmodel viewmodel;
+  final EmpleadoExpedienteViewmodel viewmodel;
 
   @override
-  State<ExpedienteScreen> createState() => _ExpedienteScreenState();
+  State<EmpleadoExpedienteScreen> createState() => _EmpleadoExpedienteScreenState();
 }
 
-class _ExpedienteScreenState extends State<ExpedienteScreen> {
+class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

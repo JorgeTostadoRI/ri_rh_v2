@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
 
 class EnrollDialog extends StatefulWidget {
   const EnrollDialog({
@@ -12,7 +12,7 @@ class EnrollDialog extends StatefulWidget {
     required this.viewmodel,
   });
   
-  final HuellasEmpleadoViewmodel viewmodel;
+  final EmpleadoHuellasViewmodel viewmodel;
 
   @override
   State<EnrollDialog> createState() => _EnrollDialogState();

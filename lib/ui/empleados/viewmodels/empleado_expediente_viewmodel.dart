@@ -5,8 +5,8 @@ import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-class ExpedienteViewmodel extends ChangeNotifier {
-  ExpedienteViewmodel({
+class EmpleadoExpedienteViewmodel extends ChangeNotifier {
+  EmpleadoExpedienteViewmodel({
     required this.empleadoId,
     required this._empleadosRepository,
   }) {
