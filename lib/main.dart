@@ -62,7 +62,7 @@ class _MainAppState extends State<MainApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Provider.of<DeviceAuthService>(context).initializeDevice();
+    Provider.of<DeviceAuthService>(context, listen: false).initializeDevice();
     final themeProvider = Provider.of<AppThemeProvider>(context);
 
     return MaterialApp.router(

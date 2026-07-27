@@ -139,6 +139,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 return EmpleadoExpedienteScreen(
                   viewmodel: EmpleadoExpedienteViewmodel(
                     empleadoId: empleadoId,
+                    log: context.read(),
                     empleadosRepository: context.read(),
                   ),
                 );

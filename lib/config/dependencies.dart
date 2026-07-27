@@ -117,7 +117,6 @@ Future<List<SingleChildWidget>> get providersRemote async {
     ),
     Provider(create: (context) =>
       ApiClient(
-        log: context.read(),
         dioFactory: _dioClient,
       ),
     ),

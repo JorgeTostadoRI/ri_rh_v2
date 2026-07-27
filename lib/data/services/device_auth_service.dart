@@ -3,12 +3,9 @@ import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:logger/logger.dart';
-import 'package:ri_rh_v2/utils/result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceAuthService {
-  final _log = Logger();
   final _storage = const FlutterSecureStorage();
   final _algorithm = Ed25519();
 
@@ -60,14 +57,8 @@ class DeviceAuthService {
     return base64.encode(signature.bytes);
   }
 
-  Future<Result<void>> _savePubKey(String pubKey) async {
-    try {
-      final sharedPreferences = SharedPreferencesAsync();
-      await sharedPreferences.setString(_pubkeyKey, pubKey);
-      return const Result.ok(null);
-    } on Exception catch (e) {
-      _log.w('Failed to set token', error: e);
-      return Result.error(e);
-    }
+  Future<void> _savePubKey(String pubKey) async {
+    final sharedPreferences = SharedPreferencesAsync();
+    await sharedPreferences.setString(_pubkeyKey, pubKey);
   }
 }
