@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
 
 class PracticanteExpedienteScreen extends StatefulWidget {
@@ -76,24 +77,9 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                   children: [
                     Flexible(
                       flex: 3,
-                      child: Column(
-                        mainAxisAlignment: .start,
-                        crossAxisAlignment: .stretch,
-                        mainAxisSize: .min,
-                        children: [
-                          _DataCard(
-                            icon: LucideIcons.user,
-                            title: 'Datos Generales',
-                          ),
-                          _DataCard(
-                            icon: LucideIcons.briefcase,
-                            title: 'Datos Laborales',
-                          ),
-                          _DataCard(
-                            icon: LucideIcons.phone,
-                            title: 'Contacto y Dirección',
-                          ),
-                        ],
+                      child: ExpedienteForm(
+                        baseEmpleado: practicante.base,
+                        readOnly: true,
                       ),
                     ),
                     Flexible(

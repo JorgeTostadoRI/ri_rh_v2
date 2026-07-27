@@ -1,11 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
-import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
+import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/expediente_viewmodel.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 
 class ExpedienteScreen extends StatefulWidget {
   const ExpedienteScreen({
@@ -68,12 +68,6 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
                         ),
                       ],
                     ),
-                    if (kDebugMode)
-                      ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(LucideIcons.pen),
-                        label: Text('Editar')
-                      ),
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -83,24 +77,9 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
                   children: [
                     Flexible(
                       flex: 3,
-                      child: Column(
-                        mainAxisAlignment: .start,
-                        crossAxisAlignment: .stretch,
-                        mainAxisSize: .min,
-                        children: [
-                          _DataCard(
-                            icon: LucideIcons.user,
-                            title: 'Datos Generales',
-                          ),
-                          _DataCard(
-                            icon: LucideIcons.briefcase,
-                            title: 'Datos Laborales',
-                          ),
-                          _DataCard(
-                            icon: LucideIcons.phone,
-                            title: 'Contacto y Dirección',
-                          ),
-                        ],
+                      child: ExpedienteForm(
+                        baseEmpleado: empleado.base,
+                        readOnly: true,
                       ),
                     ),
                     Flexible(
@@ -109,7 +88,7 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
 
                         crossAxisAlignment: .stretch,
                         children: [
-                          _DataCard(
+                          IconCard(
                             icon: LucideIcons.fingerprintPattern,
                             title: 'Huellas',
                             children: [
@@ -130,71 +109,6 @@ class _ExpedienteScreenState extends State<ExpedienteScreen> {
             );
           }
         ),
-      ),
-    );
-  }
-}
-
-class _DataCard extends StatelessWidget {
-  const _DataCard({
-    required this.icon,
-    required this.title,
-    this.children = const <Widget>[],
-  });
-
-  final IconData icon;
-  final String title;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      child: Container(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          spacing: 24,
-          mainAxisSize: .min,
-          crossAxisAlignment: .stretch,
-          children: [
-            Row(
-              spacing: 12,
-              children: [
-                _IconContainer(icon: icon),
-                Text(
-                  title,
-                  style: TextTheme.of(context).headlineSmall?.copyWith(fontWeight: .w700),
-                ),
-              ],
-            ),
-            ...children,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _IconContainer extends StatelessWidget {
-  const _IconContainer({
-    required this.icon,
-  });
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Icon(
-        icon,
-        color: primaryColor,
-        size: 20,
       ),
     );
   }
