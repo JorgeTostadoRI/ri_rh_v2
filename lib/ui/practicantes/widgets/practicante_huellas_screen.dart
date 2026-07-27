@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
+import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/hand_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/delete_fingerprint_dialog.dart';
-import 'package:ri_rh_v2/ui/empleados/viewmodels/huellas_empleado_viewmodel.dart';
-import 'package:ri_rh_v2/ui/empleados/widgets/enroll_dialog.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/enroll_dialog.dart';
+import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
 
-class HuellasEmpleadoScreen extends StatelessWidget {
-  const HuellasEmpleadoScreen({
+class PracticanteHuellasScreen extends StatelessWidget {
+  const PracticanteHuellasScreen({
     super.key,
     required this.viewmodel,
   });
 
-  final HuellasEmpleadoViewmodel viewmodel;
+  final PracticanteHuellasViewmodel viewmodel;
 
   Future<void> onAddHandler(BuildContext context, Finger finger) async {
     if (finger.user <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('El empleado no cuenta con un usuario asociado, contacte al administrador.'),
+          content: Text('El practicante no cuenta con un usuario asociado, contacte al administrador.'),
         ),
       );
       return;
@@ -65,13 +66,13 @@ class HuellasEmpleadoScreen extends StatelessWidget {
               return Center(child: Text(viewmodel.load.result.toString()));
             }
 
-            final empleado = viewmodel.empleado;
+            final practicante = viewmodel.practicante;
             return Column(
               spacing: 32,
               crossAxisAlignment: .stretch,
               children: [
                 PageHeader(
-                  title: 'Huellas del Empleado',
+                  title: 'Huellas del Practicante',
                   subtitle: 'Verifica el estado de registro y realiza el escaneo de huellas',
                   showBackButton: true,
                 ),
@@ -83,15 +84,21 @@ class HuellasEmpleadoScreen extends StatelessWidget {
                       spacing: 4,
                       crossAxisAlignment: .start,
                       children: [
-                        Text('COLABORADOR', style: TextTheme.of(context).labelSmall?.copyWith(fontWeight: .w900)),
-                        Text(empleado.base.nombre, style: TextTheme.of(context).headlineSmall),
+                        Text(
+                          switch (practicante.type) {
+                            TypePracticante.practicante => 'PRACTICANTE',
+                            TypePracticante.residente => 'RESIDENTE',
+                          },
+                          style: TextTheme.of(context).labelSmall?.copyWith(fontWeight: .w900),
+                        ),
+                        Text(practicante.base.nombre, style: TextTheme.of(context).headlineSmall),
                         Row(
                           spacing: 6,
                           mainAxisSize: .min,
                           children: [
                             Icon(LucideIcons.briefcase, color: primaryColor, size: 14),
                             Text(
-                              empleado.base.puesto.nombre,
+                              practicante.base.puesto.nombre,
                               style: TextTheme.of(context).labelMedium?.copyWith(
                                 color: primaryColor,
                                 fontWeight: .w700,

@@ -59,14 +59,12 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
 
   @override
   Future<Result<List<Finger>>> getFingerprintsOfUser(int id) async {
-    final getResult = await _apiClient.getHuellas();
-    switch (getResult) {
+    final resultHuellas = await _apiClient.getHuellas(userId: id);
+    switch (resultHuellas) {
       case Error():
-        return Result.error(getResult.error);
+        return Result.error(resultHuellas.error);
       case Ok():
-        // TODO: use query param
-        final huellas = getResult.value.where((huella) => huella.usuario == id);
-        final fingers = huellas.map((huella) => Finger(
+        final fingers = resultHuellas.value.map((huella) => Finger(
           id: huella.id!,
           user: huella.usuario,
           hand: Hand.fromString(huella.hand),

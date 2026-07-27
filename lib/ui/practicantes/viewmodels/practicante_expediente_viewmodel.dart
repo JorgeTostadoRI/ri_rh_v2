@@ -26,6 +26,7 @@ class PracticanteExpedienteViewmodel extends ChangeNotifier {
     final result = await _practicantesRepository.getPracticante(_practicanteId);
     switch(result) {
       case Error():
+        _log.warning('Failed to load practicante with ID $_practicanteId', error: result.error);
         return result;
       case Ok():
     }

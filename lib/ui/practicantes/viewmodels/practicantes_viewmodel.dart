@@ -34,6 +34,11 @@ class PracticantesViewmodel extends ChangeNotifier {
     }
 
     _practicantes = resultPracticantes.value;
+    if (searchText.isNotEmpty) {
+      _practicantes = _practicantes.where(
+        (practicante) => practicante.base.nombre.toLowerCase().contains(searchText.toLowerCase())
+      ).toList();
+    }
     notifyListeners();
     return const Result.ok(null);
   }

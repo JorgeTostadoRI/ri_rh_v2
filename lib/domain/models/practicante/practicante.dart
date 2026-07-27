@@ -21,11 +21,13 @@ abstract class Practicante with _$Practicante {
 
   factory Practicante.fromApiModel({
     required PracticanteApiModel model,
+    required List<User> users,
     required List<Puesto> puestos,
     required List<Universidad> universidades,
   }) => Practicante(
       base: BaseEmpleado(
         id: model.id,
+        user: model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null,
         nombre: model.name,
         salario: model.salary,
         puesto: puestos.firstWhere((puesto) => puesto.id == model.puestoRef),

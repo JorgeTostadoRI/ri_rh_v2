@@ -24,8 +24,10 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/new_incidencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/not_found_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_expediente_screen.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_huellas_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicantes_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
@@ -153,6 +155,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     return HuellasEmpleadoScreen(
                       viewmodel: HuellasEmpleadoViewmodel(
                         empleadoId: empleadoId,
+                        log: context.read(),
                         empleadosRepository: context.read(),
                         fingerprintRepository: context.read(),
                       ),
@@ -189,7 +192,27 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     practicantesRepository: context.read(),
                   ),
                 );
-              }
+              },
+              routes: [
+                GoRoute(
+                  path: Routes.huellas,
+                  builder: (context, state) {
+                    final practicanteId = int.tryParse(state.pathParameters['practicanteId']!);
+                    if (practicanteId == null) {
+                      return const NotFoundScreen(message: 'Practicante no encontrado');
+                    }
+
+                    return PracticanteHuellasScreen(
+                      viewmodel: PracticanteHuellasViewmodel(
+                        practicanteId: practicanteId,
+                        log: context.read(),
+                        practicantesRepository: context.read(),
+                        fingerprintRepository: context.read(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

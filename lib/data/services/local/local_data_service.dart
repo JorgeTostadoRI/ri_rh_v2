@@ -261,6 +261,7 @@ class LocalDataService {
   }
 
   Future<List<Practicante>> getPracticantes() async {
+    final users = getUsers();
     final universidades = getUniversidades();
     final puestos = getPuestos();
 
@@ -269,6 +270,7 @@ class LocalDataService {
     .map<PracticanteApiModel>(PracticanteApiModel.fromJson)
     .map<Practicante>((apiPracticante) => Practicante.fromApiModel(
       model: apiPracticante,
+      users: users,
       universidades: universidades,
       puestos: puestos,
     ))

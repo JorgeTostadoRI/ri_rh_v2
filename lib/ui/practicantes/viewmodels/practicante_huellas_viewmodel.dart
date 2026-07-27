@@ -2,29 +2,29 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
+import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
-import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
+import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-class HuellasEmpleadoViewmodel extends ChangeNotifier {
-  HuellasEmpleadoViewmodel({
-    required this.empleadoId,
+class PracticanteHuellasViewmodel extends ChangeNotifier {
+  PracticanteHuellasViewmodel({
+    required this.practicanteId,
     required this._log,
-    required this._empleadosRepository,
+    required this._practicantesRepository,
     required this._fingerprintRepository,
   }) {
-    load = Command1(_load)..execute(empleadoId);
+    load = Command1(_load)..execute(practicanteId);
     capture = Command1(_capture);
     enroll = Command1(_enroll);
     delete = Command1(_delete);
   }
 
-  final int empleadoId;
-  final EmpleadosRepository _empleadosRepository;
+  final int practicanteId;
+  final PracticantesRepository _practicantesRepository;
   final FingerprintRepository _fingerprintRepository;
 
   final AppLogger _log;
@@ -33,8 +33,8 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
   late final Command1<void, Finger> enroll;
   late final Command1<void, Finger> delete;
 
-  late final Empleado _empleado;
-  Empleado get empleado => _empleado;
+  late final Practicante _practicante;
+  Practicante get practicante => _practicante;
 
   late List<Finger> _fingers;
   List<Finger> get rightHandFingers => _fingers.where((finger) => finger.hand == Hand.right).toList();
@@ -66,21 +66,21 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
     );
   }
 
-  Future<Result<void>> _load(int empleadoId) async {
-    final empleadoResult = await _empleadosRepository.getEmpleado(empleadoId);
-    switch (empleadoResult) {
+  Future<Result<void>> _load(int practicanteId) async {
+    final practicanteResult = await _practicantesRepository.getPracticante(practicanteId);
+    switch (practicanteResult) {
       case Error():
-        _log.warning('Failed to load empleado #$empleadoId', error: empleadoResult.error);
-        return Result.error(empleadoResult.error);
+        _log.warning('Failed to load practicante #$practicanteId', error: practicanteResult.error);
+        return Result.error(practicanteResult.error);
       case Ok():
-        _empleado = empleadoResult.value;
+        _practicante = practicanteResult.value;
         _fingers = _generateFingersList();
     }
 
-    final fingersResult = await _fingerprintRepository.getFingerprintsOfUser(_empleado.base.user?.id ?? 0);
+    final fingersResult = await _fingerprintRepository.getFingerprintsOfUser(_practicante.base.user?.id ?? 0);
     switch (fingersResult) {
       case Error():
-        _log.warning('Failed to load huellas of empleado #$empleadoId', error: fingersResult.error);
+        _log.warning('Failed to load huellas of practicante #$_practicante', error: fingersResult.error);
         return Result.error(fingersResult.error);
       case Ok():
         for (final finger in fingersResult.value) {
@@ -128,16 +128,16 @@ class HuellasEmpleadoViewmodel extends ChangeNotifier {
   // Call after _empleado has been set
   List<Finger> _generateFingersList() {
     return [
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.thumb, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.pointer, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.middle, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.ring, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.pinky, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.thumb, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.pointer, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.middle, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.ring, scanned: false),
-      Finger(user: _empleado.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.pinky, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.thumb, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.pointer, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.middle, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.ring, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.left, fingerName: FingerName.pinky, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.thumb, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.pointer, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.middle, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.ring, scanned: false),
+      Finger(user: _practicante.base.user?.id ?? 0, hand: Hand.right, fingerName: FingerName.pinky, scanned: false),
     ];
   }
 

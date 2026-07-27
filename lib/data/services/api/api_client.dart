@@ -219,11 +219,17 @@ class ApiClient {
   }
 
   // HUELLAS
-  Future<Result<List<HuellaApiModel>>> getHuellas() async {
+  Future<Result<List<HuellaApiModel>>> getHuellas({int? userId}) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('/api/rh/huellas/');
+      final Map<String, dynamic> queryParams = {};
+      if (userId != null) {
+        queryParams.addAll({
+          'usuario': userId,
+        });
+      }
+      final response = await dio.get('/api/rh/huellas/', queryParameters: queryParams);
       final result = (response.data as List)
       .map((json) => HuellaApiModel.fromJson(json))
       .toList();
@@ -247,10 +253,8 @@ class ApiClient {
       final result = HuellaApiModel.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
-      _log.error('ApiClient | DioException posting huella', error: e.response);
-      return Result.error(e);
+      return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
-      _log.error('ApiClient | Exception posting huella', error: e);
       return Result.error(e);
     } finally {
       dio.close();

@@ -4,6 +4,7 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class PracticantesRepositoryRemote extends PracticantesRepository {
@@ -15,13 +16,14 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
   final AppLogger _log;
   final ApiClient _apiClient;
 
+  List<User>? _cachedUsers;
   List<Puesto>? _cachedPuestos;
   List<Universidad>? _cachedUniversidades;
 
   @override
   Future<Result<List<Practicante>>> getPracticantes() async {
     try {
-      await Future.wait([_cachePuestos(), _cacheUniversidades()]);
+      await Future.wait([_cacheUsers(), _cachePuestos(), _cacheUniversidades()]);
     } on Exception catch (e) {
       _log.warning('Failed to cache dependencies for practicantes', error: e);
       return Result.error(e);
@@ -38,6 +40,7 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
       final practicantes = resultPracticantes.value
       .map((apiPracticante) => Practicante.fromApiModel(
         model: apiPracticante,
+        users: _cachedUsers!,
         universidades: _cachedUniversidades!,
         puestos: _cachedPuestos!,
       )).toList();
@@ -51,7 +54,7 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
   @override
   Future<Result<Practicante>> getPracticante(int id) async {
     try {
-      await Future.wait([_cachePuestos(), _cacheUniversidades()]);
+      await Future.wait([_cacheUsers(), _cachePuestos(), _cacheUniversidades()]);
     } on Exception catch (e) {
       return Result.error(e);
     }
@@ -66,6 +69,7 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
       }
       final practicante = Practicante.fromApiModel(
         model: resultPracticante.value,
+        users: _cachedUsers!,
         puestos: _cachedPuestos!,
         universidades: _cachedUniversidades!,
       );
@@ -73,6 +77,19 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
     } on Exception catch (e) {
       _log.error('Failed mapping practicante with ID $id', error: e);
       return Result.error(e);
+    }
+  }
+
+  Future<void> _cacheUsers() async {
+    if (_cachedUsers == null) {
+      final resultUsers = await _apiClient.getUsers();
+      switch (resultUsers) {
+        case Error():
+          throw resultUsers.error;
+        case Ok():
+      }
+
+      _cachedUsers = resultUsers.value;
     }
   }
 
