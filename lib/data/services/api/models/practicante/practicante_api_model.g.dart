@@ -33,12 +33,12 @@ _PracticanteApiModel _$PracticanteApiModelFromJson(Map<String, dynamic> json) =>
       domicilioUrl: json['comprobante_domicilio'] as String?,
       cartaPresentacionUrl: json['carta_presentacion'] as String?,
       cvUrl: json['curriculum_vitae'] as String?,
-      registeredAt: json['fechaAlta'] == null
+      registeredAt: json['fecha_alta'] == null
           ? null
-          : DateTime.parse(json['fechaAlta'] as String),
-      terminatedAt: json['fechaBaja'] == null
+          : DateTime.parse(json['fecha_alta'] as String),
+      terminatedAt: json['fecha_baja'] == null
           ? null
-          : DateTime.parse(json['fechaBaja'] as String),
+          : DateTime.parse(json['fecha_baja'] as String),
     );
 
 Map<String, dynamic> _$PracticanteApiModelToJson(
@@ -69,8 +69,8 @@ Map<String, dynamic> _$PracticanteApiModelToJson(
   'comprobante_domicilio': instance.domicilioUrl,
   'carta_presentacion': instance.cartaPresentacionUrl,
   'curriculum_vitae': instance.cvUrl,
-  'fechaAlta': instance.registeredAt?.toIso8601String(),
-  'fechaBaja': instance.terminatedAt?.toIso8601String(),
+  'fecha_alta': instance.registeredAt?.toIso8601String(),
+  'fecha_baja': instance.terminatedAt?.toIso8601String(),
 };
 
 const _$StatusPracticanteEnumMap = {

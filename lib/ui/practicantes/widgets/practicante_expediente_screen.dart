@@ -62,7 +62,7 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                           crossAxisAlignment: .start,
                           children: [
                             Text('Expediente Digital', style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
-                            Text(practicante.name, style: TextTheme.of(context).titleSmall),
+                            Text(practicante.base.nombre, style: TextTheme.of(context).titleSmall),
                           ],
                         ),
                       ],

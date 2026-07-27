@@ -30,7 +30,7 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
       }
     }
 
-    final index = _cachedPracticantes!.indexWhere((practicante) => practicante.id == id);
+    final index = _cachedPracticantes!.indexWhere((practicante) => practicante.base.id == id);
     if (index == -1) {
       return Result.error(Exception('Practicante not found'));
     }

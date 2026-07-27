@@ -57,9 +57,9 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     @JsonKey(name: 'curriculum_vitae')
     String? cvUrl,
 
-    @JsonKey(name: 'fechaAlta')
+    @JsonKey(name: 'fecha_alta')
     DateTime? registeredAt,
-    @JsonKey(name: 'fechaBaja')
+    @JsonKey(name: 'fecha_baja')
     DateTime? terminatedAt,
   }) = _PracticanteApiModel;
 

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
-import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_card.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_status_chip.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class PracticantesScreen extends StatefulWidget {
@@ -120,8 +123,11 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                     mainAxisExtent: 350,
                   ),
                   itemBuilder: (context, index) {
-                    return PracticanteCard(
-                      practicante: widget.viewmodel.practicantes[index],
+                    final practicante = widget.viewmodel.practicantes[index];
+                    return BaseEmpleadoCard(
+                      baseEmpleado: practicante.base,
+                      statusChip: PracticanteStatusChip(status: practicante.status!),
+                      onExpedientePressed: () => context.go(Routes.expedienteOfPracticante(practicante)),
                     );
                   }
                 );
