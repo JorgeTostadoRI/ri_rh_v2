@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.da
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
@@ -369,6 +370,25 @@ class ApiClient {
       final response = await dio.get('/api/usuarios/obtener-todos-usuarios-simple/');
       final result = (response.data as List)
       .map((json) => User.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // HORARIOS
+  Future<Result<List<Horario>>> getHorarios() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/horarios/');
+      final result = (response.data as List)
+      .map((json) => Horario.fromJson(json))
       .toList();
       return Result.ok(result);
     } on DioException catch (e) {

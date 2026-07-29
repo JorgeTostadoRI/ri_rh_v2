@@ -7,10 +7,12 @@ import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_mo
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
+import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
+import 'package:ri_rh_v2/utils/time/time.dart';
 
 class LocalDataService {
   List<Departamento> getDepartamentos() {
@@ -276,6 +278,26 @@ class LocalDataService {
     ))
     .toList();
     return practicantes;
+  }
+
+  List<Horario> getHorarios() {
+    return [
+      Horario(
+        id: 1,
+        name: 'Diurno',
+        firstStartTime: Time(7),
+        firstEndTime: Time(12),
+        secondStartTime: Time(13),
+        secondEndTime: Time(17),
+        mon: true,
+        tue: true,
+        wed: true,
+        thu: true,
+        fri: true,
+        sat: false,
+        sun: false,
+      ),
+    ];
   }
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {
