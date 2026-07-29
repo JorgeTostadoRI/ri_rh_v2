@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AsistenciaApiModel implements DiagnosticableTreeMixin {
 
- int? get id; DateTime? get createdAt; DateTime? get updatedAt; String? get type; bool? get isLate;@JsonKey(name: 'photo') String? get photoPath;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get photoFile; int get usuario;
+ int get id; DateTime? get createdAt; DateTime? get updatedAt; AsistenciaType? get type; int get minutesLate;@JsonKey(name: 'photo') String? get photoUrl;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get photoFile;@JsonKey(name: 'usuario') int get userRef;@JsonKey(name: 'horario') int? get horarioRef;
 /// Create a copy of AsistenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $AsistenciaApiModelCopyWith<AsistenciaApiModel> get copyWith => _$AsistenciaApiM
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'AsistenciaApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('isLate', isLate))..add(DiagnosticsProperty('photoPath', photoPath))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('usuario', usuario));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('minutesLate', minutesLate))..add(DiagnosticsProperty('photoUrl', photoUrl))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('userRef', userRef))..add(DiagnosticsProperty('horarioRef', horarioRef));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AsistenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.isLate, isLate) || other.isLate == isLate)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.usuario, usuario) || other.usuario == usuario));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AsistenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.userRef, userRef) || other.userRef == userRef)&&(identical(other.horarioRef, horarioRef) || other.horarioRef == horarioRef));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,type,isLate,photoPath,photoFile,usuario);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,type,minutesLate,photoUrl,photoFile,userRef,horarioRef);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AsistenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, type: $type, isLate: $isLate, photoPath: $photoPath, photoFile: $photoFile, usuario: $usuario)';
+  return 'AsistenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, type: $type, minutesLate: $minutesLate, photoUrl: $photoUrl, photoFile: $photoFile, userRef: $userRef, horarioRef: $horarioRef)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $AsistenciaApiModelCopyWith<$Res>  {
   factory $AsistenciaApiModelCopyWith(AsistenciaApiModel value, $Res Function(AsistenciaApiModel) _then) = _$AsistenciaApiModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, String? type, bool? isLate,@JsonKey(name: 'photo') String? photoPath,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, int usuario
+ int id, DateTime? createdAt, DateTime? updatedAt, AsistenciaType? type, int minutesLate,@JsonKey(name: 'photo') String? photoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile,@JsonKey(name: 'usuario') int userRef,@JsonKey(name: 'horario') int? horarioRef
 });
 
 
@@ -72,17 +72,18 @@ class _$AsistenciaApiModelCopyWithImpl<$Res>
 
 /// Create a copy of AsistenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? type = freezed,Object? isLate = freezed,Object? photoPath = freezed,Object? photoFile = freezed,Object? usuario = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? type = freezed,Object? minutesLate = null,Object? photoUrl = freezed,Object? photoFile = freezed,Object? userRef = null,Object? horarioRef = freezed,}) {
   return _then(AsistenciaApiModel(
-id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String?,isLate: freezed == isLate ? _self.isLate : isLate // ignore: cast_nullable_to_non_nullable
-as bool?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as AsistenciaType?,minutesLate: null == minutesLate ? _self.minutesLate : minutesLate // ignore: cast_nullable_to_non_nullable
+as int,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String?,photoFile: freezed == photoFile ? _self.photoFile : photoFile // ignore: cast_nullable_to_non_nullable
-as XFile?,usuario: null == usuario ? _self.usuario : usuario // ignore: cast_nullable_to_non_nullable
-as int,
+as XFile?,userRef: null == userRef ? _self.userRef : userRef // ignore: cast_nullable_to_non_nullable
+as int,horarioRef: freezed == horarioRef ? _self.horarioRef : horarioRef // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -167,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  AsistenciaType? type,  int minutesLate, @JsonKey(name: 'photo')  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile, @JsonKey(name: 'usuario')  int userRef, @JsonKey(name: 'horario')  int? horarioRef)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AsistenciaApiModel() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate,_that.photoPath,_that.photoFile,_that.usuario);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.minutesLate,_that.photoUrl,_that.photoFile,_that.userRef,_that.horarioRef);case _:
   return orElse();
 
 }
@@ -188,10 +189,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  AsistenciaType? type,  int minutesLate, @JsonKey(name: 'photo')  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile, @JsonKey(name: 'usuario')  int userRef, @JsonKey(name: 'horario')  int? horarioRef)  $default,) {final _that = this;
 switch (_that) {
 case _AsistenciaApiModel():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate,_that.photoPath,_that.photoFile,_that.usuario);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.minutesLate,_that.photoUrl,_that.photoFile,_that.userRef,_that.horarioRef);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +209,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  String? type,  bool? isLate, @JsonKey(name: 'photo')  String? photoPath, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  int usuario)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  AsistenciaType? type,  int minutesLate, @JsonKey(name: 'photo')  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile, @JsonKey(name: 'usuario')  int userRef, @JsonKey(name: 'horario')  int? horarioRef)?  $default,) {final _that = this;
 switch (_that) {
 case _AsistenciaApiModel() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate,_that.photoPath,_that.photoFile,_that.usuario);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.minutesLate,_that.photoUrl,_that.photoFile,_that.userRef,_that.horarioRef);case _:
   return null;
 
 }
@@ -223,17 +224,18 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.type,_that.isLate
 @JsonSerializable()
 
 class _AsistenciaApiModel with DiagnosticableTreeMixin implements AsistenciaApiModel {
-  const _AsistenciaApiModel({this.id, this.createdAt, this.updatedAt, this.type, this.isLate, @JsonKey(name: 'photo') this.photoPath, @JsonKey(includeFromJson: false, includeToJson: false) this.photoFile, required this.usuario});
+  const _AsistenciaApiModel({this.id = 0, this.createdAt, this.updatedAt, this.type, this.minutesLate = 0, @JsonKey(name: 'photo') this.photoUrl, @JsonKey(includeFromJson: false, includeToJson: false) this.photoFile, @JsonKey(name: 'usuario') required this.userRef, @JsonKey(name: 'horario') this.horarioRef});
   factory _AsistenciaApiModel.fromJson(Map<String, dynamic> json) => _$AsistenciaApiModelFromJson(json);
 
-@override final  int? id;
+@override@JsonKey() final  int id;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
-@override final  String? type;
-@override final  bool? isLate;
-@override@JsonKey(name: 'photo') final  String? photoPath;
+@override final  AsistenciaType? type;
+@override@JsonKey() final  int minutesLate;
+@override@JsonKey(name: 'photo') final  String? photoUrl;
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  XFile? photoFile;
-@override final  int usuario;
+@override@JsonKey(name: 'usuario') final  int userRef;
+@override@JsonKey(name: 'horario') final  int? horarioRef;
 
 /// Create a copy of AsistenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
@@ -249,21 +251,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'AsistenciaApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('isLate', isLate))..add(DiagnosticsProperty('photoPath', photoPath))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('usuario', usuario));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('minutesLate', minutesLate))..add(DiagnosticsProperty('photoUrl', photoUrl))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('userRef', userRef))..add(DiagnosticsProperty('horarioRef', horarioRef));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AsistenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.isLate, isLate) || other.isLate == isLate)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.usuario, usuario) || other.usuario == usuario));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AsistenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.userRef, userRef) || other.userRef == userRef)&&(identical(other.horarioRef, horarioRef) || other.horarioRef == horarioRef));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,type,isLate,photoPath,photoFile,usuario);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,type,minutesLate,photoUrl,photoFile,userRef,horarioRef);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AsistenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, type: $type, isLate: $isLate, photoPath: $photoPath, photoFile: $photoFile, usuario: $usuario)';
+  return 'AsistenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, type: $type, minutesLate: $minutesLate, photoUrl: $photoUrl, photoFile: $photoFile, userRef: $userRef, horarioRef: $horarioRef)';
 }
 
 
@@ -274,7 +276,7 @@ abstract mixin class _$AsistenciaApiModelCopyWith<$Res> implements $AsistenciaAp
   factory _$AsistenciaApiModelCopyWith(_AsistenciaApiModel value, $Res Function(_AsistenciaApiModel) _then) = __$AsistenciaApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, String? type, bool? isLate,@JsonKey(name: 'photo') String? photoPath,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, int usuario
+ int id, DateTime? createdAt, DateTime? updatedAt, AsistenciaType? type, int minutesLate,@JsonKey(name: 'photo') String? photoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile,@JsonKey(name: 'usuario') int userRef,@JsonKey(name: 'horario') int? horarioRef
 });
 
 
@@ -291,17 +293,18 @@ class __$AsistenciaApiModelCopyWithImpl<$Res>
 
 /// Create a copy of AsistenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? type = freezed,Object? isLate = freezed,Object? photoPath = freezed,Object? photoFile = freezed,Object? usuario = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? type = freezed,Object? minutesLate = null,Object? photoUrl = freezed,Object? photoFile = freezed,Object? userRef = null,Object? horarioRef = freezed,}) {
   return _then(_AsistenciaApiModel(
-id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String?,isLate: freezed == isLate ? _self.isLate : isLate // ignore: cast_nullable_to_non_nullable
-as bool?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as AsistenciaType?,minutesLate: null == minutesLate ? _self.minutesLate : minutesLate // ignore: cast_nullable_to_non_nullable
+as int,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String?,photoFile: freezed == photoFile ? _self.photoFile : photoFile // ignore: cast_nullable_to_non_nullable
-as XFile?,usuario: null == usuario ? _self.usuario : usuario // ignore: cast_nullable_to_non_nullable
-as int,
+as XFile?,userRef: null == userRef ? _self.userRef : userRef // ignore: cast_nullable_to_non_nullable
+as int,horarioRef: freezed == horarioRef ? _self.horarioRef : horarioRef // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

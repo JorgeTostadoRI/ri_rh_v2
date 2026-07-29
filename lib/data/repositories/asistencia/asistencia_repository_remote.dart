@@ -16,26 +16,17 @@ class AsistenciaRepositoryRemote implements AsistenciaRepository {
     try {
       final asistenciaApiModel = AsistenciaApiModel(
         photoFile: asistencia.photoFile,
-        usuario: asistencia.usuario,
+        userRef: asistencia.user.id,
       );
 
       final result = await _apiClient.postAsistencia(asistenciaApiModel);
       switch (result) {
         case Ok():
-          final asistencia = result.value;
-          return Result.ok(Asistencia(
-            id: asistencia.id,
-            createdAt: asistencia.createdAt,
-            updatedAt: asistencia.updatedAt,
-            type: AsistenciaType.fromString(asistencia.type!),
-            isLate: asistencia.isLate,
-            photoPath: asistencia.photoPath,
-            usuario: asistencia.usuario,
-          ));
+          final createdAsistencia = Asistencia.fromApiModel(result.value, user: asistencia.user);
+          return Result.ok(createdAsistencia);
         case Error():
           return Result.error(result.error);
       }
-
     } on Exception catch(error) {
       return Result.error(error);
     }

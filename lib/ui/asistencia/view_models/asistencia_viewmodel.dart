@@ -88,10 +88,14 @@ class AsistenciaViewmodel extends ChangeNotifier {
         return Result.error(Exception('Failed to log in'));
     }
 
-    final result = await _asistenciaRepository.createAsistencia(Asistencia(
-      usuario: _userinfo!.id,
-      photoFile: photo,
-    ));
+    final currentUser = _authRepository.getCurrentUser();
+
+    final result = await _asistenciaRepository.createAsistencia(
+      Asistencia(
+        user: currentUser!,
+        photoFile: photo,
+      )
+    );
 
     switch(result) {
       case Ok():
@@ -117,7 +121,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
     }
 
     final asistencia = Asistencia(
-      usuario: user.value.id,
+      user: user.value,
       photoFile: photo,
     );
 

@@ -15,7 +15,6 @@ class AsistenciaRepositoryLocal extends AsistenciaRepository {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       type: _asistenciaType,
-      isLate: false,
     );
     _asistencias.add(asistenciaWithId);
 
