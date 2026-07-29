@@ -5,7 +5,9 @@ import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_mode
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
@@ -389,6 +391,44 @@ class ApiClient {
       final response = await dio.get('/api/rh/horarios/');
       final result = (response.data as List)
       .map((json) => Horario.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // DEPARTAMENTOS
+  Future<Result<List<Departamento>>> getDepartamentos() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/departamentos/');
+      final result = (response.data as List)
+      .map((json) => Departamento.fromJson(json))
+      .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // REPORTES
+  Future<Result<List<ReporteAsistenciaResponse>>> getReporteAsistencia(DateTime start, DateTime end) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/reportes/asistencias/');
+      final result = (response.data as List)
+      .map((json) => ReporteAsistenciaResponse.fromJson(json))
       .toList();
       return Result.ok(result);
     } on DioException catch (e) {
