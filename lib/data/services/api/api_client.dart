@@ -422,14 +422,16 @@ class ApiClient {
   }
 
   // REPORTES
-  Future<Result<List<ReporteAsistenciaResponse>>> getReporteAsistencia(DateTime start, DateTime end) async {
+  Future<Result<ReporteAsistenciaResponse>> getReporteAsistencia(DateTime start, DateTime end) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('/api/rh/reportes/asistencias/');
-      final result = (response.data as List)
-      .map((json) => ReporteAsistenciaResponse.fromJson(json))
-      .toList();
+      final Map<String, dynamic> queryParams = {
+        'start_date': start.toIso8601String(),
+        'end_date': end.toIso8601String(),
+      };
+      final response = await dio.get('/api/rh/reportes/asistencias/', queryParameters: queryParams);
+      final result = ReporteAsistenciaResponse.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
