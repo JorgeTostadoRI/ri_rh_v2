@@ -11,7 +11,7 @@ part 'asistencia.g.dart';
 enum AsistenciaType {
   @JsonValue('in')
   entry,
-  @JsonValue('exit')
+  @JsonValue('out')
   exit;
 
   factory AsistenciaType.fromString(String value) {

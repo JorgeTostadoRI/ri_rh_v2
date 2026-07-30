@@ -36,5 +36,5 @@ Map<String, dynamic> _$AsistenciaApiModelToJson(_AsistenciaApiModel instance) =>
 
 const _$AsistenciaTypeEnumMap = {
   AsistenciaType.entry: 'in',
-  AsistenciaType.exit: 'exit',
+  AsistenciaType.exit: 'out',
 };
