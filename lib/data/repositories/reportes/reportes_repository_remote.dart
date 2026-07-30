@@ -67,6 +67,7 @@ class ReportesRepositoryRemote extends ReportesRepository {
       liderPermitido: false,
     );
 
+    final List<Asistencia> attendanceList = [];
     final Map<String, List<Asistencia>> attendanceByDate = {};
     for (final day in dates) {
       attendanceByDate[day.toShortIsoString()] = [];
@@ -77,6 +78,7 @@ class ReportesRepositoryRemote extends ReportesRepository {
       final dayKey = day.toShortIsoString();
       final asistencia = Asistencia.fromApiModel(apiAsistencia, user: user);
 
+      attendanceList.add(asistencia);
       if (!attendanceByDate.containsKey(dayKey)) {
         attendanceByDate[dayKey] = [asistencia];
         continue;
@@ -86,6 +88,7 @@ class ReportesRepositoryRemote extends ReportesRepository {
 
     final item = ReporteAsistenciaItem(
       user: user,
+      attendance: attendanceList,
       attendanceByDate: attendanceByDate,
       totalMinutesLate: userReport.totalMinutesLate,
     );

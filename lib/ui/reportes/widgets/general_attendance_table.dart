@@ -14,11 +14,20 @@ class GeneralAttendanceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
     final yMd = DateFormat.yMd();
     final jm = DateFormat.jm();
     final periodCellWidth = 140.0;
 
     return DataTable(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFAF5),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.fromBorderSide(BorderSide(
+          color: borderColor,
+          width: 0.8,
+        ))
+      ),
       columns: [
         DataColumn(
           label: Text('EMPLEADO'),
@@ -58,13 +67,25 @@ class GeneralAttendanceTable extends StatelessWidget {
         reporte.items.length,
         (int index) {
           final item = reporte.items[index];
-          return DataRow(
+          return DataRow.byIndex(
+            index: index,
+            color: WidgetStateProperty.resolveWith<Color?>((states) {
+              return index.isOdd ? const Color(0xFFFFFAF5) : Colors.white; 
+            }),
             cells: [
               DataCell(
-                Text(item.user.nombre),
+                Text(
+                  item.user.nombre,
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontSize: 14,
+                  )
+                ),
               ),
               DataCell(
-                Text(item.user.departamento.nombre), 
+                Text(
+                  item.user.departamento.nombre,
+                  style: textTheme.labelLarge,
+                ),
               ),
               ...List<DataCell>.generate(
                 reporte.dates.length,

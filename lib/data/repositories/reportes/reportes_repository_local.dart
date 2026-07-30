@@ -33,13 +33,16 @@ class ReportesRepositoryLocal extends ReportesRepository {
     int sequentialId = 1;
 
     for (final user in users) {
+      final List<Asistencia> attendanceList = [];
       final Map<String, List<Asistencia>> attendanceByDate = {};
       for (final day in dates) {
         final attendanceForDay = _generateAttendanceForDay(sequentialId, user, null);
+        attendanceList.addAll(attendanceForDay);
         attendanceByDate[day.toShortIsoString()] = attendanceForDay;
       }
       final item = ReporteAsistenciaItem(
         user: user,
+        attendance: attendanceList,
         attendanceByDate: attendanceByDate,
         totalMinutesLate: 0,
       );

@@ -11,10 +11,12 @@ class StatusChip extends StatelessWidget {
     super.key,
     required this.type,
     required this.label,
+    this.mouseCursor,
   });
 
   final StatusChipType type;
   final String label;
+  final MouseCursor? mouseCursor;
 
   Color get bgColor {
     return switch (type) {
@@ -40,7 +42,7 @@ class StatusChip extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
-      mouseCursor: SystemMouseCursors.click,
+      mouseCursor: mouseCursor,
       label: Text(
         label,
         style: TextStyle(

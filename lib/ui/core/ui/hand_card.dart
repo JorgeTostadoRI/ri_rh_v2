@@ -106,6 +106,7 @@ class _FingerStatus extends StatelessWidget {
           child: StatusChip(
             type: finger.scanned ? StatusChipType.success : StatusChipType.failure,
             label: finger.scanned ? 'ESCANEADO' : 'PENDIENTE',
+            mouseCursor: SystemMouseCursors.click,
           ),
         )
       ],

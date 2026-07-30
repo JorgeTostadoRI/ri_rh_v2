@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/core/ui/metric_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/general_attendance_table.dart';
+import 'package:ri_rh_v2/ui/reportes/widgets/individual_attendance_table.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class ReporteAsistenciaScreen extends StatefulWidget {
@@ -23,8 +24,6 @@ class ReporteAsistenciaScreen extends StatefulWidget {
 }
 
 class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
-  final ScrollController _tableController = ScrollController();
-
   int viewSelectIndex = 0;
   final List<String> viewSelectionLabels = ['Empresa', 'Empleados'];
 
@@ -37,12 +36,6 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
       return dateFormat.format(start);
     }
     return '${dateFormat.format(start)} - ${dateFormat.format(end)}';
-  }
-
-  @override
-  void dispose() {
-    _tableController.dispose();
-    super.dispose();
   }
 
   @override
@@ -160,21 +153,72 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                   );
                 }
 
-                return Scrollbar(
-                  controller: _tableController,
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    scrollDirection: .horizontal,
-                    controller: _tableController,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(minWidth: 800),
-                      child: GeneralAttendanceTable(reporte: widget.viewmodel.reporte),
-                    ),
-                  ),
-                );
+                final reporte = widget.viewmodel.reporte;
+                if (viewSelectIndex == 0) {
+                  return _TableWrapper(
+                    table: GeneralAttendanceTable(reporte: reporte),
+                  );
+                }
+
+                if (viewSelectIndex == 1) {
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: reporte.items.length,
+                    itemBuilder: (context, index) {
+                      return _TableWrapper(
+                        table: IndividualAttendanceTable(
+                          item: reporte.items[index],
+                          dates: reporte.dates,
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, _) {
+                      return SizedBox(height: 32);
+                    },
+                  );
+                }
+
+                return SizedBox.shrink();
               },
-            )
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TableWrapper extends StatefulWidget {
+  final Widget table;
+
+  const _TableWrapper({
+    required this.table,
+  });
+
+  @override
+  State<_TableWrapper> createState() => _TableWrapperState();
+}
+
+class _TableWrapperState extends State<_TableWrapper> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        scrollDirection: .horizontal,
+        controller: _scrollController,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: 800),
+          child: widget.table,
         ),
       ),
     );
