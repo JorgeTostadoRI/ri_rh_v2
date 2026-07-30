@@ -35,24 +35,27 @@ class ReportesRepositoryLocal extends ReportesRepository {
     for (final user in users) {
       final Map<String, List<Asistencia>> attendanceByDate = {};
       for (final day in dates) {
-        final dateKey = day.toShortIsoString();
-        attendanceByDate[dateKey] = _generateAsistenciasList(sequentialId, user, null);
+        final attendanceForDay = _generateAttendanceForDay(sequentialId, user, null);
+        attendanceByDate[day.toShortIsoString()] = attendanceForDay;
       }
-      final item = ReporteAsistenciaItem(user: user, attendanceByDate: attendanceByDate);
+      final item = ReporteAsistenciaItem(
+        user: user,
+        attendanceByDate: attendanceByDate,
+        totalMinutesLate: 0,
+      );
       items.add(item);
     }
     return items;
   }
 
-  List<Asistencia> _generateAsistenciasList(int sequentialId, User user, Horario? horario) {
+  List<Asistencia> _generateAttendanceForDay(int sequentialId, User user, Horario? horario) {
     bool isEntry = true;
-    final today = DateTime.now();
     final List<Asistencia> asistencias = [];
     for (int i = 0; i < 4; i++) {
       final asistencia = Asistencia(
         id: sequentialId++,
-        createdAt: today,
-        updatedAt: today,
+        createdAt: _createdAtDatesByIndex[i],
+        updatedAt: _createdAtDatesByIndex[i],
         type: isEntry ? AsistenciaType.entry : AsistenciaType.exit,
         user: user,
         horario: horario,
@@ -62,4 +65,11 @@ class ReportesRepositoryLocal extends ReportesRepository {
     }
     return asistencias;
   }
+
+  static final _createdAtDatesByIndex = {
+    0: DateTime(2026, 7, 29, 7),
+    1: DateTime(2026, 7, 29, 12),
+    2: DateTime(2026, 7, 29, 13),
+    3: DateTime(2026, 7, 29, 17),
+  };
 }

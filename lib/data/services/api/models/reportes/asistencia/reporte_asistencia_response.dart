@@ -26,6 +26,7 @@ abstract class ReporteAsistenciaUser with _$ReporteAsistenciaUser {
     @JsonKey(name: 'departamento')
     required int departamentoRef,
     required List<AsistenciaApiModel> asistencia,
+    required int totalMinutesLate,
   }) = _ReporteAsistenciaUser;
 
   factory ReporteAsistenciaUser.fromJson(Map<String, Object?> json) => _$ReporteAsistenciaUserFromJson(json);

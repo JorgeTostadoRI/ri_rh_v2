@@ -35,6 +35,7 @@ _ReporteAsistenciaUser _$ReporteAsistenciaUserFromJson(
   asistencia: (json['asistencia'] as List<dynamic>)
       .map((e) => AsistenciaApiModel.fromJson(e as Map<String, dynamic>))
       .toList(),
+  totalMinutesLate: (json['total_minutes_late'] as num).toInt(),
 );
 
 Map<String, dynamic> _$ReporteAsistenciaUserToJson(
@@ -46,4 +47,5 @@ Map<String, dynamic> _$ReporteAsistenciaUserToJson(
   'rol': instance.rol,
   'departamento': instance.departamentoRef,
   'asistencia': instance.asistencia,
+  'total_minutes_late': instance.totalMinutesLate,
 };

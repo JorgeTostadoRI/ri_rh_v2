@@ -17,6 +17,7 @@ abstract class ReporteAsistencia with _$ReporteAsistencia {
 abstract class ReporteAsistenciaItem with _$ReporteAsistenciaItem {
   const factory ReporteAsistenciaItem({
     required User user,
-    required Map<DateTime, List<Asistencia>> attendanceByDate,
+    required Map<String, List<Asistencia>> attendanceByDate,
+    required int totalMinutesLate,
   }) = _ReporteAsistenciaItem;
 }

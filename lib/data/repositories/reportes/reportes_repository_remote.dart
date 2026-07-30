@@ -1,6 +1,7 @@
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
@@ -10,9 +11,11 @@ import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class ReportesRepositoryRemote extends ReportesRepository {
+  final AppLogger _log;
   final ApiClient _apiClient;
   
   ReportesRepositoryRemote({
+    required this._log,
     required this._apiClient,
   });
 
@@ -38,45 +41,53 @@ class ReportesRepositoryRemote extends ReportesRepository {
     }
 
     final List<ReporteAsistenciaItem> reporteItems = [];
-    for (final response in resultReporte.value) {
-      final item = _generateReporteAsistenciaItem(response);
+    final dates = listDaysBetween(start, end);
+    for (final userReport in resultReporte.value.users) {
+      final item = _generateReporteAsistenciaItem(userReport, dates);
       reporteItems.add(item);
     }
 
     final reporte = ReporteAsistencia(
       items: reporteItems,
-      dates: listDaysBetween(start, end),
+      dates: dates,
     );
     return Result.ok(reporte);
   }
 
-  ReporteAsistenciaItem _generateReporteAsistenciaItem(ReporteAsistenciaResponse resp) {
+  ReporteAsistenciaItem _generateReporteAsistenciaItem(ReporteAsistenciaUser userReport, List<DateTime> dates) {
     final user = User(
-      id: resp.id,
-      username: resp.username,
-      nombre: resp.nombre,
+      id: userReport.id,
+      username: userReport.username,
+      nombre: userReport.nombre,
       telefono: '',
       correo: '',
-      rol: resp.rol,
-      departamento: _cachedDepartamentos!.firstWhere((dep) => dep.id == resp.departamentoRef),
+      rol: userReport.rol,
+      departamento: _cachedDepartamentos!.firstWhere((dep) => dep.id == userReport.departamentoRef),
       departamentosPermitidos: [],
       liderPermitido: false,
     );
 
     final Map<String, List<Asistencia>> attendanceByDate = {};
-    for (final apiAsistencia in resp.asistencia) {
-      final dateKey = apiAsistencia.createdAt!.toShortIsoString();
+    for (final day in dates) {
+      attendanceByDate[day.toShortIsoString()] = [];
+    }
+
+    for (final apiAsistencia in userReport.asistencia) {
+      final day = apiAsistencia.createdAt!.toLocal().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+      final dayKey = day.toShortIsoString();
       final asistencia = Asistencia.fromApiModel(apiAsistencia, user: user);
-      if (!attendanceByDate.containsKey(dateKey)) {
-        attendanceByDate[dateKey] = [asistencia];
+
+      if (!attendanceByDate.containsKey(dayKey)) {
+        attendanceByDate[dayKey] = [asistencia];
         continue;
       }
-      attendanceByDate[dateKey]!.add(asistencia);
+      attendanceByDate[dayKey]!.add(asistencia);
     }
 
     final item = ReporteAsistenciaItem(
       user: user,
       attendanceByDate: attendanceByDate,
+      totalMinutesLate: userReport.totalMinutesLate,
     );
     return item;
   }

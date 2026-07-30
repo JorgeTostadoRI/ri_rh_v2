@@ -299,7 +299,7 @@ as List<DateTime>,
 /// @nodoc
 mixin _$ReporteAsistenciaItem implements DiagnosticableTreeMixin {
 
- User get user; Map<DateTime, List<Asistencia>> get attendanceByDate;
+ User get user; Map<String, List<Asistencia>> get attendanceByDate; int get totalMinutesLate;
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -311,21 +311,21 @@ $ReporteAsistenciaItemCopyWith<ReporteAsistenciaItem> get copyWith => _$ReporteA
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ReporteAsistenciaItem'))
-    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('attendanceByDate', attendanceByDate));
+    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('attendanceByDate', attendanceByDate))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.attendanceByDate, attendanceByDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.attendanceByDate, attendanceByDate)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(attendanceByDate));
+int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(attendanceByDate),totalMinutesLate);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ReporteAsistenciaItem(user: $user, attendanceByDate: $attendanceByDate)';
+  return 'ReporteAsistenciaItem(user: $user, attendanceByDate: $attendanceByDate, totalMinutesLate: $totalMinutesLate)';
 }
 
 
@@ -336,7 +336,7 @@ abstract mixin class $ReporteAsistenciaItemCopyWith<$Res>  {
   factory $ReporteAsistenciaItemCopyWith(ReporteAsistenciaItem value, $Res Function(ReporteAsistenciaItem) _then) = _$ReporteAsistenciaItemCopyWithImpl;
 @useResult
 $Res call({
- User user, Map<DateTime, List<Asistencia>> attendanceByDate
+ User user, Map<String, List<Asistencia>> attendanceByDate, int totalMinutesLate
 });
 
 
@@ -353,11 +353,12 @@ class _$ReporteAsistenciaItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? attendanceByDate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? attendanceByDate = null,Object? totalMinutesLate = null,}) {
   return _then(ReporteAsistenciaItem(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,attendanceByDate: null == attendanceByDate ? _self.attendanceByDate : attendanceByDate // ignore: cast_nullable_to_non_nullable
-as Map<DateTime, List<Asistencia>>,
+as Map<String, List<Asistencia>>,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of ReporteAsistenciaItem
@@ -451,10 +452,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( User user,  Map<DateTime, List<Asistencia>> attendanceByDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( User user,  Map<String, List<Asistencia>> attendanceByDate,  int totalMinutesLate)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaItem() when $default != null:
-return $default(_that.user,_that.attendanceByDate);case _:
+return $default(_that.user,_that.attendanceByDate,_that.totalMinutesLate);case _:
   return orElse();
 
 }
@@ -472,10 +473,10 @@ return $default(_that.user,_that.attendanceByDate);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( User user,  Map<DateTime, List<Asistencia>> attendanceByDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( User user,  Map<String, List<Asistencia>> attendanceByDate,  int totalMinutesLate)  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaItem():
-return $default(_that.user,_that.attendanceByDate);case _:
+return $default(_that.user,_that.attendanceByDate,_that.totalMinutesLate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -492,10 +493,10 @@ return $default(_that.user,_that.attendanceByDate);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( User user,  Map<DateTime, List<Asistencia>> attendanceByDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( User user,  Map<String, List<Asistencia>> attendanceByDate,  int totalMinutesLate)?  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaItem() when $default != null:
-return $default(_that.user,_that.attendanceByDate);case _:
+return $default(_that.user,_that.attendanceByDate,_that.totalMinutesLate);case _:
   return null;
 
 }
@@ -507,17 +508,18 @@ return $default(_that.user,_that.attendanceByDate);case _:
 
 
 class _ReporteAsistenciaItem with DiagnosticableTreeMixin implements ReporteAsistenciaItem {
-  const _ReporteAsistenciaItem({required this.user, required  Map<DateTime, List<Asistencia>> attendanceByDate}): _attendanceByDate = attendanceByDate;
+  const _ReporteAsistenciaItem({required this.user, required  Map<String, List<Asistencia>> attendanceByDate, required this.totalMinutesLate}): _attendanceByDate = attendanceByDate;
   
 
 @override final  User user;
- final  Map<DateTime, List<Asistencia>> _attendanceByDate;
-@override Map<DateTime, List<Asistencia>> get attendanceByDate {
+ final  Map<String, List<Asistencia>> _attendanceByDate;
+@override Map<String, List<Asistencia>> get attendanceByDate {
   if (_attendanceByDate is EqualUnmodifiableMapView) return _attendanceByDate;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_attendanceByDate);
 }
 
+@override final  int totalMinutesLate;
 
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
@@ -530,21 +532,21 @@ _$ReporteAsistenciaItemCopyWith<_ReporteAsistenciaItem> get copyWith => __$Repor
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ReporteAsistenciaItem'))
-    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('attendanceByDate', attendanceByDate));
+    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('attendanceByDate', attendanceByDate))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other._attendanceByDate, _attendanceByDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other._attendanceByDate, _attendanceByDate)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(_attendanceByDate));
+int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(_attendanceByDate),totalMinutesLate);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ReporteAsistenciaItem(user: $user, attendanceByDate: $attendanceByDate)';
+  return 'ReporteAsistenciaItem(user: $user, attendanceByDate: $attendanceByDate, totalMinutesLate: $totalMinutesLate)';
 }
 
 
@@ -555,7 +557,7 @@ abstract mixin class _$ReporteAsistenciaItemCopyWith<$Res> implements $ReporteAs
   factory _$ReporteAsistenciaItemCopyWith(_ReporteAsistenciaItem value, $Res Function(_ReporteAsistenciaItem) _then) = __$ReporteAsistenciaItemCopyWithImpl;
 @override @useResult
 $Res call({
- User user, Map<DateTime, List<Asistencia>> attendanceByDate
+ User user, Map<String, List<Asistencia>> attendanceByDate, int totalMinutesLate
 });
 
 
@@ -572,11 +574,12 @@ class __$ReporteAsistenciaItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? attendanceByDate = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? attendanceByDate = null,Object? totalMinutesLate = null,}) {
   return _then(_ReporteAsistenciaItem(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,attendanceByDate: null == attendanceByDate ? _self._attendanceByDate : attendanceByDate // ignore: cast_nullable_to_non_nullable
-as Map<DateTime, List<Asistencia>>,
+as Map<String, List<Asistencia>>,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
