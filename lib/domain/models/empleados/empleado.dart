@@ -4,6 +4,7 @@ import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.da
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
+import 'package:ri_rh_v2/utils/model_exception.dart';
 
 part 'empleado.freezed.dart';
 
@@ -39,58 +40,79 @@ abstract class Empleado with _$Empleado {
     required EmpleadoApiModel model,
     required List<User> users,
     required List<Puesto> puestos,
-  }) => Empleado(
-    base: BaseEmpleado(
-      id: model.id,
-      user: model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null,
-      puesto: puestos.firstWhere((puesto) => puesto.id == model.puestoRef),
-      nombre: model.nombre,
-      nacidoEn: model.fechaNacimiento,
-      clabeInterbancaria: model.clabeInterbancaria,
-      numeroContacto: model.numeroContacto,
-      contactoEmergencia: model.contactoEmergencia,
-      rfc: model.rfc,
-      curp: model.curp,
-      nss: model.nss,
-      direccion: model.direccion,
-      salario: model.salario,
-      registradoEn: model.registeredAt,
-      finalizadoEn: model.terminatedAt,
-      files: BaseEmpleadoFiles(
-        ineUrl: model.ineUrl,
-        actaNacimientoUrl: model.actaNacimientoUrl,
-        estadoCuentaUrl: model.estadoCuentaUrl,
-        curpUrl: model.curpUrl,
-        nssUrl: model.nssUrl,
-        domicilioUrl: model.comprobanteDomicilioUrl,
-        cvUrl: model.cvUrl,
+  }) {
+    late User? user;
+    late Puesto puesto;
+
+    try {
+      user = model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null;
+      puesto = puestos.firstWhere((puesto) => puesto.id == model.puestoRef);
+    } on StateError {
+
+      throw ModelException(
+        'Failed to find element for Empleado',
+        context: {
+          'model': 'Empleado',
+          'id': model.id,
+          'userRef': model.userRef,
+          'puestoRef': model.puestoRef,
+        },
+      );
+    }
+
+    return Empleado(
+      base: BaseEmpleado(
+        id: model.id,
+        user: user,
+        puesto: puesto,
+        nombre: model.nombre,
+        nacidoEn: model.fechaNacimiento,
+        clabeInterbancaria: model.clabeInterbancaria,
+        numeroContacto: model.numeroContacto,
+        contactoEmergencia: model.contactoEmergencia,
+        rfc: model.rfc,
+        curp: model.curp,
+        nss: model.nss,
+        direccion: model.direccion,
+        salario: model.salario,
+        registradoEn: model.registeredAt,
+        finalizadoEn: model.terminatedAt,
+        files: BaseEmpleadoFiles(
+          ineUrl: model.ineUrl,
+          actaNacimientoUrl: model.actaNacimientoUrl,
+          estadoCuentaUrl: model.estadoCuentaUrl,
+          curpUrl: model.curpUrl,
+          nssUrl: model.nssUrl,
+          domicilioUrl: model.comprobanteDomicilioUrl,
+          cvUrl: model.cvUrl,
+        ),
       ),
-    ),
-    escolaridad: model.escolaridad,
-    montoRetencionInfonavit: model.montoRetencionInfonavit,
-    estatus: model.estatus,
-    antiguedad: model.antiguedad,
-    diasVacaciones: model.diasVacaciones,
-    alta: AltaEmpleo(
-      constanciaEstudioUrl: model.constanciaEstudioUrl,
-      constanciaSituacionFiscalUrl: model.constanciaSituacionFiscalUrl,
-      altaImssUrl: model.altaImssUrl,
-      avisoInfonavitUrl: model.avisoInfonavitUrl,
-      cartaRecomendacion1Url: model.cartaRecomendacion1Url,
-      cartaRecomendacion2Url: model.cartaRecomendacion2Url,
-      cartaRecomendacion3Url: model.cartaRecomendacion3Url,
-      cartaNoAntecedentesPenalesUrl: model.cartaNoAntecedentesPenalesUrl,
-      contratoLaboralUrl: model.contratoLaboralUrl,
-      cartaOfertaUrl: model.cartaOfertaUrl,
-      examenMedicoUrl: model.examenMedicoUrl,
-    ),
-    baja: BajaEmpleo(
-      cartaRenunciaUrl: model.cartaRenunciaUrl,
-      finiquitoUrl: model.finiquitoUrl,
-      bajaImssUrl: model.bajaImssUrl,
-      comprobanteFiniquitoUrl: model.comprobanteFiniquitoUrl,
-    ),
-  );
+      escolaridad: model.escolaridad,
+      montoRetencionInfonavit: model.montoRetencionInfonavit,
+      estatus: model.estatus,
+      antiguedad: model.antiguedad,
+      diasVacaciones: model.diasVacaciones,
+      alta: AltaEmpleo(
+        constanciaEstudioUrl: model.constanciaEstudioUrl,
+        constanciaSituacionFiscalUrl: model.constanciaSituacionFiscalUrl,
+        altaImssUrl: model.altaImssUrl,
+        avisoInfonavitUrl: model.avisoInfonavitUrl,
+        cartaRecomendacion1Url: model.cartaRecomendacion1Url,
+        cartaRecomendacion2Url: model.cartaRecomendacion2Url,
+        cartaRecomendacion3Url: model.cartaRecomendacion3Url,
+        cartaNoAntecedentesPenalesUrl: model.cartaNoAntecedentesPenalesUrl,
+        contratoLaboralUrl: model.contratoLaboralUrl,
+        cartaOfertaUrl: model.cartaOfertaUrl,
+        examenMedicoUrl: model.examenMedicoUrl,
+      ),
+      baja: BajaEmpleo(
+        cartaRenunciaUrl: model.cartaRenunciaUrl,
+        finiquitoUrl: model.finiquitoUrl,
+        bajaImssUrl: model.bajaImssUrl,
+        comprobanteFiniquitoUrl: model.comprobanteFiniquitoUrl,
+      ),
+    );
+  }
 }
 
 @freezed

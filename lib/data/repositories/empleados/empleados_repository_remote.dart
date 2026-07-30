@@ -42,12 +42,17 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
       case Ok():
     }
 
-    final empleado = Empleado.fromApiModel(
-      model: resultEmpleado.value,
-      users: _cachedUsers!,
-      puestos: _cachedPuestos!,
-    );
-    return Result.ok(empleado);
+    try {
+      final empleado = Empleado.fromApiModel(
+        model: resultEmpleado.value,
+        users: _cachedUsers!,
+        puestos: _cachedPuestos!,
+      );
+      return Result.ok(empleado);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed mapping empleado', error: e, stackTrace: stackTrace);
+      return Result.error(e);
+    }
   }
 
   @override
@@ -70,12 +75,17 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
       case Ok():
     }
 
-    _cachedEmpleados = result.value
-    .map((apiEmpleado) => Empleado.fromApiModel(
-      model: apiEmpleado,
-      users: _cachedUsers!,
-      puestos: _cachedPuestos!,
-    )).toList();
+    try {
+      _cachedEmpleados = result.value
+      .map((apiEmpleado) => Empleado.fromApiModel(
+        model: apiEmpleado,
+        users: _cachedUsers!,
+        puestos: _cachedPuestos!,
+      )).toList();
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed to map empleados', error: e, stackTrace: stackTrace);
+      return Result.error(e);
+    }
     _cacheTime = DateTime.now();
 
     return Result.ok(_cachedEmpleados!);

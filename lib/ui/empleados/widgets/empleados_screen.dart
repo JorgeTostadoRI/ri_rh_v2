@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleado_status_chip.dart';
@@ -96,16 +97,25 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                 }
             
                 if (widget.viewmodel.load.error) {
-                  return Column(
-                    spacing: 32,
-                    children: [
-                      const Text('No se pudieron cargar los empleados'),
-                      ElevatedButton.icon(
-                        onPressed: () => widget.viewmodel.load.execute(),
-                        icon: Icon(LucideIcons.rotateCcw),
-                        label: Text('Reintentar')
-                      ),
-                    ],
+                  return Center(
+                    child: Column(
+                      spacing: 32,
+                      crossAxisAlignment: .center,
+                      children: [
+                        const Text('No se pudieron cargar los empleados'),
+                        Text(
+                          widget.viewmodel.load.result.toString(),
+                          style: TextStyle(
+                            color: errorColor,
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () => widget.viewmodel.load.execute(),
+                          icon: Icon(LucideIcons.rotateCcw),
+                          label: Text('Reintentar')
+                        ),
+                      ],
+                    ),
                   );
                 }
             
