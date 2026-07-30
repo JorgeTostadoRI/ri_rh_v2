@@ -22,6 +22,9 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_re
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository.dart';
+import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
@@ -93,6 +96,11 @@ Future<List<SingleChildWidget>> get providersLocal async {
         localDataService: context.read(),
       ) as PracticantesRepository
     ),
+    Provider(create: (context) =>
+      ReportesRepositoryLocal(
+        localDataService: context.read(),
+      ) as ReportesRepository
+    ),
   ];
 }
 
@@ -162,6 +170,12 @@ Future<List<SingleChildWidget>> get providersRemote async {
         log: context.read(),
         apiClient: context.read(),
       ) as PracticantesRepository
+    ),
+    Provider(create: (context) =>
+      ReportesRepositoryRemote(
+        log: context.read(),
+        apiClient: context.read(),
+      )as ReportesRepository
     ),
   ];
 }

@@ -114,6 +114,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                       _buildNavItem(LucideIcons.users, 'Empleados', Routes.empleados),
                       _buildNavItem(LucideIcons.school, 'Practicantes', Routes.practicantes),
                       _buildNavItem(LucideIcons.alertCircle, 'Incidencias', Routes.incidencias),
+                      _buildNavItem(LucideIcons.clipboardList, 'Reportes', Routes.reportes),
                     ],
                   );
                 }

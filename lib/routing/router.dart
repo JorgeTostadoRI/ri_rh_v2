@@ -29,6 +29,8 @@ import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart'
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_expediente_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_huellas_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicantes_screen.dart';
+import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/reportes/widgets/reporte_asistencia_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
   initialLocation: Routes.home,
@@ -217,6 +219,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             ),
           ],
         ),
+        GoRoute(
+          path: Routes.reportes,
+          builder: (context, state) {
+            return ReporteAsistenciaScreen(
+              viewmodel: ReporteAsistenciaViewmodel(
+                log: context.read(),
+                reportesRepository: context.read(),
+              ),
+            );
+          }
+        ),
       ],
     ),
   ],
@@ -256,6 +269,7 @@ bool _requiresLogin(String location) {
   if (path == Routes.home) return true;
   if (path.startsWith(Routes.empleados)) return true;
   if (path.startsWith(Routes.practicantes)) return true;
+  if (path.startsWith(Routes.reportes)) return true;
 
   return false;
 }
