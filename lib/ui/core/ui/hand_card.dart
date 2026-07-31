@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
@@ -99,16 +100,24 @@ class _FingerStatus extends StatelessWidget {
             Text(nameOfFinger),
           ],
         ),
-        GestureDetector(
-          onTap: finger.scanned
-            ? () => onDelete(context, finger)
-            : () => onAdd(context, finger),
-          child: StatusChip(
+        // If scanner is not available just render the status
+        if (kIsWeb)
+          StatusChip(
             type: finger.scanned ? StatusChipType.success : StatusChipType.failure,
             label: finger.scanned ? 'ESCANEADO' : 'PENDIENTE',
-            mouseCursor: SystemMouseCursors.click,
           ),
-        )
+        // If scanner is available allow interaction
+        if (!kIsWeb)
+          GestureDetector(
+            onTap: finger.scanned
+              ? () => onDelete(context, finger)
+              : () => onAdd(context, finger),
+            child: StatusChip(
+              type: finger.scanned ? StatusChipType.success : StatusChipType.failure,
+              label: finger.scanned ? 'ESCANEADO' : 'PENDIENTE',
+              mouseCursor: SystemMouseCursors.click,
+            ),
+          ),
       ],
     );
   }
