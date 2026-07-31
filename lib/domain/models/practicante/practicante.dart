@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
+import 'package:ri_rh_v2/utils/model_exception.dart';
 
 part 'practicante.freezed.dart';
 
@@ -24,13 +25,35 @@ abstract class Practicante with _$Practicante {
     required List<User> users,
     required List<Puesto> puestos,
     required List<Universidad> universidades,
-  }) => Practicante(
+  }) {
+    late final User? user;
+    late final Puesto puesto;
+    late final Universidad university;
+
+    try {
+      user = model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null;
+      puesto = puestos.firstWhere((puesto) => puesto.id == model.puestoRef);
+      university = universidades.firstWhere((uni) => uni.id == model.universityRef);
+    } on StateError {
+      throw ModelException(
+        'Failed to find element for Practicante',
+        context: {
+          'model': 'Practicante',
+          'id': model.id,
+          'userRef': model.userRef,
+          'puestoRef': model.puestoRef,
+          'universityRef': model.universityRef,
+        },
+      );
+    }
+
+    return Practicante(
       base: BaseEmpleado(
         id: model.id,
-        user: model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null,
+        user: user,
         nombre: model.name,
         salario: model.salary,
-        puesto: puestos.firstWhere((puesto) => puesto.id == model.puestoRef),
+        puesto: puesto,
         nacidoEn: model.fechaNacimiento,
         clabeInterbancaria: model.clabeInterbancaria,
         numeroContacto: model.numeroContacto,
@@ -57,8 +80,9 @@ abstract class Practicante with _$Practicante {
       ),
       status: model.status,
       type: model.type,
-      university: universidades.firstWhere((uni) => uni.id == model.universityRef),
-  );
+      university: university,
+    );
+  }
 }
 
 @freezed

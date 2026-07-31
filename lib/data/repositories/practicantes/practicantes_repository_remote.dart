@@ -45,8 +45,8 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
         puestos: _cachedPuestos!,
       )).toList();
       return Result.ok(practicantes);
-    } on Exception catch (e) {
-      _log.error('Failed mapping practicantes', error: e);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed mapping practicantes', error: e, stackTrace: stackTrace);
       return Result.error(e);
     }
   }
@@ -74,8 +74,8 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
         universidades: _cachedUniversidades!,
       );
       return Result.ok(practicante);
-    } on Exception catch (e) {
-      _log.error('Failed mapping practicante with ID $id', error: e);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed mapping practicante', error: e, stackTrace: stackTrace);
       return Result.error(e);
     }
   }
