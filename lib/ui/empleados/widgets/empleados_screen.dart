@@ -52,6 +52,7 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
   @override
   void dispose() {
     _search.dispose();
+    _debouncer.dispose();
     super.dispose();
   }
 

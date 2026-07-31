@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/motd_list.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
+import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class AsistenciaScreen extends StatefulWidget {
   const AsistenciaScreen({
@@ -21,6 +22,7 @@ class AsistenciaScreen extends StatefulWidget {
 class _AsistenciaScreenState extends State<AsistenciaScreen> {
   CameraController? _controller;
   late Future<List<CameraDescription>> _getAvailableCameras;
+  final Debouncer _debouncer = Debouncer(milliseconds: 60000); // 1 minute
 
   void _onRegisterResult() {
     if (widget.viewmodel.register.completed || widget.viewmodel.register.error) {
@@ -31,14 +33,15 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   Future<void> _onScanResult() async {
     if (widget.viewmodel.scanFingerprint.completed) {
       widget.viewmodel.scanFingerprint.clearResult();
-      final cameras = await _getAvailableCameras;
-      await _initializeCameraController(cameras[0]);
+      await _initializeCamera();
 
       if (mounted) {
         if (_controller != null) {
           try {
             final imageFile = await _controller!.takePicture();
             widget.viewmodel.register.execute(imageFile);
+            // Dispose the camera after a while if it isn't used
+            _debouncer.run(_disposeCamera);
           } on CameraException {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -58,14 +61,24 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
     }
   }
 
-  Future<void> _initializeCameraController(CameraDescription camera) async {
+  Future<void> _initializeCamera() async {
+    final cameras = await _getAvailableCameras;
     if (_controller == null) {
       _controller = CameraController(
-        camera,
+        cameras[0],
         ResolutionPreset.medium,
       );
       await _controller!.initialize();
     }
+  }
+
+  void _disposeCamera() {
+    if (_controller == null) {
+      return;
+    }
+
+    _controller!.dispose();
+    _controller = null;
   }
 
   @override
@@ -91,6 +104,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   @override
   void dispose() {
     widget.viewmodel.dispose();
+    _debouncer.dispose();
     _controller?.dispose();
     super.dispose();
   }

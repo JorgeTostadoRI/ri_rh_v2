@@ -26,7 +26,7 @@ class FingerScanServiceImpl extends FingerScanService {
         onListen: _connectDevice,
         onCancel: _closeDevice,
       );
-      _log.debug('FingerScanService | Initialized');
+      _log.info('Initialized fingerprint scanner');
       _initialized = true;
     }
   }
@@ -37,7 +37,6 @@ class FingerScanServiceImpl extends FingerScanService {
       await _controller.close();
       _sdk.terminate();
       _initialized = false;
-      _log.debug('FingerScanService | Disposed');
     }
   }
 
@@ -59,16 +58,19 @@ class FingerScanServiceImpl extends FingerScanService {
       return;
     }
     _sdk.cache.add(template, fid);
+    _log.info('Added template FID $fid to scanner cache');
   }
 
   @override
   void delete(int fid) {
     _sdk.cache.delete(fid);
+    _log.info('Deleted template FID $fid from scanner cache');
   }
 
   @override
   void clear() {
     _sdk.cache.clear();
+    _log.info('Cleared scanner cache');
   }
 
   @override
@@ -84,7 +86,7 @@ class FingerScanServiceImpl extends FingerScanService {
 
     final capture = _device!.captureFingerprint();
     if (capture != null) {
-      _log.debug('FingerScanService | Captured a fingerprint');
+      _log.info('Scanner captured a fingerprint');
       _controller.add(capture.template);
     }
   }
@@ -96,7 +98,7 @@ class FingerScanServiceImpl extends FingerScanService {
     _device = _sdk.openDevice();
 
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-    _log.debug('FingerScanService | Connected device, listening for fingerprints...');
+    _log.info('Connected to scanner, listening for fingerprints...');
   }
 
   void _closeDevice() {
@@ -104,6 +106,6 @@ class FingerScanServiceImpl extends FingerScanService {
     _timer = null;
     _device?.close();
     _device = null;
-    _log.debug('FingerScanService | Disconnected device');
+    _log.info('Disconnected scanner');
   }
 }
