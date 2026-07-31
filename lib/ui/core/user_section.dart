@@ -15,7 +15,7 @@ class UserSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
-    final parts = user.nombre.split(' ');
+    final parts = user.nombre.trim().split(RegExp(r'\s+'));
     final initials = parts.map((part) => part.substring(0, 1)).take(2).join();
 
     return Row(
