@@ -31,7 +31,11 @@ abstract class Practicante with _$Practicante {
     late final Universidad university;
 
     try {
-      user = model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null;
+      if (model.userRef != 0 && users.any((user) => user.id == model.userRef)) {
+        user = users.firstWhere((user) => user.id == model.userRef);
+      } else {
+        user = null;
+      }
       puesto = puestos.firstWhere((puesto) => puesto.id == model.puestoRef);
       university = universidades.firstWhere((uni) => uni.id == model.universityRef);
     } on StateError {

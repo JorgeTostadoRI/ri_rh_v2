@@ -45,7 +45,11 @@ abstract class Empleado with _$Empleado {
     late Puesto puesto;
 
     try {
-      user = model.userRef != 0 ? users.firstWhere((user) => user.id == model.userRef) : null;
+      if (model.userRef != 0 && users.any((user) => user.id == model.userRef)) {
+        user = users.firstWhere((user) => user.id == model.userRef);
+      } else {
+        user = null;
+      }
       puesto = puestos.firstWhere((puesto) => puesto.id == model.puestoRef);
     } on StateError {
 
