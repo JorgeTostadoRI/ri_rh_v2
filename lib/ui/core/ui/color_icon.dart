@@ -6,6 +6,7 @@ class ColorIcon extends StatelessWidget {
   final Color? iconColor;
   final double width;
   final double height;
+  final BoxShape shape;
   final IconData icon;
 
   const ColorIcon({
@@ -14,6 +15,7 @@ class ColorIcon extends StatelessWidget {
     this.iconColor,
     this.width = 48.0,
     this.height = 48.0,
+    this.shape = BoxShape.rectangle,
     required this.icon,
   });
 
@@ -24,7 +26,8 @@ class ColorIcon extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: shape == BoxShape.rectangle ? BorderRadius.circular(15) : null,
+        shape: shape,
       ),
       child: Icon(icon, color: iconColor ?? primaryColor),
     );

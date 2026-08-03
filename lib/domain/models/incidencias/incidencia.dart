@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 part 'incidencia.freezed.dart';
 part 'incidencia.g.dart';
 
+@JsonEnum()
 enum IncidenciaState {
   @JsonValue('PE')
   pending,
@@ -12,6 +13,10 @@ enum IncidenciaState {
   rejected,
   @JsonValue('AP')
   approved,
+}
+
+extension IncidenciaStateValue on IncidenciaState {
+  String get jsonValue => _$IncidenciaStateEnumMap[this]!;
 }
 
 @freezed

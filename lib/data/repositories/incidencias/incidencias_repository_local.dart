@@ -1,5 +1,6 @@
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class IncidenciasRepositoryLocal extends IncidenciasRepository {
@@ -19,5 +20,11 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
     );
     _incidencias.add(incidenciaWithId);
     return const Result.ok(null);
+  }
+
+  @override
+  Future<Result<List<Incidencia>>> getIncidencias(String category, {IncidenciaQuery? query}) async {
+    final incidenciasOfCategory = _incidencias.where((incidencia) => incidencia.categoryId == category).toList();
+    return Result.ok(incidenciasOfCategory);
   }
 }

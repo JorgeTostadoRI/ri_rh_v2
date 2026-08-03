@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -95,6 +96,33 @@ class ApiClient {
       final result = Incidencia.fromJson(response.data).copyWith(
         categoryId: incidencia.categoryId,
       );
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<List<Incidencia>>> getIncidencias(String category, {IncidenciaQuery? query}) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final endpoint = '/api/rh/$category/';
+      final Map<String, dynamic> queryParams = {};
+      if (query != null) {
+        queryParams.addAll({
+          if (query.state != null)
+            'state': query.state!.jsonValue,
+        });
+      }
+      final response = await dio.get(endpoint, queryParameters: queryParams);
+      final result = (response.data as List)
+        .map((json) => Incidencia.fromJson(json))
+        .toList();
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));

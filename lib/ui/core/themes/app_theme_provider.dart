@@ -178,6 +178,12 @@ class AppThemeProvider extends ChangeNotifier {
       foregroundColor: Colors.white,
       backgroundColor: primaryColor,
     ),
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: primaryColor,
+      ),
+    ),
   );
 
   void toggleBrightness(bool value) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
@@ -80,22 +81,24 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.incidencias,
           builder: (context, state) {
             return IncidenciasScreen(
-              viewmodel: IncidenciasViewmodel(),
+              viewmodel: IncidenciasViewmodel(
+                authRepository: context.read(),
+                incidenciasRepository: context.read(),
+              ),
             );
           },
           routes: [
             GoRoute(
               path: Routes.newIncidencia,
               builder: (context, state) {
-                final incidenciasViewmodel = IncidenciasViewmodel();
-                final categoryIndex = incidenciasViewmodel.categories.indexWhere((e) => e.id == state.pathParameters['categoriaId']!);
+                final categoryIndex = incidenciaCategories.indexWhere((category) => category.id == state.pathParameters['categoriaId']!);
 
                 if (categoryIndex == -1) {
                   return const NotFoundScreen(message: 'Categoría no encontrada');
                 }
 
                 return NewIncidenciaScreen(
-                  category: incidenciasViewmodel.categories[categoryIndex],
+                  category: incidenciaCategories[categoryIndex],
                   viewmodel: NewIncidenciaViewmodel(
                     log: context.read(),
                     authRepository: context.read(),
