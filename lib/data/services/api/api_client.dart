@@ -133,6 +133,40 @@ class ApiClient {
     }
   }
 
+  Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final response = await dio.post('/api/rh/$category/$id/approve/');
+      final result = Incidencia.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<Incidencia>> rejectIncidencia(String category, int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final response = await dio.post('/api/rh/$category/$id/reject/');
+      final result = Incidencia.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // AVISOS
   Future<Result<List<Aviso>>> getAvisos({DateTime? query}) async {
     final dio = _dioFactory();

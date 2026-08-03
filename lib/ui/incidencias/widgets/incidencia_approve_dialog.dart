@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
@@ -37,12 +38,12 @@ class IncidenciaApproveDialog extends StatelessWidget {
       ),
       actions: [
         OutlinedButton.icon(
-          onPressed: () {},
+          onPressed: () => context.pop(IncidenciaState.rejected),
           icon: Icon(LucideIcons.x),
           label: Text('Rechazar'),
         ),
         ElevatedButton.icon(
-          onPressed: () {},
+          onPressed: () => context.pop(IncidenciaState.approved),
           icon: Icon(LucideIcons.circleCheckBig),
           label: Text('Aprobar'),
         ),

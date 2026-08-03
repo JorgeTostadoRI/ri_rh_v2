@@ -117,6 +117,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           builder: (context, state) {
             return PendingIncidenciasScreen(
               viewmodel: PendingIncidenciasViewmodel(
+                log: context.read(),
                 incidenciasRepository: context.read(),
               ),
             );

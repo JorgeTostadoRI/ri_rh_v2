@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
@@ -8,18 +9,28 @@ import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class PendingIncidenciasViewmodel extends ChangeNotifier {
+  final AppLogger _log;
   final IncidenciasRepository _incidenciasRepository;
   
   PendingIncidenciasViewmodel({
+    required this._log,
     required this._incidenciasRepository,
   }) {
     load = Command0(_load)..execute();
+    approve = Command1(_approve);
+    reject = Command1(_reject);
   }
 
   late final Command0 load;
+  late final Command1<void, Incidencia> approve;
+  late final Command1<void, Incidencia> reject;
 
   List<Incidencia>? _pendingToReview;
   List<Incidencia>? get pendingToReview => _pendingToReview;
+
+  List<IncidenciaCategory> get categories { 
+    return incidenciaCategories;
+  }
 
   Future<Result<void>> _load() async {
     final pendingQuery = IncidenciaQuery(state: IncidenciaState.pending);
@@ -45,7 +56,31 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     return Result.ok(null);
   }
 
-  List<IncidenciaCategory> get categories { 
-    return incidenciaCategories;
+  Future<Result<void>> _approve(Incidencia incidencia) async {
+    final resultApproval = await _incidenciasRepository.approveIncidencia(incidencia.categoryId, incidencia.id!);
+    switch (resultApproval) {
+      case Error():
+        _log.warning('Failed to approve ${incidencia.categoryId} #${incidencia.id}', error: resultApproval.error);
+        return Result.error(resultApproval.error);
+      case Ok():
+    }
+
+    _pendingToReview!.remove(incidencia);
+    notifyListeners();
+    return Result.ok(null);
+  }
+
+  Future<Result<void>> _reject(Incidencia incidencia) async {
+    final resultReject = await _incidenciasRepository.approveIncidencia(incidencia.categoryId, incidencia.id!);
+    switch (resultReject) {
+      case Error():
+        _log.warning('Failed to reject ${incidencia.categoryId} #${incidencia.id}', error: resultReject.error);
+        return Result.error(resultReject.error);
+      case Ok():
+    }
+
+    _pendingToReview!.remove(incidencia);
+    notifyListeners();
+    return Result.ok(null);
   }
 }

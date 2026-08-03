@@ -27,4 +27,34 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
     final incidenciasOfCategory = _incidencias.where((incidencia) => incidencia.categoryId == category).toList();
     return Result.ok(incidenciasOfCategory);
   }
+
+  @override
+  Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
+    final index = _incidencias.indexWhere((x) => x.id == id && x.categoryId == category);
+    if (index == -1) {
+      return Result.error(Exception('Not found'));
+    }
+    final approvedIncidencia = _incidencias[index].copyWith(
+      state: IncidenciaState.approved,
+      revisor: null,
+    );
+
+    _incidencias[index] = approvedIncidencia;
+    return Result.ok(approvedIncidencia);
+  }
+
+  @override
+  Future<Result<Incidencia>> rejectIncidencia(String category, int id) async {
+    final index = _incidencias.indexWhere((x) => x.id == id && x.categoryId == category);
+    if (index == -1) {
+      return Result.error(Exception('Not found'));
+    }
+    final rejectedIncidencia = _incidencias[index].copyWith(
+      state: IncidenciaState.rejected,
+      revisor: null,
+    );
+
+    _incidencias[index] = rejectedIncidencia;
+    return Result.ok(rejectedIncidencia);
+  }
 }

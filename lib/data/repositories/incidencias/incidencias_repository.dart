@@ -8,4 +8,10 @@ abstract class IncidenciasRepository {
 
   /// Obten un listado de [Incidencia]
   Future<Result<List<Incidencia>>> getIncidencias(String category, {IncidenciaQuery? query});
+
+  /// Aprueba una [Incidencia]
+  Future<Result<Incidencia>> approveIncidencia(String category, int id);
+
+  /// Rechaza una [Incidencia]
+  Future<Result<Incidencia>> rejectIncidencia(String category, int id);
 }

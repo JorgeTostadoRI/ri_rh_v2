@@ -34,4 +34,30 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       .toList();
     return Result.ok(incidencias);
   }
+
+  @override
+  Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
+    final resultApproval = await _apiClient.approveIncidencia(category, id);
+    switch (resultApproval) {
+      case Error():
+        return Result.error(resultApproval.error);
+      case Ok():
+    }
+
+    final incidencia = resultApproval.value;
+    return Result.ok(incidencia);
+  }
+
+  @override
+  Future<Result<Incidencia>> rejectIncidencia(String category, int id) async {
+    final resultApproval = await _apiClient.rejectIncidencia(category, id);
+    switch (resultApproval) {
+      case Error():
+        return Result.error(resultApproval.error);
+      case Ok():
+    }
+
+    final incidencia = resultApproval.value;
+    return Result.ok(incidencia);
+  }
 }
