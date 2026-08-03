@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
-import 'package:ri_rh_v2/ui/core/user_section.dart';
+import 'package:ri_rh_v2/ui/core/ui/user_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IndividualAttendanceTable extends StatelessWidget {
