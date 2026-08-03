@@ -21,9 +21,11 @@ import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/widgets/home_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/new_incidencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/not_found_screen.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/pending_incidencias_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
@@ -109,6 +111,16 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               }
             ),
           ],
+        ),
+        GoRoute(
+          path: Routes.pendingIncidencias,
+          builder: (context, state) {
+            return PendingIncidenciasScreen(
+              viewmodel: PendingIncidenciasViewmodel(
+                incidenciasRepository: context.read(),
+              ),
+            );
+          },
         ),
         GoRoute(
           path: Routes.avisos,

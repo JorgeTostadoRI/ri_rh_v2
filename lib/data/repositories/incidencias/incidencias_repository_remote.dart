@@ -22,6 +22,16 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
 
   @override
   Future<Result<List<Incidencia>>> getIncidencias(String category, {IncidenciaQuery? query}) async {
-    return _apiClient.getIncidencias(category, query: query);
+    final resultIncidencias = await _apiClient.getIncidencias(category, query: query);
+    switch (resultIncidencias) {
+      case Error():
+        return Result.error(resultIncidencias.error);
+      case Ok():
+    }
+
+    final incidencias = resultIncidencias.value
+      .map((incidencia) => incidencia.copyWith(categoryId: category))
+      .toList();
+    return Result.ok(incidencias);
   }
 }

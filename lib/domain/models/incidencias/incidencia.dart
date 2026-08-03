@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 
 part 'incidencia.freezed.dart';
@@ -42,4 +43,19 @@ abstract class Incidencia with _$Incidencia {
     }) = _Incidencia;
 
     factory Incidencia.fromJson(Map<String, Object?> json) => _$IncidenciaFromJson(json);
+}
+
+extension IncidenciaGetters on Incidencia {
+  String get categoryName {
+    return switch(categoryId) {
+      permisoCategory => 'Permiso',
+      faltaCategory => 'Falta',
+      horasExtraCategory => 'Horas Extra',
+      vacacionesCategory => 'Vacaciones',
+      retardoCategory => 'Retardo',
+      incapacidadCategory => 'Incapacidad',
+      requerimientoJudicialCategory => 'Requerimiento Judicial',
+      _ => 'Desconocido',
+    };
+  }
 }

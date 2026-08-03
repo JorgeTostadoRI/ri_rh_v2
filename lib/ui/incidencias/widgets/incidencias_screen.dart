@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
@@ -34,7 +36,7 @@ class IncidenciasScreen extends StatelessWidget {
                   return SizedBox.shrink();
                 }
                 
-                return _PendingReviewNotification(count: viewmodel.pendingToReview?.length ?? 0);
+                return _PendingReviewNotification(viewmodel: viewmodel);
               }
             ),
             const SizedBox(height: 32),
@@ -58,16 +60,16 @@ class IncidenciasScreen extends StatelessWidget {
 
 class _PendingReviewNotification extends StatelessWidget {
   const _PendingReviewNotification({
-    required this.count,
+    required this.viewmodel,
   });
 
-  final int count;
+  final IncidenciasViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
-    if (count <= 0) {
+    if (viewmodel.pendingToReview?.isEmpty ?? true) {
       return SizedBox.shrink();
     }
 
@@ -107,7 +109,9 @@ class _PendingReviewNotification extends StatelessWidget {
             ),
             Spacer(),
             IconButton.filled(
-              onPressed: () {},
+              onPressed: () => context.push(
+                Routes.pendingIncidencias,
+              ),
               icon: Icon(LucideIcons.arrowRight),
             ),
           ],
@@ -117,6 +121,7 @@ class _PendingReviewNotification extends StatelessWidget {
   }
 
   String get pendingCountText {
+    final count = viewmodel.pendingToReview?.length ?? 0;
     if (count == 1) {
       return '$count solicitud pendiente de revisión';
     } else {
