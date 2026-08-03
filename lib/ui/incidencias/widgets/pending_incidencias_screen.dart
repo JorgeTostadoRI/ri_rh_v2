@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_approve_dialog.dart';
 
 class PendingIncidenciasScreen extends StatelessWidget {
   const PendingIncidenciasScreen({
@@ -67,7 +68,7 @@ class PendingIncidenciasScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      title: Text(incidencia.categoryName, style: textTheme.headlineSmall),
+                      title: Text('${incidencia.categoryName} #${incidencia.id}', style: textTheme.headlineSmall),
                       subtitle: Text(
                         incidencia.reason,
                         style: textTheme.labelMedium,
@@ -77,6 +78,16 @@ class PendingIncidenciasScreen extends StatelessWidget {
                         yMd.format(incidencia.start.toLocal()),
                         style: textTheme.labelMedium,
                       ),
+                      onTap: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return IncidenciaApproveDialog(
+                              incidencia: incidencia,
+                            );
+                          }
+                        );
+                      }
                     );
                   },
                   separatorBuilder: (context, _) => SizedBox(height: 12),
