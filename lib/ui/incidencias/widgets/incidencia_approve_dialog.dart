@@ -29,8 +29,17 @@ class IncidenciaApproveDialog extends StatelessWidget {
         crossAxisAlignment: .start,
         children: [
           Text('Fecha de creación', style: textTheme.headlineSmall),
-            Text(yMMMMdjm.format(incidencia.createdAt!.toLocal())),
+          Text(yMMMMdjm.format(incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
+          Text('Solicitor', style: textTheme.headlineSmall),
+          Text(incidencia.solicitor!.nombre),
+          const SizedBox(height: 24),
+          if (incidencia.revisor != null)
+          ...[
+            Text('Revisor asignado', style: textTheme.headlineSmall),
+            Text(incidencia.solicitor!.nombre),
+            const SizedBox(height: 24),
+          ],
           Text('Fecha solicitadas', style: textTheme.headlineSmall),
           if (incidencia.start.isSameDay(incidencia.end))
             Text(yMMMMdjm.format(incidencia.start.toLocal())),

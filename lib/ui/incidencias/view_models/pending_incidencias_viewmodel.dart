@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/config/incidencia_categories.dart';
+import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -12,10 +12,12 @@ typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
 
 class PendingIncidenciasViewmodel extends ChangeNotifier {
   final AppLogger _log;
+  final AuthRepository _authRepository;
   final IncidenciasRepository _incidenciasRepository;
   
   PendingIncidenciasViewmodel({
     required this._log,
+    required this._authRepository,
     required this._incidenciasRepository,
   }) {
     load = Command0(_load)..execute();
@@ -30,31 +32,60 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   List<Incidencia>? _pendingToReview;
   List<Incidencia>? get pendingToReview => _pendingToReview;
 
+  List<Incidencia>? _historial;
+  List<Incidencia>? get historial => _historial;
+
   List<IncidenciaCategory> get categories { 
     return incidenciaCategories;
   }
 
   Future<Result<void>> _load() async {
-    final pendingQuery = IncidenciaQuery(state: IncidenciaState.pending);
+    final currentUser = _authRepository.getCurrentUser();
+    if (currentUser == null) {
+      return Result.error(Exception('Not authenticated'));
+    }
+
     final resultIncidencias = await Future.wait([
-      _incidenciasRepository.getIncidencias(permisoCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(horasExtraCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(vacacionesCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(incapacidadCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(requerimientoJudicialCategory, query: pendingQuery),
+      _incidenciasRepository.getIncidencias(permisoCategory),
+      _incidenciasRepository.getIncidencias(horasExtraCategory),
+      _incidenciasRepository.getIncidencias(vacacionesCategory),
+      _incidenciasRepository.getIncidencias(incapacidadCategory),
+      _incidenciasRepository.getIncidencias(requerimientoJudicialCategory),
     ]);
 
     List<Incidencia> pendingIncidencias = [];
+    List<Incidencia> otherIncidencias = [];
     for (final result in resultIncidencias) {
       switch (result) {
         case Error():
           continue;
         case Ok():
-          pendingIncidencias.addAll(result.value);
       }
     }
-    _pendingToReview = pendingIncidencias;
 
+    for (final result in resultIncidencias) {
+      switch (result) {
+        case Error():
+          _log.warning('Failed to fetch incidencias', error: result.error);
+          continue;
+        case Ok():
+          for (final incidencia in result.value) {
+            final isPending = incidencia.state == IncidenciaState.pending;
+            final isSolicitor = incidencia.solicitor == currentUser;
+            if (isPending && !isSolicitor) {
+              pendingIncidencias.add(incidencia);
+            } else {
+              if (!isSolicitor) {
+                otherIncidencias.add(incidencia);
+              }
+            }
+          }
+      } 
+    }
+
+    _pendingToReview = pendingIncidencias;
+    _historial = otherIncidencias;
+    notifyListeners();
     return Result.ok(null);
   }
 
@@ -68,6 +99,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
+    _historial!.add(incidencia);
     notifyListeners();
     return Result.ok(null);
   }
@@ -88,6 +120,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
+    _historial!.add(incidencia);
     notifyListeners();
     return Result.ok(null);
   }
