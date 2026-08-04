@@ -1,22 +1,38 @@
+import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class IncidenciasRepositoryLocal extends IncidenciasRepository {
+  final AuthRepository _authRepository;
+  final LocalDataService _localDataService;
+  
+  IncidenciasRepositoryLocal({
+    required this._authRepository,
+    required this._localDataService,
+  });
+
   int _sequentialId = 0;
 
-  List<Incidencia> _incidencias = List<Incidencia>.empty(growable: true);
+  final List<Incidencia> _incidencias = List<Incidencia>.empty(growable: true);
 
   @override
   Future<Result<void>> createIncidencia(Incidencia incidencia) async {
+    final currentUser = _authRepository.getCurrentUser();
+    if (currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+    final users = _localDataService.getUsers();
+
     final incidenciaWithId = incidencia.copyWith(
       id: _sequentialId++,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       state: IncidenciaState.pending,
-      solicitor: 7,
-      revisor: 10,
+      solicitor: currentUser,
+      revisor: users.last,
     );
     _incidencias.add(incidenciaWithId);
     return const Result.ok(null);

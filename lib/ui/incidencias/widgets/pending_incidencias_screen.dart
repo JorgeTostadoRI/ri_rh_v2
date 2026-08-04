@@ -51,7 +51,7 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
           crossAxisAlignment: .start,
           children: [
             PageHeader(
-              title: 'Solicitudes de Incidencias pendientes',
+              title: 'Solicitudes de Incidencias',
               subtitle: 'Revisa tus solicitudes pendientes de revisión.',
               showBackButton: true,
             ),

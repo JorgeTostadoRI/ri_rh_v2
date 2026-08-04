@@ -73,7 +73,10 @@ Future<List<SingleChildWidget>> get providersLocal async {
       AsistenciaRepositoryLocal() as AsistenciaRepository
     ),
     Provider(create: (context) =>
-      IncidenciasRepositoryLocal() as IncidenciasRepository
+      IncidenciasRepositoryLocal(
+        authRepository: context.read(),
+        localDataService: context.read(),
+      ) as IncidenciasRepository
     ),
     Provider(create: (context) =>
       AvisosRepositoryLocal(

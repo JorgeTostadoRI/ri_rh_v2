@@ -101,7 +101,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
       start: _constructDate(_startDate!, _startTime),
       end: _constructDate(_endDate ?? _startDate!, _endTime),
       reason: _reason!,
-      solicitor: user!.id,
+      solicitor: user!,
       categoryId: category.id,
       files: incidenciaFiles,
     );

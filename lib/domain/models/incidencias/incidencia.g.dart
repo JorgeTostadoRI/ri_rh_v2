@@ -15,8 +15,13 @@ _Incidencia _$IncidenciaFromJson(Map<String, dynamic> json) => _Incidencia(
       ? null
       : DateTime.parse(json['updated_at'] as String),
   state: $enumDecodeNullable(_$IncidenciaStateEnumMap, json['state']),
-  revisor: (json['revisor'] as num?)?.toInt(),
-  solicitor: (json['solicitor'] as num?)?.toInt(),
+  revisor: json['revisor'] == null
+      ? null
+      : User.fromJson(json['revisor'] as Map<String, dynamic>),
+  solicitor: json['solicitor'] == null
+      ? null
+      : User.fromJson(json['solicitor'] as Map<String, dynamic>),
+  rejectionReason: json['rejection_reason'] as String?,
   start: DateTime.parse(json['start'] as String),
   end: DateTime.parse(json['end'] as String),
   reason: json['reason'] as String,
@@ -34,6 +39,7 @@ Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
       'state': _$IncidenciaStateEnumMap[instance.state],
       'revisor': instance.revisor,
       'solicitor': instance.solicitor,
+      'rejection_reason': instance.rejectionReason,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,

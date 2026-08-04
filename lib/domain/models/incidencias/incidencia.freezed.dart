@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Incidencia implements DiagnosticableTreeMixin {
 
- int? get id; DateTime? get createdAt; DateTime? get updatedAt; IncidenciaState? get state; int? get revisor; int? get solicitor; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files;@JsonKey(defaultValue: '') String get categoryId;
+ int? get id; DateTime? get createdAt; DateTime? get updatedAt; IncidenciaState? get state; User? get revisor; User? get solicitor; String? get rejectionReason; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files;@JsonKey(defaultValue: '') String get categoryId;
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $IncidenciaCopyWith<Incidencia> get copyWith => _$IncidenciaCopyWithImpl<Inciden
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Incidencia'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('revisor', revisor))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('categoryId', categoryId));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('revisor', revisor))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('categoryId', categoryId));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.revisor, revisor) || other.revisor == revisor)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.revisor, revisor) || other.revisor == revisor)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,revisor,solicitor,start,end,reason,const DeepCollectionEquality().hash(files),categoryId);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,revisor,solicitor,rejectionReason,start,end,reason,const DeepCollectionEquality().hash(files),categoryId);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, revisor: $revisor, solicitor: $solicitor, start: $start, end: $end, reason: $reason, files: $files, categoryId: $categoryId)';
+  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, revisor: $revisor, solicitor: $solicitor, rejectionReason: $rejectionReason, start: $start, end: $end, reason: $reason, files: $files, categoryId: $categoryId)';
 }
 
 
@@ -55,11 +55,11 @@ abstract mixin class $IncidenciaCopyWith<$Res>  {
   factory $IncidenciaCopyWith(Incidencia value, $Res Function(Incidencia) _then) = _$IncidenciaCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, int? revisor, int? solicitor, DateTime start, DateTime end, String reason, List<IncidenciaFile> files,@JsonKey(defaultValue: '') String categoryId
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, User? revisor, User? solicitor, String? rejectionReason, DateTime start, DateTime end, String reason, List<IncidenciaFile> files,@JsonKey(defaultValue: '') String categoryId
 });
 
 
-
+$UserCopyWith<$Res>? get revisor;$UserCopyWith<$Res>? get solicitor;
 
 }
 /// @nodoc
@@ -72,15 +72,16 @@ class _$IncidenciaCopyWithImpl<$Res>
 
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? revisor = freezed,Object? solicitor = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? categoryId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? revisor = freezed,Object? solicitor = freezed,Object? rejectionReason = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? categoryId = null,}) {
   return _then(Incidencia(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,state: freezed == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
 as IncidenciaState?,revisor: freezed == revisor ? _self.revisor : revisor // ignore: cast_nullable_to_non_nullable
-as int?,solicitor: freezed == solicitor ? _self.solicitor : solicitor // ignore: cast_nullable_to_non_nullable
-as int?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as User?,solicitor: freezed == solicitor ? _self.solicitor : solicitor // ignore: cast_nullable_to_non_nullable
+as User?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
@@ -88,7 +89,31 @@ as List<IncidenciaFile>,categoryId: null == categoryId ? _self.categoryId : cate
 as String,
   ));
 }
+/// Create a copy of Incidencia
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res>? get revisor {
+    if (_self.revisor == null) {
+    return null;
+  }
 
+  return $UserCopyWith<$Res>(_self.revisor!, (value) {
+    return _then(_self.copyWith(revisor: value));
+  });
+}/// Create a copy of Incidencia
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res>? get solicitor {
+    if (_self.solicitor == null) {
+    return null;
+  }
+
+  return $UserCopyWith<$Res>(_self.solicitor!, (value) {
+    return _then(_self.copyWith(solicitor: value));
+  });
+}
 }
 
 
@@ -170,10 +195,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? revisor,  User? solicitor,  String? rejectionReason,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Incidencia() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.rejectionReason,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
   return orElse();
 
 }
@@ -191,10 +216,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? revisor,  User? solicitor,  String? rejectionReason,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)  $default,) {final _that = this;
 switch (_that) {
 case _Incidencia():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.rejectionReason,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +236,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  int? revisor,  int? solicitor,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? revisor,  User? solicitor,  String? rejectionReason,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files, @JsonKey(defaultValue: '')  String categoryId)?  $default,) {final _that = this;
 switch (_that) {
 case _Incidencia() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisor,_that.solicitor,_that.rejectionReason,_that.start,_that.end,_that.reason,_that.files,_that.categoryId);case _:
   return null;
 
 }
@@ -226,15 +251,16 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 @JsonSerializable()
 
 class _Incidencia with DiagnosticableTreeMixin implements Incidencia {
-  const _Incidencia({this.id, this.createdAt, this.updatedAt, this.state, this.revisor, this.solicitor, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, @JsonKey(defaultValue: '') required this.categoryId}): _files = files;
+  const _Incidencia({this.id, this.createdAt, this.updatedAt, this.state, this.revisor, this.solicitor, this.rejectionReason, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, @JsonKey(defaultValue: '') required this.categoryId}): _files = files;
   factory _Incidencia.fromJson(Map<String, dynamic> json) => _$IncidenciaFromJson(json);
 
 @override final  int? id;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
 @override final  IncidenciaState? state;
-@override final  int? revisor;
-@override final  int? solicitor;
+@override final  User? revisor;
+@override final  User? solicitor;
+@override final  String? rejectionReason;
 @override final  DateTime start;
 @override final  DateTime end;
 @override final  String reason;
@@ -261,21 +287,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Incidencia'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('revisor', revisor))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('categoryId', categoryId));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('revisor', revisor))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('categoryId', categoryId));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.revisor, revisor) || other.revisor == revisor)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.revisor, revisor) || other.revisor == revisor)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,revisor,solicitor,start,end,reason,const DeepCollectionEquality().hash(_files),categoryId);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,revisor,solicitor,rejectionReason,start,end,reason,const DeepCollectionEquality().hash(_files),categoryId);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, revisor: $revisor, solicitor: $solicitor, start: $start, end: $end, reason: $reason, files: $files, categoryId: $categoryId)';
+  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, revisor: $revisor, solicitor: $solicitor, rejectionReason: $rejectionReason, start: $start, end: $end, reason: $reason, files: $files, categoryId: $categoryId)';
 }
 
 
@@ -286,11 +312,11 @@ abstract mixin class _$IncidenciaCopyWith<$Res> implements $IncidenciaCopyWith<$
   factory _$IncidenciaCopyWith(_Incidencia value, $Res Function(_Incidencia) _then) = __$IncidenciaCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, int? revisor, int? solicitor, DateTime start, DateTime end, String reason, List<IncidenciaFile> files,@JsonKey(defaultValue: '') String categoryId
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, User? revisor, User? solicitor, String? rejectionReason, DateTime start, DateTime end, String reason, List<IncidenciaFile> files,@JsonKey(defaultValue: '') String categoryId
 });
 
 
-
+@override $UserCopyWith<$Res>? get revisor;@override $UserCopyWith<$Res>? get solicitor;
 
 }
 /// @nodoc
@@ -303,15 +329,16 @@ class __$IncidenciaCopyWithImpl<$Res>
 
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? revisor = freezed,Object? solicitor = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? categoryId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? revisor = freezed,Object? solicitor = freezed,Object? rejectionReason = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? categoryId = null,}) {
   return _then(_Incidencia(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,state: freezed == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
 as IncidenciaState?,revisor: freezed == revisor ? _self.revisor : revisor // ignore: cast_nullable_to_non_nullable
-as int?,solicitor: freezed == solicitor ? _self.solicitor : solicitor // ignore: cast_nullable_to_non_nullable
-as int?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as User?,solicitor: freezed == solicitor ? _self.solicitor : solicitor // ignore: cast_nullable_to_non_nullable
+as User?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,files: null == files ? _self._files : files // ignore: cast_nullable_to_non_nullable
@@ -320,7 +347,31 @@ as String,
   ));
 }
 
+/// Create a copy of Incidencia
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res>? get revisor {
+    if (_self.revisor == null) {
+    return null;
+  }
 
+  return $UserCopyWith<$Res>(_self.revisor!, (value) {
+    return _then(_self.copyWith(revisor: value));
+  });
+}/// Create a copy of Incidencia
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res>? get solicitor {
+    if (_self.solicitor == null) {
+    return null;
+  }
+
+  return $UserCopyWith<$Res>(_self.solicitor!, (value) {
+    return _then(_self.copyWith(solicitor: value));
+  });
+}
 }
 
 // dart format on
