@@ -122,7 +122,13 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> rejectIncidencia(String category, int id) async {
+  Future<Result<Incidencia>> rejectIncidencia(
+    int id,
+    {
+      required String category,
+      required String rejectionReason,
+    }
+  ) async {
     try {
       if (_cachedUsers == null) {
         final resultUsers = await _apiClient.getUsers();
@@ -135,7 +141,11 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
         _cachedUsers = resultUsers.value;
       }
 
-      final resultApproval = await _apiClient.rejectIncidencia(category, id);
+      final resultApproval = await _apiClient.rejectIncidencia(
+        id,
+        category: category,
+        rejectionReason: rejectionReason,
+      );
       switch (resultApproval) {
         case Error():
           return Result.error(resultApproval.error);

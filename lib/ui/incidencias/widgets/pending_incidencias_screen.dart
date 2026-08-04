@@ -96,16 +96,18 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       title: Text(
-                        '${incidencia.categoryName} para ${_formatStartEndDates(incidencia)}',
+                        '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
                         style: textTheme.headlineSmall,
                       ),
                       subtitle: Text(
                         incidencia.reason,
-                        style: textTheme.labelLarge,
+                        style: textTheme.labelLarge?.copyWith(
+                          fontSize: 16,
+                        ),
                         overflow: .ellipsis,
                       ),
                       onTap: () async {
-                        final IncidenciaState? state = await showDialog(
+                        final IncidenciaApproveDialogResult? result = await showDialog<IncidenciaApproveDialogResult>(
                           context: context,
                           builder: (context) {
                             return IncidenciaApproveDialog(
@@ -114,9 +116,9 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
                           }
                         );
 
-                        if (state == null) return;
+                        if (result == null) return;
 
-                        _handleDialogStateResult(incidencia, state);
+                        _handleDialogStateResult(incidencia, result);
                       }
                     );
                   },
@@ -140,12 +142,12 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
     }
   }
 
-  void _handleDialogStateResult(Incidencia incidencia, IncidenciaState state) {
-    switch (state) {
+  void _handleDialogStateResult(Incidencia incidencia, IncidenciaApproveDialogResult result) {
+    switch (result.state) {
       case IncidenciaState.approved:
         widget.viewmodel.approve.execute(incidencia);
       case IncidenciaState.rejected:
-        widget.viewmodel.reject.execute(incidencia);
+        widget.viewmodel.reject.execute((incidencia: incidencia, rejectionReason: result.rejectionReason));
       default:
         throw ArgumentError('Invalid state option');
     }

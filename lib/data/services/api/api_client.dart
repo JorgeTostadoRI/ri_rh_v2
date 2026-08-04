@@ -152,12 +152,20 @@ class ApiClient {
     }
   }
 
-  Future<Result<IncidenciaApiModel>> rejectIncidencia(String category, int id) async {
+  Future<Result<IncidenciaApiModel>> rejectIncidencia(
+    int id,
+    {
+      required String category,
+      required String rejectionReason,
+    }
+  ) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
 
-      final response = await dio.post('/api/rh/$category/$id/reject/');
+      final response = await dio.post('/api/rh/$category/$id/reject/', data: {
+        'rejection_reason': rejectionReason,
+      });
       final result = IncidenciaApiModel.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {

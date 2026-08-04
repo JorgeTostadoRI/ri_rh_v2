@@ -8,6 +8,8 @@ import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
+typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
+
 class PendingIncidenciasViewmodel extends ChangeNotifier {
   final AppLogger _log;
   final IncidenciasRepository _incidenciasRepository;
@@ -23,7 +25,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   late final Command0 load;
   late final Command1<void, Incidencia> approve;
-  late final Command1<void, Incidencia> reject;
+  late final Command1<void, RejectParams> reject;
 
   List<Incidencia>? _pendingToReview;
   List<Incidencia>? get pendingToReview => _pendingToReview;
@@ -70,8 +72,14 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     return Result.ok(null);
   }
 
-  Future<Result<void>> _reject(Incidencia incidencia) async {
-    final resultReject = await _incidenciasRepository.approveIncidencia(incidencia.categoryId, incidencia.id!);
+  Future<Result<void>> _reject(RejectParams params) async {
+    final incidencia = params.incidencia;
+    final rejectionReason = params.rejectionReason;
+    final resultReject = await _incidenciasRepository.rejectIncidencia(
+      incidencia.id!,
+      category: incidencia.categoryId,
+      rejectionReason: rejectionReason,
+    );
     switch (resultReject) {
       case Error():
         _log.warning('Failed to reject ${incidencia.categoryId} #${incidencia.id}', error: resultReject.error);

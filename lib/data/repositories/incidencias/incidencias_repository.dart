@@ -14,7 +14,13 @@ abstract class IncidenciasRepository {
   Future<Result<Incidencia>> approveIncidencia(String category, int id);
 
   /// Rechaza una [Incidencia]
-  Future<Result<Incidencia>> rejectIncidencia(String category, int id);
+  Future<Result<Incidencia>> rejectIncidencia(
+    int id,
+    {
+      required String category,
+      required String rejectionReason,
+    }
+  );
 
   /// Obtiene el numero de incidencias pendientes a revisar
   Future<Result<IncidenciaPendingCountResponse>> getIncidenciasPendingCount();

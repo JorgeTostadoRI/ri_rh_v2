@@ -62,7 +62,13 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> rejectIncidencia(String category, int id) async {
+  Future<Result<Incidencia>> rejectIncidencia(
+    int id,
+    {
+      required String category,
+      required String rejectionReason,
+    }
+  ) async {
     final index = _incidencias.indexWhere((x) => x.id == id && x.categoryId == category);
     if (index == -1) {
       return Result.error(Exception('Not found'));
@@ -70,6 +76,7 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
     final rejectedIncidencia = _incidencias[index].copyWith(
       state: IncidenciaState.rejected,
       revisor: null,
+      rejectionReason: rejectionReason,
     );
 
     _incidencias[index] = rejectedIncidencia;
