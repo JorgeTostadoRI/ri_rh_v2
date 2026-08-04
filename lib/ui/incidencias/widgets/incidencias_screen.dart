@@ -69,7 +69,7 @@ class _PendingReviewNotification extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
-    if (viewmodel.pendingToReview?.isEmpty ?? true) {
+    if ((viewmodel.pendingToReview ?? 0) == 0) {
       return SizedBox.shrink();
     }
 
@@ -121,7 +121,7 @@ class _PendingReviewNotification extends StatelessWidget {
   }
 
   String get pendingCountText {
-    final count = viewmodel.pendingToReview?.length ?? 0;
+    final count = viewmodel.pendingToReview ?? 0;
     if (count == 1) {
       return '$count solicitud pendiente de revisión';
     } else {

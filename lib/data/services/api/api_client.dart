@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_mode
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_pending_count_response.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
@@ -158,6 +159,23 @@ class ApiClient {
 
       final response = await dio.post('/api/rh/$category/$id/reject/');
       final result = IncidenciaApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<IncidenciaPendingCountResponse>> getIncidenciasPendingCount() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final response = await dio.get('/api/rh/incidencias-review-count/');
+      final result = IncidenciaPendingCountResponse.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));

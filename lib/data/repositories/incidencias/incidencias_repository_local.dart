@@ -1,5 +1,7 @@
+import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_pending_count_response.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
@@ -72,5 +74,63 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
 
     _incidencias[index] = rejectedIncidencia;
     return Result.ok(rejectedIncidencia);
+  }
+
+  @override
+  Future<Result<IncidenciaPendingCountResponse>> getIncidenciasPendingCount() async {
+    final currentUser = _authRepository.getCurrentUser();
+    if (currentUser == null) {
+      return Result.ok(
+        IncidenciaPendingCountResponse(
+          total: 0,
+          permisos: 0,
+          horasExtra: 0,
+          vacaciones: 0,
+          incapacidades: 0,
+          requerimientosJudiciales: 0,
+        )
+      );
+    }
+
+    int permisos = 0;
+    int horasExtra = 0;
+    int vacaciones = 0;
+    int incapacidades = 0;
+    int requerimientos = 0;
+
+    int total = _incidencias.fold(0, (sum, incidencia) {
+      if (incidencia.state == IncidenciaState.pending && incidencia.revisor == currentUser) {
+        sum += 1;
+      }
+      return sum;
+    });
+
+    for (final incidencia in _incidencias) {
+      if (incidencia.state == IncidenciaState.pending && incidencia.revisor == currentUser) {
+        switch (incidencia.categoryId) {
+          case permisoCategory:
+            permisos += 1;
+          case horasExtraCategory:
+            horasExtra += 1;
+          case vacacionesCategory:
+            vacaciones += 1;
+          case incapacidadCategory:
+            incapacidades += 1;
+          case requerimientoJudicialCategory:
+            requerimientos += 1;
+        }
+      }
+    }
+
+    return Result.ok(
+      IncidenciaPendingCountResponse(
+        total: total,
+        permisos: permisos,
+        horasExtra: horasExtra,
+        vacaciones: vacaciones,
+        incapacidades: incapacidades,
+        requerimientosJudiciales: requerimientos,
+      )
+    );
   }
 }

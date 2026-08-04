@@ -3,9 +3,7 @@ import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -24,8 +22,8 @@ class IncidenciasViewmodel extends ChangeNotifier {
 
   late final Command0 load;
 
-  List<Incidencia>? _pendingToReview;
-  List<Incidencia>? get pendingToReview => _pendingToReview;
+  int? _pendingToReview;
+  int? get pendingToReview => _pendingToReview;
 
   Future<Result<void>> _load() async {
     final isAuthenticated = await _authRepository.isAuthenticated;
@@ -33,34 +31,15 @@ class IncidenciasViewmodel extends ChangeNotifier {
       return Result.ok(null);
     }
 
-    final pendingQuery = IncidenciaQuery(state: IncidenciaState.pending);
-    // await one future to cache the users
-    final resultPermisos = await _incidenciasRepository.getIncidencias(permisoCategory, query: pendingQuery);
-    switch(resultPermisos) {
+    final resultCount = await _incidenciasRepository.getIncidenciasPendingCount();
+    switch(resultCount) {
       case Error():
-        _log.error('Failed to fetch permisos', error: resultPermisos.error);
-        return Result.error(resultPermisos.error);
+        _log.error('Failed to fetch incidencias pending count', error: resultCount.error);
+        return Result.error(resultCount.error);
       case Ok():
     }
-    final resultIncidencias = await Future.wait([
-      _incidenciasRepository.getIncidencias(horasExtraCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(vacacionesCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(incapacidadCategory, query: pendingQuery),
-      _incidenciasRepository.getIncidencias(requerimientoJudicialCategory, query: pendingQuery),
-    ]);
-    resultIncidencias.add(resultPermisos);
-
-    List<Incidencia> pendingIncidencias = [];
-    for (final result in resultIncidencias) {
-      switch (result) {
-        case Error():
-          continue;
-        case Ok():
-          pendingIncidencias.addAll(result.value);
-      }
-    }
-    _pendingToReview = pendingIncidencias;
-
+    _pendingToReview = resultCount.value.total;
+    notifyListeners();
     return Result.ok(null);
   }
 
