@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_card.dart';
 
@@ -29,16 +31,7 @@ class IncidenciasScreen extends StatelessWidget {
               title: 'Incidencias',
               subtitle: 'Selecciona el tipo de incidencia que deseas registrar.',
             ),
-            ListenableBuilder(
-              listenable: viewmodel.load,
-              builder: (context, _) {
-                if (viewmodel.load.running || viewmodel.load.error) {
-                  return SizedBox.shrink();
-                }
-                
-                return _PendingReviewNotification(viewmodel: viewmodel);
-              }
-            ),
+            _PendingReviewNotification(),
             const SizedBox(height: 32),
             Center(
               child: Wrap(
@@ -59,19 +52,10 @@ class IncidenciasScreen extends StatelessWidget {
 }
 
 class _PendingReviewNotification extends StatelessWidget {
-  const _PendingReviewNotification({
-    required this.viewmodel,
-  });
-
-  final IncidenciasViewmodel viewmodel;
-
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
-
-    if ((viewmodel.pendingToReview ?? 0) == 0) {
-      return SizedBox.shrink();
-    }
+    final notificationVM = context.watch<NotificationViewmodel>();
 
     return Padding(
       padding: const EdgeInsets.only(top: 40.0),
@@ -85,43 +69,59 @@ class _PendingReviewNotification extends StatelessWidget {
           )),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Row(
-          spacing: 12,
-          children: [
-            ColorIcon(
-              icon: LucideIcons.clock,
-              width: 36,
-              height: 36,
-              backgroundColor: const Color(0xFFFDDCB0),
-              shape: BoxShape.circle,
-            ),
-            Text.rich(
-              TextSpan(
-                text: 'Tienes ',
-                style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
-                children: [
-                  TextSpan(
-                    text: pendingCountText,
-                    style: TextStyle(color: primaryColor),
+        child: ListenableBuilder(
+          listenable: notificationVM,
+          builder: (context, _) {
+            final int count = notificationVM.pendingIncidenciasToReview;
+            final bool hasNotifications = count > 0;
+
+            return Row(
+              spacing: 12,
+              children: [
+                if (hasNotifications)
+                  ...[
+
+                    ColorIcon(
+                      icon: LucideIcons.clock,
+                      width: 36,
+                      height: 36,
+                      backgroundColor:const Color(0xFFFDDCB0),
+                      shape: BoxShape.circle,
+                    ),
+                    Text.rich(
+                      TextSpan(
+                        text: 'Tienes ',
+                        style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
+                        children: [
+                          TextSpan(
+                            text: pendingCountText(notificationVM.pendingIncidenciasToReview),
+                            style: TextStyle(color: primaryColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                if (!hasNotifications)
+                  Text(
+                    'Revisar historial de incidencias',
+                    style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
                   ),
-                ],
-              ),
-            ),
-            Spacer(),
-            IconButton.filled(
-              onPressed: () => context.push(
-                Routes.pendingIncidencias,
-              ),
-              icon: Icon(LucideIcons.arrowRight),
-            ),
-          ],
+                Spacer(),
+                IconButton.filled(
+                  onPressed: () => context.push(
+                    Routes.pendingIncidencias,
+                  ),
+                  icon: Icon(LucideIcons.arrowRight),
+                ),
+              ],
+            );
+          }
         ),
       ),
     );
   }
 
-  String get pendingCountText {
-    final count = viewmodel.pendingToReview ?? 0;
+  String pendingCountText(int count) {
     if (count == 1) {
       return '$count solicitud pendiente de revisión';
     } else {

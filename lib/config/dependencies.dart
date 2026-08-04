@@ -34,6 +34,7 @@ import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 Dio _dioClient() {
   const apiUrl = String.fromEnvironment('api_url', defaultValue: 'http://localhost:8000');
@@ -103,6 +104,13 @@ Future<List<SingleChildWidget>> get providersLocal async {
       ReportesRepositoryLocal(
         localDataService: context.read(),
       ) as ReportesRepository
+    ),
+    ChangeNotifierProvider(create: (context) =>
+      NotificationViewmodel(
+        log: context.read(),
+        authRepository: context.read(),
+        incidenciasRepository: context.read(),
+      )
     ),
   ];
 }
@@ -178,7 +186,14 @@ Future<List<SingleChildWidget>> get providersRemote async {
       ReportesRepositoryRemote(
         log: context.read(),
         apiClient: context.read(),
-      )as ReportesRepository
+      ) as ReportesRepository
+    ),
+    ChangeNotifierProvider(create: (context) =>
+      NotificationViewmodel(
+        log: context.read(),
+        authRepository: context.read(),
+        incidenciasRepository: context.read(),
+      )
     ),
   ];
 }

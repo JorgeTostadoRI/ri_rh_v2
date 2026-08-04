@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/field_label.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -27,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onResult() {
     if (widget.viewmodel.login.completed) {
       widget.viewmodel.login.clearResult();
+      context.read<NotificationViewmodel>().load.execute(); // refresh notification count
       context.go(Routes.home);
     }
 

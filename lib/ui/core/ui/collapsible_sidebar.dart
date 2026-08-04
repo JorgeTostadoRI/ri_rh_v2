@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
   const CollapsibleSidebar({super.key});
@@ -109,12 +110,43 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                 if (snapshot.data == true) {
                   return Column(
                     children: [
-                      _buildNavItem(LucideIcons.clock, 'Ingreso', Routes.ingreso),
-                      _buildNavItem(LucideIcons.megaphone, 'Avisos', Routes.avisos),
-                      _buildNavItem(LucideIcons.users, 'Empleados', Routes.empleados),
-                      _buildNavItem(LucideIcons.school, 'Practicantes', Routes.practicantes),
-                      _buildNavItem(LucideIcons.alertCircle, 'Incidencias', Routes.incidencias),
-                      _buildNavItem(LucideIcons.clipboardList, 'Reportes', Routes.reportes),
+                      _NavItem(
+                        icon: LucideIcons.clock,
+                        label: 'Ingreso',
+                        route: Routes.ingreso,
+                        isCollapsed: isCollapsed,
+                      ),
+                      _NavItem(
+                        icon: LucideIcons.megaphone,
+                        label: 'Avisos',
+                        route: Routes.avisos,
+                        isCollapsed: isCollapsed,
+                      ),
+                      _NavItem(
+                        icon: LucideIcons.users,
+                        label: 'Empleados',
+                        route: Routes.empleados,
+                        isCollapsed: isCollapsed,
+                      ),
+                      _NavItem(
+                        icon: LucideIcons.school,
+                        label: 'Practicantes',
+                        route: Routes.practicantes,
+                        isCollapsed: isCollapsed,
+                      ),
+                      _NavItem(
+                        icon: LucideIcons.alertCircle,
+                        label: 'Incidencias',
+                        route: Routes.incidencias,
+                        isCollapsed: isCollapsed,
+                        trailing: _IncidenciaCountBadge(),
+                      ),
+                      _NavItem(
+                        icon: LucideIcons.clipboardList,
+                        label: 'Reportes',
+                        route: Routes.reportes,
+                        isCollapsed: isCollapsed,
+                      ),
                     ],
                   );
                 }
@@ -122,9 +154,25 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
 
               return Column(
                 children: [
-                  _buildNavItem(LucideIcons.clock, 'Ingreso', Routes.ingreso),
-                  _buildNavItem(LucideIcons.megaphone, 'Avisos', Routes.avisos),
-                  _buildNavItem(LucideIcons.alertCircle, 'Incidencias', Routes.incidencias),
+                  _NavItem(
+                    icon: LucideIcons.clock,
+                    label: 'Ingreso',
+                    route: Routes.ingreso,
+                    isCollapsed: isCollapsed,
+                  ),
+                  _NavItem(
+                    icon: LucideIcons.megaphone,
+                    label: 'Avisos',
+                    route: Routes.avisos,
+                    isCollapsed: isCollapsed,
+                  ),
+                  _NavItem(
+                    icon: LucideIcons.alertCircle,
+                    label: 'Incidencias',
+                    route: Routes.incidencias,
+                    isCollapsed: false,
+                    trailing: _IncidenciaCountBadge(),
+                  ),
                 ],
               );
             },
@@ -148,8 +196,25 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
       ),
   );
   }
+}
 
-  Widget _buildNavItem(IconData icon, String label, String route) {
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.route,
+    required this.isCollapsed,
+    this.trailing,
+  });
+
+  final IconData icon;
+  final String label;
+  final String route;
+  final bool isCollapsed;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
     final state = GoRouterState.of(context);
     final fullPath = state.fullPath ?? '';
     final Color textColor = Color(0xFF9A7B5A);
@@ -173,6 +238,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                     color: selected ? Colors.white : textColor,
                   ),
                 ),
+          trailing: isCollapsed ? null : trailing,
           selected: selected,
           tileColor: Colors.white,
           selectedTileColor: primaryColor,
@@ -182,6 +248,36 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
           onTap: () => context.go(route),
         ),
       ),
+    );
+  }
+}
+
+class _IncidenciaCountBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final viewmodel = context.watch<NotificationViewmodel>();
+
+    return ListenableBuilder(
+      listenable: viewmodel.load,
+      builder: (context, _) {
+        if (viewmodel.load.running) {
+          return SizedBox.shrink();
+        }
+
+        if (viewmodel.load.error) {
+          return Tooltip(message: 'No se pudieron cargar las notificaciones de incidencias');
+        }
+
+        if (viewmodel.pendingIncidenciasToReview == 0) {
+          return SizedBox.shrink();
+        }
+
+        return Badge.count(
+          count: viewmodel.pendingIncidenciasToReview,
+          maxCount: 99,
+          backgroundColor: primaryColor,
+        );
+      }
     );
   }
 }

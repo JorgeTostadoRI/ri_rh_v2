@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -28,7 +30,11 @@ class HomeScreen extends StatelessWidget {
                     style: textTheme.headlineLarge,
                   ),
                   ElevatedButton(
-                    onPressed: () => viewmodel.logout.execute(),
+                    onPressed: () {
+                      viewmodel.logout.execute();
+                      final notificationVM = context.read<NotificationViewmodel>();
+                      notificationVM.clear.execute(); // clear notification counters
+                    },
                     child: Text('Cerrar sesión'),
                   ),
                 ],
