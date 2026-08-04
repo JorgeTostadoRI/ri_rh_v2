@@ -99,7 +99,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
-    _historial!.add(incidencia);
+    _historial!.add(resultApproval.value);
     notifyListeners();
     return Result.ok(null);
   }
@@ -120,7 +120,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
-    _historial!.add(incidencia);
+    _historial!.add(resultReject.value);
     notifyListeners();
     return Result.ok(null);
   }
