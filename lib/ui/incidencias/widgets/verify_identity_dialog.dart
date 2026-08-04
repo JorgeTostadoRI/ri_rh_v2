@@ -42,6 +42,12 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
   }
 
   @override
+  void dispose() {
+    widget.viewmodel.login.removeListener(_onResult);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       constraints: BoxConstraints(maxWidth: 384, maxHeight: 384),
