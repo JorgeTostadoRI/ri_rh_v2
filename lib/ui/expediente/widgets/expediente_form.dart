@@ -29,20 +29,23 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
   late final TextEditingController _nombreEmergencia;
   late final TextEditingController _contactoEmergencia;
   late final TextEditingController _direccion;
+  late final TextEditingController _jefe;
 
   @override
   void initState() {
     super.initState();
-    _nombre = TextEditingController(text: widget.baseEmpleado.nombre);
-    _nss = TextEditingController(text: widget.baseEmpleado.nss);
-    _curp = TextEditingController(text: widget.baseEmpleado.curp);
-    _rfc = TextEditingController(text: widget.baseEmpleado.rfc);
-    _puesto = TextEditingController(text: widget.baseEmpleado.puesto.nombre);
-    _salario = TextEditingController(text: widget.baseEmpleado.salario.toString());
-    _alta = TextEditingController(text: widget.baseEmpleado.registradoEn?.toShortIsoString());
-    _nombreEmergencia = TextEditingController(text: widget.baseEmpleado.numeroContacto);
-    _contactoEmergencia = TextEditingController(text: widget.baseEmpleado.contactoEmergencia);
-    _direccion = TextEditingController(text: widget.baseEmpleado.direccion);
+    final base = widget.baseEmpleado;
+    _nombre = TextEditingController(text: base.nombre);
+    _nss = TextEditingController(text: base.nss);
+    _curp = TextEditingController(text: base.curp);
+    _rfc = TextEditingController(text: base.rfc);
+    _puesto = TextEditingController(text: base.puesto.nombre);
+    _salario = TextEditingController(text: base.salario.toString());
+    _alta = TextEditingController(text: base.registradoEn?.toShortIsoString());
+    _nombreEmergencia = TextEditingController(text: base.numeroContacto);
+    _contactoEmergencia = TextEditingController(text: base.contactoEmergencia);
+    _direccion = TextEditingController(text: base.direccion);
+    _jefe = TextEditingController(text: base.jefe?.nombre);
   }
 
   @override
@@ -148,12 +151,28 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                 ),
               ],
             ),
-            TextFormField(
-              readOnly: widget.readOnly,
-              controller: _alta,
-              decoration: InputDecoration(
-                labelText: 'FECHA ALTA',
-              ),
+            Row(
+              spacing: crossSpacing,
+              children: [
+                Flexible(
+                  child: TextFormField(
+                    readOnly: widget.readOnly,
+                    controller: _alta,
+                    decoration: InputDecoration(
+                      labelText: 'FECHA ALTA',
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: TextFormField(
+                    readOnly: widget.readOnly,
+                    controller: _jefe,
+                    decoration: InputDecoration(
+                      labelText: 'JEFE DIRECTO',
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
