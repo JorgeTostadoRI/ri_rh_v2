@@ -27,14 +27,23 @@ abstract class Practicante with _$Practicante {
     required List<Universidad> universidades,
   }) {
     late final User? user;
+    late final User? jefe;
     late final Puesto puesto;
     late final Universidad university;
 
     try {
-      if (model.userRef != 0 && users.any((user) => user.id == model.userRef)) {
-        user = users.firstWhere((user) => user.id == model.userRef);
+      final userIndex = model.userRef == 0 ? -1 : users.indexWhere((user) => user.id == model.userRef);
+      if (userIndex != -1) {
+        user = users[userIndex];
       } else {
         user = null;
+      }
+
+      final jefeIndex = model.userRef == 0 ? -1 : users.indexWhere((user) => user.id == model.jefeRef);
+      if (jefeIndex != -1) {
+        jefe = users[jefeIndex];
+      } else {
+        jefe = null;
       }
       puesto = puestos.firstWhere((puesto) => puesto.id == model.puestoRef);
       university = universidades.firstWhere((uni) => uni.id == model.universityRef);
@@ -55,6 +64,7 @@ abstract class Practicante with _$Practicante {
       base: BaseEmpleado(
         id: model.id,
         user: user,
+        jefe: jefe,
         nombre: model.name,
         salario: model.salary,
         puesto: puesto,

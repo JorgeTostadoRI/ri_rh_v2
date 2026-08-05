@@ -41,14 +41,23 @@ abstract class Empleado with _$Empleado {
     required List<User> users,
     required List<Puesto> puestos,
   }) {
-    late User? user;
-    late Puesto puesto;
+    late final User? user;
+    late final User? jefe;
+    late final Puesto puesto;
 
     try {
-      if (model.userRef != 0 && users.any((user) => user.id == model.userRef)) {
-        user = users.firstWhere((user) => user.id == model.userRef);
+      final userIndex = model.userRef == 0 ? -1 : users.indexWhere((user) => user.id == model.userRef);
+      if (userIndex != -1) {
+        user = users[userIndex];
       } else {
         user = null;
+      }
+
+      final jefeIndex = model.userRef == 0 ? -1 : users.indexWhere((user) => user.id == model.jefeRef);
+      if (jefeIndex != -1) {
+        jefe = users[jefeIndex];
+      } else {
+        jefe = null;
       }
       puesto = puestos.firstWhere((puesto) => puesto.id == model.puestoRef);
     } on StateError {
@@ -68,6 +77,7 @@ abstract class Empleado with _$Empleado {
       base: BaseEmpleado(
         id: model.id,
         user: user,
+        jefe: jefe,
         puesto: puesto,
         nombre: model.nombre,
         nacidoEn: model.fechaNacimiento,

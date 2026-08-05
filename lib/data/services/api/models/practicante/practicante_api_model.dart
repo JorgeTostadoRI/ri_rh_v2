@@ -36,6 +36,8 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     required String direccion,
     @JsonKey(defaultValue: 0, name: 'usuario')
     required int userRef,
+    @JsonKey(defaultValue: 0, name: 'jefe')
+    required int jefeRef,
 
     // Documents
     @JsonKey(name: 'identificacion_oficial')

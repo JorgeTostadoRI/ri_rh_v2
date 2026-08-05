@@ -12,6 +12,8 @@ abstract class EmpleadoApiModel with _$EmpleadoApiModel {
     int id,
     @JsonKey(name: 'usuario', defaultValue: 0)
     required int userRef,
+    @JsonKey(name: 'jefe', defaultValue: 0)
+    required int jefeRef,
     // Datos generales
     @JsonKey(name: 'nombre_completo')
     required String nombre,

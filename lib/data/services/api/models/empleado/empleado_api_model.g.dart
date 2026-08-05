@@ -11,6 +11,7 @@ _EmpleadoApiModel _$EmpleadoApiModelFromJson(
 ) => _EmpleadoApiModel(
   id: (json['id'] as num?)?.toInt() ?? 0,
   userRef: (json['usuario'] as num?)?.toInt() ?? 0,
+  jefeRef: (json['jefe'] as num?)?.toInt() ?? 0,
   nombre: json['nombre_completo'] as String,
   fechaNacimiento: DateTime.parse(json['fecha_nacimiento'] as String),
   escolaridad: $enumDecode(_$EscolaridadEnumMap, json['escolaridad']),
@@ -63,6 +64,7 @@ Map<String, dynamic> _$EmpleadoApiModelToJson(_EmpleadoApiModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'usuario': instance.userRef,
+      'jefe': instance.jefeRef,
       'nombre_completo': instance.nombre,
       'fecha_nacimiento': instance.fechaNacimiento.toIso8601String(),
       'escolaridad': _$EscolaridadEnumMap[instance.escolaridad]!,

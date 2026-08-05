@@ -11,6 +11,7 @@ abstract class BaseEmpleado with _$BaseEmpleado {
     @Default(0)
     int id,
     User? user,
+    User? jefe,
 
     // Datos generales
     required String nombre,
