@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.da
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -29,6 +30,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   late final Command1<void, Incidencia> approve;
   late final Command1<void, RejectParams> reject;
 
+  // FIXME: when hot reloading, resets to 0 instead of keeping the tab index
   int selection = 0;
 
   List<Incidencia>? _pendingToReview;
@@ -49,10 +51,12 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
     switch (selection) {
       case 0:
+        _log.info('Loading incidencias to review');
         final result = await _loadToReview();
         notifyListeners();
         return result;
       case 1:
+        _log.info('Loading incidencias historic');
         final result = await _loadHistoric();
         notifyListeners();
         return result;
@@ -131,14 +135,17 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     try {
       if (_historial != null) return const Result.ok(null);
 
+      final query = IncidenciaQuery(
+        state: [IncidenciaState.approved, IncidenciaState.rejected],
+      );
       final resultIncidencias = await Future.wait([
-        _incidenciasRepository.getIncidencias(permisoCategory),
-        _incidenciasRepository.getIncidencias(horasExtraCategory),
-        _incidenciasRepository.getIncidencias(vacacionesCategory),
-        _incidenciasRepository.getIncidencias(incapacidadCategory),
-        _incidenciasRepository.getIncidencias(requerimientoJudicialCategory),
-        _incidenciasRepository.getIncidencias(faltaCategory),
-        _incidenciasRepository.getIncidencias(retardoCategory),
+        _incidenciasRepository.getIncidencias(permisoCategory, query: query),
+        _incidenciasRepository.getIncidencias(horasExtraCategory, query: query),
+        _incidenciasRepository.getIncidencias(vacacionesCategory, query: query),
+        _incidenciasRepository.getIncidencias(incapacidadCategory, query: query),
+        _incidenciasRepository.getIncidencias(requerimientoJudicialCategory, query: query),
+        _incidenciasRepository.getIncidencias(faltaCategory, query: query),
+        _incidenciasRepository.getIncidencias(retardoCategory, query: query),
       ]);
 
       List<Incidencia> historic = [];

@@ -11,7 +11,6 @@ import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_as
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
@@ -114,14 +113,7 @@ class ApiClient {
       _authHeader(dio);
 
       final endpoint = '/api/rh/$category/';
-      final Map<String, dynamic> queryParams = {};
-      if (query != null) {
-        queryParams.addAll({
-          if (query.state != null)
-            'state': query.state!.jsonValue,
-        });
-      }
-      final response = await dio.get(endpoint, queryParameters: queryParams);
+      final response = await dio.get(endpoint, queryParameters: query?.toMap());
       final result = (response.data as List)
         .map((json) => IncidenciaApiModel.fromJson(json))
         .toList();

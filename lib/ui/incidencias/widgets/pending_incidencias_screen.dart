@@ -351,7 +351,7 @@ class _IncidenciasHistory extends StatelessWidget {
           );
         }
 
-        if (viewmodel.historial!.isEmpty) {
+        if (viewmodel.historial?.isEmpty ?? true) {
           return Center(
             child: Column(
               spacing: 24,
@@ -359,6 +359,7 @@ class _IncidenciasHistory extends StatelessWidget {
                 Icon(
                   LucideIcons.tentTree,
                   size: 60,
+                  color: primaryColor,
                 ),
                 Text('No hay incidencias previas', style: textTheme.headlineSmall),
               ],
