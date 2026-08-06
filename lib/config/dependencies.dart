@@ -54,6 +54,18 @@ List<SingleChildWidget> get _sharedProviders {
   ];
 }
 
+List<SingleChildWidget> get _sharedViewmodels {
+  return [
+    ChangeNotifierProvider(create: (context) =>
+      NotificationViewmodel(
+        log: context.read(),
+        authRepository: context.read(),
+        incidenciasRepository: context.read(),
+      )
+    ),
+  ];
+}
+
 Future<List<SingleChildWidget>> get providersLocal async {
   await LogManager.init(debug: true);
 
@@ -105,13 +117,7 @@ Future<List<SingleChildWidget>> get providersLocal async {
         localDataService: context.read(),
       ) as ReportesRepository
     ),
-    ChangeNotifierProvider(create: (context) =>
-      NotificationViewmodel(
-        log: context.read(),
-        authRepository: context.read(),
-        incidenciasRepository: context.read(),
-      )
-    ),
+    ..._sharedViewmodels,
   ];
 }
 
@@ -188,12 +194,6 @@ Future<List<SingleChildWidget>> get providersRemote async {
         apiClient: context.read(),
       ) as ReportesRepository
     ),
-    ChangeNotifierProvider(create: (context) =>
-      NotificationViewmodel(
-        log: context.read(),
-        authRepository: context.read(),
-        incidenciasRepository: context.read(),
-      )
-    ),
+    ..._sharedViewmodels,
   ];
 }
