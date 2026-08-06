@@ -132,7 +132,7 @@ class ApiClient {
     try {
       _authHeader(dio);
 
-      final response = await dio.get('/api/rh/$category/pending/');
+      final response = await dio.get('/api/rh/$category/pending-review/');
       final result = (response.data as List)
         .map((json) => IncidenciaApiModel.fromJson(json))
         .toList();
