@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IncidenciaOverviewDialog extends StatelessWidget {
@@ -23,7 +24,13 @@ class IncidenciaOverviewDialog extends StatelessWidget {
       content: Column(
         crossAxisAlignment: .start,
         children: [
-          Text('Fecha de creación', style: textTheme.headlineSmall),
+          Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Text('Fecha de creación', style: textTheme.headlineSmall),
+              _IncidenciaStatusChip(state: incidencia.state!),
+            ],
+          ),
           Text(yMMMMdjm.format(incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
@@ -43,6 +50,11 @@ class IncidenciaOverviewDialog extends StatelessWidget {
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(incidencia.reason, style: textTheme.bodyMedium),
+          if (incidencia.rejectionReason != null)
+            ...[
+              Text('Motivo de rechazo', style: textTheme.headlineSmall),
+              Text(incidencia.rejectionReason!, style: textTheme.bodyMedium),
+            ]
         ],
       ),
     );
@@ -58,5 +70,22 @@ class IncidenciaOverviewDialog extends StatelessWidget {
       final localEnd = incidencia.end.toLocal();
       return '${yMd.format(localStart)} hasta ${yMd.format(localEnd)}';
     }
+  }
+}
+
+class _IncidenciaStatusChip extends StatelessWidget {
+  const _IncidenciaStatusChip({
+    required this.state,
+  });
+
+  final IncidenciaState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state) {
+      IncidenciaState.pending => StatusChip(type: StatusChipType.warning, label: 'PENDIENTE'),
+      IncidenciaState.rejected => StatusChip(type: StatusChipType.failure, label: 'RECHAZADO'),
+      IncidenciaState.approved => StatusChip(type: StatusChipType.success, label: 'APROBADO'),
+    };
   }
 }
