@@ -74,6 +74,31 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
+  Future<Result<List<Incidencia>>> getIncidenciasToReview(String category) async {
+    try {
+      final users = await _getUsers();
+
+      final resultIncidencias = await _apiClient.getIncidenciasToReview(category);
+      switch (resultIncidencias) {
+        case Error():
+          return Result.error(resultIncidencias.error);
+        case Ok():
+      }
+
+      final incidencias = resultIncidencias.value
+        .map((incidenciaApiModel) => Incidencia.fromApiModel(
+          incidenciaApiModel,
+          category: category,
+          users: users,
+        ))
+        .toList();
+      return Result.ok(incidencias);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
+  @override
   Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
     try {
       final users = await _getUsers();

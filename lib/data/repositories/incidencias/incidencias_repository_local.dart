@@ -47,6 +47,17 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
   }
 
   @override
+  Future<Result<List<Incidencia>>> getIncidenciasToReview(String category) async {
+    final incidenciasToReview = _incidencias.where(
+      (incidencia) {
+        final isOfCategory = incidencia.categoryId == category;
+        final isPending = incidencia.state == IncidenciaState.pending;
+        return isOfCategory && isPending;
+      }).toList();
+    return Result.ok(incidenciasToReview);
+  }
+
+  @override
   Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
     final index = _incidencias.indexWhere((x) => x.id == id && x.categoryId == category);
     if (index == -1) {

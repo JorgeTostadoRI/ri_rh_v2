@@ -29,6 +29,8 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   late final Command1<void, Incidencia> approve;
   late final Command1<void, RejectParams> reject;
 
+  int selection = 0;
+
   List<Incidencia>? _pendingToReview;
   List<Incidencia>? get pendingToReview => _pendingToReview;
 
@@ -45,48 +47,18 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
       return Result.error(Exception('Not authenticated'));
     }
 
-    final resultIncidencias = await Future.wait([
-      _incidenciasRepository.getIncidencias(permisoCategory),
-      _incidenciasRepository.getIncidencias(horasExtraCategory),
-      _incidenciasRepository.getIncidencias(vacacionesCategory),
-      _incidenciasRepository.getIncidencias(incapacidadCategory),
-      _incidenciasRepository.getIncidencias(requerimientoJudicialCategory),
-    ]);
-
-    List<Incidencia> pendingIncidencias = [];
-    List<Incidencia> otherIncidencias = [];
-    for (final result in resultIncidencias) {
-      switch (result) {
-        case Error():
-          continue;
-        case Ok():
-      }
+    switch (selection) {
+      case 0:
+        final result = await _loadToReview();
+        notifyListeners();
+        return result;
+      case 1:
+        final result = await _loadHistoric();
+        notifyListeners();
+        return result;
+      default:
+        return Result.error(Exception('Invalid selection for loading incidencias'));
     }
-
-    for (final result in resultIncidencias) {
-      switch (result) {
-        case Error():
-          _log.warning('Failed to fetch incidencias', error: result.error);
-          continue;
-        case Ok():
-          for (final incidencia in result.value) {
-            final isPending = incidencia.state == IncidenciaState.pending;
-            final isSolicitor = incidencia.solicitor == currentUser;
-            if (isPending && !isSolicitor) {
-              pendingIncidencias.add(incidencia);
-            } else {
-              if (!isSolicitor) {
-                otherIncidencias.add(incidencia);
-              }
-            }
-          }
-      } 
-    }
-
-    _pendingToReview = pendingIncidencias;
-    _historial = otherIncidencias;
-    notifyListeners();
-    return Result.ok(null);
   }
 
   Future<Result<void>> _approve(Incidencia incidencia) async {
@@ -123,5 +95,67 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     _historial!.add(resultReject.value);
     notifyListeners();
     return Result.ok(null);
+  }
+
+  Future<Result<void>> _loadToReview() async {
+    try {
+      if (_pendingToReview != null) return const Result.ok(null);
+
+      final resultIncidencias = await Future.wait([
+        _incidenciasRepository.getIncidenciasToReview(permisoCategory),
+        _incidenciasRepository.getIncidenciasToReview(horasExtraCategory),
+        _incidenciasRepository.getIncidenciasToReview(vacacionesCategory),
+        _incidenciasRepository.getIncidenciasToReview(incapacidadCategory),
+        _incidenciasRepository.getIncidenciasToReview(requerimientoJudicialCategory),
+      ]);
+
+      List<Incidencia> pendingIncidencias = [];
+      for (final result in resultIncidencias) {
+        switch (result) {
+          case Error():
+            _log.warning('Failed to fetch incidencias', error: result.error);
+            continue;
+          case Ok():
+            pendingIncidencias.addAll(result.value);
+        }
+      }
+      _pendingToReview = pendingIncidencias;
+      return const Result.ok(null);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed to load incidencias to review', error: e, stackTrace: stackTrace);
+      return Result.error(e);
+    }
+  }
+
+  Future<Result<void>> _loadHistoric() async {
+    try {
+      if (_historial != null) return const Result.ok(null);
+
+      final resultIncidencias = await Future.wait([
+        _incidenciasRepository.getIncidencias(permisoCategory),
+        _incidenciasRepository.getIncidencias(horasExtraCategory),
+        _incidenciasRepository.getIncidencias(vacacionesCategory),
+        _incidenciasRepository.getIncidencias(incapacidadCategory),
+        _incidenciasRepository.getIncidencias(requerimientoJudicialCategory),
+        _incidenciasRepository.getIncidencias(faltaCategory),
+        _incidenciasRepository.getIncidencias(retardoCategory),
+      ]);
+
+      List<Incidencia> historic = [];
+      for (final result in resultIncidencias) {
+        switch (result) {
+          case Error():
+            _log.warning('Failed to fetch incidencias', error: result.error);
+            continue;
+          case Ok():
+            historic.addAll(result.value);
+        }
+      }
+      _historial = historic;
+      return const Result.ok(null);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed to load historic incidencias', error: e, stackTrace: stackTrace);
+      return Result.error(e);
+    }
   }
 }

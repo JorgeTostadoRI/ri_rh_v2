@@ -135,6 +135,25 @@ class ApiClient {
     }
   }
 
+  Future<Result<List<IncidenciaApiModel>>> getIncidenciasToReview(String category) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final response = await dio.get('/api/rh/$category/pending/');
+      final result = (response.data as List)
+        .map((json) => IncidenciaApiModel.fromJson(json))
+        .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<Result<IncidenciaApiModel>> approveIncidencia(String category, int id) async {
     final dio = _dioFactory();
     try {
@@ -544,6 +563,9 @@ class ApiException implements Exception {
   }
 
   factory ApiException.fromDioException(DioException e) {
-    return ApiException(e.response?.data?.toString() ?? 'No message provided', e.response?.statusCode ?? 0);
+    return ApiException(
+      e.response?.data?.toString() ?? e.message ?? 'No message provided',
+      e.response?.statusCode ?? 0,
+    );
   }
 }

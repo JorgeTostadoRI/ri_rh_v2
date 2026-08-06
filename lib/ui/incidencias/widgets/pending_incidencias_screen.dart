@@ -4,10 +4,11 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
-import 'package:ri_rh_v2/ui/core/ui/field_switcher.dart';
+import 'package:ri_rh_v2/ui/core/ui/custom_tab_bar.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_approve_dialog.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_overview_dialog.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class PendingIncidenciasScreen extends StatefulWidget {
@@ -22,13 +23,16 @@ class PendingIncidenciasScreen extends StatefulWidget {
   State<PendingIncidenciasScreen> createState() => _PendingIncidenciasScreenState();
 }
 
-class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
+class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final yMd = DateFormat.yMd();
   int viewSelectIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
     widget.viewmodel.approve.addListener(_onApproved);
     widget.viewmodel.reject.addListener(_onRejected);
   }
@@ -36,6 +40,8 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
   @override
   void didUpdateWidget(covariant PendingIncidenciasScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _tabController.removeListener(_onTabChanged);
+    _tabController.addListener(_onTabChanged);
     widget.viewmodel.approve.removeListener(_onApproved);
     widget.viewmodel.approve.addListener(_onApproved);
     widget.viewmodel.reject.removeListener(_onRejected);
@@ -43,84 +49,49 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          spacing: 32,
-          crossAxisAlignment: .start,
-          children: [
-            PageHeader(
-              title: 'Solicitudes de Incidencias',
-              subtitle: 'Revisa tus solicitudes pendientes de revisión.',
-              showBackButton: true,
+    return Padding(
+      padding: const EdgeInsets.all(40.0),
+      child: NestedScrollView(
+        headerSliverBuilder: ((context, innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: Column(
+                spacing: 32,
+                crossAxisAlignment: .start,
+                children: [
+                  PageHeader(
+                    title: 'Solicitudes de Incidencias',
+                    subtitle: 'Revisa tus solicitudes pendientes de revisión.',
+                    showBackButton: true,
+                  ),
+                  CustomTabBar(
+                    controller: _tabController,
+                    options: [
+                      'Pendientes',
+                      'Historial',
+                    ],
+                  ),
+                ],
+              ),
             ),
-            FieldSwitcher(
-              selectedIndex: viewSelectIndex,
-              onSelected: (value) => setState(() => viewSelectIndex = value),
-              options: [
-                'Pendientes',
-                'Historial',
-              ],
-            ),
-            ListenableBuilder(
-              listenable: Listenable.merge([
-                widget.viewmodel.load,
-                widget.viewmodel.approve,
-                widget.viewmodel.reject,
-              ]),
-              builder: (context, _) {
-                if (widget.viewmodel.load.running) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                if (widget.viewmodel.load.error) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        Text('No se pudieron cargar las incidencias.'),
-                        Text(
-                          widget.viewmodel.load.result.toString(),
-                          style: TextStyle(color: errorColor),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () => widget.viewmodel.load.execute(),
-                          icon: Icon(LucideIcons.rotateCcw),
-                          label: Text('Reintentar'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (viewSelectIndex == 0) {
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: widget.viewmodel.pendingToReview!.length,
-                    itemBuilder: (context, index) {
-                      final incidencia = widget.viewmodel.pendingToReview![index];
-                      return _IncidenciaListTile(incidencia: incidencia, onResult: _handleDialogStateResult);
-                    },
-                    separatorBuilder: (context, _) => SizedBox(height: 12),
-                  );
-                }
-                if (viewSelectIndex == 1) {
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: widget.viewmodel.historial!.length,
-                    itemBuilder: (context, index) {
-                      final incidencia = widget.viewmodel.historial![index];
-                      return _IncidenciaListTile(incidencia: incidencia, onResult: _handleDialogStateResult);
-                    },
-                    separatorBuilder: (context, _) => SizedBox(height: 12),
-                  );
-                }
-
-                return SizedBox.shrink();
-              },
-            )
-          ],
+          ];
+        }),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 32.0),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _IncidenciasReviewList(viewmodel: widget.viewmodel, onResult: _handleDialogStateResult),
+              _IncidenciasHistory(viewmodel: widget.viewmodel, onResult: _handleDialogStateResult),
+            ],
+          ),
         ),
       ),
     );
@@ -166,16 +137,25 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> {
       );
     }
   }
+
+  void _onTabChanged() {
+    if (_tabController.indexIsChanging) {
+      widget.viewmodel.selection = _tabController.index;
+      widget.viewmodel.load.execute();
+    }
+  }
 }
 
 class _IncidenciaListTile extends StatelessWidget {
   const _IncidenciaListTile({
     required this.incidencia,
     required this.onResult,
+    required this.canApprove,
   });
 
   final Incidencia incidencia;
   final Function(Incidencia, IncidenciaApproveDialogResult) onResult;
+  final bool canApprove;
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +194,14 @@ class _IncidenciaListTile extends StatelessWidget {
         overflow: .ellipsis,
       ),
       onTap: () async {
+        if (!canApprove) {
+          showDialog(
+            context: context,
+            builder: (context) => IncidenciaOverviewDialog(incidencia: incidencia),
+          );
+          return;
+        }
+
         final IncidenciaApproveDialogResult? result = await showDialog<IncidenciaApproveDialogResult>(
           context: context,
           builder: (context) {
@@ -240,5 +228,158 @@ class _IncidenciaListTile extends StatelessWidget {
       final localEnd = incidencia.end.toLocal();
       return '${yMd.format(localStart)} hasta ${yMd.format(localEnd)}';
     }
+  }
+}
+
+class _IncidenciasReviewList extends StatelessWidget {
+  const _IncidenciasReviewList({
+    required this.viewmodel,
+    required this.onResult,
+  });
+
+  final PendingIncidenciasViewmodel viewmodel;
+  final Function(Incidencia, IncidenciaApproveDialogResult) onResult;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        viewmodel.load,
+        viewmodel.approve,
+        viewmodel.reject,
+      ]),
+      builder: (context, _) {
+        if (viewmodel.load.running) {
+          return Center(child: CircularProgressIndicator());
+        }
+    
+        if (viewmodel.load.error) {
+          return Center(
+            child: Column(
+              children: [
+                Text('No se pudieron cargar las incidencias.'),
+                Text(
+                  viewmodel.load.result.toString(),
+                  style: TextStyle(color: errorColor),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => viewmodel.load.execute(),
+                  icon: Icon(LucideIcons.rotateCcw),
+                  label: Text('Reintentar'),
+                ),
+              ],
+            ),
+          );
+        }
+    
+        if (viewmodel.pendingToReview?.isEmpty ?? true) {
+          return Center(
+            child: Column(
+              spacing: 24,
+              children: [
+                Icon(
+                  LucideIcons.partyPopper,
+                  size: 60,
+                  color: statusSuccessColor,
+                ),
+                Text('No tienes incidencias por revisar', style: textTheme.headlineSmall),
+              ],
+            ),
+          );
+        }
+    
+        return ListView.separated(
+          shrinkWrap: true,
+          itemCount: viewmodel.pendingToReview!.length,
+          itemBuilder: (context, index) {
+            final incidencia = viewmodel.pendingToReview![index];
+            return _IncidenciaListTile(
+              incidencia: incidencia,
+              onResult: onResult,
+              canApprove: true,
+            );
+          },
+          separatorBuilder: (context, _) => SizedBox(height: 12),
+        );
+      },
+    );
+  }
+}
+
+class _IncidenciasHistory extends StatelessWidget {
+  const _IncidenciasHistory({
+    required this.viewmodel,
+    required this.onResult,
+  });
+
+  final PendingIncidenciasViewmodel viewmodel;
+  final Function(Incidencia, IncidenciaApproveDialogResult) onResult;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        viewmodel.load,
+        viewmodel.approve,
+        viewmodel.reject,
+      ]),
+      builder: (context, _) {
+        if (viewmodel.load.running) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (viewmodel.load.error) {
+          return Center(
+            child: Column(
+              children: [
+                Text('No se pudieron cargar las incidencias.'),
+                Text(
+                  viewmodel.load.result.toString(),
+                  style: TextStyle(color: errorColor),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => viewmodel.load.execute(),
+                  icon: Icon(LucideIcons.rotateCcw),
+                  label: Text('Reintentar'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (viewmodel.historial!.isEmpty) {
+          return Center(
+            child: Column(
+              spacing: 24,
+              children: [
+                Icon(
+                  LucideIcons.tentTree,
+                  size: 60,
+                ),
+                Text('No hay incidencias previas', style: textTheme.headlineSmall),
+              ],
+            ),
+          );
+        }
+
+        return ListView.separated(
+          shrinkWrap: true,
+          itemCount: viewmodel.historial!.length,
+          itemBuilder: (context, index) {
+            final incidencia = viewmodel.historial![index];
+            return _IncidenciaListTile(
+              incidencia: incidencia,
+              onResult: onResult,
+              canApprove: false,
+            );
+          },
+          separatorBuilder: (context, _) => SizedBox(height: 12),
+        );
+      },
+    );
   }
 }
