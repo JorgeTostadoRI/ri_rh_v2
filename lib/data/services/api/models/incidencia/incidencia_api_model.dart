@@ -28,8 +28,7 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
         required String reason,
         required List<IncidenciaFile> files,
 
-        @JsonKey(defaultValue: '')
-        required String categoryId,
+        required IncidenciaCategory category,
     }) = _IncidenciaApiModel;
 
     factory IncidenciaApiModel.fromJson(Map<String, Object?> json) => _$IncidenciaApiModelFromJson(json);

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -23,6 +22,22 @@ extension IncidenciaStateValue on IncidenciaState {
   String get jsonValue => _$IncidenciaStateEnumMap[this]!;
 }
 
+@JsonEnum(valueField: 'id')
+enum IncidenciaCategory {
+  permiso('permiso', 'permisos', 'Permisos'),
+  horasextra('horasextra', 'horas-extras', 'Horas Extras'),
+  vacaciones('vacaciones', 'vacaciones', 'Vacaciones'),
+  incapacidad('incapacidad', 'incapacidades', 'Incapacidades'),
+  requerimientojudicial('requerimientojudicial', 'requerimientos-judiciales', 'Requerimientos Judiciales'),
+  falta('falta', 'faltas', 'Faltas'),
+  retardo('retardo', 'retardos', 'Retardos');
+
+  final String id;
+  final String url;
+  final String label;
+  const IncidenciaCategory(this.id, this.url, this.label);
+}
+
 @freezed
 abstract class Incidencia with _$Incidencia {
     const factory Incidencia({
@@ -43,14 +58,12 @@ abstract class Incidencia with _$Incidencia {
         required String reason,
         required List<IncidenciaFile> files,
 
-        @JsonKey(defaultValue: '')
-        required String categoryId,
+        required IncidenciaCategory category,
     }) = _Incidencia;
 
     factory Incidencia.fromJson(Map<String, Object?> json) => _$IncidenciaFromJson(json);
 
     factory Incidencia.fromApiModel(IncidenciaApiModel model, {
-      required String category,
       required List<User> users,
     }) {
       late final User solicitor;
@@ -68,7 +81,7 @@ abstract class Incidencia with _$Incidencia {
           'Failed to find element for incidencia',
           context: {
             'model': 'Incidencia',
-            'category': category,
+            'category': model.category,
             'id': model.id,
             'solicitorRef': model.solicitorRef,
             'revisorRef': model.revisorRef,
@@ -88,22 +101,21 @@ abstract class Incidencia with _$Incidencia {
         end: model.end,
         reason: model.reason,
         files: model.files,
-        categoryId: category,
+        category: model.category,
       );
     }
 }
 
 extension IncidenciaGetters on Incidencia {
   String get categoryName {
-    return switch(categoryId) {
-      permisoCategory => 'Permiso',
-      faltaCategory => 'Falta',
-      horasExtraCategory => 'Horas Extra',
-      vacacionesCategory => 'Vacaciones',
-      retardoCategory => 'Retardo',
-      incapacidadCategory => 'Incapacidad',
-      requerimientoJudicialCategory => 'Requerimiento Judicial',
-      _ => 'Desconocido',
+    return switch(category) {
+      IncidenciaCategory.permiso => 'Permiso',
+      IncidenciaCategory.falta => 'Falta',
+      IncidenciaCategory.horasextra => 'Horas Extra',
+      IncidenciaCategory.vacaciones => 'Vacaciones',
+      IncidenciaCategory.retardo => 'Retardo',
+      IncidenciaCategory.incapacidad => 'Incapacidad',
+      IncidenciaCategory.requerimientojudicial => 'Requerimiento Judicial',
     };
   }
 }

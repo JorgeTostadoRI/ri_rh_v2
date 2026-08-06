@@ -25,7 +25,7 @@ _IncidenciaApiModel _$IncidenciaApiModelFromJson(Map<String, dynamic> json) =>
       files: (json['files'] as List<dynamic>)
           .map((e) => IncidenciaFile.fromJson(e as Map<String, dynamic>))
           .toList(),
-      categoryId: json['category_id'] as String? ?? '',
+      category: $enumDecode(_$IncidenciaCategoryEnumMap, json['category']),
     );
 
 Map<String, dynamic> _$IncidenciaApiModelToJson(_IncidenciaApiModel instance) =>
@@ -41,11 +41,21 @@ Map<String, dynamic> _$IncidenciaApiModelToJson(_IncidenciaApiModel instance) =>
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,
       'files': instance.files,
-      'category_id': instance.categoryId,
+      'category': _$IncidenciaCategoryEnumMap[instance.category]!,
     };
 
 const _$IncidenciaStateEnumMap = {
   IncidenciaState.pending: 'PE',
   IncidenciaState.rejected: 'RE',
   IncidenciaState.approved: 'AP',
+};
+
+const _$IncidenciaCategoryEnumMap = {
+  IncidenciaCategory.permiso: 'permiso',
+  IncidenciaCategory.horasextra: 'horasextra',
+  IncidenciaCategory.vacaciones: 'vacaciones',
+  IncidenciaCategory.incapacidad: 'incapacidad',
+  IncidenciaCategory.requerimientojudicial: 'requerimientojudicial',
+  IncidenciaCategory.falta: 'falta',
+  IncidenciaCategory.retardo: 'retardo',
 };

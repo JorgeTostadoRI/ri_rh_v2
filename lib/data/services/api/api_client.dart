@@ -5,7 +5,6 @@ import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_mode
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
-import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_pending_count_response.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
@@ -89,14 +88,12 @@ class ApiClient {
         'uploaded_files': uploadList,
       });
 
-      final category = incidencia.categoryId;
+      final category = incidencia.category.url;
       final response = await dio.post(
         '/api/rh/$category/',
         data: formData,
       );
-      final result = IncidenciaApiModel.fromJson(response.data).copyWith(
-        categoryId: incidencia.categoryId,
-      );
+      final result = IncidenciaApiModel.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
@@ -107,13 +104,12 @@ class ApiClient {
     }
   }
 
-  Future<Result<List<IncidenciaApiModel>>> getIncidencias(String category, {IncidenciaQuery? query}) async {
+  Future<Result<List<IncidenciaApiModel>>> getIncidencias({IncidenciaQuery? query}) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
 
-      final endpoint = '/api/rh/$category/';
-      final response = await dio.get(endpoint, queryParameters: query?.toMap());
+      final response = await dio.get('/api/rh/incidencias/', queryParameters: query?.toMap());
       final result = (response.data as List)
         .map((json) => IncidenciaApiModel.fromJson(json))
         .toList();
@@ -127,12 +123,12 @@ class ApiClient {
     }
   }
 
-  Future<Result<List<IncidenciaApiModel>>> getIncidenciasToReview(String category) async {
+  Future<Result<List<IncidenciaApiModel>>> getIncidenciasToReview() async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
 
-      final response = await dio.get('/api/rh/$category/pending-review/');
+      final response = await dio.get('/api/rh/incidencias/pending-review/');
       final result = (response.data as List)
         .map((json) => IncidenciaApiModel.fromJson(json))
         .toList();
@@ -188,13 +184,13 @@ class ApiClient {
     }
   }
 
-  Future<Result<IncidenciaPendingCountResponse>> getIncidenciasPendingCount() async {
+  Future<Result<int>> getIncidenciasPendingCount() async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
 
-      final response = await dio.get('/api/rh/incidencias-review-count/');
-      final result = IncidenciaPendingCountResponse.fromJson(response.data);
+      final response = await dio.get('/api/rh/incidencias/pending-review-count/');
+      final result = (response.data['total'] as num).toInt();
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));

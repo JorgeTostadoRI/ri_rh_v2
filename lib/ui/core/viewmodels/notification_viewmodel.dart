@@ -46,7 +46,7 @@ class NotificationViewmodel extends ChangeNotifier {
         return Result.ok(null);
       }
 
-      final resultIncidenciasCount = await _incidenciasRepository.getIncidenciasPendingCount();
+      final resultIncidenciasCount = await _incidenciasRepository.getIncidenciasToReviewCount();
       switch (resultIncidenciasCount) {
         case Error():
           _log.error('Failed to fetch pending incidencia count', error: resultIncidenciasCount.error);
@@ -54,7 +54,7 @@ class NotificationViewmodel extends ChangeNotifier {
         case Ok():
       }
 
-      _pendingIncidenciasToReview = resultIncidenciasCount.value.total;
+      _pendingIncidenciasToReview = resultIncidenciasCount.value;
       notifyListeners();
       return Result.ok(null);
     } on Exception catch (e) {

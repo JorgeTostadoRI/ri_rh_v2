@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -31,19 +29,15 @@ class IncidenciasViewmodel extends ChangeNotifier {
       return Result.ok(null);
     }
 
-    final resultCount = await _incidenciasRepository.getIncidenciasPendingCount();
+    final resultCount = await _incidenciasRepository.getIncidenciasToReviewCount();
     switch(resultCount) {
       case Error():
         _log.error('Failed to fetch incidencias pending count', error: resultCount.error);
         return Result.error(resultCount.error);
       case Ok():
     }
-    _pendingToReview = resultCount.value.total;
+    _pendingToReview = resultCount.value;
     notifyListeners();
     return Result.ok(null);
-  }
-
-  List<IncidenciaCategory> get categories { 
-    return incidenciaCategories;
   }
 }

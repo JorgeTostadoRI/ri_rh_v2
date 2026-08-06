@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ri_rh_v2/config/incidencia_categories.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -39,10 +37,6 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   List<Incidencia>? _historial;
   List<Incidencia>? get historial => _historial;
 
-  List<IncidenciaCategory> get categories { 
-    return incidenciaCategories;
-  }
-
   Future<Result<void>> _load() async {
     final currentUser = _authRepository.getCurrentUser();
     if (currentUser == null) {
@@ -66,16 +60,16 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> _approve(Incidencia incidencia) async {
-    final resultApproval = await _incidenciasRepository.approveIncidencia(incidencia.categoryId, incidencia.id!);
+    final resultApproval = await _incidenciasRepository.approveIncidencia(incidencia);
     switch (resultApproval) {
       case Error():
-        _log.warning('Failed to approve ${incidencia.categoryId} #${incidencia.id}', error: resultApproval.error);
+        _log.warning('Failed to approve ${incidencia.category.id} #${incidencia.id}', error: resultApproval.error);
         return Result.error(resultApproval.error);
       case Ok():
     }
 
     _pendingToReview!.remove(incidencia);
-    _historial!.add(resultApproval.value);
+    _historial?.add(resultApproval.value);
     notifyListeners();
     return Result.ok(null);
   }
@@ -83,20 +77,20 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   Future<Result<void>> _reject(RejectParams params) async {
     final incidencia = params.incidencia;
     final rejectionReason = params.rejectionReason;
-    final resultReject = await _incidenciasRepository.rejectIncidencia(
-      incidencia.id!,
-      category: incidencia.categoryId,
+
+    final incidenciaWithRejection = incidencia.copyWith(
       rejectionReason: rejectionReason,
     );
+    final resultReject = await _incidenciasRepository.rejectIncidencia(incidenciaWithRejection);
     switch (resultReject) {
       case Error():
-        _log.warning('Failed to reject ${incidencia.categoryId} #${incidencia.id}', error: resultReject.error);
+        _log.warning('Failed to reject ${incidencia.category.id} #${incidencia.id}', error: resultReject.error);
         return Result.error(resultReject.error);
       case Ok():
     }
 
     _pendingToReview!.remove(incidencia);
-    _historial!.add(resultReject.value);
+    _historial?.add(resultReject.value);
     notifyListeners();
     return Result.ok(null);
   }
@@ -105,25 +99,15 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     try {
       if (_pendingToReview != null) return const Result.ok(null);
 
-      final resultIncidencias = await Future.wait([
-        _incidenciasRepository.getIncidenciasToReview(permisoCategory),
-        _incidenciasRepository.getIncidenciasToReview(horasExtraCategory),
-        _incidenciasRepository.getIncidenciasToReview(vacacionesCategory),
-        _incidenciasRepository.getIncidenciasToReview(incapacidadCategory),
-        _incidenciasRepository.getIncidenciasToReview(requerimientoJudicialCategory),
-      ]);
+      final resultIncidencias = await _incidenciasRepository.getIncidenciasToReview();
 
-      List<Incidencia> pendingIncidencias = [];
-      for (final result in resultIncidencias) {
-        switch (result) {
-          case Error():
-            _log.warning('Failed to fetch incidencias', error: result.error);
-            continue;
-          case Ok():
-            pendingIncidencias.addAll(result.value);
-        }
+      switch (resultIncidencias) {
+        case Error():
+          _log.warning('Failed to fetch incidencias', error: resultIncidencias.error);
+          return Result.error(resultIncidencias.error);
+        case Ok():
       }
-      _pendingToReview = pendingIncidencias;
+      _pendingToReview = resultIncidencias.value;
       return const Result.ok(null);
     } on Exception catch (e, stackTrace) {
       _log.error('Failed to load incidencias to review', error: e, stackTrace: stackTrace);
@@ -138,27 +122,15 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
       final query = IncidenciaQuery(
         state: [IncidenciaState.approved, IncidenciaState.rejected],
       );
-      final resultIncidencias = await Future.wait([
-        _incidenciasRepository.getIncidencias(permisoCategory, query: query),
-        _incidenciasRepository.getIncidencias(horasExtraCategory, query: query),
-        _incidenciasRepository.getIncidencias(vacacionesCategory, query: query),
-        _incidenciasRepository.getIncidencias(incapacidadCategory, query: query),
-        _incidenciasRepository.getIncidencias(requerimientoJudicialCategory, query: query),
-        _incidenciasRepository.getIncidencias(faltaCategory, query: query),
-        _incidenciasRepository.getIncidencias(retardoCategory, query: query),
-      ]);
+      final resultIncidencias = await _incidenciasRepository.getIncidencias(query: query);
 
-      List<Incidencia> historic = [];
-      for (final result in resultIncidencias) {
-        switch (result) {
-          case Error():
-            _log.warning('Failed to fetch incidencias', error: result.error);
-            continue;
-          case Ok():
-            historic.addAll(result.value);
-        }
+      switch (resultIncidencias) {
+        case Error():
+          _log.warning('Failed to fetch incidencias', error: resultIncidencias.error);
+          return Result.error(resultIncidencias.error);
+        case Ok():
       }
-      _historial = historic;
+      _historial = resultIncidencias.value;
       return const Result.ok(null);
     } on Exception catch (e, stackTrace) {
       _log.error('Failed to load historic incidencias', error: e, stackTrace: stackTrace);

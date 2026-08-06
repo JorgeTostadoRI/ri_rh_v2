@@ -8,7 +8,6 @@ import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.da
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -102,7 +101,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
       end: _constructDate(_endDate ?? _startDate!, _endTime),
       reason: _reason!,
       solicitor: user!,
-      categoryId: category.id,
+      category: category,
       files: incidenciaFiles,
     );
     final incidenciaResult = await _incidenciasRepository.createIncidencia(incidencia);

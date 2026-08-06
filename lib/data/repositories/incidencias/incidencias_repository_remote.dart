@@ -28,8 +28,8 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
         end: incidencia.end,
         reason: incidencia.reason,
         files: incidencia.files,
-        categoryId: incidencia.categoryId,
         solicitorRef: incidencia.solicitor?.id,
+        category: incidencia.category
       );
       final resultIncidencia = await _apiClient.postIncidencia(incidenciaApiModel);
       switch (resultIncidencia) {
@@ -39,7 +39,6 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       }
       final incidenciaWithValues = Incidencia.fromApiModel(
         resultIncidencia.value,
-        category: incidencia.categoryId,
         users: users,
       );
       return Result.ok(incidenciaWithValues);
@@ -49,11 +48,11 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<List<Incidencia>>> getIncidencias(String category, {IncidenciaQuery? query}) async {
+  Future<Result<List<Incidencia>>> getIncidencias({IncidenciaQuery? query}) async {
     try {
       final users = await _getUsers();
 
-      final resultIncidencias = await _apiClient.getIncidencias(category, query: query);
+      final resultIncidencias = await _apiClient.getIncidencias(query: query);
       switch (resultIncidencias) {
         case Error():
           return Result.error(resultIncidencias.error);
@@ -63,7 +62,6 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       final incidencias = resultIncidencias.value
         .map((incidenciaApiModel) => Incidencia.fromApiModel(
           incidenciaApiModel,
-          category: category,
           users: users,
         ))
         .toList();
@@ -74,11 +72,11 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<List<Incidencia>>> getIncidenciasToReview(String category) async {
+  Future<Result<List<Incidencia>>> getIncidenciasToReview() async {
     try {
       final users = await _getUsers();
 
-      final resultIncidencias = await _apiClient.getIncidenciasToReview(category);
+      final resultIncidencias = await _apiClient.getIncidenciasToReview();
       switch (resultIncidencias) {
         case Error():
           return Result.error(resultIncidencias.error);
@@ -88,7 +86,6 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       final incidencias = resultIncidencias.value
         .map((incidenciaApiModel) => Incidencia.fromApiModel(
           incidenciaApiModel,
-          category: category,
           users: users,
         ))
         .toList();
@@ -99,43 +96,40 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
+  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia) async {
     try {
       final users = await _getUsers();
 
-      final resultApproval = await _apiClient.approveIncidencia(category, id);
+      final resultApproval = await _apiClient.approveIncidencia(incidencia.category.url, incidencia.id!);
       switch (resultApproval) {
         case Error():
           return Result.error(resultApproval.error);
         case Ok():
       }
 
-      final incidencia = Incidencia.fromApiModel(
+      final approvedIncidencia = Incidencia.fromApiModel(
         resultApproval.value,
-        category: category,
         users: users,
       );
-      return Result.ok(incidencia);
+      return Result.ok(approvedIncidencia);
     } on Exception catch (e) {
       return Result.error(e);
     }
   }
 
   @override
-  Future<Result<Incidencia>> rejectIncidencia(
-    int id,
-    {
-      required String category,
-      required String rejectionReason,
+  Future<Result<Incidencia>> rejectIncidencia(Incidencia incidencia) async {
+    if (incidencia.rejectionReason == null || incidencia.rejectionReason!.isEmpty) {
+      return Result.error(Exception('Needs a rejection reason'));
     }
-  ) async {
+
     try {
       final users = await _getUsers();
 
       final resultApproval = await _apiClient.rejectIncidencia(
-        id,
-        category: category,
-        rejectionReason: rejectionReason,
+        incidencia.id!,
+        category: incidencia.category.url,
+        rejectionReason: incidencia.rejectionReason!,
       );
       switch (resultApproval) {
         case Error():
@@ -143,19 +137,18 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
         case Ok():
       }
 
-      final incidencia = Incidencia.fromApiModel(
+      final rejectedIncidencia = Incidencia.fromApiModel(
         resultApproval.value,
-        category: category,
         users: users,
       );
-      return Result.ok(incidencia);
+      return Result.ok(rejectedIncidencia);
     } on Exception catch (e) {
       return Result.error(e);
     }
   }
 
   @override
-  Future<Result<IncidenciaPendingCountResponse>> getIncidenciasPendingCount() async {
+  Future<Result<int>> getIncidenciasToReviewCount() async {
     return _apiClient.getIncidenciasPendingCount();
   }
 

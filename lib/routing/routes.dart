@@ -1,5 +1,5 @@
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 
 abstract final class Routes {
@@ -16,7 +16,7 @@ abstract final class Routes {
   static const practicantes = '/practicantes';
   static const expedientePracticante = ':practicanteId';
   static const reportes = '/reportes';
-  static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.id}/new';
+  static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.url}/new';
   static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}';
   static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}/$huellas';
   static String expedienteOfPracticante(Practicante practicante) => '$practicantes/${practicante.base.id}';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ri_rh_v2/domain/models/incidencias/incidencia_category.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
@@ -8,18 +8,26 @@ class IncidenciaCategoryCard extends StatefulWidget {
   const IncidenciaCategoryCard({
     super.key,
     required this.category,
+    required this.icon,
+    required this.description,
+    required this.color,
+    required this.bg,
   });
 
   final IncidenciaCategory category;
+  final IconData icon;
+  final String description;
+  final Color color;
+  final Color bg;
 
   @override
-  State<IncidenciaCategoryCard> createState() => _IncidenciaCardState();
+  State<IncidenciaCategoryCard> createState() => _IncidenciaCategoryCardState();
 }
 
-class _IncidenciaCardState extends State<IncidenciaCategoryCard> {
+class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
   bool _hovering = false;
 
-  Color get borderColor => _hovering ? widget.category.color : Color(0xFFF5E8D8);
+  Color get borderColor => _hovering ? widget.color : Color(0xFFF5E8D8);
   double get iconScale => _hovering ? 1.1 : 1.0;
 
   @override
@@ -52,10 +60,10 @@ class _IncidenciaCardState extends State<IncidenciaCategoryCard> {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: widget.category.bg,
+                      color: widget.bg,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(widget.category.icon, color: widget.category.color)
+                    child: Icon(widget.icon, color: widget.color)
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -68,7 +76,7 @@ class _IncidenciaCardState extends State<IncidenciaCategoryCard> {
                   textAlign: .center,
                 ),
                 Text(
-                  widget.category.description,
+                  widget.description,
                   style: TextTheme.of(context).labelMedium?.copyWith(
                     color: labelTextColor,
                   ),
