@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:synchronized/synchronized.dart';
 
 class IncidenciasRepositoryRemote extends IncidenciasRepository {
   IncidenciasRepositoryRemote({
@@ -15,20 +16,12 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   final ApiClient _apiClient;
 
   List<User>? _cachedUsers;
+  final Lock _usersLock = Lock();
 
   @override
   Future<Result<Incidencia>> createIncidencia(Incidencia incidencia) async {
     try {
-      if (_cachedUsers == null) {
-        final resultUsers = await _apiClient.getUsers();
-        switch (resultUsers) {
-          case Error():
-            return Result.error(resultUsers.error);
-          case Ok():
-        }
-
-        _cachedUsers = resultUsers.value;
-      }
+      final users = await _getUsers();
 
       final incidenciaApiModel = IncidenciaApiModel(
         start: incidencia.start,
@@ -47,7 +40,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       final incidenciaWithValues = Incidencia.fromApiModel(
         resultIncidencia.value,
         category: incidencia.categoryId,
-        users: _cachedUsers!,
+        users: users,
       );
       return Result.ok(incidenciaWithValues);
     } on Exception catch(error) {
@@ -58,16 +51,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   @override
   Future<Result<List<Incidencia>>> getIncidencias(String category, {IncidenciaQuery? query}) async {
     try {
-      if (_cachedUsers == null) {
-        final resultUsers = await _apiClient.getUsers();
-        switch (resultUsers) {
-          case Error():
-            return Result.error(resultUsers.error);
-          case Ok():
-        }
-
-        _cachedUsers = resultUsers.value;
-      }
+      final users = await _getUsers();
 
       final resultIncidencias = await _apiClient.getIncidencias(category, query: query);
       switch (resultIncidencias) {
@@ -80,7 +64,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
         .map((incidenciaApiModel) => Incidencia.fromApiModel(
           incidenciaApiModel,
           category: category,
-          users: _cachedUsers!,
+          users: users,
         ))
         .toList();
       return Result.ok(incidencias);
@@ -92,16 +76,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   @override
   Future<Result<Incidencia>> approveIncidencia(String category, int id) async {
     try {
-      if (_cachedUsers == null) {
-        final resultUsers = await _apiClient.getUsers();
-        switch (resultUsers) {
-          case Error():
-            return Result.error(resultUsers.error);
-          case Ok():
-        }
-
-        _cachedUsers = resultUsers.value;
-      }
+      final users = await _getUsers();
 
       final resultApproval = await _apiClient.approveIncidencia(category, id);
       switch (resultApproval) {
@@ -113,7 +88,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       final incidencia = Incidencia.fromApiModel(
         resultApproval.value,
         category: category,
-        users: _cachedUsers!,
+        users: users,
       );
       return Result.ok(incidencia);
     } on Exception catch (e) {
@@ -130,16 +105,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
     }
   ) async {
     try {
-      if (_cachedUsers == null) {
-        final resultUsers = await _apiClient.getUsers();
-        switch (resultUsers) {
-          case Error():
-            return Result.error(resultUsers.error);
-          case Ok():
-        }
-
-        _cachedUsers = resultUsers.value;
-      }
+      final users = await _getUsers();
 
       final resultApproval = await _apiClient.rejectIncidencia(
         id,
@@ -155,7 +121,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
       final incidencia = Incidencia.fromApiModel(
         resultApproval.value,
         category: category,
-        users: _cachedUsers!,
+        users: users,
       );
       return Result.ok(incidencia);
     } on Exception catch (e) {
@@ -166,5 +132,25 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   @override
   Future<Result<IncidenciaPendingCountResponse>> getIncidenciasPendingCount() async {
     return _apiClient.getIncidenciasPendingCount();
+  }
+
+  Future<List<User>> _getUsers() async {
+    final cached = _cachedUsers;
+    if (cached != null) return cached;
+
+    return _usersLock.synchronized(() async {
+      // Check if we cached the users while waiting to acquire the lock
+      final cachedAfterLock = _cachedUsers;
+      if (cachedAfterLock != null) return cachedAfterLock;
+
+        final resultUsers = await _apiClient.getUsers();
+        switch (resultUsers) {
+          case Error():
+            throw resultUsers.error;
+          case Ok():
+            _cachedUsers = resultUsers.value;
+            return _cachedUsers!;
+        }
+    });
   }
 }
