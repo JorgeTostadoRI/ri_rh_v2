@@ -160,6 +160,10 @@ class _PendingReviewNotification extends StatelessWidget {
                     Routes.pendingIncidencias,
                   ),
                   icon: Icon(LucideIcons.arrowRight),
+                  style: IconButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: primaryColor,
+                  ),
                 ),
               ],
             );

@@ -118,20 +118,26 @@ class AppThemeProvider extends ChangeNotifier {
         fontWeight: .w700,
         fontFamily: 'Inter',
       ),
-      border: WidgetStateInputBorder.fromMap({
-        WidgetState.focused: OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor, width: 0.8),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        WidgetState.error: OutlineInputBorder(
-          borderSide: BorderSide(color: errorColor, width: 0.8),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        WidgetState.any: OutlineInputBorder(
-          borderSide: BorderSide(color: borderColor, width: 0.8),
-          borderRadius: BorderRadius.circular(16),
-        ),
-      }),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor, width: 0.8),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: primaryColor, width: 0.8),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: errorColor, width: 0.8),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor, width: 0.8),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor, width: 0.8),
+        borderRadius: BorderRadius.circular(16),
+      ),
       filled: true,
       fillColor: inputFillColor,
     ),
@@ -177,12 +183,6 @@ class AppThemeProvider extends ChangeNotifier {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       foregroundColor: Colors.white,
       backgroundColor: primaryColor,
-    ),
-    iconButtonTheme: IconButtonThemeData(
-      style: IconButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: primaryColor,
-      ),
     ),
   );
 
