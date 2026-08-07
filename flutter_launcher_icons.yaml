@@ -1,0 +1,16 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icons/app_icon.png"
+
+  android: false
+
+  ios: false
+
+  web:
+    generate: true
+    background_color: "#FFFFFF"
+    theme_color: "#E87B1E"
+
+  windows:
+    generate: true
+    icon_size: 128 # min:48, max:256, default: 48
