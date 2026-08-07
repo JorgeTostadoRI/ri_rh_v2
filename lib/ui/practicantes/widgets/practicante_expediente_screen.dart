@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
-import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
+import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
+import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/expediente_files.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
 
@@ -49,26 +50,12 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
             final practicante = widget.viewmodel.practicante;
             return Column(
               mainAxisSize: .min,
-              mainAxisAlignment: .start,
+              crossAxisAlignment: .start,
               children: [
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    Row(
-                      spacing: 16,
-                      mainAxisSize: .min,
-                      children: [
-                        AppBackButton(),
-                        Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Text('Expediente Digital', style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
-                            Text(practicante.base.nombre, style: TextTheme.of(context).titleSmall),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                PageHeader(
+                  title: 'Expediente Digital',
+                  subtitle: practicante.base.nombre,
+                  showBackButton: true,
                 ),
                 const SizedBox(height: 32),
                 Row(
@@ -85,10 +72,13 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                     Flexible(
                       flex: 1,
                       child: Column(
-
                         crossAxisAlignment: .stretch,
                         children: [
-                          _DataCard(
+                          ExpedienteFiles(
+                            files: practicante.base.files,
+                            altaPracticante: practicante.alta,
+                          ),
+                          IconCard(
                             icon: LucideIcons.fingerprintPattern,
                             title: 'Huellas',
                             children: [
@@ -109,71 +99,6 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
             );
           }
         ),
-      ),
-    );
-  }
-}
-
-class _DataCard extends StatelessWidget {
-  const _DataCard({
-    required this.icon,
-    required this.title,
-    this.children = const <Widget>[],
-  });
-
-  final IconData icon;
-  final String title;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      child: Container(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          spacing: 24,
-          mainAxisSize: .min,
-          crossAxisAlignment: .stretch,
-          children: [
-            Row(
-              spacing: 12,
-              children: [
-                _IconContainer(icon: icon),
-                Text(
-                  title,
-                  style: TextTheme.of(context).headlineSmall?.copyWith(fontWeight: .w700),
-                ),
-              ],
-            ),
-            ...children,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _IconContainer extends StatelessWidget {
-  const _IconContainer({
-    required this.icon,
-  });
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Icon(
-        icon,
-        color: primaryColor,
-        size: 20,
       ),
     );
   }
