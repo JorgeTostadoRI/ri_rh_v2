@@ -28,12 +28,14 @@ import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_remote.d
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
+import 'package:ri_rh_v2/data/services/file_download/file_download_service_factory.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_dev.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service_factory.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 Dio _dioClient() {
@@ -51,6 +53,9 @@ List<SingleChildWidget> get _sharedProviders {
   return [
     ChangeNotifierProvider(create: (_) => AppThemeProvider()..loadTheme()),
     Provider(create: (_) => DeviceAuthService()),
+    Provider(create: (_) => getFileDownloadService(
+      dioFactory: _dioClient,
+    )),
   ];
 }
 
@@ -61,6 +66,12 @@ List<SingleChildWidget> get _sharedViewmodels {
         log: context.read(),
         authRepository: context.read(),
         incidenciasRepository: context.read(),
+      )
+    ),
+    ChangeNotifierProvider(create: (context) =>
+      DownloadViewmodel(
+        log: context.read(),
+        fileDownloadService: context.read(),
       )
     ),
   ];

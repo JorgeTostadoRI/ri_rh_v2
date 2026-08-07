@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 
-class ExpedienteFiles extends StatelessWidget {
+class ExpedienteFiles extends StatefulWidget {
   const ExpedienteFiles({
     super.key,
     required this.files,
@@ -20,39 +20,96 @@ class ExpedienteFiles extends StatelessWidget {
   final AltaPracticante? altaPracticante;
 
   @override
+  State<ExpedienteFiles> createState() => _ExpedienteFilesState();
+}
+
+class _ExpedienteFilesState extends State<ExpedienteFiles> {
+  late final DownloadViewmodel _downloadViewmodel;
+
+  @override
+  void initState() {
+    super.initState();
+    _downloadViewmodel = context.read<DownloadViewmodel>();
+    _downloadViewmodel.downloadFile.addListener(_onDownload);
+  }
+
+  @override
+  void didUpdateWidget(covariant ExpedienteFiles oldWidget) {
+    _downloadViewmodel.downloadFile.removeListener(_onDownload);
+    _downloadViewmodel.downloadFile.addListener(_onDownload);
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _downloadViewmodel.downloadFile.removeListener(_onDownload);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return IconCard(
       icon: LucideIcons.fileText,
       title: 'Documentación',
       children: [
-        _FileDisplay(name: 'INE/Identificación', url: files.ineUrl),
-        _FileDisplay(name: 'Acta de nacimiento', url: files.actaNacimientoUrl),
-        _FileDisplay(name: 'CURP', url: files.curpUrl),
-        _FileDisplay(name: 'NSS', url: files.nssUrl),
-        _FileDisplay(name: 'Curriculum Vitae', url: files.cvUrl),
-        _FileDisplay(name: 'Comprobante de domicilio', url: files.domicilioUrl),
-        _FileDisplay(name: 'Cuenta Bancaria', url: files.estadoCuentaUrl),
-        if (altaEmpleo != null)
+        _FileDisplay(name: 'INE/Identificación', url: widget.files.ineUrl),
+        _FileDisplay(name: 'Acta de nacimiento', url: widget.files.actaNacimientoUrl),
+        _FileDisplay(name: 'CURP', url: widget.files.curpUrl),
+        _FileDisplay(name: 'NSS', url: widget.files.nssUrl),
+        _FileDisplay(name: 'Curriculum Vitae', url: widget.files.cvUrl),
+        _FileDisplay(name: 'Comprobante de domicilio', url: widget.files.domicilioUrl),
+        _FileDisplay(name: 'Cuenta Bancaria', url: widget.files.estadoCuentaUrl),
+        if (widget.altaEmpleo != null)
           ...[
-            _FileDisplay(name: 'RFC', url: altaEmpleo!.constanciaSituacionFiscalUrl),
-            _FileDisplay(name: 'Alta IMSS', url: altaEmpleo!.altaImssUrl),
-            _FileDisplay(name: 'Aviso de Retención Infonavit', url: altaEmpleo!.avisoInfonavitUrl),
-            _FileDisplay(name: 'Constancia de estudio', url: altaEmpleo!.constanciaEstudioUrl),
-            _FileDisplay(name: 'Constancia de antecedentes penales', url: altaEmpleo!.cartaNoAntecedentesPenalesUrl),
-            _FileDisplay(name: 'Contrato Laboral', url: altaEmpleo!.contratoLaboralUrl),
-            _FileDisplay(name: 'Carta Oferta', url: altaEmpleo!.cartaOfertaUrl),
-            _FileDisplay(name: 'Examen Médico', url: altaEmpleo!.examenMedicoUrl),
-            _FileDisplay(name: 'Carta de Recomendación (1)', url: altaEmpleo!.cartaRecomendacion1Url),
-            _FileDisplay(name: 'Carta de Recomendación (2)', url: altaEmpleo!.cartaRecomendacion2Url),
-            _FileDisplay(name: 'Carta de Recomendación (3)', url: altaEmpleo!.cartaRecomendacion3Url),
+            _FileDisplay(name: 'RFC', url: widget.altaEmpleo!.constanciaSituacionFiscalUrl),
+            _FileDisplay(name: 'Alta IMSS', url: widget.altaEmpleo!.altaImssUrl),
+            _FileDisplay(name: 'Aviso de Retención Infonavit', url: widget.altaEmpleo!.avisoInfonavitUrl),
+            _FileDisplay(name: 'Constancia de estudio', url: widget.altaEmpleo!.constanciaEstudioUrl),
+            _FileDisplay(name: 'Constancia de antecedentes penales', url: widget.altaEmpleo!.cartaNoAntecedentesPenalesUrl),
+            _FileDisplay(name: 'Contrato Laboral', url: widget.altaEmpleo!.contratoLaboralUrl),
+            _FileDisplay(name: 'Carta Oferta', url: widget.altaEmpleo!.cartaOfertaUrl),
+            _FileDisplay(name: 'Examen Médico', url: widget.altaEmpleo!.examenMedicoUrl),
+            _FileDisplay(name: 'Carta de Recomendación (1)', url: widget.altaEmpleo!.cartaRecomendacion1Url),
+            _FileDisplay(name: 'Carta de Recomendación (2)', url: widget.altaEmpleo!.cartaRecomendacion2Url),
+            _FileDisplay(name: 'Carta de Recomendación (3)', url: widget.altaEmpleo!.cartaRecomendacion3Url),
           ],
-        if (altaPracticante != null)
+        if (widget.altaPracticante != null)
           ...[
-            _FileDisplay(name: 'RFC', url: altaPracticante!.rfcUrl),
-            _FileDisplay(name: 'Carta Presentación', url: altaPracticante!.cartaPresentacionUrl),
+            _FileDisplay(name: 'RFC', url: widget.altaPracticante!.rfcUrl),
+            _FileDisplay(name: 'Carta Presentación', url: widget.altaPracticante!.cartaPresentacionUrl),
           ],
       ],
     );
+  }
+
+  void _onDownload() {
+    if (_downloadViewmodel.downloadFile.completed) {
+      _downloadViewmodel.downloadFile.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Se ha descargado el archivo'),
+        )
+      );
+    }
+    else if (_downloadViewmodel.downloadFile.error) {
+      final errorMessage = _downloadViewmodel.downloadFile.result.toString();
+      _downloadViewmodel.downloadFile.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se pudo descargar el archivo'),
+          action: SnackBarAction(
+            label: 'Detalles',
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Detalle de error'),
+                content: Text(errorMessage),
+              ),
+            ),
+          ),
+        )
+      );
+    }
   }
 }
 
@@ -99,6 +156,7 @@ class _FileDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final downloadViewmodel = context.watch<DownloadViewmodel>();
     final uploaded = url != null;
 
     return Container(
@@ -116,7 +174,11 @@ class _FileDisplay extends StatelessWidget {
           ),
           if (uploaded)
             IconButton(
-              onPressed: () => context.read<AppLogger>().info('Download $url'),
+              onPressed: () {
+                final filename = url!.split('/').last;
+                final params = DownloadFileParams(filename: filename, url: url!);
+                downloadViewmodel.downloadFile.execute(params);
+              },
               icon: Icon(
                 LucideIcons.download,
                 color: Color(0xFF008236),

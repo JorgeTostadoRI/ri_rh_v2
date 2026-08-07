@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:typed_data';
 
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
