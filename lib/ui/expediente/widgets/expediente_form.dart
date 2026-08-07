@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
-import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class ExpedienteForm extends StatefulWidget {
   const ExpedienteForm({
@@ -19,6 +21,9 @@ class ExpedienteForm extends StatefulWidget {
 }
 
 class _ExpedienteFormState extends State<ExpedienteForm> {
+  final DateFormat ddMMyy = DateFormat('dd/MM/yy');
+  final NumberFormat currencyFormat = NumberFormat.decimalPatternDigits(locale: 'en', decimalDigits: 2);
+
   late final TextEditingController _nombre;
   late final TextEditingController _nss;
   late final TextEditingController _curp;
@@ -30,6 +35,7 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
   late final TextEditingController _contactoEmergencia;
   late final TextEditingController _direccion;
   late final TextEditingController _jefe;
+  late final TextEditingController _usuario;
 
   @override
   void initState() {
@@ -40,12 +46,13 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
     _curp = TextEditingController(text: base.curp);
     _rfc = TextEditingController(text: base.rfc);
     _puesto = TextEditingController(text: base.puesto.nombre);
-    _salario = TextEditingController(text: base.salario.toString());
-    _alta = TextEditingController(text: base.registradoEn?.toShortIsoString());
+    _salario = TextEditingController(text: currencyFormat.format(base.salario));
+    _alta = TextEditingController(text: base.registradoEn != null ? ddMMyy.format(base.registradoEn!) : null);
     _nombreEmergencia = TextEditingController(text: base.numeroContacto);
     _contactoEmergencia = TextEditingController(text: base.contactoEmergencia);
     _direccion = TextEditingController(text: base.direccion);
     _jefe = TextEditingController(text: base.jefe?.nombre);
+    _usuario = TextEditingController(text: base.user?.username);
   }
 
   @override
@@ -122,6 +129,13 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                 ),
               ],
             ),
+            TextFormField(
+              readOnly: true,
+              controller: _usuario,
+              decoration: InputDecoration(
+                labelText: 'USUARIO ASOCIADO',
+              ),
+            ),
           ],
         ),
         IconCard(
@@ -145,6 +159,7 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                     readOnly: widget.readOnly,
                     controller: _salario,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(LucideIcons.dollarSign, color: labelTextColor),
                       labelText: 'SALARIO DIARIO',
                     ),
                   ),
@@ -155,7 +170,7 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
               spacing: crossSpacing,
               children: [
                 Flexible(
-                  child: TextFormField(
+                  child: DateFormField(
                     readOnly: widget.readOnly,
                     controller: _alta,
                     decoration: InputDecoration(
@@ -165,7 +180,7 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                 ),
                 Flexible(
                   child: TextFormField(
-                    readOnly: widget.readOnly,
+                    readOnly: true,
                     controller: _jefe,
                     decoration: InputDecoration(
                       labelText: 'JEFE DIRECTO',
