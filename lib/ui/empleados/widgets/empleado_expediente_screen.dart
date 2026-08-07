@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
-import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
+import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/expediente_files.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 
 class EmpleadoExpedienteScreen extends StatefulWidget {
@@ -49,26 +50,12 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
             final empleado = widget.viewmodel.empleado;
             return Column(
               mainAxisSize: .min,
-              mainAxisAlignment: .start,
+              crossAxisAlignment: .start,
               children: [
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    Row(
-                      spacing: 16,
-                      mainAxisSize: .min,
-                      children: [
-                        AppBackButton(),
-                        Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Text('Expediente Digital', style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
-                            Text(empleado.base.nombre, style: TextTheme.of(context).titleSmall),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                PageHeader(
+                  title: 'Expediente Digital', 
+                  subtitle: empleado.base.nombre,
+                  showBackButton: true,
                 ),
                 const SizedBox(height: 32),
                 Row(
@@ -88,6 +75,10 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
 
                         crossAxisAlignment: .stretch,
                         children: [
+                          ExpedienteFiles(
+                            files: empleado.base.files,
+                            altaEmpleo: empleado.alta,
+                          ),
                           IconCard(
                             icon: LucideIcons.fingerprintPattern,
                             title: 'Huellas',

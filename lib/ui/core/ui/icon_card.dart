@@ -28,9 +28,12 @@ class IconCard extends StatelessWidget {
               spacing: 12,
               children: [
                 _IconContainer(icon: icon),
-                Text(
-                  title,
-                  style: TextTheme.of(context).headlineSmall?.copyWith(fontWeight: .w700),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextTheme.of(context).headlineSmall?.copyWith(fontWeight: .w700),
+                    overflow: .ellipsis,
+                  ),
                 ),
               ],
             ),

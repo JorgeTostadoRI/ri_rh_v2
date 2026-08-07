@@ -12,6 +12,7 @@ class DateFormField extends StatefulWidget {
     this.validatorMessage,
     this.decoration,
     this.required = false,
+    this.readOnly = false,
   });
 
   final TextEditingController? controller;
@@ -20,6 +21,7 @@ class DateFormField extends StatefulWidget {
   final String? validatorMessage;
   final InputDecoration? decoration;
   final bool required;
+  final bool readOnly;
 
   @override
   State<DateFormField> createState() => _DateFormFieldState();
@@ -134,13 +136,15 @@ class _DateFormFieldState extends State<DateFormField> {
       controller: _controller,
       focusNode: _focusNode,
       decoration: decoration.copyWith(
-        suffixIcon: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: _pickerHandler,
-            child: Icon(LucideIcons.calendar, color: labelTextColor),
+        suffixIcon: widget.readOnly
+          ? null
+          : MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: _pickerHandler,
+              child: Icon(LucideIcons.calendar, color: labelTextColor),
+            ),
           ),
-        ),
       ),
       keyboardType: TextInputType.number,
       inputFormatters: [
@@ -149,6 +153,7 @@ class _DateFormFieldState extends State<DateFormField> {
       ],
       autovalidateMode: .onUserInteraction,
       validator: _validator,
+      readOnly: widget.readOnly,
     );
   }
 }
