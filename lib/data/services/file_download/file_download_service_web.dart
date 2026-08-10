@@ -1,7 +1,7 @@
 import 'dart:js_interop';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
 import 'package:ri_rh_v2/data/services/file_download/file_download_service.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -19,7 +19,7 @@ class FileDownloadServiceImpl extends FileDownloadService {
     try {
       final dio = _dioFactory();
       final response = await dio.get<List<int>>(
-        url,
+        _sanitizeUrl(url),
         options: Options(responseType: ResponseType.bytes),
       );
       // Create the blob and temporary URL from the response bytes
@@ -46,5 +46,17 @@ class FileDownloadServiceImpl extends FileDownloadService {
     } catch (e) {
       return Result.error(Exception('$e'));
     }
+  }
+
+  String _sanitizeUrl(String originalUrl) {
+    if (kDebugMode) {
+      return originalUrl;
+    }
+
+    String sanitizedUrl = originalUrl;
+    if (sanitizedUrl.startsWith('http://')) {
+      sanitizedUrl = sanitizedUrl.replaceFirst('http://', 'https://');
+    }
+    return sanitizedUrl;
   }
 }
