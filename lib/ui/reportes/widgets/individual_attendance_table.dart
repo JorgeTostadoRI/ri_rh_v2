@@ -53,8 +53,36 @@ class IndividualAttendanceTable extends StatelessWidget {
             columns: [
               DataColumn(label: Text('FECHA')),
               DataColumn(label: Text('INICIO')),
-              DataColumn(label: Text('ENTRADA COMIDA')),
-              DataColumn(label: Text('SALIDA COMIDA')),
+              DataColumn(label: Table(
+                defaultColumnWidth: _innerTableDefaultColWidth,
+                children: [
+                  TableRow(
+                    children: [
+                      Text('ENTRADA'),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('COMIDA'),
+                    ],
+                  ),
+                ],
+              )),
+              DataColumn(label: Table(
+                defaultColumnWidth: _innerTableDefaultColWidth,
+                children: [
+                  TableRow(
+                    children: [
+                      Text('SALIDA'),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('COMIDA'),
+                    ],
+                  ),
+                ],
+              )),
               DataColumn(label: Text('FIN')),
               DataColumn(label: Text('TIEMPO RETARDO')),
             ],
@@ -93,6 +121,8 @@ class IndividualAttendanceTable extends StatelessWidget {
       ),
     );
   }
+
+  static const TableColumnWidth _innerTableDefaultColWidth = FixedColumnWidth(70);
 }
 
 class _LateStatusChip extends StatelessWidget {

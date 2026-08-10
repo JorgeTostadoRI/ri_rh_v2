@@ -107,6 +107,7 @@ class _ExpedienteFilesState extends State<ExpedienteFiles> {
               ),
             ),
           ),
+          persist: false,
         )
       );
     }
@@ -156,7 +157,7 @@ class _FileDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final downloadViewmodel = context.watch<DownloadViewmodel>();
+    final downloadViewmodel = context.read<DownloadViewmodel>();
     final uploaded = url != null;
 
     return Container(

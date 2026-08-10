@@ -17,9 +17,9 @@ class GeneralAttendanceTable extends StatelessWidget {
     final textTheme = TextTheme.of(context);
     final yMd = DateFormat.yMd();
     final jm = DateFormat.jm();
-    final periodCellWidth = 140.0;
 
     return DataTable(
+      headingRowHeight: 80,
       decoration: BoxDecoration(
         color: const Color(0xFFFFFAF5),
         borderRadius: BorderRadius.circular(20),
@@ -40,18 +40,31 @@ class GeneralAttendanceTable extends StatelessWidget {
           (int index) {
             final day = reporte.dates[index];
             return DataColumn(
-              label: Column(
-                mainAxisSize: .min,
+              label: Table(
+                defaultColumnWidth: _innerTableDefaultColWidth,
                 children: [
-                  Text(yMd.format(day)),
-                  Row(
-                    spacing: 16,
-                    mainAxisSize: .min,
+                  TableRow(
                     children: [
-                      SizedBox(width: periodCellWidth, child: Text('INICIO')),
-                      SizedBox(width: periodCellWidth, child: Text('ENTRADA COMIDA')),
-                      SizedBox(width: periodCellWidth, child: Text('SALIDA COMIDA')),
-                      SizedBox(width: periodCellWidth, child: Text('FIN')),
+                      Text(yMd.format(day)),
+                      SizedBox.shrink(),
+                      SizedBox.shrink(),
+                      SizedBox.shrink(),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      SizedBox.shrink(),
+                      Text('ENTRADA'),
+                      Text('SALIDA'),
+                      SizedBox.shrink(),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('INICIO'),
+                      Text('COMIDA'),
+                      Text('COMIDA'),
+                      Text('FIN'),
                     ],
                   ),
                 ],
@@ -93,24 +106,21 @@ class GeneralAttendanceTable extends StatelessWidget {
                   final day = reporte.dates[dayIdx];
                   final attendance = item.attendanceByDate[day.toShortIsoString()]!;
                   return DataCell(
-                    Row(
-                      mainAxisSize: .min,
-                      spacing: 8,
-                      children: List<Widget>.generate(
-                        4,
-                        (int attendanceIdx) {
-                          if (attendanceIdx < attendance.length) {
-                            return SizedBox(
-                              width: periodCellWidth,
-                              child: Text(jm.format(attendance[attendanceIdx].createdAt!.toLocal())),
-                            );
-                          }
-                          return SizedBox(
-                            width: periodCellWidth,
-                            child: Text('FALTA'),
-                          );
-                        },
-                      ),
+                    Table(
+                      defaultColumnWidth: _innerTableDefaultColWidth,
+                      children: [
+                        TableRow(
+                          children: List<Widget>.generate(
+                            4,
+                            (int attendanceIdx) {
+                              if (attendanceIdx < attendance.length) {
+                                return Text(jm.format(attendance[attendanceIdx].createdAt!.toLocal()));
+                              }
+                              return Text('FALTA');
+                            }
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -124,4 +134,6 @@ class GeneralAttendanceTable extends StatelessWidget {
       ),
     );
   }
+
+  static const TableColumnWidth _innerTableDefaultColWidth = FixedColumnWidth(100);
 }
