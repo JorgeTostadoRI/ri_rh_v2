@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "RI Recursos Humanos"
-#define MyAppVersion "0.4.3"
+#define MyAppVersion "0.4.4"
 #define MyAppPublisher "RNTV Comercializadora de Componentes Industriales"
 #define MyAppExeName "ri_rh_v2.exe"
 
