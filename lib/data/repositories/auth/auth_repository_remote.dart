@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:synchronized/synchronized.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
@@ -33,18 +34,33 @@ class AuthRepositoryRemote extends AuthRepository {
   String? _authToken;
   User? _currentUser;
 
+  final Lock _userLock = Lock();
+
   /// Fetch token from shared preferences
   Future<void> _fetch() async {
     final result = await _sharedPreferencesService.fetchToken();
     switch (result) {
-      case Ok<String?>():
-        _authToken = result.value;
-        _isAuthenticated = result.value != null;
-      case Error<String?>():
+      case Error():
         _log.error(
           'AuthRepository | Failed to fech Token from SharedPreferences',
           error: result.error,
         );
+        _authToken = null;
+        _isAuthenticated = null;
+        return;
+      case Ok():
+        _authToken = result.value;
+        _isAuthenticated = result.value != null;
+    }
+
+    final resultUser = await _fetchUser();
+    switch (resultUser) {
+      case Error():
+        _log.info('Reset auth credentials');
+        _authToken = null;
+        _isAuthenticated = false;
+        _currentUser = null;
+      case Ok():
     }
   }
 
@@ -211,5 +227,28 @@ class AuthRepositoryRemote extends AuthRepository {
     _isAuthenticated = false;
     _authToken = null;
     _currentUser = null;
+  }
+
+  Future<Result<void>> _fetchUser() async {
+    if (_authToken == null) return Result.error(Exception('No token'));
+
+    final cached = _currentUser;
+    if (cached != null) return const Result.ok(null);
+
+    return _userLock.synchronized(() async {
+      // Check if we cached the user while waiting for the lock
+      final cachedAfterLock = _currentUser;
+      if (cachedAfterLock != null) return const Result.ok(null);
+
+      final resultUser = await _apiClient.getCurrentUser();
+      switch (resultUser) {
+        case Error():
+          _log.error('Failed to fetch current user', error: resultUser.error);
+          return Result.error(resultUser.error);
+        case Ok():
+      }
+      _currentUser = resultUser.value;
+      return const Result.ok(null);
+    });
   }
 }

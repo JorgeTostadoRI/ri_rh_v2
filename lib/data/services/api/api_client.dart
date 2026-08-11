@@ -479,6 +479,25 @@ class ApiClient {
     }
   }
 
+  // FIXME: errors out, perhaps when decoding from json
+  Future<Result<User>> getCurrentUser() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/loginbytoken/');
+      final result = User.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } catch (e) {
+      return Result.error(Exception('$e'));
+    } finally {
+      dio.close();
+    }
+  }
+
   // HORARIOS
   Future<Result<List<Horario>>> getHorarios() async {
     final dio = _dioFactory();
