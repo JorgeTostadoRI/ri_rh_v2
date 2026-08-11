@@ -4,7 +4,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
-class IncidenciaOverviewDialog extends StatelessWidget {
+class IncidenciaOverviewDialog extends StatefulWidget {
   const IncidenciaOverviewDialog({
     super.key,
     required this.incidencia,
@@ -13,13 +13,32 @@ class IncidenciaOverviewDialog extends StatelessWidget {
   final Incidencia incidencia;
 
   @override
+  State<IncidenciaOverviewDialog> createState() => _IncidenciaOverviewDialogState();
+}
+
+class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
+  final _yMMMMd = DateFormat.yMMMMd();
+  final _yMMMMdjm = DateFormat.yMMMMd().add_jm();
+  final _yMd = DateFormat.yMd();
+
+  late final DateTime _localStart;
+  late final DateTime _localEnd;
+
+  @override
+  void initState() {
+    super.initState();
+    _localStart = widget.incidencia.start.toLocal();
+    _localEnd = widget.incidencia.end.toLocal();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
     final yMMMMdjm = DateFormat.yMMMMd().add_jm();
 
     return AlertDialog(
       title: Text(
-        '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
+        '${widget.incidencia.categoryName} para ${widget.incidencia.solicitor!.nombre} en ${_formatTitleDates()}',
       ),
       content: Column(
         crossAxisAlignment: .start,
@@ -28,48 +47,48 @@ class IncidenciaOverviewDialog extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             children: [
               Text('Fecha de creación', style: textTheme.headlineSmall),
-              _IncidenciaStatusChip(state: incidencia.state!),
+              _IncidenciaStatusChip(state: widget.incidencia.state!),
             ],
           ),
-          Text(yMMMMdjm.format(incidencia.createdAt!.toLocal())),
+          Text(yMMMMdjm.format(_localStart)),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
-          Text(incidencia.solicitor!.nombre),
+          Text(widget.incidencia.solicitor!.nombre),
           const SizedBox(height: 24),
-          if (incidencia.revisor != null)
+          if (widget.incidencia.revisor != null)
           ...[
-            Text('Revisor asignado', style: textTheme.headlineSmall),
-            Text(incidencia.solicitor!.nombre),
-            const SizedBox(height: 24),
+              Text('Revisor asignado', style: textTheme.headlineSmall),
+              Text(widget.incidencia.solicitor!.nombre),
+              const SizedBox(height: 24),
           ],
-          Text('Fecha solicitadas', style: textTheme.headlineSmall),
-          if (incidencia.start.isSameDay(incidencia.end))
-            Text(yMMMMdjm.format(incidencia.start.toLocal())),
-          if (!incidencia.start.isSameDay(incidencia.end))
-            Text('${yMMMMdjm.format(incidencia.start.toLocal())} - ${yMMMMdjm.format(incidencia.end.toLocal())}'),
+          Text('Fechas solicitadas', style: textTheme.headlineSmall),
+          Text(_formatRequestedDates()),
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
-          Text(incidencia.reason, style: textTheme.bodyMedium),
-          if (incidencia.rejectionReason != null)
+          Text(widget.incidencia.reason, style: textTheme.bodyMedium),
+          if (widget.incidencia.rejectionReason != null)
             ...[
               Text('Motivo de rechazo', style: textTheme.headlineSmall),
-              Text(incidencia.rejectionReason!, style: textTheme.bodyMedium),
+              Text(widget.incidencia.rejectionReason!, style: textTheme.bodyMedium),
             ]
         ],
       ),
     );
   }
 
-  String _formatStartEndDates(Incidencia incidencia) {
-    final yMd = DateFormat.yMd();
-
-    if (incidencia.start.isSameDay(incidencia.end)) {
-      return yMd.format(incidencia.start.toLocal());
+  String _formatTitleDates() {
+    if (_localStart.isSameDay(_localEnd)) {
+      return _yMd.format(widget.incidencia.start.toLocal());
     } else {
-      final localStart = incidencia.start.toLocal();
-      final localEnd = incidencia.end.toLocal();
-      return '${yMd.format(localStart)} hasta ${yMd.format(localEnd)}';
+      return '${_yMd.format(_localStart)} hasta ${_yMd.format(_localEnd)}';
     }
+  }
+
+  String _formatRequestedDates() {
+    if (_localStart == _localEnd) {
+      return _yMMMMd.format(_localStart);
+    }
+    return '${_yMMMMdjm.format(_localStart)} hasta ${_yMMMMdjm.format(_localEnd)}';
   }
 }
 
