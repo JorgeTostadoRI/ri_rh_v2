@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/asistencia_daily/asistencia_daily_api_model.dart';
 
 part 'reporte_asistencia_response.freezed.dart';
 part 'reporte_asistencia_response.g.dart';
@@ -10,24 +10,25 @@ abstract class ReporteAsistenciaResponse with _$ReporteAsistenciaResponse {
   const factory ReporteAsistenciaResponse({
     required DateTime startDate,
     required DateTime endDate,
-    required List<ReporteAsistenciaUser> users,
+    @JsonKey(name: 'users')
+    required List<ReporteAsistenciaResponseItem> items,
   }) = _ReporteAsistenciaResponse;
 
   factory ReporteAsistenciaResponse.fromJson(Map<String, Object?> json) => _$ReporteAsistenciaResponseFromJson(json);
 }
 
 @freezed
-abstract class ReporteAsistenciaUser with _$ReporteAsistenciaUser {
-  const factory ReporteAsistenciaUser({
+abstract class ReporteAsistenciaResponseItem with _$ReporteAsistenciaResponseItem {
+  const factory ReporteAsistenciaResponseItem({
     required int id,
     required String username,
     required String nombre,
     required String rol,
     @JsonKey(name: 'departamento')
     required int departamentoRef,
-    required List<AsistenciaApiModel> asistencia,
     required int totalMinutesLate,
-  }) = _ReporteAsistenciaUser;
+    required List<AsistenciaDailyApiModel> asistencia,
+  }) = _ReporteAsistenciaResponseItem;
 
-  factory ReporteAsistenciaUser.fromJson(Map<String, Object?> json) => _$ReporteAsistenciaUserFromJson(json);
+  factory ReporteAsistenciaResponseItem.fromJson(Map<String, Object?> json) => _$ReporteAsistenciaResponseItemFromJson(json);
 }
