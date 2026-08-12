@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
@@ -20,6 +21,7 @@ class IndividualAttendanceTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final yMd = DateFormat.yMd();
     final jm = DateFormat.jm();
+    final totalMinutesLate = item.asistencia.entries.fold(0, (sum, asist) => sum + asist.value.minutesLate);
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 24),
@@ -42,7 +44,7 @@ class IndividualAttendanceTable extends StatelessWidget {
               spacing: 32,
               children: [
                 UserSection(user: item.user),
-                _LateStatusChip(minutesLate: item.totalMinutesLate),
+                _LateStatusChip(minutesLate: totalMinutesLate),
               ],
             ),
           ),
@@ -58,7 +60,7 @@ class IndividualAttendanceTable extends StatelessWidget {
                 children: [
                   TableRow(
                     children: [
-                      Text('ENTRADA'),
+                      Text('SALIDA'),
                     ],
                   ),
                   TableRow(
@@ -73,7 +75,7 @@ class IndividualAttendanceTable extends StatelessWidget {
                 children: [
                   TableRow(
                     children: [
-                      Text('SALIDA'),
+                      Text('ENTRADA'),
                     ],
                   ),
                   TableRow(
@@ -90,25 +92,33 @@ class IndividualAttendanceTable extends StatelessWidget {
               dates.length,
               (int dateIdx) {
                 final day = dates[dateIdx];
-                final attendanceOfDay = item.attendanceByDate[day.toShortIsoString()]!;
-                final minutesLateOfDay = attendanceOfDay.fold(0, (sum, attendance) => sum + attendance.minutesLate);
+                final attendance = item.asistencia[day.toShortIsoString()];
+
+                if (attendance == null) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(yMd.format(day))),
+                      DataCell(Text('SIN DATOS')),
+                      DataCell(SizedBox.shrink()),
+                      DataCell(SizedBox.shrink()),
+                      DataCell(SizedBox.shrink()),
+                      DataCell(
+                        Text(
+                          '0 min',
+                          style: TextStyle(color: errorColor, fontWeight: .w700),
+                        ),
+                      ),
+                    ],
+                  );
+                }
                 
                 return DataRow(
                   cells: [
                     DataCell(Text(yMd.format(day))),
-                    ...List<DataCell>.generate(
-                      4,
-                      (int attendanceIdx) {
-                        if (attendanceIdx < attendanceOfDay.length) {
-                          final attendance = attendanceOfDay[attendanceIdx];
-                          return DataCell(Text(jm.format(attendance.createdAt!.toLocal())));
-                        }
-                        return DataCell(Text('FALTA'));
-                      },
-                    ),
+                    ..._buildCheckIns(attendance, jm),
                     DataCell(
                       Text(
-                        '$minutesLateOfDay min',
+                        '${attendance.minutesLate} min',
                         style: TextStyle(color: errorColor, fontWeight: .w700),
                       ),
                     ),
@@ -120,6 +130,47 @@ class IndividualAttendanceTable extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<DataCell> _buildCheckIns(AsistenciaDaily attendance, DateFormat jm) {
+    return switch (attendance.status) {
+      AsistenciaStatus.present => [
+        DataCell(Text(attendance.entryAt != null ? jm.format(attendance.entryAt!) : '-')),
+        DataCell(Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!) : '-')),
+        DataCell(Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!) : '-')),
+        DataCell(Text(attendance.exitAt != null ? jm.format(attendance.exitAt!) : '-')),
+      ],
+      AsistenciaStatus.late => [
+        DataCell(Text(attendance.entryAt != null ? jm.format(attendance.entryAt!) : '-')),
+        DataCell(Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!) : '-')),
+        DataCell(Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!) : '-')),
+        DataCell(Text(attendance.exitAt != null ? jm.format(attendance.exitAt!) : '-')),
+      ],
+      AsistenciaStatus.excused => [
+        DataCell(Text(attendance.entryAt != null ? jm.format(attendance.entryAt!) : '-')),
+        DataCell(Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!) : '-')),
+        DataCell(Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!) : '-')),
+        DataCell(Text(attendance.exitAt != null ? jm.format(attendance.exitAt!) : '-')),
+      ],
+      AsistenciaStatus.absent => const [
+        DataCell(Text('FALTA')),
+        DataCell(Text('FALTA')),
+        DataCell(Text('FALTA')),
+        DataCell(Text('FALTA')),
+      ],
+      AsistenciaStatus.rest => const [
+        DataCell(Text('DESCANSO')),
+        DataCell(Text('DESCANSO')),
+        DataCell(Text('DESCANSO')),
+        DataCell(Text('DESCANSO')),
+      ],
+      AsistenciaStatus.vacation => const [
+        DataCell(Text('VACACIONES')),
+        DataCell(Text('VACACIONES')),
+        DataCell(Text('VACACIONES')),
+        DataCell(Text('VACACIONES')),
+      ],
+    };
   }
 
   static const TableColumnWidth _innerTableDefaultColWidth = FixedColumnWidth(70);

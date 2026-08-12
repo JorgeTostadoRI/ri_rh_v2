@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
-import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
+import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -74,7 +74,7 @@ class ReporteAsistenciaViewmodel extends ChangeNotifier {
     int daysMissed  = 0;
     for (final day in _reporte!.dates) {
       final dayKey = day.toShortIsoString();
-      if (item.attendanceByDate[dayKey]!.isEmpty) {
+      if (item.asistencia[dayKey]?.status == AsistenciaStatus.absent) {
         daysMissed += 1;
       }
     }
@@ -82,10 +82,12 @@ class ReporteAsistenciaViewmodel extends ChangeNotifier {
   }
 
   int _combineEntriesCount(int sum, ReporteAsistenciaItem item) {
+    const validEntryValues = [AsistenciaStatus.present, AsistenciaStatus.late];
+
     int entriesByUser = 0;
     for (final day in _reporte!.dates) {
       final dayKey = day.toShortIsoString();
-      if (item.attendanceByDate[dayKey]!.any((asistencia) => asistencia.type == AsistenciaType.entry)) {
+      if (validEntryValues.contains(item.asistencia[dayKey]?.status)) {
         entriesByUser += 1;
       }
     }

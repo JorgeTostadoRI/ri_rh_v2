@@ -14,9 +14,8 @@ abstract class AsistenciaApiModel with _$AsistenciaApiModel {
         int id,
         DateTime? createdAt,
         DateTime? updatedAt,
+        DateTime? attendedAt,
         AsistenciaType? type,
-        @Default(0)
-        int minutesLate,
 
         // Archivo opcional, será el path al archivo en servidor
         @JsonKey(name: 'photo')
@@ -27,8 +26,6 @@ abstract class AsistenciaApiModel with _$AsistenciaApiModel {
 
         @JsonKey(name: 'usuario')
         required int userRef,
-        @JsonKey(name: 'horario')
-        int? horarioRef,
     }) = _AsistenciaApiModel;
 
     factory AsistenciaApiModel.fromJson(Map<String, Object?> json) => _$AsistenciaApiModelFromJson(json);

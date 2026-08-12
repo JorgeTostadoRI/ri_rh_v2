@@ -107,7 +107,7 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                     MetricCard(
                       label: 'CON REGISTRO',
                       value: widget.viewmodel.entriesCount.toString(),
-                      subtitle: 'empleados con entrada',
+                      subtitle: 'entradas totales',
                       icon: ColorIcon(
                         backgroundColor: statusSuccessBgColor,
                         iconColor: statusSuccessColor,
@@ -117,7 +117,7 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                     MetricCard(
                       label: 'FALTAS',
                       value: widget.viewmodel.absenceCount.toString(),
-                      subtitle: 'empleados sin entrada',
+                      subtitle: 'acumuladas',
                       icon: ColorIcon(
                         backgroundColor: statusFailureBgColor,
                         iconColor: statusFailureColor,
