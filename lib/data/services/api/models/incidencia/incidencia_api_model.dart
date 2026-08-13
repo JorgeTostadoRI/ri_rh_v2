@@ -22,6 +22,9 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
         int? solicitorRef,
         // Agregado al rechazar la incidencia
         String? rejectionReason,
+
+        @JsonKey(name: 'pdf')
+        String? pdfUrl,
         
         required DateTime start,
         required DateTime end,
