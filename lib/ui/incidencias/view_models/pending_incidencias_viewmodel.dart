@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
 
@@ -22,11 +23,13 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     load = Command0(_load)..execute();
     approve = Command1(_approve);
     reject = Command1(_reject);
+    download = Command1(_download);
   }
 
   late final Command0 load;
   late final Command1<void, Incidencia> approve;
   late final Command1<void, RejectParams> reject;
+  late final Command1<void, Incidencia> download;
 
   // FIXME: when hot reloading, resets to 0 instead of keeping the tab index
   int selection = 0;
@@ -136,5 +139,20 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
       _log.error('Failed to load historic incidencias', error: e, stackTrace: stackTrace);
       return Result.error(e);
     }
+  }
+
+  Future<Result<void>> _download(Incidencia incidencia) async {
+    if (incidencia.pdfUrl == null) {
+      _log.warning('PDF not available');
+      return Result.error(Exception('PDF is not available'));
+    }
+
+    final url = Uri.parse(incidencia.pdfUrl!);
+    if (!await launchUrl(url)) {
+      _log.error('Failed to open incidencia PDF');
+      return Result.error(Exception('Could not open URL'));
+    }
+
+    return const Result.ok(null);
   }
 }

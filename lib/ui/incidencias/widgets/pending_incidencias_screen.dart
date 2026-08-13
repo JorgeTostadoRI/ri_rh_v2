@@ -151,11 +151,13 @@ class _IncidenciaListTile extends StatelessWidget {
     required this.incidencia,
     required this.onResult,
     required this.canApprove,
+    required this.onDownload,
   });
 
   final Incidencia incidencia;
   final Function(Incidencia, IncidenciaApproveDialogResult) onResult;
   final bool canApprove;
+  final void Function() onDownload;
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +199,10 @@ class _IncidenciaListTile extends StatelessWidget {
         if (!canApprove) {
           showDialog(
             context: context,
-            builder: (context) => IncidenciaOverviewDialog(incidencia: incidencia),
+            builder: (context) => IncidenciaOverviewDialog(
+              incidencia: incidencia,
+              onDownload: onDownload,
+            ),
           );
           return;
         }
@@ -299,6 +304,7 @@ class _IncidenciasReviewList extends StatelessWidget {
               incidencia: incidencia,
               onResult: onResult,
               canApprove: true,
+              onDownload: () => viewmodel.download.execute(incidencia),
             );
           },
           separatorBuilder: (context, _) => SizedBox(height: 12),
@@ -376,6 +382,7 @@ class _IncidenciasHistory extends StatelessWidget {
               incidencia: incidencia,
               onResult: onResult,
               canApprove: false,
+              onDownload: () => viewmodel.download.execute(incidencia),
             );
           },
           separatorBuilder: (context, _) => SizedBox(height: 12),
