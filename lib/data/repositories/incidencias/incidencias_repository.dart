@@ -22,4 +22,7 @@ abstract class IncidenciasRepository {
 
   /// Obtiene el numero de incidencias pendientes a revisar
   Future<Result<int>> getIncidenciasToReviewCount();
+
+  /// Generar el PDF de la incidencia
+  Future<Result<Incidencia>> generatePDF(Incidencia incidencia);
 }

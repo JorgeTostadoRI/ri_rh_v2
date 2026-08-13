@@ -142,9 +142,37 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> _download(Incidencia incidencia) async {
+    if (incidencia.state != IncidenciaState.approved) {
+      return Result.error(Exception('Incidencia is not approved'));
+    }
+
     if (incidencia.pdfUrl == null) {
-      _log.warning('PDF not available');
-      return Result.error(Exception('PDF is not available'));
+      final resultPDF = await _incidenciasRepository.generatePDF(incidencia);
+
+      switch (resultPDF) {
+        case Error():
+          _log.error('Failed to generate PDF', error: resultPDF.error);
+          return Result.error(resultPDF.error);
+        case Ok():
+          _log.info('Generated PDF for incidencia');
+      }
+
+      final incidenciaWithPDF = resultPDF.value;
+
+      // Replace the old version
+      if (historial != null) {
+        final index = _historial!.indexOf(incidencia);
+        _historial![index] = incidenciaWithPDF;
+        notifyListeners();
+      }
+
+      final url = Uri.parse(incidenciaWithPDF.pdfUrl!);
+      if (!await launchUrl(url)) {
+        _log.error('Failed to open incidencia PDF');
+        return Result.error(Exception('Could not open URL'));
+      }
+
+      return const Result.ok(null);
     }
 
     final url = Uri.parse(incidencia.pdfUrl!);

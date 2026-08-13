@@ -201,6 +201,23 @@ class ApiClient {
     }
   }
 
+  Future<Result<IncidenciaApiModel>> generateIncidenciaPDF(int id, String category) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final response = await dio.post('/api/rh/$category/$id/generate-pdf/');
+      final result = IncidenciaApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // AVISOS
   Future<Result<List<Aviso>>> getAvisos({DateTime? query}) async {
     final dio = _dioFactory();

@@ -151,6 +151,27 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
     return _apiClient.getIncidenciasPendingCount();
   }
 
+  @override
+  Future<Result<Incidencia>> generatePDF(Incidencia incidencia) async {
+    try {
+      final users = await _getUsers();
+
+      final result = await _apiClient.generateIncidenciaPDF(incidencia.id!, incidencia.category.url);
+
+      switch (result) {
+        case Error():
+          return Result.error(result.error);
+        case Ok():
+      }
+
+      final incidenciaWithPDF = Incidencia.fromApiModel(result.value, users: users);
+
+      return Result.ok(incidenciaWithPDF);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
   Future<List<User>> _getUsers() async {
     final cached = _cachedUsers;
     if (cached != null) return cached;

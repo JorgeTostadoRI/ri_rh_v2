@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
@@ -79,7 +80,10 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
       actions: [
         if (widget.incidencia.state == IncidenciaState.approved)
           ElevatedButton.icon(
-            onPressed: widget.onDownload,
+            onPressed: () {
+              widget.onDownload();
+              context.pop(); // pop to avoid holding a stale reference if the incidencia was updated
+            },
             icon: Icon(LucideIcons.download),
             label: Text('Descargar'),
           ),
