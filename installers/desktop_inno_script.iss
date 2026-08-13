@@ -48,6 +48,7 @@ Source: "C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\build\windows\x64\runn
 Source: "C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\build\windows\x64\runner\Release\camera_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\build\windows\x64\runner\Release\flutter_secure_storage_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\desar\OneDrive\Desktop\sistema\ri_rh_v2\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
