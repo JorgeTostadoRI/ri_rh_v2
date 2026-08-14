@@ -38,6 +38,7 @@ abstract class EmpleadoApiModel with _$EmpleadoApiModel {
     required double salario,
     int? antiguedad,
     int? diasVacaciones,
+    required bool hasSignature,
     @JsonKey(name: 'fecha_alta')
     DateTime? registeredAt,
     @JsonKey(name: 'fecha_baja')

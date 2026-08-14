@@ -28,6 +28,7 @@ _EmpleadoApiModel _$EmpleadoApiModelFromJson(
   salario: _doubleFromJson(json['salario_diario']),
   antiguedad: (json['antiguedad'] as num?)?.toInt(),
   diasVacaciones: (json['dias_vacaciones'] as num?)?.toInt(),
+  hasSignature: json['has_signature'] as bool,
   registeredAt: json['fecha_alta'] == null
       ? null
       : DateTime.parse(json['fecha_alta'] as String),
@@ -81,6 +82,7 @@ Map<String, dynamic> _$EmpleadoApiModelToJson(_EmpleadoApiModel instance) =>
       'salario_diario': instance.salario,
       'antiguedad': instance.antiguedad,
       'dias_vacaciones': instance.diasVacaciones,
+      'has_signature': instance.hasSignature,
       'fecha_alta': instance.registeredAt?.toIso8601String(),
       'fecha_baja': instance.terminatedAt?.toIso8601String(),
       'identificacion_oficial': instance.ineUrl,

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BaseEmpleado implements DiagnosticableTreeMixin {
 
- int get id; User? get user; User? get jefe; String get nombre; DateTime get nacidoEn; String get clabeInterbancaria; String get numeroContacto; String get contactoEmergencia; String get rfc; String get curp; String get nss; String get direccion; Puesto get puesto; double get salario; DateTime? get registradoEn; DateTime? get finalizadoEn; BaseEmpleadoFiles get files;
+ int get id; User? get user; User? get jefe; String get nombre; DateTime get nacidoEn; String get clabeInterbancaria; String get numeroContacto; String get contactoEmergencia; String get rfc; String get curp; String get nss; String get direccion; Puesto get puesto; double get salario; DateTime? get registradoEn; DateTime? get finalizadoEn; bool get hasSignature; BaseEmpleadoFiles get files;
 /// Create a copy of BaseEmpleado
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,21 +27,21 @@ $BaseEmpleadoCopyWith<BaseEmpleado> get copyWith => _$BaseEmpleadoCopyWithImpl<B
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'BaseEmpleado'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('jefe', jefe))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('nacidoEn', nacidoEn))..add(DiagnosticsProperty('clabeInterbancaria', clabeInterbancaria))..add(DiagnosticsProperty('numeroContacto', numeroContacto))..add(DiagnosticsProperty('contactoEmergencia', contactoEmergencia))..add(DiagnosticsProperty('rfc', rfc))..add(DiagnosticsProperty('curp', curp))..add(DiagnosticsProperty('nss', nss))..add(DiagnosticsProperty('direccion', direccion))..add(DiagnosticsProperty('puesto', puesto))..add(DiagnosticsProperty('salario', salario))..add(DiagnosticsProperty('registradoEn', registradoEn))..add(DiagnosticsProperty('finalizadoEn', finalizadoEn))..add(DiagnosticsProperty('files', files));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('jefe', jefe))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('nacidoEn', nacidoEn))..add(DiagnosticsProperty('clabeInterbancaria', clabeInterbancaria))..add(DiagnosticsProperty('numeroContacto', numeroContacto))..add(DiagnosticsProperty('contactoEmergencia', contactoEmergencia))..add(DiagnosticsProperty('rfc', rfc))..add(DiagnosticsProperty('curp', curp))..add(DiagnosticsProperty('nss', nss))..add(DiagnosticsProperty('direccion', direccion))..add(DiagnosticsProperty('puesto', puesto))..add(DiagnosticsProperty('salario', salario))..add(DiagnosticsProperty('registradoEn', registradoEn))..add(DiagnosticsProperty('finalizadoEn', finalizadoEn))..add(DiagnosticsProperty('hasSignature', hasSignature))..add(DiagnosticsProperty('files', files));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BaseEmpleado&&(identical(other.id, id) || other.id == id)&&(identical(other.user, user) || other.user == user)&&(identical(other.jefe, jefe) || other.jefe == jefe)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.nacidoEn, nacidoEn) || other.nacidoEn == nacidoEn)&&(identical(other.clabeInterbancaria, clabeInterbancaria) || other.clabeInterbancaria == clabeInterbancaria)&&(identical(other.numeroContacto, numeroContacto) || other.numeroContacto == numeroContacto)&&(identical(other.contactoEmergencia, contactoEmergencia) || other.contactoEmergencia == contactoEmergencia)&&(identical(other.rfc, rfc) || other.rfc == rfc)&&(identical(other.curp, curp) || other.curp == curp)&&(identical(other.nss, nss) || other.nss == nss)&&(identical(other.direccion, direccion) || other.direccion == direccion)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.salario, salario) || other.salario == salario)&&(identical(other.registradoEn, registradoEn) || other.registradoEn == registradoEn)&&(identical(other.finalizadoEn, finalizadoEn) || other.finalizadoEn == finalizadoEn)&&(identical(other.files, files) || other.files == files));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BaseEmpleado&&(identical(other.id, id) || other.id == id)&&(identical(other.user, user) || other.user == user)&&(identical(other.jefe, jefe) || other.jefe == jefe)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.nacidoEn, nacidoEn) || other.nacidoEn == nacidoEn)&&(identical(other.clabeInterbancaria, clabeInterbancaria) || other.clabeInterbancaria == clabeInterbancaria)&&(identical(other.numeroContacto, numeroContacto) || other.numeroContacto == numeroContacto)&&(identical(other.contactoEmergencia, contactoEmergencia) || other.contactoEmergencia == contactoEmergencia)&&(identical(other.rfc, rfc) || other.rfc == rfc)&&(identical(other.curp, curp) || other.curp == curp)&&(identical(other.nss, nss) || other.nss == nss)&&(identical(other.direccion, direccion) || other.direccion == direccion)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.salario, salario) || other.salario == salario)&&(identical(other.registradoEn, registradoEn) || other.registradoEn == registradoEn)&&(identical(other.finalizadoEn, finalizadoEn) || other.finalizadoEn == finalizadoEn)&&(identical(other.hasSignature, hasSignature) || other.hasSignature == hasSignature)&&(identical(other.files, files) || other.files == files));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,user,jefe,nombre,nacidoEn,clabeInterbancaria,numeroContacto,contactoEmergencia,rfc,curp,nss,direccion,puesto,salario,registradoEn,finalizadoEn,files);
+int get hashCode => Object.hash(runtimeType,id,user,jefe,nombre,nacidoEn,clabeInterbancaria,numeroContacto,contactoEmergencia,rfc,curp,nss,direccion,puesto,salario,registradoEn,finalizadoEn,hasSignature,files);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'BaseEmpleado(id: $id, user: $user, jefe: $jefe, nombre: $nombre, nacidoEn: $nacidoEn, clabeInterbancaria: $clabeInterbancaria, numeroContacto: $numeroContacto, contactoEmergencia: $contactoEmergencia, rfc: $rfc, curp: $curp, nss: $nss, direccion: $direccion, puesto: $puesto, salario: $salario, registradoEn: $registradoEn, finalizadoEn: $finalizadoEn, files: $files)';
+  return 'BaseEmpleado(id: $id, user: $user, jefe: $jefe, nombre: $nombre, nacidoEn: $nacidoEn, clabeInterbancaria: $clabeInterbancaria, numeroContacto: $numeroContacto, contactoEmergencia: $contactoEmergencia, rfc: $rfc, curp: $curp, nss: $nss, direccion: $direccion, puesto: $puesto, salario: $salario, registradoEn: $registradoEn, finalizadoEn: $finalizadoEn, hasSignature: $hasSignature, files: $files)';
 }
 
 
@@ -52,7 +52,7 @@ abstract mixin class $BaseEmpleadoCopyWith<$Res>  {
   factory $BaseEmpleadoCopyWith(BaseEmpleado value, $Res Function(BaseEmpleado) _then) = _$BaseEmpleadoCopyWithImpl;
 @useResult
 $Res call({
- int id, User? user, User? jefe, String nombre, DateTime nacidoEn, String clabeInterbancaria, String numeroContacto, String contactoEmergencia, String rfc, String curp, String nss, String direccion, Puesto puesto, double salario, DateTime? registradoEn, DateTime? finalizadoEn, BaseEmpleadoFiles files
+ int id, User? user, User? jefe, String nombre, DateTime nacidoEn, String clabeInterbancaria, String numeroContacto, String contactoEmergencia, String rfc, String curp, String nss, String direccion, Puesto puesto, double salario, DateTime? registradoEn, DateTime? finalizadoEn, bool hasSignature, BaseEmpleadoFiles files
 });
 
 
@@ -69,7 +69,7 @@ class _$BaseEmpleadoCopyWithImpl<$Res>
 
 /// Create a copy of BaseEmpleado
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? user = freezed,Object? jefe = freezed,Object? nombre = null,Object? nacidoEn = null,Object? clabeInterbancaria = null,Object? numeroContacto = null,Object? contactoEmergencia = null,Object? rfc = null,Object? curp = null,Object? nss = null,Object? direccion = null,Object? puesto = null,Object? salario = null,Object? registradoEn = freezed,Object? finalizadoEn = freezed,Object? files = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? user = freezed,Object? jefe = freezed,Object? nombre = null,Object? nacidoEn = null,Object? clabeInterbancaria = null,Object? numeroContacto = null,Object? contactoEmergencia = null,Object? rfc = null,Object? curp = null,Object? nss = null,Object? direccion = null,Object? puesto = null,Object? salario = null,Object? registradoEn = freezed,Object? finalizadoEn = freezed,Object? hasSignature = null,Object? files = null,}) {
   return _then(BaseEmpleado(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
@@ -87,7 +87,8 @@ as String,puesto: null == puesto ? _self.puesto : puesto // ignore: cast_nullabl
 as Puesto,salario: null == salario ? _self.salario : salario // ignore: cast_nullable_to_non_nullable
 as double,registradoEn: freezed == registradoEn ? _self.registradoEn : registradoEn // ignore: cast_nullable_to_non_nullable
 as DateTime?,finalizadoEn: freezed == finalizadoEn ? _self.finalizadoEn : finalizadoEn // ignore: cast_nullable_to_non_nullable
-as DateTime?,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
+as DateTime?,hasSignature: null == hasSignature ? _self.hasSignature : hasSignature // ignore: cast_nullable_to_non_nullable
+as bool,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
 as BaseEmpleadoFiles,
   ));
 }
@@ -215,10 +216,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  User? user,  User? jefe,  String nombre,  DateTime nacidoEn,  String clabeInterbancaria,  String numeroContacto,  String contactoEmergencia,  String rfc,  String curp,  String nss,  String direccion,  Puesto puesto,  double salario,  DateTime? registradoEn,  DateTime? finalizadoEn,  BaseEmpleadoFiles files)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  User? user,  User? jefe,  String nombre,  DateTime nacidoEn,  String clabeInterbancaria,  String numeroContacto,  String contactoEmergencia,  String rfc,  String curp,  String nss,  String direccion,  Puesto puesto,  double salario,  DateTime? registradoEn,  DateTime? finalizadoEn,  bool hasSignature,  BaseEmpleadoFiles files)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BaseEmpleado() when $default != null:
-return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that.clabeInterbancaria,_that.numeroContacto,_that.contactoEmergencia,_that.rfc,_that.curp,_that.nss,_that.direccion,_that.puesto,_that.salario,_that.registradoEn,_that.finalizadoEn,_that.files);case _:
+return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that.clabeInterbancaria,_that.numeroContacto,_that.contactoEmergencia,_that.rfc,_that.curp,_that.nss,_that.direccion,_that.puesto,_that.salario,_that.registradoEn,_that.finalizadoEn,_that.hasSignature,_that.files);case _:
   return orElse();
 
 }
@@ -236,10 +237,10 @@ return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  User? user,  User? jefe,  String nombre,  DateTime nacidoEn,  String clabeInterbancaria,  String numeroContacto,  String contactoEmergencia,  String rfc,  String curp,  String nss,  String direccion,  Puesto puesto,  double salario,  DateTime? registradoEn,  DateTime? finalizadoEn,  BaseEmpleadoFiles files)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  User? user,  User? jefe,  String nombre,  DateTime nacidoEn,  String clabeInterbancaria,  String numeroContacto,  String contactoEmergencia,  String rfc,  String curp,  String nss,  String direccion,  Puesto puesto,  double salario,  DateTime? registradoEn,  DateTime? finalizadoEn,  bool hasSignature,  BaseEmpleadoFiles files)  $default,) {final _that = this;
 switch (_that) {
 case _BaseEmpleado():
-return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that.clabeInterbancaria,_that.numeroContacto,_that.contactoEmergencia,_that.rfc,_that.curp,_that.nss,_that.direccion,_that.puesto,_that.salario,_that.registradoEn,_that.finalizadoEn,_that.files);case _:
+return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that.clabeInterbancaria,_that.numeroContacto,_that.contactoEmergencia,_that.rfc,_that.curp,_that.nss,_that.direccion,_that.puesto,_that.salario,_that.registradoEn,_that.finalizadoEn,_that.hasSignature,_that.files);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -256,10 +257,10 @@ return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  User? user,  User? jefe,  String nombre,  DateTime nacidoEn,  String clabeInterbancaria,  String numeroContacto,  String contactoEmergencia,  String rfc,  String curp,  String nss,  String direccion,  Puesto puesto,  double salario,  DateTime? registradoEn,  DateTime? finalizadoEn,  BaseEmpleadoFiles files)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  User? user,  User? jefe,  String nombre,  DateTime nacidoEn,  String clabeInterbancaria,  String numeroContacto,  String contactoEmergencia,  String rfc,  String curp,  String nss,  String direccion,  Puesto puesto,  double salario,  DateTime? registradoEn,  DateTime? finalizadoEn,  bool hasSignature,  BaseEmpleadoFiles files)?  $default,) {final _that = this;
 switch (_that) {
 case _BaseEmpleado() when $default != null:
-return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that.clabeInterbancaria,_that.numeroContacto,_that.contactoEmergencia,_that.rfc,_that.curp,_that.nss,_that.direccion,_that.puesto,_that.salario,_that.registradoEn,_that.finalizadoEn,_that.files);case _:
+return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that.clabeInterbancaria,_that.numeroContacto,_that.contactoEmergencia,_that.rfc,_that.curp,_that.nss,_that.direccion,_that.puesto,_that.salario,_that.registradoEn,_that.finalizadoEn,_that.hasSignature,_that.files);case _:
   return null;
 
 }
@@ -271,7 +272,7 @@ return $default(_that.id,_that.user,_that.jefe,_that.nombre,_that.nacidoEn,_that
 
 
 class _BaseEmpleado with DiagnosticableTreeMixin implements BaseEmpleado {
-  const _BaseEmpleado({this.id = 0, this.user, this.jefe, required this.nombre, required this.nacidoEn, required this.clabeInterbancaria, required this.numeroContacto, required this.contactoEmergencia, required this.rfc, required this.curp, required this.nss, required this.direccion, required this.puesto, required this.salario, this.registradoEn, this.finalizadoEn, required this.files});
+  const _BaseEmpleado({this.id = 0, this.user, this.jefe, required this.nombre, required this.nacidoEn, required this.clabeInterbancaria, required this.numeroContacto, required this.contactoEmergencia, required this.rfc, required this.curp, required this.nss, required this.direccion, required this.puesto, required this.salario, this.registradoEn, this.finalizadoEn, required this.hasSignature, required this.files});
   
 
 @override@JsonKey() final  int id;
@@ -290,6 +291,7 @@ class _BaseEmpleado with DiagnosticableTreeMixin implements BaseEmpleado {
 @override final  double salario;
 @override final  DateTime? registradoEn;
 @override final  DateTime? finalizadoEn;
+@override final  bool hasSignature;
 @override final  BaseEmpleadoFiles files;
 
 /// Create a copy of BaseEmpleado
@@ -303,21 +305,21 @@ _$BaseEmpleadoCopyWith<_BaseEmpleado> get copyWith => __$BaseEmpleadoCopyWithImp
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'BaseEmpleado'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('jefe', jefe))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('nacidoEn', nacidoEn))..add(DiagnosticsProperty('clabeInterbancaria', clabeInterbancaria))..add(DiagnosticsProperty('numeroContacto', numeroContacto))..add(DiagnosticsProperty('contactoEmergencia', contactoEmergencia))..add(DiagnosticsProperty('rfc', rfc))..add(DiagnosticsProperty('curp', curp))..add(DiagnosticsProperty('nss', nss))..add(DiagnosticsProperty('direccion', direccion))..add(DiagnosticsProperty('puesto', puesto))..add(DiagnosticsProperty('salario', salario))..add(DiagnosticsProperty('registradoEn', registradoEn))..add(DiagnosticsProperty('finalizadoEn', finalizadoEn))..add(DiagnosticsProperty('files', files));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('jefe', jefe))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('nacidoEn', nacidoEn))..add(DiagnosticsProperty('clabeInterbancaria', clabeInterbancaria))..add(DiagnosticsProperty('numeroContacto', numeroContacto))..add(DiagnosticsProperty('contactoEmergencia', contactoEmergencia))..add(DiagnosticsProperty('rfc', rfc))..add(DiagnosticsProperty('curp', curp))..add(DiagnosticsProperty('nss', nss))..add(DiagnosticsProperty('direccion', direccion))..add(DiagnosticsProperty('puesto', puesto))..add(DiagnosticsProperty('salario', salario))..add(DiagnosticsProperty('registradoEn', registradoEn))..add(DiagnosticsProperty('finalizadoEn', finalizadoEn))..add(DiagnosticsProperty('hasSignature', hasSignature))..add(DiagnosticsProperty('files', files));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BaseEmpleado&&(identical(other.id, id) || other.id == id)&&(identical(other.user, user) || other.user == user)&&(identical(other.jefe, jefe) || other.jefe == jefe)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.nacidoEn, nacidoEn) || other.nacidoEn == nacidoEn)&&(identical(other.clabeInterbancaria, clabeInterbancaria) || other.clabeInterbancaria == clabeInterbancaria)&&(identical(other.numeroContacto, numeroContacto) || other.numeroContacto == numeroContacto)&&(identical(other.contactoEmergencia, contactoEmergencia) || other.contactoEmergencia == contactoEmergencia)&&(identical(other.rfc, rfc) || other.rfc == rfc)&&(identical(other.curp, curp) || other.curp == curp)&&(identical(other.nss, nss) || other.nss == nss)&&(identical(other.direccion, direccion) || other.direccion == direccion)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.salario, salario) || other.salario == salario)&&(identical(other.registradoEn, registradoEn) || other.registradoEn == registradoEn)&&(identical(other.finalizadoEn, finalizadoEn) || other.finalizadoEn == finalizadoEn)&&(identical(other.files, files) || other.files == files));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BaseEmpleado&&(identical(other.id, id) || other.id == id)&&(identical(other.user, user) || other.user == user)&&(identical(other.jefe, jefe) || other.jefe == jefe)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.nacidoEn, nacidoEn) || other.nacidoEn == nacidoEn)&&(identical(other.clabeInterbancaria, clabeInterbancaria) || other.clabeInterbancaria == clabeInterbancaria)&&(identical(other.numeroContacto, numeroContacto) || other.numeroContacto == numeroContacto)&&(identical(other.contactoEmergencia, contactoEmergencia) || other.contactoEmergencia == contactoEmergencia)&&(identical(other.rfc, rfc) || other.rfc == rfc)&&(identical(other.curp, curp) || other.curp == curp)&&(identical(other.nss, nss) || other.nss == nss)&&(identical(other.direccion, direccion) || other.direccion == direccion)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.salario, salario) || other.salario == salario)&&(identical(other.registradoEn, registradoEn) || other.registradoEn == registradoEn)&&(identical(other.finalizadoEn, finalizadoEn) || other.finalizadoEn == finalizadoEn)&&(identical(other.hasSignature, hasSignature) || other.hasSignature == hasSignature)&&(identical(other.files, files) || other.files == files));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,user,jefe,nombre,nacidoEn,clabeInterbancaria,numeroContacto,contactoEmergencia,rfc,curp,nss,direccion,puesto,salario,registradoEn,finalizadoEn,files);
+int get hashCode => Object.hash(runtimeType,id,user,jefe,nombre,nacidoEn,clabeInterbancaria,numeroContacto,contactoEmergencia,rfc,curp,nss,direccion,puesto,salario,registradoEn,finalizadoEn,hasSignature,files);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'BaseEmpleado(id: $id, user: $user, jefe: $jefe, nombre: $nombre, nacidoEn: $nacidoEn, clabeInterbancaria: $clabeInterbancaria, numeroContacto: $numeroContacto, contactoEmergencia: $contactoEmergencia, rfc: $rfc, curp: $curp, nss: $nss, direccion: $direccion, puesto: $puesto, salario: $salario, registradoEn: $registradoEn, finalizadoEn: $finalizadoEn, files: $files)';
+  return 'BaseEmpleado(id: $id, user: $user, jefe: $jefe, nombre: $nombre, nacidoEn: $nacidoEn, clabeInterbancaria: $clabeInterbancaria, numeroContacto: $numeroContacto, contactoEmergencia: $contactoEmergencia, rfc: $rfc, curp: $curp, nss: $nss, direccion: $direccion, puesto: $puesto, salario: $salario, registradoEn: $registradoEn, finalizadoEn: $finalizadoEn, hasSignature: $hasSignature, files: $files)';
 }
 
 
@@ -328,7 +330,7 @@ abstract mixin class _$BaseEmpleadoCopyWith<$Res> implements $BaseEmpleadoCopyWi
   factory _$BaseEmpleadoCopyWith(_BaseEmpleado value, $Res Function(_BaseEmpleado) _then) = __$BaseEmpleadoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, User? user, User? jefe, String nombre, DateTime nacidoEn, String clabeInterbancaria, String numeroContacto, String contactoEmergencia, String rfc, String curp, String nss, String direccion, Puesto puesto, double salario, DateTime? registradoEn, DateTime? finalizadoEn, BaseEmpleadoFiles files
+ int id, User? user, User? jefe, String nombre, DateTime nacidoEn, String clabeInterbancaria, String numeroContacto, String contactoEmergencia, String rfc, String curp, String nss, String direccion, Puesto puesto, double salario, DateTime? registradoEn, DateTime? finalizadoEn, bool hasSignature, BaseEmpleadoFiles files
 });
 
 
@@ -345,7 +347,7 @@ class __$BaseEmpleadoCopyWithImpl<$Res>
 
 /// Create a copy of BaseEmpleado
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? user = freezed,Object? jefe = freezed,Object? nombre = null,Object? nacidoEn = null,Object? clabeInterbancaria = null,Object? numeroContacto = null,Object? contactoEmergencia = null,Object? rfc = null,Object? curp = null,Object? nss = null,Object? direccion = null,Object? puesto = null,Object? salario = null,Object? registradoEn = freezed,Object? finalizadoEn = freezed,Object? files = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? user = freezed,Object? jefe = freezed,Object? nombre = null,Object? nacidoEn = null,Object? clabeInterbancaria = null,Object? numeroContacto = null,Object? contactoEmergencia = null,Object? rfc = null,Object? curp = null,Object? nss = null,Object? direccion = null,Object? puesto = null,Object? salario = null,Object? registradoEn = freezed,Object? finalizadoEn = freezed,Object? hasSignature = null,Object? files = null,}) {
   return _then(_BaseEmpleado(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
@@ -363,7 +365,8 @@ as String,puesto: null == puesto ? _self.puesto : puesto // ignore: cast_nullabl
 as Puesto,salario: null == salario ? _self.salario : salario // ignore: cast_nullable_to_non_nullable
 as double,registradoEn: freezed == registradoEn ? _self.registradoEn : registradoEn // ignore: cast_nullable_to_non_nullable
 as DateTime?,finalizadoEn: freezed == finalizadoEn ? _self.finalizadoEn : finalizadoEn // ignore: cast_nullable_to_non_nullable
-as DateTime?,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
+as DateTime?,hasSignature: null == hasSignature ? _self.hasSignature : hasSignature // ignore: cast_nullable_to_non_nullable
+as bool,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
 as BaseEmpleadoFiles,
   ));
 }

@@ -25,7 +25,8 @@
         "curriculum_vitae": "media/PracticantesResidentes/CurriculumVitae/CV_1.pdf",
         "estado": "alta",
         "fecha_alta": "2026-06-16",
-        "fecha_baja": null
+        "fecha_baja": null,
+        "has_signature": true
     },
     {
         "id": 2,
@@ -53,7 +54,8 @@
         "curriculum_vitae": "media/PracticantesResidentes/CurriculumVitae/CV_2.pdf",
         "estado": "alta",
         "fecha_alta": "2026-06-17",
-        "fecha_baja": null
+        "fecha_baja": null,
+        "has_signature": false
     },
     {
         "id": 3,
@@ -81,7 +83,8 @@
         "curriculum_vitae": "media/PracticantesResidentes/CurriculumVitae/CV_3.pdf",
         "estado": "alta",
         "fecha_alta": "2026-06-17",
-        "fecha_baja": null
+        "fecha_baja": null,
+        "has_signature": false
     },
     {
         "id": 4,
@@ -109,7 +112,8 @@
         "curriculum_vitae": "media/PracticantesResidentes/CurriculumVitae/CV_5.pdf",
         "estado": "alta",
         "fecha_alta": "2026-06-17",
-        "fecha_baja": null
+        "fecha_baja": null,
+        "has_signature": true
     },
     {
         "id": 5,
@@ -137,7 +141,8 @@
         "curriculum_vitae": "media/PracticantesResidentes/CurriculumVitae/CV_5.pdf",
         "estado": "alta",
         "fecha_alta": "2026-06-18",
-        "fecha_baja": null
+        "fecha_baja": null,
+        "has_signature": true
     },
     {
         "id": 6,
@@ -165,6 +170,7 @@
         "curriculum_vitae": "media/PracticantesResidentes/CurriculumVitae/CV_6.pdf",
         "estado": "alta",
         "fecha_alta": "2026-06-18",
-        "fecha_baja": null
+        "fecha_baja": null,
+        "has_signature": true
     }
 ]
