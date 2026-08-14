@@ -133,24 +133,29 @@ class IndividualAttendanceTable extends StatelessWidget {
   }
 
   List<DataCell> _buildCheckIns(AsistenciaDaily attendance, DateFormat jm) {
+    final entryAt = attendance.entryAt?.toLocal();
+    final exitToLunchAt = attendance.exitToLunchAt?.toLocal();
+    final entryFromLunchAt = attendance.entryFromLunchAt?.toLocal();
+    final exitAt = attendance.exitAt?.toLocal();
+
     return switch (attendance.status) {
       AsistenciaStatus.present => [
-        DataCell(Text(attendance.entryAt != null ? jm.format(attendance.entryAt!) : '-')),
-        DataCell(Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!) : '-')),
-        DataCell(Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!) : '-')),
-        DataCell(Text(attendance.exitAt != null ? jm.format(attendance.exitAt!) : '-')),
+        DataCell(Text(entryAt != null ? jm.format(entryAt) : '-')),
+        DataCell(Text(exitToLunchAt != null ? jm.format(exitToLunchAt) : '-')),
+        DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
+        DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
       ],
       AsistenciaStatus.late => [
-        DataCell(Text(attendance.entryAt != null ? jm.format(attendance.entryAt!) : '-')),
-        DataCell(Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!) : '-')),
-        DataCell(Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!) : '-')),
-        DataCell(Text(attendance.exitAt != null ? jm.format(attendance.exitAt!) : '-')),
+        DataCell(Text(entryAt != null ? jm.format(entryAt) : '-')),
+        DataCell(Text(exitToLunchAt != null ? jm.format(exitToLunchAt) : '-')),
+        DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
+        DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
       ],
       AsistenciaStatus.excused => [
-        DataCell(Text(attendance.entryAt != null ? jm.format(attendance.entryAt!) : '-')),
-        DataCell(Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!) : '-')),
-        DataCell(Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!) : '-')),
-        DataCell(Text(attendance.exitAt != null ? jm.format(attendance.exitAt!) : '-')),
+        DataCell(Text(entryAt != null ? jm.format(entryAt) : '-')),
+        DataCell(Text(exitToLunchAt != null ? jm.format(exitToLunchAt) : '-')),
+        DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
+        DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
       ],
       AsistenciaStatus.absent => const [
         DataCell(Text('FALTA')),
