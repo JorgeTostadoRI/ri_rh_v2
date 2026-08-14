@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
@@ -24,7 +25,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
 
     _capturesSub = _fingerprintRepository.capture()
     .listen(
-      (template) => login.execute(template),
+      (scan) => login.execute(scan.template),
       onError: (e) {
         _log.error('NewIncidenciaViewmodel | Capture stream error', error: e);
       }
@@ -38,7 +39,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
 
   late Command1<void, Uint8List> login;
 
-  late final StreamSubscription<Uint8List> _capturesSub;
+  late final StreamSubscription<Scan> _capturesSub;
 
   IncidenciaDateOption _dateOption = IncidenciaDateOption.DATE_RANGE;
   IncidenciaDateOption get dateOption => _dateOption;

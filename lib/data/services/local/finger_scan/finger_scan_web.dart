@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 
@@ -21,7 +22,7 @@ class FingerScanServiceImpl extends FingerScanService {
   }
 
   @override
-  Stream<Uint8List> captureStream() async* {}
+  Stream<Scan> captureStream() async* {}
 
   @override
   int identify(Uint8List template) {

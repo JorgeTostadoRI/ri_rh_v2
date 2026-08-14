@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
@@ -26,7 +27,7 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   bool _initialized = false;
 
   @override
-  Stream<Uint8List> capture() {
+  Stream<Scan> capture() {
     return _fingerScanService.captureStream();
   }
 

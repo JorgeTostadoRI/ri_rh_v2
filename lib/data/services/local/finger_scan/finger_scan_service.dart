@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
+
 abstract class FingerScanService {
   /// Initializes the scanner SDK and cache
   void init();
@@ -8,7 +10,7 @@ abstract class FingerScanService {
   void dispose();
 
   /// A stream which captures fingerprint templates.
-  Stream<Uint8List> captureStream();
+  Stream<Scan> captureStream();
 
   /// Identify a fingerprint [template].
   /// 

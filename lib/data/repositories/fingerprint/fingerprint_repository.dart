@@ -1,12 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 abstract class FingerprintRepository {
   /// Captured fingerprint templates will be added through the stream.
-  Stream<Uint8List> capture();
+  Stream<Scan> capture();
 
   /// Searches the given fingerprint [template] and returns a User if there's a match
   UserInfo? matchFingerprintToUser(Uint8List template);

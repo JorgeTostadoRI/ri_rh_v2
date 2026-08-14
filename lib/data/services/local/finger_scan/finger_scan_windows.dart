@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:zk_finger/zk_finger.dart';
@@ -15,14 +16,14 @@ class FingerScanServiceImpl extends FingerScanService {
   late final ZKFinger _sdk;
   ZKDevice? _device;
   Timer? _timer;
-  late final StreamController<Uint8List> _controller;
+  late final StreamController<Scan> _controller;
   bool _initialized = false;
 
   @override
   void init() {
     if (!_initialized) {
       _sdk = ZKFinger();
-      _controller = StreamController<Uint8List>.broadcast(
+      _controller = StreamController<Scan>.broadcast(
         onListen: _connectDevice,
         onCancel: _closeDevice,
       );
@@ -41,7 +42,7 @@ class FingerScanServiceImpl extends FingerScanService {
   }
 
   @override
-  Stream<Uint8List> captureStream() {
+  Stream<Scan> captureStream() {
     return _controller.stream;
   }
 
@@ -87,7 +88,12 @@ class FingerScanServiceImpl extends FingerScanService {
     final capture = _device!.captureFingerprint();
     if (capture != null) {
       _log.info('Scanner captured a fingerprint');
-      _controller.add(capture.template);
+      _controller.add(Scan(
+        template: capture.template,
+        image: capture.image,
+        width: capture.width,
+        height: capture.height,
+      ));
     }
   }
 

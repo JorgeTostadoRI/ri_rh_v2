@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
@@ -28,7 +29,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
 
     _capturesSub = _fingerprintRepository.capture()
     .listen(
-      (template) => scanFingerprint.execute(template),
+      (scan) => scanFingerprint.execute(scan.template),
       onError: (e) {
         _log.error('AsistenciaViewmodel | Capture stream error', error: e);
       }
@@ -49,7 +50,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
   int _fingerIndex = 0;
   String get fingerName => _fingerNames[_fingerIndex];
 
-  late final StreamSubscription<Uint8List> _capturesSub;
+  late final StreamSubscription<Scan> _capturesSub;
 
   bool _manualEntryEnabled = false;
   bool get manualEntryEnabled => _manualEntryEnabled;

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
@@ -54,11 +55,11 @@ class PracticanteHuellasViewmodel extends ChangeNotifier {
 
   final List<Uint8List> _captures = List.empty(growable: true);
   int get captureCount => 3 - _captures.length;
-  StreamSubscription<Uint8List> get capturesSub {
+  StreamSubscription<Scan> get capturesSub {
     return _fingerprintRepository.capture()
     .take(3) // Only listen for 3 captures
     .listen(
-      (Uint8List template) => capture.execute(template),
+      (Scan scan) => capture.execute(scan.template),
       onDone: () => enroll.execute(_selectedFinger!),
       onError: (Object e) {
         _log.error('Failed to capture fingerprint', error: e);
