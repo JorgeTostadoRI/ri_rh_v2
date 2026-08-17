@@ -41,7 +41,8 @@
         "carta_renuncia": null,
         "finiquito_firmado": null,
         "baja_imss": null,
-        "comprobante_transferencia_finiquito": null
+        "comprobante_transferencia_finiquito": null,
+        "has_signature": true
     },
     {
         "id": 2,
@@ -85,7 +86,8 @@
         "carta_renuncia": null,
         "finiquito_firmado": null,
         "baja_imss": null,
-        "comprobante_transferencia_finiquito": null
+        "comprobante_transferencia_finiquito": null,
+        "has_signature": true
     },
     {
         "id": 3,
@@ -129,7 +131,8 @@
         "carta_renuncia": null,
         "finiquito_firmado": null,
         "baja_imss": null,
-        "comprobante_transferencia_finiquito": null
+        "comprobante_transferencia_finiquito": null,
+        "has_signature": false
     },
     {
         "id": 4,
@@ -173,7 +176,8 @@
         "carta_renuncia": "media/DocumentosEmpleado/CartaRenuncia/RENUNCIA.pdf",
         "finiquito_firmado": "media/DocumentosEmpleado/FiniquitoFirmado/FINIQUITO.pdf",
         "baja_imss": "media/DocumentosEmpleado/BajaImss/BAJA_IMSS.pdf",
-        "comprobante_transferencia_finiquito": "media/DocumentosEmpleado/ComprobanteTransferenciaFiniquito/COMPROBANTE_FINIQUITO.pdf"
+        "comprobante_transferencia_finiquito": "media/DocumentosEmpleado/ComprobanteTransferenciaFiniquito/COMPROBANTE_FINIQUITO.pdf",
+        "has_signature": true
     },
     {
         "id": 5,
@@ -217,7 +221,8 @@
         "carta_renuncia": null,
         "finiquito_firmado": null,
         "baja_imss": null,
-        "comprobante_transferencia_finiquito": null
+        "comprobante_transferencia_finiquito": null,
+        "has_signature": true
     },
     {
         "id": 6,
@@ -261,6 +266,7 @@
         "carta_renuncia": null,
         "finiquito_firmado": null,
         "baja_imss": null,
-        "comprobante_transferencia_finiquito": null
+        "comprobante_transferencia_finiquito": null,
+        "has_signature": false
     }
 ]

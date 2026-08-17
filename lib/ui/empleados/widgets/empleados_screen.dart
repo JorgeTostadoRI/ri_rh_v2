@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
@@ -136,6 +137,7 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                       baseEmpleado: empleado.base,
                       statusChip: EmpleadoStatusChip(status: empleado.estatus),
                       onExpedientePressed: () => context.go(Routes.expedienteOfEmpleado(empleado)),
+                      hasPendingActions: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
                     );
                   },
                 );

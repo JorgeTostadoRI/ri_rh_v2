@@ -89,6 +89,7 @@ abstract class Empleado with _$Empleado {
         nss: model.nss,
         direccion: model.direccion,
         salario: model.salario,
+        hasSignature: model.hasSignature,
         registradoEn: model.registeredAt,
         finalizadoEn: model.terminatedAt,
         files: BaseEmpleadoFiles(

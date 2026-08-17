@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 
 import 'finger_scan_service.dart';
@@ -25,7 +26,7 @@ class FingerScanServiceImpl extends FingerScanService {
   }
 
   @override
-  Stream<Uint8List> captureStream() {
+  Stream<Scan> captureStream() {
     throw UnimplementedError(_errorMessage);
   }
 

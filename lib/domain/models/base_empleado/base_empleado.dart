@@ -28,6 +28,7 @@ abstract class BaseEmpleado with _$BaseEmpleado {
     required double salario,
     DateTime? registradoEn,
     DateTime? finalizadoEn,
+    required bool hasSignature,
     required BaseEmpleadoFiles files,
   }) = _BaseEmpleado;
 }

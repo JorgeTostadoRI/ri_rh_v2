@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
+import 'package:ri_rh_v2/data/repositories/signature/signature_repository.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
@@ -16,24 +19,28 @@ class PracticanteHuellasViewmodel extends ChangeNotifier {
     required this._log,
     required this._practicantesRepository,
     required this._fingerprintRepository,
+    required this._signatureRepository,
   }) {
     load = Command1(_load)..execute(practicanteId);
     capture = Command1(_capture);
     enroll = Command1(_enroll);
     delete = Command1(_delete);
+    addSignature = Command0(_addSignature);
   }
 
   final int practicanteId;
   final PracticantesRepository _practicantesRepository;
   final FingerprintRepository _fingerprintRepository;
+  final SignatureRepository _signatureRepository;
 
   final AppLogger _log;
   late final Command1<void, int> load;
   late final Command1<void, Uint8List> capture;
   late final Command1<void, Finger> enroll;
   late final Command1<void, Finger> delete;
+  late final Command0 addSignature;
 
-  late final Practicante _practicante;
+  late Practicante _practicante;
   Practicante get practicante => _practicante;
 
   late List<Finger> _fingers;
@@ -54,15 +61,27 @@ class PracticanteHuellasViewmodel extends ChangeNotifier {
 
   final List<Uint8List> _captures = List.empty(growable: true);
   int get captureCount => 3 - _captures.length;
-  StreamSubscription<Uint8List> get capturesSub {
+  StreamSubscription<Scan> get capturesSub {
     return _fingerprintRepository.capture()
     .take(3) // Only listen for 3 captures
     .listen(
-      (Uint8List template) => capture.execute(template),
+      (Scan scan) => capture.execute(scan.template),
       onDone: () => enroll.execute(_selectedFinger!),
       onError: (Object e) {
         _log.error('Failed to capture fingerprint', error: e);
       },
+    );
+  }
+
+  Uint8List? _imageBytes;
+  Uint8List? get imageBytes => _imageBytes;
+  StreamSubscription<Scan> get captureImageSub {
+    return _fingerprintRepository.capture()
+    .listen(
+      (Scan scan) => _encodeImage(scan),
+      onError: (Object e) {
+        _log.error('Failed to encode fingerprint image', error: e);
+      }
     );
   }
 
@@ -125,6 +144,33 @@ class PracticanteHuellasViewmodel extends ChangeNotifier {
     return result;
   }
 
+  Future<Result<void>> _addSignature() async {
+    if (_imageBytes == null) {
+      _log.warning('No image captured');
+      return Result.error(Exception('No image captured'));
+    }
+
+    if (_practicante.base.user == null) {
+      _log.warning('No user assigned');
+      return Result.error(Exception('No user assigned'));
+    }
+
+    final result = await _signatureRepository.createSignature(_practicante.base.user!, _imageBytes!);
+    switch (result) {
+      case Error():
+        return Result.error(result.error);
+      case Ok():
+    }
+
+    _practicante = _practicante.copyWith(
+      base: _practicante.base.copyWith(hasSignature: true),
+    );
+    notifyListeners();
+
+    _log.info('Added signature to user #${_practicante.base.user!.id}');
+    return const Result.ok(null);
+  }
+
   // Call after _empleado has been set
   List<Finger> _generateFingersList() {
     return [
@@ -154,5 +200,30 @@ class PracticanteHuellasViewmodel extends ChangeNotifier {
     _captures.add(template);
     notifyListeners();
     return Result.ok(null);
+  }
+
+  void _encodeImage(Scan scan) {
+    // This has only one channel so it will only show red and black
+    final rawImage = img.Image.fromBytes(
+      width: scan.width,
+      height: scan.height,
+      bytes: scan.image.buffer,
+      format: .uint8,
+      numChannels: 1,
+    );
+
+    // Convert the raw image to also use G and B channels to get a white bg
+    var image = img.Image(width: scan.width, height: scan.height);
+    for (var pixel in image) {
+      final otherPixel = rawImage.getPixel(pixel.x, pixel.y);
+
+      pixel.r = otherPixel.r;
+      pixel.g = otherPixel.r;
+      pixel.b = otherPixel.r;
+    }
+
+    _imageBytes = img.encodeJpg(image);
+    _log.info('Encoded scan data to JPG');
+    notifyListeners();
   }
 }

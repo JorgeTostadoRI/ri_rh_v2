@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
@@ -42,11 +43,16 @@ class FingerprintRepositoryLocal extends FingerprintRepository {
   int _sequentialId = 3;
   
   @override
-  Stream<Uint8List> capture() {
+  Stream<Scan> capture() {
     _log.debug('FingerprintRepository | Listening for fingerprint captures');
-    return Stream<Uint8List>.periodic(
+    return Stream<Scan>.periodic(
       const Duration(seconds: 30),
-      (_) => utf8.encode('1,danielfernandez,r,index'),
+      (_) => Scan(
+        template: utf8.encode('1,danielfernandez,r,index'),
+        image: Uint8List.fromList([0]),
+        width: 0,
+        height: 0,
+      ),
     );
   }
 

@@ -38,6 +38,7 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     required int userRef,
     @JsonKey(defaultValue: 0, name: 'jefe')
     required int jefeRef,
+    required bool hasSignature,
 
     // Documents
     @JsonKey(name: 'identificacion_oficial')

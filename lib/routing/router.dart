@@ -181,6 +181,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                         log: context.read(),
                         empleadosRepository: context.read(),
                         fingerprintRepository: context.read(),
+                        signatureRepository: context.read(),
                       ),
                     );
                   }
@@ -231,6 +232,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                         log: context.read(),
                         practicantesRepository: context.read(),
                         fingerprintRepository: context.read(),
+                        signatureRepository: context.read(),
                       ),
                     );
                   },

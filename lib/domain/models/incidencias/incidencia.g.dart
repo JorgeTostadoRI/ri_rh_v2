@@ -22,6 +22,7 @@ _Incidencia _$IncidenciaFromJson(Map<String, dynamic> json) => _Incidencia(
       ? null
       : User.fromJson(json['solicitor'] as Map<String, dynamic>),
   rejectionReason: json['rejection_reason'] as String?,
+  pdfUrl: json['pdf_url'] as String?,
   start: DateTime.parse(json['start'] as String),
   end: DateTime.parse(json['end'] as String),
   reason: json['reason'] as String,
@@ -40,6 +41,7 @@ Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
       'revisor': instance.revisor,
       'solicitor': instance.solicitor,
       'rejection_reason': instance.rejectionReason,
+      'pdf_url': instance.pdfUrl,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,

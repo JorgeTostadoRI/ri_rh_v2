@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -8,9 +10,11 @@ class IncidenciaOverviewDialog extends StatefulWidget {
   const IncidenciaOverviewDialog({
     super.key,
     required this.incidencia,
+    required this.onDownload,
   });
 
   final Incidencia incidencia;
+  final void Function() onDownload;
 
   @override
   State<IncidenciaOverviewDialog> createState() => _IncidenciaOverviewDialogState();
@@ -73,6 +77,17 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
             ]
         ],
       ),
+      actions: [
+        if (widget.incidencia.state == IncidenciaState.approved)
+          ElevatedButton.icon(
+            onPressed: () {
+              widget.onDownload();
+              context.pop(); // pop to avoid holding a stale reference if the incidencia was updated
+            },
+            icon: Icon(LucideIcons.download),
+            label: Text('Descargar'),
+          ),
+      ],
     );
   }
 

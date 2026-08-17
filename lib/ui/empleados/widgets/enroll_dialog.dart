@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
 
@@ -19,7 +19,7 @@ class EnrollDialog extends StatefulWidget {
 }
 
 class _EnrollDialogState extends State<EnrollDialog> {
-  late final StreamSubscription<Uint8List> _subscription;
+  late final StreamSubscription<Scan> _subscription;
 
   void _listener() {
     if (widget.viewmodel.enroll.completed) {

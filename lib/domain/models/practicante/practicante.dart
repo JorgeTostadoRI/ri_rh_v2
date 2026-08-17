@@ -78,6 +78,7 @@ abstract class Practicante with _$Practicante {
         direccion: model.direccion,
         registradoEn: model.registeredAt,
         finalizadoEn: model.terminatedAt,
+        hasSignature: model.hasSignature,
         files: BaseEmpleadoFiles(
           ineUrl: model.ineUrl,
           actaNacimientoUrl: model.actaNacimientoUrl,

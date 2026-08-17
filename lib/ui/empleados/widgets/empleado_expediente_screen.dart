@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.dart';
@@ -79,17 +81,22 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
                             files: empleado.base.files,
                             altaEmpleo: empleado.alta,
                           ),
-                          IconCard(
-                            icon: LucideIcons.fingerprintPattern,
-                            title: 'Huellas',
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.go(Routes.huellasOfEmpleado(empleado));
-                                },
-                                child: Text('Ver')
-                              ),
-                            ],
+                          Badge(
+                            backgroundColor: statusWarningColor,
+                            label: const Text('!'),
+                            isLabelVisible: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
+                            child: IconCard(
+                              icon: LucideIcons.fingerprintPattern,
+                              title: 'Huellas',
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    context.go(Routes.huellasOfEmpleado(empleado));
+                                  },
+                                  child: Text('Ver')
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

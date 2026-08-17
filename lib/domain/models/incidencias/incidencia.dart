@@ -52,6 +52,8 @@ abstract class Incidencia with _$Incidencia {
         User? solicitor,
         // Agregado al rechazar la incidencia
         String? rejectionReason,
+
+        String? pdfUrl,
         
         required DateTime start,
         required DateTime end,
@@ -97,6 +99,7 @@ abstract class Incidencia with _$Incidencia {
         revisor: revisor,
         solicitor: solicitor,
         rejectionReason: model.rejectionReason,
+        pdfUrl: model.pdfUrl,
         start: model.start,
         end: model.end,
         reason: model.reason,
