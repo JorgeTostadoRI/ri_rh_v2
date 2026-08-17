@@ -21,15 +21,30 @@ class SignatureDialog extends StatefulWidget {
 class _SignatureDialogState extends State<SignatureDialog> {
   late final StreamSubscription<Scan> _subscription;
 
+  void _listener() {
+    if (widget.viewmodel.addSignature.completed) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _subscription = widget.viewmodel.captureImageSub;
+    widget.viewmodel.addSignature.addListener(_listener);
+  }
+
+  @override
+  void didUpdateWidget(covariant SignatureDialog oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.viewmodel.addSignature.removeListener(_listener);
+    widget.viewmodel.addSignature.addListener(_listener);
   }
 
   @override
   void dispose() {
     _subscription.cancel();
+    widget.viewmodel.addSignature.removeListener(_listener);
     super.dispose();
   }
 
@@ -71,7 +86,9 @@ class _SignatureDialogState extends State<SignatureDialog> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: imageBytes == null ? null : () {},
+              onPressed: imageBytes == null
+                ? null
+                : () => widget.viewmodel.addSignature.execute(),
               child: Text('Guardar'),
             ),
           ],

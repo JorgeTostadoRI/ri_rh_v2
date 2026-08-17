@@ -144,38 +144,65 @@ class PracticanteHuellasScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (!viewmodel.practicante.base.hasSignature)
-                  Card(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          ListTile(
-                            leading: Icon(LucideIcons.circleAlert, color: statusWarningColor),
-                            title: Text('Se requieren acciones', style: textTheme.headlineSmall),
-                            subtitle: Text('Este practicante no tiene capturada huella para firma de incidencias.')
-                          ),
-                          Row(
-                            mainAxisAlignment: .end,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () => showDialog(
-                                  context: context,
-                                  builder: (context) => SignatureDialog(viewmodel: viewmodel),
-                                ),
-                                child: const Text('Agregar'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                _SignatureCard(viewmodel: viewmodel),
               ],
             );
           }
+        ),
+      ),
+    );
+  }
+}
+
+class _SignatureCard extends StatelessWidget {
+  const _SignatureCard({
+    required this.viewmodel,
+  });
+
+  final PracticanteHuellasViewmodel viewmodel;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    if (!viewmodel.practicante.base.hasSignature) {
+      return Card(
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              ListTile(
+                leading: Icon(LucideIcons.circleAlert, color: statusWarningColor),
+                title: Text('Se requieren acciones', style: textTheme.headlineSmall),
+                subtitle: Text('Este practicante no tiene capturada huella para firma de incidencias.')
+              ),
+              Row(
+                mainAxisAlignment: .end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) => SignatureDialog(viewmodel: viewmodel),
+                    ),
+                    child: const Text('Agregar'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: ListTile(
+          leading: Icon(LucideIcons.circleCheck, color: statusSuccessColor),
+          title: Text('Firma para incidencias registrada', style: textTheme.headlineSmall),
         ),
       ),
     );
