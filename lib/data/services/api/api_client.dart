@@ -485,7 +485,7 @@ class ApiClient {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('/api/usuarios/obtener-todos-usuarios-simple/');
+      final response = await dio.get('/api/usuarios/all/');
       final result = (response.data as List)
       .map((json) => User.fromJson(json))
       .toList();
