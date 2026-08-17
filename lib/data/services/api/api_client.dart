@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
@@ -12,6 +14,7 @@ import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/signature/signature.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -564,6 +567,32 @@ class ApiClient {
       };
       final response = await dio.get('/api/rh/reportes/asistencias/', queryParameters: queryParams);
       final result = ReporteAsistenciaResponse.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // FIRMAS
+  Future<Result<Signature>> postSignature(User user, Uint8List imageBytes) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      
+      final formData = FormData.fromMap({
+        'image': MultipartFile.fromBytes(
+          imageBytes,
+          filename: 'fingerprint-signature.jpg',
+          contentType: MediaType('image', 'jpg'),
+        ),
+        'usuario': user.id,
+      });
+      final response = await dio.get('api/rh/signatures/', data: formData);
+      final result = Signature.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
