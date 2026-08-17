@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/delete_fingerprint_dialog.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/enroll_dialog.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/signature_dialog.dart';
 
 class PracticanteHuellasScreen extends StatelessWidget {
   const PracticanteHuellasScreen({
@@ -52,6 +53,8 @@ class PracticanteHuellasScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(40),
@@ -89,9 +92,9 @@ class PracticanteHuellasScreen extends StatelessWidget {
                             TypePracticante.practicante => 'PRACTICANTE',
                             TypePracticante.residente => 'RESIDENTE',
                           },
-                          style: TextTheme.of(context).labelSmall?.copyWith(fontWeight: .w900),
+                          style: textTheme.labelSmall?.copyWith(fontWeight: .w900),
                         ),
-                        Text(practicante.base.nombre, style: TextTheme.of(context).headlineSmall),
+                        Text(practicante.base.nombre, style: textTheme.headlineSmall),
                         Row(
                           spacing: 6,
                           mainAxisSize: .min,
@@ -99,7 +102,7 @@ class PracticanteHuellasScreen extends StatelessWidget {
                             Icon(LucideIcons.briefcase, color: primaryColor, size: 14),
                             Text(
                               practicante.base.puesto.nombre,
-                              style: TextTheme.of(context).labelMedium?.copyWith(
+                              style: textTheme.labelMedium?.copyWith(
                                 color: primaryColor,
                                 fontWeight: .w700,
                               ),
@@ -141,6 +144,35 @@ class PracticanteHuellasScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (!viewmodel.practicante.base.hasSignature)
+                  Card(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Column(
+                        mainAxisSize: .min,
+                        children: [
+                          ListTile(
+                            leading: Icon(LucideIcons.circleAlert, color: statusWarningColor),
+                            title: Text('Se requieren acciones', style: textTheme.headlineSmall),
+                            subtitle: Text('Este practicante no tiene capturada huella para firma de incidencias.')
+                          ),
+                          Row(
+                            mainAxisAlignment: .end,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (context) => SignatureDialog(viewmodel: viewmodel),
+                                ),
+                                child: const Text('Agregar'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           }

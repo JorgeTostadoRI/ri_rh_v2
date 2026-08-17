@@ -591,7 +591,7 @@ class ApiClient {
         ),
         'usuario': user.id,
       });
-      final response = await dio.get('api/rh/signatures/', data: formData);
+      final response = await dio.post('/api/rh/signatures/', data: formData);
       final result = Signature.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
