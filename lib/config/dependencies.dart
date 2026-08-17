@@ -25,6 +25,9 @@ import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository.dart';
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/signature/signature_repository.dart';
+import 'package:ri_rh_v2/data/repositories/signature/signature_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/signature/signature_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
@@ -128,6 +131,9 @@ Future<List<SingleChildWidget>> get providersLocal async {
         localDataService: context.read(),
       ) as ReportesRepository
     ),
+    Provider(create: (context) =>
+      SignatureRepositoryLocal() as SignatureRepository
+    ),
     ..._sharedViewmodels,
   ];
 }
@@ -204,6 +210,12 @@ Future<List<SingleChildWidget>> get providersRemote async {
         log: context.read(),
         apiClient: context.read(),
       ) as ReportesRepository
+    ),
+    Provider(create: (context) =>
+      SignatureRepositoryRemote(
+        log: context.read(),
+        apiClient: context.read(),
+      ) as SignatureRepository
     ),
     ..._sharedViewmodels,
   ];
