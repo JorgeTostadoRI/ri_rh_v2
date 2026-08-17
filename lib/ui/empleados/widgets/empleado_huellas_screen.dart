@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/delete_fingerprint_dialog.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/enroll_dialog.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/signature_dialog.dart';
 
 class EmpleadoHuellasScreen extends StatelessWidget {
   const EmpleadoHuellasScreen({
@@ -55,7 +56,10 @@ class EmpleadoHuellasScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(40),
         child: ListenableBuilder(
-          listenable: viewmodel.load,
+          listenable: Listenable.merge([
+            viewmodel.load,
+            viewmodel.addSignature,
+          ]),
           builder: (context, _) {
             if (viewmodel.load.running) {
               return const Center(child: CircularProgressIndicator());
@@ -134,9 +138,65 @@ class EmpleadoHuellasScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                _SignatureCard(viewmodel: viewmodel),
               ],
             );
           }
+        ),
+      ),
+    );
+  }
+}
+
+class _SignatureCard extends StatelessWidget {
+  const _SignatureCard({
+    required this.viewmodel,
+  });
+
+  final EmpleadoHuellasViewmodel viewmodel;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    if (!viewmodel.empleado.base.hasSignature) {
+      return Card(
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              ListTile(
+                leading: Icon(LucideIcons.circleAlert, color: statusWarningColor),
+                title: Text('Se requieren acciones', style: textTheme.headlineSmall),
+                subtitle: Text('Este practicante no tiene capturada huella para firma de incidencias.')
+              ),
+              Row(
+                mainAxisAlignment: .end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) => SignatureDialog(viewmodel: viewmodel),
+                    ),
+                    child: const Text('Agregar'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: ListTile(
+          leading: Icon(LucideIcons.circleCheck, color: statusSuccessColor),
+          title: Text('Firma para incidencias registrada', style: textTheme.headlineSmall),
         ),
       ),
     );

@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
 
 class SignatureDialog extends StatefulWidget {
-  final PracticanteHuellasViewmodel viewmodel;
+  final EmpleadoHuellasViewmodel viewmodel;
 
   const SignatureDialog({
     super.key,
@@ -53,7 +53,10 @@ class _SignatureDialogState extends State<SignatureDialog> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: widget.viewmodel,
+      listenable: Listenable.merge([
+        widget.viewmodel,
+        widget.viewmodel.addSignature,
+      ]),
       builder: (context, child) {
         final imageBytes = widget.viewmodel.imageBytes;
 
@@ -61,6 +64,7 @@ class _SignatureDialogState extends State<SignatureDialog> {
           return AlertDialog(
             title: Text('Detalle de Error'),
             content: Column(
+              mainAxisSize: .min,
               spacing: 24,
               children: [
                 Text('Se encontró un error al intentar guardar la firma'),

@@ -165,6 +165,7 @@ class PracticanteHuellasViewmodel extends ChangeNotifier {
     _practicante = _practicante.copyWith(
       base: _practicante.base.copyWith(hasSignature: true),
     );
+    notifyListeners();
 
     _log.info('Added signature to user #${_practicante.base.user!.id}');
     return const Result.ok(null);

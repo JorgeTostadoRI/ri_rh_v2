@@ -59,7 +59,10 @@ class PracticanteHuellasScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(40),
         child: ListenableBuilder(
-          listenable: viewmodel.load,
+          listenable: Listenable.merge([
+            viewmodel.load,
+            viewmodel.addSignature,
+          ]),
           builder: (context, _) {
             if (viewmodel.load.running) {
               return const Center(child: CircularProgressIndicator());
