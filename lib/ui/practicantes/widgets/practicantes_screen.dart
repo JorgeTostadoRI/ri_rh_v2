@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
@@ -128,6 +129,7 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                       baseEmpleado: practicante.base,
                       statusChip: PracticanteStatusChip(status: practicante.status!),
                       onExpedientePressed: () => context.go(Routes.expedienteOfPracticante(practicante)),
+                      hasPendingActions: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
                     );
                   }
                 );
