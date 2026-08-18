@@ -607,8 +607,15 @@ class ApiClient {
 class ApiException implements Exception {
   final String message;
   final int statusCode;
+  final String? errorCode;
 
-  const ApiException(this.message, this.statusCode);
+  const ApiException(
+    this.message,
+    this.statusCode,
+    {
+      this.errorCode,
+    }
+  );
 
   @override
   String toString() {
@@ -616,9 +623,24 @@ class ApiException implements Exception {
   }
 
   factory ApiException.fromDioException(DioException e) {
+    String? errorCode;
+
+    try {
+      if (e.response != null && e.response!.data is Map<String, dynamic>) {
+        final json = e.response!.data;
+        if (json.containsKey('code')) {
+          errorCode = json['code'] as String;
+        }
+      }
+    } catch (e) {
+      // Response wasn't json or code wasn't a string
+      errorCode = null;
+    }
+
     return ApiException(
       e.response?.data?.toString() ?? e.message ?? 'No message provided',
       e.response?.statusCode ?? 0,
+      errorCode: errorCode,
     );
   }
 }

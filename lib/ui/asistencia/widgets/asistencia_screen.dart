@@ -1,10 +1,15 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
+import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
+import 'package:ri_rh_v2/utils/result.dart' as result;
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/motd_list.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
+import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class AsistenciaScreen extends StatefulWidget {
@@ -25,8 +30,42 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   final Debouncer _debouncer = Debouncer(milliseconds: 60000); // 1 minute
 
   void _onRegisterResult() {
-    if (widget.viewmodel.register.completed || widget.viewmodel.register.error) {
+    if (widget.viewmodel.register.completed) {
       Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
+    }
+
+    if (widget.viewmodel.register.error) {
+      final error = (widget.viewmodel.register.result as result.Error).error;
+      Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
+
+      if (error is ApiException) {
+        if (error.errorCode == ApiErrorCodes.lateEntry) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Fuera de Horario'),
+                content: Text(
+                  'No se ha registrado tu entrada debido a que intentaste registrar fuera de tu hora permitida de entrada. '
+                  'Ten en cuenta que tienes 10 minutos de gracia para tu entrada. '
+                  'No entré a laborar hoy porque NO se le dará compensación por el trabajo.'
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => context.pop(),
+                    child: Text('Entendido'),
+                  ),
+                ],
+              );
+            }
+          );
+          return;
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'Error al registrar asistencia', error: error),
+      );
     }
   }
 
