@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 
 import 'config/dependencies.dart';
@@ -23,7 +22,6 @@ void main() async {
     return true;
   };
 
-  usePathUrlStrategy();
   initializeDateFormatting('es_ES', null).then((_) {    
     runApp(MultiProvider(providers: providers, child: const MainApp()));
   });

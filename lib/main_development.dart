@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
-
 import 'config/dependencies.dart';
 import 'main.dart';
 
@@ -12,7 +10,6 @@ import 'main.dart';
 void main() async {
   final providers = await providersLocal;
 
-  usePathUrlStrategy();
   initializeDateFormatting('es_ES', null).then((_) {    
     runApp(MultiProvider(providers: providers, child: const MainApp()));
   });
