@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User implements DiagnosticableTreeMixin {
 
- int get id; String get username; String get nombre; String get telefono; String get correo; String get rol; Departamento get departamento; List<Departamento> get departamentosPermitidos; bool get liderPermitido; int? get empleadoId;
+ int get id; String get username; String get nombre; String get telefono; String get correo; String? get rol; Departamento? get departamento; List<Departamento> get departamentosPermitidos; bool get liderPermitido; int? get empleadoId;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,11 +55,11 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String rol, Departamento departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, int? empleadoId
+ int id, String username, String nombre, String telefono, String correo, String? rol, Departamento? departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, int? empleadoId
 });
 
 
-$DepartamentoCopyWith<$Res> get departamento;
+$DepartamentoCopyWith<$Res>? get departamento;
 
 }
 /// @nodoc
@@ -72,16 +72,16 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? empleadoId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = freezed,Object? departamento = freezed,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? empleadoId = freezed,}) {
   return _then(User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,nombre: null == nombre ? _self.nombre : nombre // ignore: cast_nullable_to_non_nullable
 as String,telefono: null == telefono ? _self.telefono : telefono // ignore: cast_nullable_to_non_nullable
 as String,correo: null == correo ? _self.correo : correo // ignore: cast_nullable_to_non_nullable
-as String,rol: null == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
-as String,departamento: null == departamento ? _self.departamento : departamento // ignore: cast_nullable_to_non_nullable
-as Departamento,departamentosPermitidos: null == departamentosPermitidos ? _self.departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
+as String,rol: freezed == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
+as String?,departamento: freezed == departamento ? _self.departamento : departamento // ignore: cast_nullable_to_non_nullable
+as Departamento?,departamentosPermitidos: null == departamentosPermitidos ? _self.departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
 as List<Departamento>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
 as bool,empleadoId: freezed == empleadoId ? _self.empleadoId : empleadoId // ignore: cast_nullable_to_non_nullable
 as int?,
@@ -91,9 +91,12 @@ as int?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$DepartamentoCopyWith<$Res> get departamento {
-  
-  return $DepartamentoCopyWith<$Res>(_self.departamento, (value) {
+$DepartamentoCopyWith<$Res>? get departamento {
+    if (_self.departamento == null) {
+    return null;
+  }
+
+  return $DepartamentoCopyWith<$Res>(_self.departamento!, (value) {
     return _then(_self.copyWith(departamento: value));
   });
 }
@@ -178,7 +181,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  Departamento departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
 return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.empleadoId);case _:
@@ -199,7 +202,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  Departamento departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)  $default,) {final _that = this;
 switch (_that) {
 case _User():
 return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.empleadoId);case _:
@@ -219,7 +222,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  Departamento departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
 return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.empleadoId);case _:
@@ -234,7 +237,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 @JsonSerializable()
 
 class _User with DiagnosticableTreeMixin implements User {
-  const _User({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, required this.rol, required this.departamento, required  List<Departamento> departamentosPermitidos, required this.liderPermitido, this.empleadoId}): _departamentosPermitidos = departamentosPermitidos;
+  const _User({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, this.rol, this.departamento, required  List<Departamento> departamentosPermitidos, required this.liderPermitido, this.empleadoId}): _departamentosPermitidos = departamentosPermitidos;
   factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override final  int id;
@@ -242,8 +245,8 @@ class _User with DiagnosticableTreeMixin implements User {
 @override final  String nombre;
 @override final  String telefono;
 @override final  String correo;
-@override final  String rol;
-@override final  Departamento departamento;
+@override final  String? rol;
+@override final  Departamento? departamento;
  final  List<Departamento> _departamentosPermitidos;
 @override List<Departamento> get departamentosPermitidos {
   if (_departamentosPermitidos is EqualUnmodifiableListView) return _departamentosPermitidos;
@@ -293,11 +296,11 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String rol, Departamento departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, int? empleadoId
+ int id, String username, String nombre, String telefono, String correo, String? rol, Departamento? departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, int? empleadoId
 });
 
 
-@override $DepartamentoCopyWith<$Res> get departamento;
+@override $DepartamentoCopyWith<$Res>? get departamento;
 
 }
 /// @nodoc
@@ -310,16 +313,16 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? empleadoId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = freezed,Object? departamento = freezed,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? empleadoId = freezed,}) {
   return _then(_User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,nombre: null == nombre ? _self.nombre : nombre // ignore: cast_nullable_to_non_nullable
 as String,telefono: null == telefono ? _self.telefono : telefono // ignore: cast_nullable_to_non_nullable
 as String,correo: null == correo ? _self.correo : correo // ignore: cast_nullable_to_non_nullable
-as String,rol: null == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
-as String,departamento: null == departamento ? _self.departamento : departamento // ignore: cast_nullable_to_non_nullable
-as Departamento,departamentosPermitidos: null == departamentosPermitidos ? _self._departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
+as String,rol: freezed == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
+as String?,departamento: freezed == departamento ? _self.departamento : departamento // ignore: cast_nullable_to_non_nullable
+as Departamento?,departamentosPermitidos: null == departamentosPermitidos ? _self._departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
 as List<Departamento>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
 as bool,empleadoId: freezed == empleadoId ? _self.empleadoId : empleadoId // ignore: cast_nullable_to_non_nullable
 as int?,
@@ -330,9 +333,12 @@ as int?,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$DepartamentoCopyWith<$Res> get departamento {
-  
-  return $DepartamentoCopyWith<$Res>(_self.departamento, (value) {
+$DepartamentoCopyWith<$Res>? get departamento {
+    if (_self.departamento == null) {
+    return null;
+  }
+
+  return $DepartamentoCopyWith<$Res>(_self.departamento!, (value) {
     return _then(_self.copyWith(departamento: value));
   });
 }

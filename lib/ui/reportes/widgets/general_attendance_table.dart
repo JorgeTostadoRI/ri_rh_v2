@@ -97,7 +97,7 @@ class GeneralAttendanceTable extends StatelessWidget {
               ),
               DataCell(
                 Text(
-                  item.user.departamento.nombre,
+                  item.user.departamento?.nombre ?? 'SIN DEPARTAMENTO',
                   style: textTheme.labelLarge,
                 ),
               ),
