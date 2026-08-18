@@ -12,10 +12,10 @@ _User _$UserFromJson(Map<String, dynamic> json) => _User(
   nombre: json['nombre'] as String,
   telefono: json['telefono'] as String,
   correo: json['correo'] as String,
-  rol: json['rol'] as String,
-  departamento: Departamento.fromJson(
-    json['departamento'] as Map<String, dynamic>,
-  ),
+  rol: json['rol'] as String?,
+  departamento: json['departamento'] == null
+      ? null
+      : Departamento.fromJson(json['departamento'] as Map<String, dynamic>),
   departamentosPermitidos: (json['departamentos_permitidos'] as List<dynamic>)
       .map((e) => Departamento.fromJson(e as Map<String, dynamic>))
       .toList(),

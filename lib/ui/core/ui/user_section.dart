@@ -50,10 +50,11 @@ class UserSection extends StatelessWidget {
                 fontSize: 14,
               ),
             ),
-            Text(
-              user.departamento.nombre,
-              style: textTheme.labelMedium,
-            ),
+            if (user.departamento != null)
+              Text(
+                user.departamento!.nombre,
+                style: textTheme.labelMedium,
+              ),
           ],
         ),
       ],
