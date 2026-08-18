@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class IncidenciaOverviewDialog extends StatefulWidget {
   const IncidenciaOverviewDialog({
@@ -39,10 +42,12 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
     final yMMMMdjm = DateFormat.yMMMMd().add_jm();
+    final incidencia = widget.incidencia;
 
     return AlertDialog(
+      scrollable: true,
       title: Text(
-        '${widget.incidencia.categoryName} para ${widget.incidencia.solicitor!.nombre} en ${_formatTitleDates()}',
+        '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatTitleDates()}',
       ),
       content: Column(
         crossAxisAlignment: .start,
@@ -51,34 +56,72 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
             mainAxisAlignment: .spaceBetween,
             children: [
               Text('Fecha de creación', style: textTheme.headlineSmall),
-              _IncidenciaStatusChip(state: widget.incidencia.state!),
+              _IncidenciaStatusChip(state: incidencia.state!),
             ],
           ),
           Text(yMMMMdjm.format(_localStart)),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
-          Text(widget.incidencia.solicitor!.nombre),
+          Text(incidencia.solicitor!.nombre),
           const SizedBox(height: 24),
-          if (widget.incidencia.revisor != null)
+          if (incidencia.revisor != null)
           ...[
               Text('Revisor asignado', style: textTheme.headlineSmall),
-              Text(widget.incidencia.solicitor!.nombre),
+              Text(incidencia.solicitor!.nombre),
               const SizedBox(height: 24),
           ],
           Text('Fechas solicitadas', style: textTheme.headlineSmall),
           Text(_formatRequestedDates()),
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
-          Text(widget.incidencia.reason, style: textTheme.bodyMedium),
-          if (widget.incidencia.rejectionReason != null)
+          Text(incidencia.reason, style: textTheme.bodyMedium),
+          if (incidencia.rejectionReason != null && incidencia.rejectionReason!.isNotEmpty)
             ...[
-              Text('Motivo de rechazo', style: textTheme.headlineSmall),
-              Text(widget.incidencia.rejectionReason!, style: textTheme.bodyMedium),
-            ]
+                const SizedBox(height: 24),
+                Text('Motivo de rechazo', style: textTheme.headlineSmall),
+                Text(incidencia.rejectionReason!, style: textTheme.bodyMedium),
+            ],
+          if (incidencia.files.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 24.0),
+              child: Column(
+                mainAxisSize: .min,
+                crossAxisAlignment: .start,
+                children: [
+                  Text('Archivos adjuntos', style: textTheme.headlineSmall),
+                  ...List<Widget>.generate(
+                    incidencia.files.length,
+                    (index) {
+                      final file = incidencia.files[index];
+                      late final String filename;
+                      try {
+                        filename = file.filepath.split('/').last;
+                      } catch (e) {
+                        filename = 'Sin nombre';
+                      }
+                      return ListTile(
+                        title: Text(filename),
+                        trailing: IconButton(
+                          onPressed: () {
+                            try {
+                              final url = Uri.parse(file.filepath);
+                              launchUrl(url);
+                            } catch (e, stackTrace) {
+                              context.read<AppLogger>().error('Failed to launch URL', error: e, stackTrace: stackTrace);    
+                            }
+                          },
+                          icon: Icon(LucideIcons.externalLink),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
       actions: [
-        if (widget.incidencia.state == IncidenciaState.approved)
+        if (incidencia.state == IncidenciaState.approved)
           ElevatedButton.icon(
             onPressed: () {
               widget.onDownload();

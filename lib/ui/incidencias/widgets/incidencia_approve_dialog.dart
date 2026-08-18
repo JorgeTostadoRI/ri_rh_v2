@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/rejection_dialog.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 typedef IncidenciaApproveDialogResult = ({IncidenciaState state, String rejectionReason});
 
@@ -38,8 +41,10 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
+    final incidencia = widget.incidencia;
 
     return AlertDialog(
+      scrollable: true,
       title: Text(
         '${widget.incidencia.categoryName} para ${widget.incidencia.solicitor!.nombre} en ${_formatTitleDates()}',
       ),
@@ -63,6 +68,43 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(widget.incidencia.reason, style: textTheme.bodyMedium),
+          if (incidencia.files.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 24.0),
+              child: Column(
+                mainAxisSize: .min,
+                crossAxisAlignment: .start,
+                children: [
+                  Text('Archivos adjuntos', style: textTheme.headlineSmall),
+                  ...List<Widget>.generate(
+                    incidencia.files.length,
+                    (index) {
+                      final file = incidencia.files[index];
+                      late final String filename;
+                      try {
+                        filename = file.filepath.split('/').last;
+                      } catch (e) {
+                        filename = 'Sin nombre';
+                      }
+                      return ListTile(
+                        title: Text(filename),
+                        trailing: IconButton(
+                          onPressed: () {
+                            try {
+                              final url = Uri.parse(file.filepath);
+                              launchUrl(url);
+                            } catch (e, stackTrace) {
+                              context.read<AppLogger>().error('Failed to launch URL', error: e, stackTrace: stackTrace);    
+                            }
+                          },
+                          icon: Icon(LucideIcons.externalLink),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
       actions: [
