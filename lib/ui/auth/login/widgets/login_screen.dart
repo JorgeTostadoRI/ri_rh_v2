@@ -73,127 +73,129 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          spacing: 24,
-          children: [
-            ElevatedContainer(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: const BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0, 8),
-                            blurRadius: 24,
-                            color: Color.fromARGB(82, 232, 123, 30),
-                          ),
-                        ],
-                      ),
-                      alignment: .center, // prevents the container from resizing the svg
-                      child: SvgPicture.asset(Assets.layoutGrid, width: 30, height: 30),
-                    ),
-                  ),
-                  Text(
-                    'Recursos Humanos',
-                    style: textTheme.headlineMedium,
-                  ),
-                  Text(
-                    'R&I AUTOMATION',
-                    style: textTheme.labelLarge,
-                  ),
-                  const SizedBox(height: 36),
-                  SizedBox(
-                    width: 400,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        spacing: 20,
-                        children: [
-                          TextFormField(
-                            controller: _username,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Este campo es requerido';
-                              }
-                                  
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              labelText: 'USUARIO',
-                              hintText: 'Ingresa tu usuario',
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            spacing: 24,
+            children: [
+              ElevatedContainer(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: const BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, 8),
+                              blurRadius: 24,
+                              color: Color.fromARGB(82, 232, 123, 30),
                             ),
-                            textInputAction: .next,
-                          ),
-                          TextFormField(
-                            controller: _password,
-                            obscureText: !showPassword,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Este campo es requerido';
-                              }
-                                  
-                              return null;
-                            },
-                            textInputAction: .done,
-                            onFieldSubmitted: (_) => _login(),
-                            decoration: InputDecoration(
-                              labelText: 'CONTRASEÑA',
-                              hintText: 'Ingresa tu contraseña',
-                              suffixIcon: IconButton(
-                                onPressed: () => setState(() => showPassword = !showPassword),
-                                icon: Icon(
-                                  showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                          ],
+                        ),
+                        alignment: .center, // prevents the container from resizing the svg
+                        child: SvgPicture.asset(Assets.layoutGrid, width: 30, height: 30),
+                      ),
+                    ),
+                    Text(
+                      'Recursos Humanos',
+                      style: textTheme.headlineMedium,
+                    ),
+                    Text(
+                      'R&I AUTOMATION',
+                      style: textTheme.labelLarge,
+                    ),
+                    const SizedBox(height: 36),
+                    SizedBox(
+                      width: 400,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          spacing: 20,
+                          children: [
+                            TextFormField(
+                              controller: _username,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Este campo es requerido';
+                                }
+                                    
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'USUARIO',
+                                hintText: 'Ingresa tu usuario',
+                              ),
+                              textInputAction: .next,
+                            ),
+                            TextFormField(
+                              controller: _password,
+                              obscureText: !showPassword,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Este campo es requerido';
+                                }
+                                    
+                                return null;
+                              },
+                              textInputAction: .done,
+                              onFieldSubmitted: (_) => _login(),
+                              decoration: InputDecoration(
+                                labelText: 'CONTRASEÑA',
+                                hintText: 'Ingresa tu contraseña',
+                                suffixIcon: IconButton(
+                                  onPressed: () => setState(() => showPassword = !showPassword),
+                                  icon: Icon(
+                                    showPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CommandButton.icon(
-                                  command: widget.viewmodel.login,
-                                  onPressed: _login,
-                                  icon: Icon(LucideIcons.logIn),
-                                  label: Text('Ingresar'),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: CommandButton.icon(
+                                    command: widget.viewmodel.login,
+                                    onPressed: _login,
+                                    icon: Icon(LucideIcons.logIn),
+                                    label: Text('Ingresar'),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            FutureBuilder(
-              future: packageInfoFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    return Text(
-                      'v${snapshot.data!.version}',
-                      style: textTheme.labelSmall,
-                    );
+              FutureBuilder(
+                future: packageInfoFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        'v${snapshot.data!.version}',
+                        style: textTheme.labelSmall,
+                      );
+                    }
                   }
-                }
-
-                return Text(
-                  'Cargando versión...',
-                  style: textTheme.labelSmall,
-                );
-              },
-            ),
-          ],
+      
+                  return Text(
+                    'Cargando versión...',
+                    style: textTheme.labelSmall,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
