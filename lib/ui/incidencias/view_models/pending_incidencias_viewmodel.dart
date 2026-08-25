@@ -72,7 +72,14 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
-    _historial?.add(resultApproval.value);
+    if (const [IncidenciaState.approved, IncidenciaState.rejected].contains(resultApproval.value.state)) {
+      _historial?.add(resultApproval.value);
+    } else {
+      final isRH = await _authRepository.isRH;
+      if (isRH) {
+        _pendingToReview!.add(resultApproval.value);
+      }
+    }
     notifyListeners();
     return Result.ok(null);
   }
@@ -93,7 +100,9 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
-    _historial?.add(resultReject.value);
+    if (const [IncidenciaState.approved, IncidenciaState.rejected].contains(resultReject.value.state)) {
+      _historial?.add(resultReject.value);
+    }
     notifyListeners();
     return Result.ok(null);
   }

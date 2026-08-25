@@ -64,12 +64,6 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
           Text('Solicitor', style: textTheme.headlineSmall),
           Text(incidencia.solicitor!.nombre),
           const SizedBox(height: 24),
-          if (incidencia.revisor != null)
-          ...[
-              Text('Revisor asignado', style: textTheme.headlineSmall),
-              Text(incidencia.solicitor!.nombre),
-              const SizedBox(height: 24),
-          ],
           Text('Fechas solicitadas', style: textTheme.headlineSmall),
           Text(_formatRequestedDates()),
           const SizedBox(height: 24),

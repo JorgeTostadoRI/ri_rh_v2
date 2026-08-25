@@ -13,6 +13,8 @@ import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:synchronized/synchronized.dart';
 
+const String _rhDepartmentName = 'Recursos Humanos';
+
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
     required this._log,
@@ -86,9 +88,16 @@ class AuthRepositoryRemote extends AuthRepository {
       return false;
     }
 
-    final departamentoNames = _currentUser!.departamentosPermitidos.map((dep) => dep.nombre).toList();
-    final hasDepartamentoRH = departamentoNames.contains('Recursos Humanos');
-    return hasDepartamentoRH;
+    if (_currentUser == null) {
+      return false;
+    }
+
+    final departamento = _currentUser!.departamento;
+    if (departamento == null) {
+      return false;
+    }
+
+    return departamento.nombre == _rhDepartmentName;
   }
 
   @override
@@ -164,6 +173,44 @@ class AuthRepositoryRemote extends AuthRepository {
 
   @override
   User? getCurrentUser() => _currentUser;
+
+  @override
+  Future<Result<void>> updateRole(String role) async {
+    if (_currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+
+    final resultPatch = await _apiClient.patchUser(_currentUser!.id, {
+      'rol': role,
+    });
+    switch (resultPatch) {
+      case Error():
+        return Result.error(resultPatch.error);
+      case Ok():
+    }
+    _currentUser = resultPatch.value;
+    notifyListeners();
+    return const Result.ok(null);
+  }
+
+  @override
+  Future<Result<void>> updateDepartment(Departamento department) async {
+    if (_currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+
+    final resultPatch = await _apiClient.patchUser(_currentUser!.id, {
+      'departamento_id': department.id,
+    });
+    switch (resultPatch) {
+      case Error():
+        return Result.error(resultPatch.error);
+      case Ok():
+    }
+    _currentUser = resultPatch.value;
+    notifyListeners();
+    return const Result.ok(null);
+  }
 
   String? _authHeaderProvider() =>
       _authToken != null ? 'Token $_authToken' : null;

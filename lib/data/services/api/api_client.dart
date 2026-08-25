@@ -518,6 +518,24 @@ class ApiClient {
     }
   }
 
+  Future<Result<User>> patchUser(int id, Map<String, Object?> patchValues) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.patch('/api/usuarios/$id/', data: patchValues);
+      final result = User.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } catch (e) {
+      return Result.error(Exception('$e'));
+    } finally {
+      dio.close();
+    }
+  }
+
   // HORARIOS
   Future<Result<List<Horario>>> getHorarios() async {
     final dio = _dioFactory();
