@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/manual_entry_form.dart';
@@ -110,7 +111,7 @@ class _IconBuilder extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(15),
         ),
-        child: SvgPicture.asset('assets/icons/scan_success.svg'),
+        child: SvgPicture.asset(Assets.scanSuccess),
       );
     }
     else if (scanFingerprint.error || register.error) {
@@ -131,7 +132,7 @@ class _IconBuilder extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(15),
         ),
-        child: SvgPicture.asset('assets/icons/scan_failure.svg')
+        child: SvgPicture.asset(Assets.scanFailure)
       );
     }
     
@@ -152,7 +153,7 @@ class _IconBuilder extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(15),
       ),
-      child: SvgPicture.asset('assets/icons/fingerprint.svg'),
+      child: SvgPicture.asset(Assets.fingerprint),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -56,7 +57,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(15)),
                               ),
-                              child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
+                              child: SvgPicture.asset(Assets.layoutGrid, width: 30, height: 30),
                             ),
                           );
                         } else {
@@ -70,7 +71,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                                 shape: BoxShape.rectangle,
                                 borderRadius: BorderRadius.all(Radius.circular(15)),
                               ),
-                              child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
+                              child: SvgPicture.asset(Assets.layoutGrid, width: 30, height: 30),
                             ),
                           );
                         }
@@ -84,7 +85,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(15)),
                       ),
-                      child: SvgPicture.asset('assets/icons/layout_grid.svg', width: 30, height: 30),
+                      child: SvgPicture.asset(Assets.layoutGrid, width: 30, height: 30),
                     );
                   }
                 ),
