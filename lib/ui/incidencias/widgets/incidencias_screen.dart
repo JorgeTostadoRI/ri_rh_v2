@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/auth_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_category_card.dart';
@@ -103,73 +104,109 @@ class _PendingReviewNotification extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
+    final authVM = context.watch<AuthViewmodel>();
     final notificationVM = context.watch<NotificationViewmodel>();
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 40.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 250, 231, 207),
-          border: Border.fromBorderSide(BorderSide(
-            color: const Color(0xFFF5CFA0),
-            width: 0.8,
-          )),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: ListenableBuilder(
-          listenable: notificationVM,
-          builder: (context, _) {
-            final int count = notificationVM.pendingIncidenciasToReview;
-            final bool hasNotifications = count > 0;
+    return FutureBuilder(
+      future: authVM.isAuthenticated,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SizedBox.shrink();
+        }
 
-            return Row(
-              spacing: 12,
-              children: [
-                if (hasNotifications)
-                  ...[
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 40.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              decoration: BoxDecoration(
+                color: statusFailureBgColor,
+                border: Border.fromBorderSide(BorderSide(
+                  color: const Color(0xFFF5CFA0),
+                  width: 0.8,
+                )),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'No se pudieron obtener las notificaciones pendientes',
+                style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
+              ),
+            ),
+          );
+        }
 
-                    ColorIcon(
-                      icon: LucideIcons.clock,
-                      width: 36,
-                      height: 36,
-                      backgroundColor:const Color(0xFFFDDCB0),
-                      shape: BoxShape.circle,
-                    ),
-                    Text.rich(
-                      TextSpan(
-                        text: 'Tienes ',
-                        style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
-                        children: [
+        // If not authenticated
+        if (snapshot.hasData && !snapshot.data!) {
+          return SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 250, 231, 207),
+              border: Border.fromBorderSide(BorderSide(
+                color: const Color(0xFFF5CFA0),
+                width: 0.8,
+              )),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ListenableBuilder(
+              listenable: notificationVM,
+              builder: (context, _) {
+                final int count = notificationVM.pendingIncidenciasToReview;
+                final bool hasNotifications = count > 0;
+        
+                return Row(
+                  spacing: 12,
+                  children: [
+                    if (hasNotifications)
+                      ...[
+        
+                        ColorIcon(
+                          icon: LucideIcons.clock,
+                          width: 36,
+                          height: 36,
+                          backgroundColor:const Color(0xFFFDDCB0),
+                          shape: BoxShape.circle,
+                        ),
+                        Text.rich(
                           TextSpan(
-                            text: pendingCountText(notificationVM.pendingIncidenciasToReview),
-                            style: TextStyle(color: primaryColor),
+                            text: 'Tienes ',
+                            style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
+                            children: [
+                              TextSpan(
+                                text: pendingCountText(notificationVM.pendingIncidenciasToReview),
+                                style: TextStyle(color: primaryColor),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ],
+                    if (!hasNotifications)
+                      Text(
+                        'Revisar historial de incidencias',
+                        style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
+                      ),
+                    Spacer(),
+                    IconButton.filled(
+                      onPressed: () => context.push(
+                        Routes.pendingIncidencias,
+                      ),
+                      icon: Icon(LucideIcons.arrowRight),
+                      style: IconButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: primaryColor,
                       ),
                     ),
                   ],
-                if (!hasNotifications)
-                  Text(
-                    'Revisar historial de incidencias',
-                    style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
-                  ),
-                Spacer(),
-                IconButton.filled(
-                  onPressed: () => context.push(
-                    Routes.pendingIncidencias,
-                  ),
-                  icon: Icon(LucideIcons.arrowRight),
-                  style: IconButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: primaryColor,
-                  ),
-                ),
-              ],
-            );
-          }
-        ),
-      ),
+                );
+              }
+            ),
+          ),
+        );
+      }
     );
   }
 
