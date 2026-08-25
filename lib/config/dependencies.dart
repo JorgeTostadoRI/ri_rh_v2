@@ -38,6 +38,7 @@ import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/auth_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
@@ -76,6 +77,11 @@ List<SingleChildWidget> get _sharedViewmodels {
         log: context.read(),
         fileDownloadService: context.read(),
       )
+    ),
+    ChangeNotifierProvider(create: (context) =>
+      AuthViewmodel(
+        authRepository: context.read(),
+      ),
     ),
   ];
 }
