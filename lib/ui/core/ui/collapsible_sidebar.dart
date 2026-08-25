@@ -24,8 +24,9 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
 
   @override
   Widget build(BuildContext context) {
-    final isAuthenticated = context.watch<AuthRepository>().isAuthenticated;
-    final isRH = context.watch<AuthRepository>().isRH;
+    final auth = context.watch<AuthRepository>();
+    final isAuthenticated = auth.isAuthenticated;
+    final isRH = auth.isRH;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),

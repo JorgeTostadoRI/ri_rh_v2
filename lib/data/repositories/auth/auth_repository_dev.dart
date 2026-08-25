@@ -1,8 +1,11 @@
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+
+const String _rhDepartmentName = 'Recursos Humanos';
 
 class AuthRepositoryDev extends AuthRepository {
   AuthRepositoryDev({
@@ -24,8 +27,12 @@ class AuthRepositoryDev extends AuthRepository {
       return false;
     }
 
-    final departamentos = _currentUser!.departamentosPermitidos.map((dep) => dep.nombre).toSet();
-    return departamentos.contains('Recursos Humanos');
+    final departamento = _currentUser!.departamento;
+    if (departamento == null) {
+      return false;
+    }
+
+    return departamento.nombre == _rhDepartmentName;
   }
 
   @override
@@ -64,5 +71,31 @@ class AuthRepositoryDev extends AuthRepository {
   @override
   User? getCurrentUser() {
     return _currentUser;
+  }
+
+  @override
+  Future<Result<void>> updateRole(String role) async {
+    if (_currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+
+    _currentUser = _currentUser!.copyWith(
+      rol: role,
+    );
+    notifyListeners();
+    return const Result.ok(null);
+  }
+
+  @override
+  Future<Result<void>> updateDepartment(Departamento department) async {
+    if (_currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+
+    _currentUser = _currentUser!.copyWith(
+      departamento: department,
+    );
+    notifyListeners();
+    return const Result.ok(null);
   }
 }

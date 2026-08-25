@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -22,4 +23,8 @@ abstract class AuthRepository extends ChangeNotifier {
 
   /// Get user in session
   User? getCurrentUser();
+
+  Future<Result<void>> updateRole(String role);
+
+  Future<Result<void>> updateDepartment(Departamento department);
 }
