@@ -47,8 +47,8 @@ Dio _dioClient() {
   return Dio(
     BaseOptions(
       baseUrl: apiUrl,
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
     ),
   );
 }
