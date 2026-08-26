@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/custom_tab_bar.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_filters.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_approve_dialog.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_overview_dialog.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -78,6 +79,7 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
                       'Historial',
                     ],
                   ),
+                  IncidenciaFilters(viewmodel: widget.viewmodel),
                 ],
               ),
             ),

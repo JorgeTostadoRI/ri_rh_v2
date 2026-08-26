@@ -122,9 +122,9 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   Future<Result<void>> _loadToReview() async {
     try {
-      if (_pendingToReview != null) return const Result.ok(null);
-
-      final resultIncidencias = await _incidenciasRepository.getIncidenciasToReview();
+      final query = _query.copyWith(state: const [IncidenciaState.pending]);
+      _log.debug(query.toString());
+      final resultIncidencias = await _incidenciasRepository.getIncidenciasToReview(query: query);
 
       switch (resultIncidencias) {
         case Error():
@@ -145,8 +145,9 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
       if (_historial != null) return const Result.ok(null);
 
       final query = _query.copyWith(
-        state: const [IncidenciaState.pending, IncidenciaState.rejected],
+        state: const [IncidenciaState.approved, IncidenciaState.rejected],
       );
+      _log.debug(query.toString());
       final resultIncidencias = await _incidenciasRepository.getIncidencias(query: query);
 
       switch (resultIncidencias) {
