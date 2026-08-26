@@ -25,9 +25,9 @@ extension IncidenciaQueryExtension on IncidenciaQuery {
       if (state.isNotEmpty)
         'state': state.map((stateValue) => stateValue.jsonValue).toList(),
       if (startRange != null)
-        'startFrom': startRange!.start.toShortIsoString(),
+        'start_from': startRange!.start.toShortIsoString(),
       if (startRange != null)
-        'startTo': startRange!.end.toShortIsoString(),
+        'start_to': startRange!.end.toShortIsoString(),
       if (categories.isNotEmpty)
         'category': categories.map((category) => category.id).toList(),
       if (solicitores.isNotEmpty)
