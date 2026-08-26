@@ -3,12 +3,13 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
+typedef SolicitorOption = ({int id, String name});
 
 class PendingIncidenciasViewmodel extends ChangeNotifier {
   final AppLogger _log;
@@ -20,6 +21,8 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     required this._authRepository,
     required this._incidenciasRepository,
   }) {
+    _query = IncidenciaQuery();
+
     load = Command0(_load)..execute();
     approve = Command1(_approve);
     reject = Command1(_reject);
@@ -39,6 +42,16 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   List<Incidencia>? _historial;
   List<Incidencia>? get historial => _historial;
+
+  List<SolicitorOption> _solicitores = [];
+  List<SolicitorOption> get solicitores => _solicitores;
+
+  late IncidenciaQuery _query;
+  IncidenciaQuery get query => _query;
+  set query(IncidenciaQuery incidenciaQuery) {
+    _query = incidenciaQuery;
+    notifyListeners();
+  }
 
   Future<Result<void>> _load() async {
     final currentUser = _authRepository.getCurrentUser();
@@ -131,8 +144,8 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     try {
       if (_historial != null) return const Result.ok(null);
 
-      final query = IncidenciaQuery(
-        state: [IncidenciaState.approved, IncidenciaState.rejected],
+      final query = _query.copyWith(
+        state: const [IncidenciaState.pending, IncidenciaState.rejected],
       );
       final resultIncidencias = await _incidenciasRepository.getIncidencias(query: query);
 

@@ -13,7 +13,7 @@ import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/signature/signature.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -126,12 +126,12 @@ class ApiClient {
     }
   }
 
-  Future<Result<List<IncidenciaApiModel>>> getIncidenciasToReview() async {
+  Future<Result<List<IncidenciaApiModel>>> getIncidenciasToReview({IncidenciaQuery? query}) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
 
-      final response = await dio.get('/api/rh/incidencias/pending-review/');
+      final response = await dio.get('/api/rh/incidencias/pending-review/', queryParameters: query?.toMap());
       final result = (response.data as List)
         .map((json) => IncidenciaApiModel.fromJson(json))
         .toList();
