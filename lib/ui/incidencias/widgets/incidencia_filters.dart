@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 
@@ -71,7 +72,19 @@ class _IncidenciaFiltersState extends State<IncidenciaFilters> {
               : '${yMd.format(_range!.start)} - ${yMd.format(_range!.end)}'
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              final selection = await showDialog<List<int>?>(
+                context: context,
+                builder: (context) => _UsersDialog(
+                  users: widget.viewmodel.users,
+                  initialSelection: _solicitores,
+                ),
+              );
+              if (selection == null) {
+                return;
+              }
+              setState(() => _solicitores = selection);
+            },
             icon: Badge.count(
               count: _solicitores.length,
               isLabelVisible: _solicitores.isNotEmpty,
@@ -174,6 +187,75 @@ class _CategoriesDialogState extends State<_CategoriesDialog> {
                   }
                   else if (value == false) {
                     _currentSelection.remove(category);
+                  }
+                  setState(() {});
+                },
+                tristate: false,
+              );
+            },
+          ),
+        ),
+      ),
+      actions: [
+        OutlinedButton(
+          onPressed: () => setState(() => _currentSelection = []),
+          child: Text('Limpiar todos'),
+        ),
+        ElevatedButton(
+          onPressed: () => context.pop(_currentSelection),
+          child: Text('Confirmar'),
+        ),
+      ],
+    );
+  }
+}
+
+class _UsersDialog extends StatefulWidget {
+  const _UsersDialog({
+    required this.users,
+    required this.initialSelection,
+  });
+
+  final List<User> users;
+  /// Initial selection
+  final List<int> initialSelection;
+
+  @override
+  State<_UsersDialog> createState() => __UsersDialogState();
+}
+
+class __UsersDialogState extends State<_UsersDialog> {
+  late List<int> _currentSelection;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentSelection = widget.initialSelection.toList(); // copy the list so we can modify it
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      scrollable: true,
+      title: Text('Solicitores'),
+      content: SingleChildScrollView(
+        child: SizedBox(
+          width: 400,
+          height: 400,
+          child: ListView.builder(
+            itemCount: widget.users.length,
+            itemBuilder: (context, index) {
+              final user = widget.users[index];
+          
+              return CheckboxListTile(
+                title: Text(user.nombre.toUpperCase()),
+                value: _currentSelection.contains(user.id),
+                onChanged: (value) {
+                  if (value == true) {
+                    _currentSelection.add(user.id);
+                  }
+                  else if (value == false) {
+                    _currentSelection.remove(user.id);
                   }
                   setState(() {});
                 },

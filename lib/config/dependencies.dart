@@ -28,6 +28,9 @@ import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_remote.d
 import 'package:ri_rh_v2/data/repositories/signature/signature_repository.dart';
 import 'package:ri_rh_v2/data/repositories/signature/signature_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/signature/signature_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
+import 'package:ri_rh_v2/data/repositories/users/users_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/users/users_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
@@ -140,6 +143,11 @@ Future<List<SingleChildWidget>> get providersLocal async {
     Provider(create: (context) =>
       SignatureRepositoryLocal() as SignatureRepository
     ),
+    Provider(create: (context) =>
+      UsersRepositoryLocal(
+        localDataService: context.read(),
+      ) as UsersRepository
+    ),
     ..._sharedViewmodels,
   ];
 }
@@ -222,6 +230,11 @@ Future<List<SingleChildWidget>> get providersRemote async {
         log: context.read(),
         apiClient: context.read(),
       ) as SignatureRepository
+    ),
+    Provider(create: (context) =>
+      UsersRepositoryRemote(
+        apiClient: context.read(),
+      ) as UsersRepository
     ),
     ..._sharedViewmodels,
   ];

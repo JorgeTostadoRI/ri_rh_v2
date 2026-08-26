@@ -126,6 +126,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 log: context.read(),
                 authRepository: context.read(),
                 incidenciasRepository: context.read(),
+                usersRepository: context.read(),
               ),
             );
           },

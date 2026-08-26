@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,11 +18,13 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   final AppLogger _log;
   final AuthRepository _authRepository;
   final IncidenciasRepository _incidenciasRepository;
+  final UsersRepository _usersRepository;
   
   PendingIncidenciasViewmodel({
     required this._log,
     required this._authRepository,
     required this._incidenciasRepository,
+    required this._usersRepository,
   }) {
     _query = IncidenciaQuery();
 
@@ -43,8 +48,9 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   List<Incidencia>? _historial;
   List<Incidencia>? get historial => _historial;
 
-  List<SolicitorOption> _solicitores = [];
-  List<SolicitorOption> get solicitores => _solicitores;
+  List<User> _users = [];
+  List<User> get users => _users;
+  bool _cachedUsers = false;
 
   late IncidenciaQuery _query;
   IncidenciaQuery get query => _query;
@@ -58,6 +64,8 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     if (currentUser == null) {
       return Result.error(Exception('Not authenticated'));
     }
+
+    _getUsers();
 
     switch (selection) {
       case 0:
@@ -142,8 +150,6 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   Future<Result<void>> _loadHistoric() async {
     try {
-      if (_historial != null) return const Result.ok(null);
-
       final query = _query.copyWith(
         state: const [IncidenciaState.approved, IncidenciaState.rejected],
       );
@@ -205,5 +211,24 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     return const Result.ok(null);
+  }
+
+  Future<void> _getUsers() async {
+    if (_cachedUsers) return;
+
+    try {
+      final resultUsers = await _usersRepository.getUsers(query: const UserQuery(active: true, order: UserQueryOrder.nombre));
+      switch (resultUsers) {
+        case Error():
+          _log.error('Error when fetching users', error: resultUsers.error);
+          return;
+        case Ok():
+      }
+      _users = resultUsers.value;
+      _cachedUsers = true;
+      _log.info('Fetched users');
+    } catch (e, stackTrace) {
+      _log.error('Unexpected error when fetching users', error: e, stackTrace: stackTrace);
+    }
   }
 }
