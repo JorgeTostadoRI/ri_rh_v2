@@ -2,7 +2,7 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class IncidenciasRepositoryLocal extends IncidenciasRepository {
@@ -45,7 +45,7 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<List<Incidencia>>> getIncidenciasToReview() async {
+  Future<Result<List<Incidencia>>> getIncidenciasToReview({IncidenciaQuery? query}) async {
     final incidenciasToReview = _incidencias.where(
       (incidencia) {
         final isPending = incidencia.state == IncidenciaState.pending;

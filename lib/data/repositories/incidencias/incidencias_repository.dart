@@ -1,5 +1,5 @@
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 abstract class IncidenciasRepository {
@@ -10,7 +10,7 @@ abstract class IncidenciasRepository {
   Future<Result<List<Incidencia>>> getIncidencias({IncidenciaQuery? query});
 
   /// Obten un [List<Incidencia>] pendientes de revisión
-  Future<Result<List<Incidencia>>> getIncidenciasToReview();
+  Future<Result<List<Incidencia>>> getIncidenciasToReview({IncidenciaQuery? query});
 
   /// Aprueba una [Incidencia]
   Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia);

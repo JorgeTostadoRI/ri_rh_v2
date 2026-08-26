@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
+import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
+typedef SolicitorOption = ({int id, String name});
 
 class PendingIncidenciasViewmodel extends ChangeNotifier {
   final AppLogger _log;
   final AuthRepository _authRepository;
   final IncidenciasRepository _incidenciasRepository;
+  final UsersRepository _usersRepository;
   
   PendingIncidenciasViewmodel({
     required this._log,
     required this._authRepository,
     required this._incidenciasRepository,
+    required this._usersRepository,
   }) {
+    _query = IncidenciaQuery();
+
     load = Command0(_load)..execute();
     approve = Command1(_approve);
     reject = Command1(_reject);
@@ -40,11 +48,24 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   List<Incidencia>? _historial;
   List<Incidencia>? get historial => _historial;
 
+  List<User> _users = [];
+  List<User> get users => _users;
+  bool _cachedUsers = false;
+
+  late IncidenciaQuery _query;
+  IncidenciaQuery get query => _query;
+  set query(IncidenciaQuery incidenciaQuery) {
+    _query = incidenciaQuery;
+    notifyListeners();
+  }
+
   Future<Result<void>> _load() async {
     final currentUser = _authRepository.getCurrentUser();
     if (currentUser == null) {
       return Result.error(Exception('Not authenticated'));
     }
+
+    _getUsers();
 
     switch (selection) {
       case 0:
@@ -109,9 +130,9 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   Future<Result<void>> _loadToReview() async {
     try {
-      if (_pendingToReview != null) return const Result.ok(null);
-
-      final resultIncidencias = await _incidenciasRepository.getIncidenciasToReview();
+      final query = _query.copyWith(state: const [IncidenciaState.pending]);
+      _log.debug(query.toString());
+      final resultIncidencias = await _incidenciasRepository.getIncidenciasToReview(query: query);
 
       switch (resultIncidencias) {
         case Error():
@@ -129,11 +150,10 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   Future<Result<void>> _loadHistoric() async {
     try {
-      if (_historial != null) return const Result.ok(null);
-
-      final query = IncidenciaQuery(
-        state: [IncidenciaState.approved, IncidenciaState.rejected],
+      final query = _query.copyWith(
+        state: const [IncidenciaState.approved, IncidenciaState.rejected],
       );
+      _log.debug(query.toString());
       final resultIncidencias = await _incidenciasRepository.getIncidencias(query: query);
 
       switch (resultIncidencias) {
@@ -191,5 +211,24 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     return const Result.ok(null);
+  }
+
+  Future<void> _getUsers() async {
+    if (_cachedUsers) return;
+
+    try {
+      final resultUsers = await _usersRepository.getUsers(query: const UserQuery(active: true, order: UserQueryOrder.nombre));
+      switch (resultUsers) {
+        case Error():
+          _log.error('Error when fetching users', error: resultUsers.error);
+          return;
+        case Ok():
+      }
+      _users = resultUsers.value;
+      _cachedUsers = true;
+      _log.info('Fetched users');
+    } catch (e, stackTrace) {
+      _log.error('Unexpected error when fetching users', error: e, stackTrace: stackTrace);
+    }
   }
 }

@@ -2,7 +2,7 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.da
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
-import 'package:ri_rh_v2/domain/models/query/incidencia_query.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:synchronized/synchronized.dart';
@@ -71,11 +71,11 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<List<Incidencia>>> getIncidenciasToReview() async {
+  Future<Result<List<Incidencia>>> getIncidenciasToReview({IncidenciaQuery? query}) async {
     try {
       final users = await _getUsers();
 
-      final resultIncidencias = await _apiClient.getIncidenciasToReview();
+      final resultIncidencias = await _apiClient.getIncidenciasToReview(query: query);
       switch (resultIncidencias) {
         case Error():
           return Result.error(resultIncidencias.error);
