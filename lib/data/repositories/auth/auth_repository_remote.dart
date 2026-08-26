@@ -257,7 +257,6 @@ class AuthRepositoryRemote extends AuthRepository {
         ),
       ).toList(),
       liderPermitido: login.user.liderPermitido,
-      empleadoId: login.user.empleadoId,
     );
     // Store in Shared preferences
     final savedToken = await _sharedPreferencesService.saveToken(login.token);

@@ -17,7 +17,6 @@ abstract class User with _$User {
         Departamento? departamento,
         required List<Departamento> departamentosPermitidos,
         required bool liderPermitido,
-        int? empleadoId,
     }) = _User;
 
   factory User.fromJson(Map<String, Object?> json) => _$UserFromJson(json);

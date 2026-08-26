@@ -134,7 +134,6 @@ class LocalDataService {
         departamento: departamentos[11],
         departamentosPermitidos: [departamentos[11]],
         liderPermitido: false,
-        empleadoId: 1,
       ),
       User(
         id: 2,
@@ -146,7 +145,6 @@ class LocalDataService {
         departamento: departamentos[11],
         departamentosPermitidos: [departamentos[11]],
         liderPermitido: true,
-        empleadoId: 2,
       ),
       User(
         id: 3,
@@ -158,7 +156,6 @@ class LocalDataService {
         departamento: departamentos[11],
         departamentosPermitidos: [departamentos[11]],
         liderPermitido: false,
-        empleadoId: 3,
       ),
       User(
         id: 4,
@@ -170,7 +167,6 @@ class LocalDataService {
         departamento: departamentos[12],
         departamentosPermitidos: [departamentos[12]],
         liderPermitido: true,
-        empleadoId: 4,
       ),
       User(
         id: 5,
@@ -182,7 +178,6 @@ class LocalDataService {
         departamento: departamentos[1],
         departamentosPermitidos: [departamentos[1]],
         liderPermitido: false,
-        empleadoId: 5,
       ),
       User(
         id: 6,
@@ -194,7 +189,6 @@ class LocalDataService {
         departamento: departamentos[5],
         departamentosPermitidos: [departamentos[5]],
         liderPermitido: true,
-        empleadoId: 6,
       ),
     ];
   }
