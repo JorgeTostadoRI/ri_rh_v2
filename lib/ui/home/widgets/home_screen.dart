@@ -7,7 +7,7 @@ import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.viewmodel,
@@ -16,15 +16,36 @@ class HomeScreen extends StatelessWidget {
   final HomeViewmodel viewmodel;
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.viewmodel.updateRole.addListener(_onUpdatedRole);
+    widget.viewmodel.updateDepartment.addListener(_onUpdatedDepartment);
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.viewmodel.updateRole.removeListener(_onUpdatedRole);
+    widget.viewmodel.updateRole.addListener(_onUpdatedRole);
+    widget.viewmodel.updateDepartment.removeListener(_onUpdatedDepartment);
+    widget.viewmodel.updateDepartment.addListener(_onUpdatedDepartment);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
     return Center(
       child: SingleChildScrollView(
         child: ListenableBuilder(
-          listenable: viewmodel,
+          listenable: widget.viewmodel,
           builder: (context, _) {
-            final user = viewmodel.getUser();
+            final user = widget.viewmodel.getUser();
             late final String initials;
             if (user != null) {
               final parts = user.nombre.trim().split(RegExp(r'\s+'));
@@ -71,9 +92,9 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ListenableBuilder(
-                        listenable: viewmodel.updateRole,
+                        listenable: widget.viewmodel.updateRole,
                         builder: (context, _) {
-                          final running = viewmodel.updateRole.running;
+                          final running = widget.viewmodel.updateRole.running;
 
                           return DropdownButtonFormField<String?>(
                             decoration: InputDecoration(
@@ -96,16 +117,16 @@ class HomeScreen extends StatelessWidget {
                             ],
                             onChanged: (role) {
                               if (role != null) {
-                                viewmodel.updateRole.execute(role);
+                                widget.viewmodel.updateRole.execute(role);
                               }
                             },
                           );
                         }
                       ),
                       ListenableBuilder(
-                        listenable: viewmodel.updateDepartment,
+                        listenable: widget.viewmodel.updateDepartment,
                         builder: (context, _) {
-                          final running = viewmodel.updateDepartment.running;
+                          final running = widget.viewmodel.updateDepartment.running;
 
                           return DropdownButtonFormField<Departamento?>(
                             decoration: InputDecoration(
@@ -125,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                             ).toList() ?? [],
                             onChanged: (department) {
                               if (department != null) {
-                                viewmodel.updateDepartment.execute(department);
+                                widget.viewmodel.updateDepartment.execute(department);
                               }
                             },
                           );
@@ -139,7 +160,7 @@ class HomeScreen extends StatelessWidget {
                                 backgroundColor: Colors.red,
                               ),
                               onPressed: () {
-                                viewmodel.logout.execute();
+                                widget.viewmodel.logout.execute();
                                 final notificationVM = context.read<NotificationViewmodel>();
                                 notificationVM.clear.execute(); // clear notification counters
                               },
@@ -158,6 +179,20 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onUpdatedRole() {
+    if (widget.viewmodel.updateRole.completed) {
+      widget.viewmodel.updateRole.clearResult();
+      context.read<NotificationViewmodel>().load.execute();
+    }
+  }
+
+  void _onUpdatedDepartment() {
+    if (widget.viewmodel.updateDepartment.completed) {
+      widget.viewmodel.updateDepartment.clearResult();
+      context.read<NotificationViewmodel>().load.execute();
+    }
   }
 }
 
