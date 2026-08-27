@@ -52,7 +52,7 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
         crossAxisAlignment: .start,
         children: [
           Text('Fecha de creación', style: textTheme.headlineSmall),
-          Text(_yMMMMdjm.format(_localStart)),
+          Text(_yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
           Text(widget.incidencia.solicitor!.nombre),

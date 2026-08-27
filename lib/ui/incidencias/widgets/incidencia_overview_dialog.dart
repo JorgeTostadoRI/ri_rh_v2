@@ -59,7 +59,7 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
               _IncidenciaStatusChip(state: incidencia.state!),
             ],
           ),
-          Text(yMMMMdjm.format(_localStart)),
+          Text(yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
           Text(incidencia.solicitor!.nombre),
