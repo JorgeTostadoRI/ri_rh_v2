@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$IncidenciaApiModel implements DiagnosticableTreeMixin {
 
- int? get id; DateTime? get createdAt; DateTime? get updatedAt; IncidenciaState? get state;@JsonKey(name: 'revisor') int? get revisorRef;@JsonKey(name: 'solicitor') int? get solicitorRef; String? get rejectionReason;@JsonKey(name: 'pdf') String? get pdfUrl; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files; IncidenciaCategory get category;
+ int? get id; DateTime? get createdAt; DateTime? get updatedAt; IncidenciaState? get state;@JsonKey(name: 'solicitor') int? get solicitorRef;@JsonKey(name: 'approved_by') int? get approvedByRef;@JsonKey(name: 'rh_approved_by') int? get rhApprovedByRef; String? get rejectionReason;@JsonKey(name: 'rejected_by') int? get rejectedByRef;@JsonKey(name: 'pdf') String? get pdfUrl; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files; IncidenciaCategory get category;
 /// Create a copy of IncidenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $IncidenciaApiModelCopyWith<IncidenciaApiModel> get copyWith => _$IncidenciaApiM
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IncidenciaApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('revisorRef', revisorRef))..add(DiagnosticsProperty('solicitorRef', solicitorRef))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('solicitorRef', solicitorRef))..add(DiagnosticsProperty('approvedByRef', approvedByRef))..add(DiagnosticsProperty('rhApprovedByRef', rhApprovedByRef))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('rejectedByRef', rejectedByRef))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IncidenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.revisorRef, revisorRef) || other.revisorRef == revisorRef)&&(identical(other.solicitorRef, solicitorRef) || other.solicitorRef == solicitorRef)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.category, category) || other.category == category));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IncidenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.solicitorRef, solicitorRef) || other.solicitorRef == solicitorRef)&&(identical(other.approvedByRef, approvedByRef) || other.approvedByRef == approvedByRef)&&(identical(other.rhApprovedByRef, rhApprovedByRef) || other.rhApprovedByRef == rhApprovedByRef)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.rejectedByRef, rejectedByRef) || other.rejectedByRef == rejectedByRef)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.category, category) || other.category == category));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,revisorRef,solicitorRef,rejectionReason,pdfUrl,start,end,reason,const DeepCollectionEquality().hash(files),category);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,solicitorRef,approvedByRef,rhApprovedByRef,rejectionReason,rejectedByRef,pdfUrl,start,end,reason,const DeepCollectionEquality().hash(files),category);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IncidenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, revisorRef: $revisorRef, solicitorRef: $solicitorRef, rejectionReason: $rejectionReason, pdfUrl: $pdfUrl, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
+  return 'IncidenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, solicitorRef: $solicitorRef, approvedByRef: $approvedByRef, rhApprovedByRef: $rhApprovedByRef, rejectionReason: $rejectionReason, rejectedByRef: $rejectedByRef, pdfUrl: $pdfUrl, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $IncidenciaApiModelCopyWith<$Res>  {
   factory $IncidenciaApiModelCopyWith(IncidenciaApiModel value, $Res Function(IncidenciaApiModel) _then) = _$IncidenciaApiModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state,@JsonKey(name: 'revisor') int? revisorRef,@JsonKey(name: 'solicitor') int? solicitorRef, String? rejectionReason,@JsonKey(name: 'pdf') String? pdfUrl, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state,@JsonKey(name: 'solicitor') int? solicitorRef,@JsonKey(name: 'approved_by') int? approvedByRef,@JsonKey(name: 'rh_approved_by') int? rhApprovedByRef, String? rejectionReason,@JsonKey(name: 'rejected_by') int? rejectedByRef,@JsonKey(name: 'pdf') String? pdfUrl, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
 });
 
 
@@ -72,16 +72,18 @@ class _$IncidenciaApiModelCopyWithImpl<$Res>
 
 /// Create a copy of IncidenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? revisorRef = freezed,Object? solicitorRef = freezed,Object? rejectionReason = freezed,Object? pdfUrl = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? solicitorRef = freezed,Object? approvedByRef = freezed,Object? rhApprovedByRef = freezed,Object? rejectionReason = freezed,Object? rejectedByRef = freezed,Object? pdfUrl = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
   return _then(IncidenciaApiModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,state: freezed == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
-as IncidenciaState?,revisorRef: freezed == revisorRef ? _self.revisorRef : revisorRef // ignore: cast_nullable_to_non_nullable
-as int?,solicitorRef: freezed == solicitorRef ? _self.solicitorRef : solicitorRef // ignore: cast_nullable_to_non_nullable
+as IncidenciaState?,solicitorRef: freezed == solicitorRef ? _self.solicitorRef : solicitorRef // ignore: cast_nullable_to_non_nullable
+as int?,approvedByRef: freezed == approvedByRef ? _self.approvedByRef : approvedByRef // ignore: cast_nullable_to_non_nullable
+as int?,rhApprovedByRef: freezed == rhApprovedByRef ? _self.rhApprovedByRef : rhApprovedByRef // ignore: cast_nullable_to_non_nullable
 as int?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
-as String?,pdfUrl: freezed == pdfUrl ? _self.pdfUrl : pdfUrl // ignore: cast_nullable_to_non_nullable
+as String?,rejectedByRef: freezed == rejectedByRef ? _self.rejectedByRef : rejectedByRef // ignore: cast_nullable_to_non_nullable
+as int?,pdfUrl: freezed == pdfUrl ? _self.pdfUrl : pdfUrl // ignore: cast_nullable_to_non_nullable
 as String?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
@@ -172,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state, @JsonKey(name: 'revisor')  int? revisorRef, @JsonKey(name: 'solicitor')  int? solicitorRef,  String? rejectionReason, @JsonKey(name: 'pdf')  String? pdfUrl,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state, @JsonKey(name: 'solicitor')  int? solicitorRef, @JsonKey(name: 'approved_by')  int? approvedByRef, @JsonKey(name: 'rh_approved_by')  int? rhApprovedByRef,  String? rejectionReason, @JsonKey(name: 'rejected_by')  int? rejectedByRef, @JsonKey(name: 'pdf')  String? pdfUrl,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _IncidenciaApiModel() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisorRef,_that.solicitorRef,_that.rejectionReason,_that.pdfUrl,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitorRef,_that.approvedByRef,_that.rhApprovedByRef,_that.rejectionReason,_that.rejectedByRef,_that.pdfUrl,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
   return orElse();
 
 }
@@ -193,10 +195,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state, @JsonKey(name: 'revisor')  int? revisorRef, @JsonKey(name: 'solicitor')  int? solicitorRef,  String? rejectionReason, @JsonKey(name: 'pdf')  String? pdfUrl,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state, @JsonKey(name: 'solicitor')  int? solicitorRef, @JsonKey(name: 'approved_by')  int? approvedByRef, @JsonKey(name: 'rh_approved_by')  int? rhApprovedByRef,  String? rejectionReason, @JsonKey(name: 'rejected_by')  int? rejectedByRef, @JsonKey(name: 'pdf')  String? pdfUrl,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)  $default,) {final _that = this;
 switch (_that) {
 case _IncidenciaApiModel():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisorRef,_that.solicitorRef,_that.rejectionReason,_that.pdfUrl,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitorRef,_that.approvedByRef,_that.rhApprovedByRef,_that.rejectionReason,_that.rejectedByRef,_that.pdfUrl,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -213,10 +215,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state, @JsonKey(name: 'revisor')  int? revisorRef, @JsonKey(name: 'solicitor')  int? solicitorRef,  String? rejectionReason, @JsonKey(name: 'pdf')  String? pdfUrl,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state, @JsonKey(name: 'solicitor')  int? solicitorRef, @JsonKey(name: 'approved_by')  int? approvedByRef, @JsonKey(name: 'rh_approved_by')  int? rhApprovedByRef,  String? rejectionReason, @JsonKey(name: 'rejected_by')  int? rejectedByRef, @JsonKey(name: 'pdf')  String? pdfUrl,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,) {final _that = this;
 switch (_that) {
 case _IncidenciaApiModel() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revisorRef,_that.solicitorRef,_that.rejectionReason,_that.pdfUrl,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitorRef,_that.approvedByRef,_that.rhApprovedByRef,_that.rejectionReason,_that.rejectedByRef,_that.pdfUrl,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
   return null;
 
 }
@@ -228,16 +230,18 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.revis
 @JsonSerializable()
 
 class _IncidenciaApiModel with DiagnosticableTreeMixin implements IncidenciaApiModel {
-  const _IncidenciaApiModel({this.id, this.createdAt, this.updatedAt, this.state, @JsonKey(name: 'revisor') this.revisorRef, @JsonKey(name: 'solicitor') this.solicitorRef, this.rejectionReason, @JsonKey(name: 'pdf') this.pdfUrl, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, required this.category}): _files = files;
+  const _IncidenciaApiModel({this.id, this.createdAt, this.updatedAt, this.state, @JsonKey(name: 'solicitor') this.solicitorRef, @JsonKey(name: 'approved_by') this.approvedByRef, @JsonKey(name: 'rh_approved_by') this.rhApprovedByRef, this.rejectionReason, @JsonKey(name: 'rejected_by') this.rejectedByRef, @JsonKey(name: 'pdf') this.pdfUrl, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, required this.category}): _files = files;
   factory _IncidenciaApiModel.fromJson(Map<String, dynamic> json) => _$IncidenciaApiModelFromJson(json);
 
 @override final  int? id;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
 @override final  IncidenciaState? state;
-@override@JsonKey(name: 'revisor') final  int? revisorRef;
 @override@JsonKey(name: 'solicitor') final  int? solicitorRef;
+@override@JsonKey(name: 'approved_by') final  int? approvedByRef;
+@override@JsonKey(name: 'rh_approved_by') final  int? rhApprovedByRef;
 @override final  String? rejectionReason;
+@override@JsonKey(name: 'rejected_by') final  int? rejectedByRef;
 @override@JsonKey(name: 'pdf') final  String? pdfUrl;
 @override final  DateTime start;
 @override final  DateTime end;
@@ -265,21 +269,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IncidenciaApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('revisorRef', revisorRef))..add(DiagnosticsProperty('solicitorRef', solicitorRef))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('solicitorRef', solicitorRef))..add(DiagnosticsProperty('approvedByRef', approvedByRef))..add(DiagnosticsProperty('rhApprovedByRef', rhApprovedByRef))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('rejectedByRef', rejectedByRef))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IncidenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.revisorRef, revisorRef) || other.revisorRef == revisorRef)&&(identical(other.solicitorRef, solicitorRef) || other.solicitorRef == solicitorRef)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.category, category) || other.category == category));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IncidenciaApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.solicitorRef, solicitorRef) || other.solicitorRef == solicitorRef)&&(identical(other.approvedByRef, approvedByRef) || other.approvedByRef == approvedByRef)&&(identical(other.rhApprovedByRef, rhApprovedByRef) || other.rhApprovedByRef == rhApprovedByRef)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.rejectedByRef, rejectedByRef) || other.rejectedByRef == rejectedByRef)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.category, category) || other.category == category));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,revisorRef,solicitorRef,rejectionReason,pdfUrl,start,end,reason,const DeepCollectionEquality().hash(_files),category);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,solicitorRef,approvedByRef,rhApprovedByRef,rejectionReason,rejectedByRef,pdfUrl,start,end,reason,const DeepCollectionEquality().hash(_files),category);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IncidenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, revisorRef: $revisorRef, solicitorRef: $solicitorRef, rejectionReason: $rejectionReason, pdfUrl: $pdfUrl, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
+  return 'IncidenciaApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, solicitorRef: $solicitorRef, approvedByRef: $approvedByRef, rhApprovedByRef: $rhApprovedByRef, rejectionReason: $rejectionReason, rejectedByRef: $rejectedByRef, pdfUrl: $pdfUrl, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
 }
 
 
@@ -290,7 +294,7 @@ abstract mixin class _$IncidenciaApiModelCopyWith<$Res> implements $IncidenciaAp
   factory _$IncidenciaApiModelCopyWith(_IncidenciaApiModel value, $Res Function(_IncidenciaApiModel) _then) = __$IncidenciaApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state,@JsonKey(name: 'revisor') int? revisorRef,@JsonKey(name: 'solicitor') int? solicitorRef, String? rejectionReason,@JsonKey(name: 'pdf') String? pdfUrl, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state,@JsonKey(name: 'solicitor') int? solicitorRef,@JsonKey(name: 'approved_by') int? approvedByRef,@JsonKey(name: 'rh_approved_by') int? rhApprovedByRef, String? rejectionReason,@JsonKey(name: 'rejected_by') int? rejectedByRef,@JsonKey(name: 'pdf') String? pdfUrl, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
 });
 
 
@@ -307,16 +311,18 @@ class __$IncidenciaApiModelCopyWithImpl<$Res>
 
 /// Create a copy of IncidenciaApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? revisorRef = freezed,Object? solicitorRef = freezed,Object? rejectionReason = freezed,Object? pdfUrl = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? solicitorRef = freezed,Object? approvedByRef = freezed,Object? rhApprovedByRef = freezed,Object? rejectionReason = freezed,Object? rejectedByRef = freezed,Object? pdfUrl = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
   return _then(_IncidenciaApiModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,state: freezed == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
-as IncidenciaState?,revisorRef: freezed == revisorRef ? _self.revisorRef : revisorRef // ignore: cast_nullable_to_non_nullable
-as int?,solicitorRef: freezed == solicitorRef ? _self.solicitorRef : solicitorRef // ignore: cast_nullable_to_non_nullable
+as IncidenciaState?,solicitorRef: freezed == solicitorRef ? _self.solicitorRef : solicitorRef // ignore: cast_nullable_to_non_nullable
+as int?,approvedByRef: freezed == approvedByRef ? _self.approvedByRef : approvedByRef // ignore: cast_nullable_to_non_nullable
+as int?,rhApprovedByRef: freezed == rhApprovedByRef ? _self.rhApprovedByRef : rhApprovedByRef // ignore: cast_nullable_to_non_nullable
 as int?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
-as String?,pdfUrl: freezed == pdfUrl ? _self.pdfUrl : pdfUrl // ignore: cast_nullable_to_non_nullable
+as String?,rejectedByRef: freezed == rejectedByRef ? _self.rejectedByRef : rejectedByRef // ignore: cast_nullable_to_non_nullable
+as int?,pdfUrl: freezed == pdfUrl ? _self.pdfUrl : pdfUrl // ignore: cast_nullable_to_non_nullable
 as String?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable

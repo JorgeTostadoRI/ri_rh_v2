@@ -57,13 +57,6 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
           Text('Solicitor', style: textTheme.headlineSmall),
           Text(widget.incidencia.solicitor!.nombre),
           const SizedBox(height: 24),
-          Text('Revisor asignado', style: textTheme.headlineSmall),
-          Text(
-            widget.incidencia.revisor != null
-              ? widget.incidencia.revisor!.nombre
-              : 'Recursos Humanos'
-            ),
-          const SizedBox(height: 24),
           Text('Fechas solicitadas', style: textTheme.headlineSmall),
           Text(_formatRequestedDates()),
           const SizedBox(height: 24),

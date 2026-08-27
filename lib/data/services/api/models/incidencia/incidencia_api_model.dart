@@ -14,14 +14,20 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
         DateTime? createdAt,
         DateTime? updatedAt,
         IncidenciaState? state,
-        @JsonKey(name: 'revisor')
-        int? revisorRef,
 
         // Se puede agregar por RH
         @JsonKey(name: 'solicitor')
         int? solicitorRef,
+
+        @JsonKey(name: 'approved_by')
+        int? approvedByRef,
+        @JsonKey(name: 'rh_approved_by')
+        int? rhApprovedByRef,
+
         // Agregado al rechazar la incidencia
         String? rejectionReason,
+        @JsonKey(name: 'rejected_by')
+        int? rejectedByRef,
 
         @JsonKey(name: 'pdf')
         String? pdfUrl,
