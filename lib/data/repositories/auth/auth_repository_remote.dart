@@ -232,32 +232,7 @@ class AuthRepositoryRemote extends AuthRepository {
     // Set auth status
     _isAuthenticated = true;
     _authToken = login.token;
-    _currentUser = User(
-      id: login.user.id,
-      username: login.user.username,
-      nombre: login.user.nombre,
-      telefono: login.user.telefono,
-      correo: login.user.correo,
-      rol: login.user.rol,
-      // TODO: map all DepartamentoApiModel to Departamento
-      departamento: Departamento(
-        id: login.user.departamento.id,
-        nombre: login.user.departamento.nombre,
-        descripcion: login.user.departamento.descripcion,
-        presupuesto: double.parse(login.user.departamento.presupuesto),
-        divisa: login.user.departamento.divisa,
-      ),
-      departamentosPermitidos: login.user.departamentosPermitidos.map(
-        (dep) => Departamento(
-          id: dep.id,
-          nombre: dep.nombre,
-          descripcion: dep.descripcion,
-          presupuesto: double.parse(dep.presupuesto),
-          divisa: dep.divisa,
-        ),
-      ).toList(),
-      liderPermitido: login.user.liderPermitido,
-    );
+    _currentUser = User.fromApiModel(login.user);
     // Store in Shared preferences
     final savedToken = await _sharedPreferencesService.saveToken(login.token);
     switch (savedToken) {

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserApiModel implements DiagnosticableTreeMixin {
 
- int get id; String get username; String get nombre; String get telefono; String get correo; String get rol; DepartamentoApiModel get departamento; List<DepartamentoApiModel> get departamentosPermitidos; bool get liderPermitido; int? get empleadoId;
+ int get id; String get username; String get nombre; String get telefono; String get correo; String get rol; DepartamentoApiModel get departamento; List<DepartamentoApiModel> get departamentosPermitidos; bool get liderPermitido; bool get isRemote;
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $UserApiModelCopyWith<UserApiModel> get copyWith => _$UserApiModelCopyWithImpl<U
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'UserApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('empleadoId', empleadoId));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other.departamentosPermitidos, departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.empleadoId, empleadoId) || other.empleadoId == empleadoId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other.departamentosPermitidos, departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(departamentosPermitidos),liderPermitido,empleadoId);
+int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(departamentosPermitidos),liderPermitido,isRemote);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, empleadoId: $empleadoId)';
+  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $UserApiModelCopyWith<$Res>  {
   factory $UserApiModelCopyWith(UserApiModel value, $Res Function(UserApiModel) _then) = _$UserApiModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, int? empleadoId
+ int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, bool isRemote
 });
 
 
@@ -72,7 +72,7 @@ class _$UserApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? empleadoId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,}) {
   return _then(UserApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -83,8 +83,8 @@ as String,rol: null == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nul
 as String,departamento: null == departamento ? _self.departamento : departamento // ignore: cast_nullable_to_non_nullable
 as DepartamentoApiModel,departamentosPermitidos: null == departamentosPermitidos ? _self.departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
 as List<DepartamentoApiModel>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
-as bool,empleadoId: freezed == empleadoId ? _self.empleadoId : empleadoId // ignore: cast_nullable_to_non_nullable
-as int?,
+as bool,isRemote: null == isRemote ? _self.isRemote : isRemote // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of UserApiModel
@@ -178,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserApiModel() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.empleadoId);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote);case _:
   return orElse();
 
 }
@@ -199,10 +199,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote)  $default,) {final _that = this;
 switch (_that) {
 case _UserApiModel():
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.empleadoId);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -219,10 +219,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  int? empleadoId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote)?  $default,) {final _that = this;
 switch (_that) {
 case _UserApiModel() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.empleadoId);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote);case _:
   return null;
 
 }
@@ -234,7 +234,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 @JsonSerializable()
 
 class _UserApiModel with DiagnosticableTreeMixin implements UserApiModel {
-  const _UserApiModel({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, required this.rol, required this.departamento, required  List<DepartamentoApiModel> departamentosPermitidos, required this.liderPermitido, this.empleadoId}): _departamentosPermitidos = departamentosPermitidos;
+  const _UserApiModel({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, required this.rol, required this.departamento, required  List<DepartamentoApiModel> departamentosPermitidos, required this.liderPermitido, this.isRemote = false}): _departamentosPermitidos = departamentosPermitidos;
   factory _UserApiModel.fromJson(Map<String, dynamic> json) => _$UserApiModelFromJson(json);
 
 @override final  int id;
@@ -252,7 +252,7 @@ class _UserApiModel with DiagnosticableTreeMixin implements UserApiModel {
 }
 
 @override final  bool liderPermitido;
-@override final  int? empleadoId;
+@override@JsonKey() final  bool isRemote;
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
@@ -268,21 +268,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'UserApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('empleadoId', empleadoId));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other._departamentosPermitidos, _departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.empleadoId, empleadoId) || other.empleadoId == empleadoId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other._departamentosPermitidos, _departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(_departamentosPermitidos),liderPermitido,empleadoId);
+int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(_departamentosPermitidos),liderPermitido,isRemote);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, empleadoId: $empleadoId)';
+  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote)';
 }
 
 
@@ -293,7 +293,7 @@ abstract mixin class _$UserApiModelCopyWith<$Res> implements $UserApiModelCopyWi
   factory _$UserApiModelCopyWith(_UserApiModel value, $Res Function(_UserApiModel) _then) = __$UserApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, int? empleadoId
+ int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, bool isRemote
 });
 
 
@@ -310,7 +310,7 @@ class __$UserApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? empleadoId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,}) {
   return _then(_UserApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -321,8 +321,8 @@ as String,rol: null == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nul
 as String,departamento: null == departamento ? _self.departamento : departamento // ignore: cast_nullable_to_non_nullable
 as DepartamentoApiModel,departamentosPermitidos: null == departamentosPermitidos ? _self._departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
 as List<DepartamentoApiModel>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
-as bool,empleadoId: freezed == empleadoId ? _self.empleadoId : empleadoId // ignore: cast_nullable_to_non_nullable
-as int?,
+as bool,isRemote: null == isRemote ? _self.isRemote : isRemote // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

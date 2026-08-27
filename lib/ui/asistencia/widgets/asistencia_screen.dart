@@ -1,8 +1,11 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
@@ -100,7 +103,9 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
     }
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> _initializeCamera() async { 
+    if (kIsWeb) return;
+
     final cameras = await _getAvailableCameras;
     if (_controller == null) {
       _controller = CameraController(
@@ -126,7 +131,9 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
     widget.viewmodel.register.addListener(_onRegisterResult);
     widget.viewmodel.scanFingerprint.addListener(_onScanResult);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getAvailableCameras = availableCameras();
+      if (!kIsWeb) {
+        _getAvailableCameras = availableCameras();
+      }
     });
   }
 
@@ -252,6 +259,38 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                           style: TextTheme.of(context).bodySmall?.copyWith(color: Color(0xFFC4A47A)),
                           textAlign: .center,
                         ),
+                        if (kIsWeb)
+                          Text.rich(
+                            TextSpan(
+                              style: TextTheme.of(context).bodySmall?.copyWith(
+                                color: Color(0xFFC4A47A),
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: '¿Eres posición remota?\n',
+                                ),
+                                TextSpan(
+                                  text: 'Registra tu asistencia aquí',
+                                  style: TextTheme.of(context).bodySmall?.copyWith(color: primaryColor),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      final currentUser = widget.viewmodel.currentUser;
+                                      if (currentUser != null && !currentUser.isRemote) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Lo sentimos pero no estás permitido para registrar tu asistencia remotamente.'),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      context.go(Routes.ingresoManual);
+                                    },
+                                ),
+                              ],
+                            ),
+                            textAlign: .center,
+                          ),
                       ],
                     ),
                   ),

@@ -45,15 +45,7 @@ class FingerprintRepositoryLocal extends FingerprintRepository {
   @override
   Stream<Scan> capture() {
     _log.debug('FingerprintRepository | Listening for fingerprint captures');
-    return Stream<Scan>.periodic(
-      const Duration(seconds: 30),
-      (_) => Scan(
-        template: utf8.encode('1,danielfernandez,r,index'),
-        image: Uint8List.fromList([0]),
-        width: 0,
-        height: 0,
-      ),
-    );
+    return Stream<Scan>.empty();
   }
 
   @override

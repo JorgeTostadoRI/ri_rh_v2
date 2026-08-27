@@ -20,6 +20,7 @@ _User _$UserFromJson(Map<String, dynamic> json) => _User(
       .map((e) => Departamento.fromJson(e as Map<String, dynamic>))
       .toList(),
   liderPermitido: json['lider_permitido'] as bool,
+  isRemote: json['is_remote'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
@@ -32,4 +33,5 @@ Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'departamento': instance.departamento,
   'departamentos_permitidos': instance.departamentosPermitidos,
   'lider_permitido': instance.liderPermitido,
+  'is_remote': instance.isRemote,
 };

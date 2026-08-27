@@ -178,6 +178,7 @@ class LocalDataService {
         departamento: departamentos[1],
         departamentosPermitidos: [departamentos[1]],
         liderPermitido: false,
+        isRemote: true,
       ),
       User(
         id: 6,
