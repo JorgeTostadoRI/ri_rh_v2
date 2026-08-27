@@ -60,6 +60,16 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
           Text('Fechas solicitadas', style: textTheme.headlineSmall),
           Text(_formatRequestedDates()),
           const SizedBox(height: 24),
+          Text('Estado de aprobación', style: textTheme.headlineSmall),
+          Text(
+            switch (incidencia.approvalStage) {
+              IncidenciaApprovalStage.awaitingBoss => 'Esperando aprobación de jefe directo',
+              IncidenciaApprovalStage.awaitingRH => 'Esperando aprobación de Recursos Humanos',
+              IncidenciaApprovalStage.done => 'Completado',
+            },
+            style: textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(widget.incidencia.reason, style: textTheme.bodyMedium),
           if (incidencia.files.isNotEmpty)

@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/custom_tab_bar.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_filters.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_approve_dialog.dart';
@@ -186,6 +187,10 @@ class _IncidenciaListTile extends StatelessWidget {
           iconColor: statusSuccessColor,
         ),
       },
+      trailing: StepTimeline(
+        length: IncidenciaApprovalStage.values.length,
+        currentStep: incidencia.approvalStage.index,
+      ),
       title: Text(
         '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
         style: textTheme.headlineSmall,
@@ -196,6 +201,7 @@ class _IncidenciaListTile extends StatelessWidget {
           fontSize: 16,
         ),
         overflow: .ellipsis,
+        maxLines: 2,
       ),
       onTap: () async {
         if (!canApprove) {

@@ -131,6 +131,12 @@ abstract class Incidencia with _$Incidencia {
     }
 }
 
+enum IncidenciaApprovalStage {
+  awaitingBoss,
+  awaitingRH,
+  done
+}
+
 extension IncidenciaGetters on Incidencia {
   String get categoryName {
     return switch(category) {
@@ -142,5 +148,17 @@ extension IncidenciaGetters on Incidencia {
       IncidenciaCategory.incapacidad => 'Incapacidad',
       IncidenciaCategory.requerimientojudicial => 'Requerimiento Judicial',
     };
+  }
+
+  IncidenciaApprovalStage get approvalStage {
+    if (state == IncidenciaState.approved) {
+      return IncidenciaApprovalStage.done;
+    }
+
+    if (rhApprovedBy == null && approvedBy != null) {
+      return IncidenciaApprovalStage.awaitingRH;
+    }
+
+    return IncidenciaApprovalStage.awaitingBoss;
   }
 }
