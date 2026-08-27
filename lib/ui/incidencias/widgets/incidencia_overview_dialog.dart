@@ -17,7 +17,7 @@ class IncidenciaOverviewDialog extends StatefulWidget {
   });
 
   final Incidencia incidencia;
-  final void Function() onDownload;
+  final void Function(bool) onDownload;
 
   @override
   State<IncidenciaOverviewDialog> createState() => _IncidenciaOverviewDialogState();
@@ -30,6 +30,8 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
 
   late final DateTime _localStart;
   late final DateTime _localEnd;
+
+  bool _forceGeneratePDF = false;
 
   @override
   void initState() {
@@ -59,7 +61,7 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
               _IncidenciaStatusChip(state: incidencia.state!),
             ],
           ),
-          Text(yMMMMdjm.format(_localStart)),
+          Text(yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
           Text(incidencia.solicitor!.nombre),
@@ -112,13 +114,33 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
                 ],
               ),
             ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Tooltip(
+              message: 'Se forzará a generar nuevamente el archivo',
+              child: Row(
+                mainAxisSize: .min,
+                children: [
+                  Checkbox(
+                    value: _forceGeneratePDF,
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _forceGeneratePDF = value);
+                      }
+                    },
+                  ),
+                  Text('¿Generar nuevamente PDF?'),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
       actions: [
         if (incidencia.state == IncidenciaState.approved)
           ElevatedButton.icon(
             onPressed: () {
-              widget.onDownload();
+              widget.onDownload(_forceGeneratePDF);
               context.pop(); // pop to avoid holding a stale reference if the incidencia was updated
             },
             icon: Icon(LucideIcons.download),

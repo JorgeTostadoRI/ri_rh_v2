@@ -152,11 +152,11 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> generatePDF(Incidencia incidencia) async {
+  Future<Result<Incidencia>> generatePDF(Incidencia incidencia, bool force) async {
     try {
       final users = await _getUsers();
 
-      final result = await _apiClient.generateIncidenciaPDF(incidencia.id!, incidencia.category.url);
+      final result = await _apiClient.generateIncidenciaPDF(incidencia.id!, incidencia.category.url, force);
 
       switch (result) {
         case Error():

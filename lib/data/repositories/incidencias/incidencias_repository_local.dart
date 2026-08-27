@@ -24,7 +24,6 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
     if (currentUser == null) {
       return Result.error(Exception('Not logged in'));
     }
-    final users = _localDataService.getUsers();
 
     final incidenciaWithId = incidencia.copyWith(
       id: _sequentialId++,
@@ -32,7 +31,6 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
       updatedAt: DateTime.now(),
       state: IncidenciaState.pending,
       solicitor: currentUser,
-      revisor: users.last,
     );
     _incidencias.add(incidenciaWithId);
     return const Result.ok(null);
@@ -46,24 +44,55 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
 
   @override
   Future<Result<List<Incidencia>>> getIncidenciasToReview({IncidenciaQuery? query}) async {
-    final incidenciasToReview = _incidencias.where(
-      (incidencia) {
+    final currentUser = _authRepository.getCurrentUser();
+    if (currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+
+    late List<Incidencia> incidenciasToReview;
+    if ((await _authRepository.isRH) && currentUser.rol == 'LIDER') {
+      incidenciasToReview = _incidencias.where((incidencia) {
         final isPending = incidencia.state == IncidenciaState.pending;
-        return isPending;
+        final approvedByBoss = incidencia.approvedBy != null;
+        final awaitingRHApproval = incidencia.rhApprovedBy == null;
+
+        return isPending && approvedByBoss && awaitingRHApproval;
       }).toList();
+    } else {
+      incidenciasToReview = _incidencias.where((incidencia) {
+        final isPending = incidencia.state == IncidenciaState.pending;
+        final awaitingBossApproval = incidencia.approvedBy == null;
+        final isNotSolicitor = incidencia.solicitor!.id != currentUser.id;
+
+        return isPending && awaitingBossApproval && isNotSolicitor;
+      }).toList();
+    }
     return Result.ok(incidenciasToReview);
   }
 
   @override
   Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia) async {
+    final currentUser = _authRepository.getCurrentUser();
+    if (currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+
     final index = _incidencias.indexWhere((x) => x.id == incidencia.id);
     if (index == -1) {
       return Result.error(Exception('Not found'));
     }
-    final approvedIncidencia = incidencia.copyWith(
-      state: IncidenciaState.approved,
-      revisor: null,
-    );
+
+    late final Incidencia approvedIncidencia;
+    if (incidencia.approvedBy == null) {
+      approvedIncidencia = incidencia.copyWith(
+        approvedBy: currentUser,
+      );
+    } else {
+      approvedIncidencia = incidencia.copyWith(
+        state: IncidenciaState.approved,
+        rhApprovedBy: currentUser,
+      );
+    }
 
     _incidencias[index] = approvedIncidencia;
     return Result.ok(approvedIncidencia);
@@ -71,6 +100,11 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
 
   @override
   Future<Result<Incidencia>> rejectIncidencia(Incidencia incidencia) async {
+    final currentUser = _authRepository.getCurrentUser();
+    if (currentUser == null) {
+      return Result.error(Exception('Not logged in'));
+    }
+    
     if (incidencia.rejectionReason == null || incidencia.rejectionReason!.isEmpty) {
       return Result.error(Exception('Needs a rejection reason'));
     }
@@ -81,7 +115,7 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
     }
     final rejectedIncidencia = incidencia.copyWith(
       state: IncidenciaState.rejected,
-      revisor: null,
+      rejectedBy: currentUser,
     );
 
     _incidencias[index] = rejectedIncidencia;
@@ -95,18 +129,36 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
       return const Result.ok(0);
     }
 
-    int total = _incidencias.fold(0, (sum, incidencia) {
-      if (incidencia.state == IncidenciaState.pending && incidencia.revisor == currentUser) {
-        sum += 1;
-      }
-      return sum;
-    });
+    late int total;
+    if ((await _authRepository.isRH) && currentUser.rol == 'LIDER') {
+      total = _incidencias.fold(0, (sum, incidencia) {
+        final isPending = incidencia.state == IncidenciaState.pending;
+        final approvedByBoss = incidencia.approvedBy != null;
+        final awaitingRHApproval = incidencia.rhApprovedBy == null;
+
+        if (isPending && approvedByBoss && awaitingRHApproval) {
+          sum += 1;
+        }
+        return sum;
+      });
+    } else {
+      total = _incidencias.fold(0, (sum, incidencia) {
+        final isPending = incidencia.state == IncidenciaState.pending;
+        final awaitingBossApproval = incidencia.approvedBy == null;
+        final isNotSolicitor = incidencia.solicitor!.id != currentUser.id;
+
+        if (isPending && awaitingBossApproval && isNotSolicitor) {
+          sum += 1;
+        }
+        return sum;
+      });
+    }
 
     return Result.ok(total);
   }
 
   @override
-  Future<Result<Incidencia>> generatePDF(Incidencia incidencia) async {
+  Future<Result<Incidencia>> generatePDF(Incidencia incidencia, bool force) async {
     final apiUrl = const String.fromEnvironment('api_url', defaultValue: 'http://localhost:8000');
 
     final incidenciaWithPDF = incidencia.copyWith(

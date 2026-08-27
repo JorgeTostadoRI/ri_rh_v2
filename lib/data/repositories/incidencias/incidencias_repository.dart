@@ -24,5 +24,5 @@ abstract class IncidenciasRepository {
   Future<Result<int>> getIncidenciasToReviewCount();
 
   /// Generar el PDF de la incidencia
-  Future<Result<Incidencia>> generatePDF(Incidencia incidencia);
+  Future<Result<Incidencia>> generatePDF(Incidencia incidencia, bool force);
 }

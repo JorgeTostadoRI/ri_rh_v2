@@ -52,20 +52,23 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
         crossAxisAlignment: .start,
         children: [
           Text('Fecha de creación', style: textTheme.headlineSmall),
-          Text(_yMMMMdjm.format(_localStart)),
+          Text(_yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
           Text('Solicitor', style: textTheme.headlineSmall),
           Text(widget.incidencia.solicitor!.nombre),
           const SizedBox(height: 24),
-          Text('Revisor asignado', style: textTheme.headlineSmall),
-          Text(
-            widget.incidencia.revisor != null
-              ? widget.incidencia.revisor!.nombre
-              : 'Recursos Humanos'
-            ),
-          const SizedBox(height: 24),
           Text('Fechas solicitadas', style: textTheme.headlineSmall),
           Text(_formatRequestedDates()),
+          const SizedBox(height: 24),
+          Text('Estado de aprobación', style: textTheme.headlineSmall),
+          Text(
+            switch (incidencia.approvalStage) {
+              IncidenciaApprovalStage.awaitingBoss => 'Esperando aprobación de jefe directo',
+              IncidenciaApprovalStage.awaitingRH => 'Esperando aprobación de Recursos Humanos',
+              IncidenciaApprovalStage.done => 'Completado',
+            },
+            style: textTheme.bodyMedium,
+          ),
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(widget.incidencia.reason, style: textTheme.bodyMedium),

@@ -46,12 +46,18 @@ abstract class Incidencia with _$Incidencia {
         DateTime? createdAt,
         DateTime? updatedAt,
         IncidenciaState? state,
-        User? revisor,
 
         // Se puede agregar por RH
         User? solicitor,
+
+        /// Quien dio aprobacion por jefe directo
+        User? approvedBy,
+        /// Quien dio aprobacion por RH
+        User? rhApprovedBy,
+
         // Agregado al rechazar la incidencia
         String? rejectionReason,
+        User? rejectedBy,
 
         String? pdfUrl,
         
@@ -69,14 +75,26 @@ abstract class Incidencia with _$Incidencia {
       required List<User> users,
     }) {
       late final User solicitor;
-      late final User? revisor;
+      late final User? approvedBy;
+      late final User? rhApprovedBy;
+      late final User? rejectedBy;
 
       try {
         solicitor = users.firstWhere((user) => user.id == model.solicitorRef);
-        if (model.revisorRef != null) {
-          revisor = users.firstWhere((user) => user.id == model.revisorRef);
+        if (model.approvedByRef != null) {
+          approvedBy = users.firstWhere((user) => user.id == model.approvedByRef);
         } else {
-          revisor = null;
+          approvedBy = null;
+        }
+        if (model.rhApprovedByRef != null) {
+          rhApprovedBy = users.firstWhere((user) => user.id == model.rhApprovedByRef);
+        } else {
+          rhApprovedBy = null;
+        }
+        if (model.rejectedByRef != null) {
+          rejectedBy = users.firstWhere((user) => user.id == model.rejectedByRef);
+        } else {
+          rejectedBy = null;
         }
       } on StateError {
         throw ModelException(
@@ -86,7 +104,9 @@ abstract class Incidencia with _$Incidencia {
             'category': model.category,
             'id': model.id,
             'solicitorRef': model.solicitorRef,
-            'revisorRef': model.revisorRef,
+            'approvedByRef': model.approvedByRef,
+            'rhApprovedByRef': model.rhApprovedByRef,
+            'rejectedBy': model.rejectedByRef,
           },
         );
       }
@@ -96,9 +116,11 @@ abstract class Incidencia with _$Incidencia {
         createdAt: model.createdAt,
         updatedAt: model.updatedAt,
         state: model.state,
-        revisor: revisor,
         solicitor: solicitor,
+        approvedBy: approvedBy,
+        rhApprovedBy: rhApprovedBy,
         rejectionReason: model.rejectionReason,
+        rejectedBy: rejectedBy,
         pdfUrl: model.pdfUrl,
         start: model.start,
         end: model.end,
@@ -107,6 +129,12 @@ abstract class Incidencia with _$Incidencia {
         category: model.category,
       );
     }
+}
+
+enum IncidenciaApprovalStage {
+  awaitingBoss,
+  awaitingRH,
+  done
 }
 
 extension IncidenciaGetters on Incidencia {
@@ -120,5 +148,17 @@ extension IncidenciaGetters on Incidencia {
       IncidenciaCategory.incapacidad => 'Incapacidad',
       IncidenciaCategory.requerimientojudicial => 'Requerimiento Judicial',
     };
+  }
+
+  IncidenciaApprovalStage get approvalStage {
+    if (state == IncidenciaState.approved) {
+      return IncidenciaApprovalStage.done;
+    }
+
+    if (rhApprovedBy == null && approvedBy != null) {
+      return IncidenciaApprovalStage.awaitingRH;
+    }
+
+    return IncidenciaApprovalStage.awaitingBoss;
   }
 }

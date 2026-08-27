@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
 typedef SolicitorOption = ({int id, String name});
+typedef DownloadParams = ({Incidencia incidencia, bool force});
 
 class PendingIncidenciasViewmodel extends ChangeNotifier {
   final AppLogger _log;
@@ -37,7 +38,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
   late final Command0 load;
   late final Command1<void, Incidencia> approve;
   late final Command1<void, RejectParams> reject;
-  late final Command1<void, Incidencia> download;
+  late final Command1<void, DownloadParams> download;
 
   // FIXME: when hot reloading, resets to 0 instead of keeping the tab index
   int selection = 0;
@@ -170,13 +171,14 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
   }
 
-  Future<Result<void>> _download(Incidencia incidencia) async {
-    if (incidencia.state != IncidenciaState.approved) {
+  Future<Result<void>> _download(DownloadParams params) async {
+    if (params.incidencia.state != IncidenciaState.approved) {
       return Result.error(Exception('Incidencia is not approved'));
     }
 
-    if (incidencia.pdfUrl == null) {
-      final resultPDF = await _incidenciasRepository.generatePDF(incidencia);
+    late final Uri url;
+    if (params.incidencia.pdfUrl == null || params.force) {
+      final resultPDF = await _incidenciasRepository.generatePDF(params.incidencia, params.force);
 
       switch (resultPDF) {
         case Error():
@@ -190,21 +192,16 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
       // Replace the old version
       if (historial != null) {
-        final index = _historial!.indexOf(incidencia);
+        final index = _historial!.indexOf(params.incidencia);
         _historial![index] = incidenciaWithPDF;
         notifyListeners();
       }
 
-      final url = Uri.parse(incidenciaWithPDF.pdfUrl!);
-      if (!await launchUrl(url)) {
-        _log.error('Failed to open incidencia PDF');
-        return Result.error(Exception('Could not open URL'));
-      }
-
-      return const Result.ok(null);
+      url = Uri.parse(incidenciaWithPDF.pdfUrl!);
+    } else {
+      url = Uri.parse(params.incidencia.pdfUrl!);
     }
 
-    final url = Uri.parse(incidencia.pdfUrl!);
     if (!await launchUrl(url)) {
       _log.error('Failed to open incidencia PDF');
       return Result.error(Exception('Could not open URL'));

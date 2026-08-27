@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/custom_tab_bar.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_filters.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_approve_dialog.dart';
@@ -159,7 +160,7 @@ class _IncidenciaListTile extends StatelessWidget {
   final Incidencia incidencia;
   final Function(Incidencia, IncidenciaApproveDialogResult) onResult;
   final bool canApprove;
-  final void Function() onDownload;
+  final void Function(bool) onDownload;
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +187,10 @@ class _IncidenciaListTile extends StatelessWidget {
           iconColor: statusSuccessColor,
         ),
       },
+      trailing: StepTimeline(
+        length: IncidenciaApprovalStage.values.length,
+        currentStep: incidencia.approvalStage.index,
+      ),
       title: Text(
         '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
         style: textTheme.headlineSmall,
@@ -196,6 +201,7 @@ class _IncidenciaListTile extends StatelessWidget {
           fontSize: 16,
         ),
         overflow: .ellipsis,
+        maxLines: 2,
       ),
       onTap: () async {
         if (!canApprove) {
@@ -306,7 +312,7 @@ class _IncidenciasReviewList extends StatelessWidget {
               incidencia: incidencia,
               onResult: onResult,
               canApprove: true,
-              onDownload: () => viewmodel.download.execute(incidencia),
+              onDownload: (_) => viewmodel.download.execute((incidencia: incidencia, force: false)),
             );
           },
           separatorBuilder: (context, _) => SizedBox(height: 12),
@@ -384,7 +390,7 @@ class _IncidenciasHistory extends StatelessWidget {
               incidencia: incidencia,
               onResult: onResult,
               canApprove: false,
-              onDownload: () => viewmodel.download.execute(incidencia),
+              onDownload: (bool force) => viewmodel.download.execute((incidencia: incidencia, force: force)),
             );
           },
           separatorBuilder: (context, _) => SizedBox(height: 12),
