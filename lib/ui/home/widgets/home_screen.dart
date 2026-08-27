@@ -89,11 +89,10 @@ class HomeScreen extends StatelessWidget {
                                 value: 'OPERADOR',
                                 child: Text('Operador'),
                               ),
-                              if (user?.liderPermitido ?? false)
-                                DropdownMenuItem(
-                                  value: 'LIDER',
-                                  child: Text('Lider'),
-                                ),
+                              DropdownMenuItem(
+                                value: 'LIDER',
+                                child: Text('Lider'),
+                              ),
                             ],
                             onChanged: (role) {
                               if (role != null) {
