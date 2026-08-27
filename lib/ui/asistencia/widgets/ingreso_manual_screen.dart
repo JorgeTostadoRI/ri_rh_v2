@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/config/app_error.dart';
-import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
+import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/ingreso_manual_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
@@ -38,12 +39,6 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
   void initState() {
     super.initState();
     widget.viewmodel.register.addListener(_onRegister);
-  }
-
-  @override
-  void dispose() {
-    widget.viewmodel.register.removeListener(_onRegister);
-    super.dispose();
   }
 
   @override
@@ -92,7 +87,8 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
                           _buildCameraButton(context),
                           Align(
                             alignment: .bottomEnd,
-                            child: ElevatedButton.icon(
+                            child: CommandButton.icon(
+                              command: widget.viewmodel.register,
                               onPressed: _registerForUser,
                               icon: Icon(LucideIcons.circleCheck),
                               label: Text('Registrar'),
@@ -259,7 +255,7 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Se registró tu asistencia')),
       );
-      context.pushReplacement(Routes.ingreso);
+      context.pop();
     }
     else if (widget.viewmodel.register.error) {
       final error = (widget.viewmodel.register.result as result.Error).error;
@@ -272,6 +268,26 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
       } else if (error is NoRemoteAllowed) {
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, 'No puedes registrar tu asistencia remotamente'),
+        );
+      } else if (error is ApiException && error.errorCode == ApiErrorCodes.lateEntry) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Fuera de Horario'),
+              content: Text(
+                'No se ha registrado tu entrada debido a que intentaste registrar fuera de tu hora permitida de entrada. '
+                'Ten en cuenta que tienes 10 minutos de gracia para tu entrada. '
+                'No laboré hoy porque NO se le dará compensación por el trabajo.'
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => context.pop(),
+                  child: Text('Entendido'),
+                ),
+              ],
+            );
+          }
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

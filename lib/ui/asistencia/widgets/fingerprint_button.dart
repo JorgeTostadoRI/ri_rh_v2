@@ -1,10 +1,10 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
+import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
-import 'package:ri_rh_v2/ui/asistencia/widgets/manual_entry_form.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -25,20 +25,6 @@ class _FingerprintButtonState extends State<FingerprintButton> {
   final columnSpacing = 20.0;
 
   late Listenable _listenable;
-
-  Future<void> onPressedRegistroManualHandler(BuildContext context) async {
-    final cameras = await availableCameras();
-
-    if (context.mounted) {
-      await showDialog(
-        context: context,
-        builder: (context) => ManualEntryForm(
-          camera: cameras.first,
-          viewmodel: widget.viewmodel,
-        ),
-      );
-    }                
-  }
 
   @override
   void initState() {
@@ -68,7 +54,7 @@ class _FingerprintButtonState extends State<FingerprintButton> {
             ),
             if (widget.viewmodel.manualEntryEnabled)
               TextButton(
-                onPressed: () => onPressedRegistroManualHandler(context),
+                onPressed: () => context.go(Routes.ingresoManual),
                 style: TextButton.styleFrom(
                   backgroundColor: primaryColor,
                 ),

@@ -35,11 +35,11 @@ class IngresoManualViewmodel extends ChangeNotifier {
     final isAuthenticated = await _authRepository.isAuthenticated;
 
     if (!isAuthenticated) {
-      final loggedIn = await _authRepository.login(username: params.username, password: params.password);
+      final resultLogin = await _authRepository.login(username: params.username, password: params.password);
 
-      switch(loggedIn) {
+      switch(resultLogin) {
         case Error():
-          _log.warning('Failed to log in', error: loggedIn.error);
+          _log.warning('Failed to log in', error: resultLogin.error);
           return Result.error(LoginError());
         case Ok():
       }
