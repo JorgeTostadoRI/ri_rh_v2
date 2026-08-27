@@ -158,7 +158,7 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> generatePDF(Incidencia incidencia) async {
+  Future<Result<Incidencia>> generatePDF(Incidencia incidencia, bool force) async {
     final apiUrl = const String.fromEnvironment('api_url', defaultValue: 'http://localhost:8000');
 
     final incidenciaWithPDF = incidencia.copyWith(

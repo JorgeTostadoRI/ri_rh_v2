@@ -160,7 +160,7 @@ class _IncidenciaListTile extends StatelessWidget {
   final Incidencia incidencia;
   final Function(Incidencia, IncidenciaApproveDialogResult) onResult;
   final bool canApprove;
-  final void Function() onDownload;
+  final void Function(bool) onDownload;
 
   @override
   Widget build(BuildContext context) {
@@ -312,7 +312,7 @@ class _IncidenciasReviewList extends StatelessWidget {
               incidencia: incidencia,
               onResult: onResult,
               canApprove: true,
-              onDownload: () => viewmodel.download.execute(incidencia),
+              onDownload: (_) => viewmodel.download.execute((incidencia: incidencia, force: false)),
             );
           },
           separatorBuilder: (context, _) => SizedBox(height: 12),
@@ -390,7 +390,7 @@ class _IncidenciasHistory extends StatelessWidget {
               incidencia: incidencia,
               onResult: onResult,
               canApprove: false,
-              onDownload: () => viewmodel.download.execute(incidencia),
+              onDownload: (bool force) => viewmodel.download.execute((incidencia: incidencia, force: force)),
             );
           },
           separatorBuilder: (context, _) => SizedBox(height: 12),
