@@ -12,6 +12,7 @@ import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -61,6 +62,8 @@ class AsistenciaViewmodel extends ChangeNotifier {
   List<Aviso> get motds => _motds;
 
   bool _disposed = false;
+
+  User? get currentUser => _authRepository.getCurrentUser();
 
   @override
   void dispose() {

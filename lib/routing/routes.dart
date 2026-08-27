@@ -6,6 +6,7 @@ abstract final class Routes {
   static const home = '/';
   static const login = '/login';
   static const ingreso = '/ingreso';
+  static const ingresoManual = '$ingreso/manual';
   static const incidencias = '/incidencias';
   static const pendingIncidencias = '$incidencias-pending';
   static const newIncidencia = ':categoriaId/new';

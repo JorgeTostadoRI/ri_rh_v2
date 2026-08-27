@@ -5,7 +5,9 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/view_models/ingreso_manual_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/asistencia_screen.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/ingreso_manual_screen.dart';
 import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/auth/login/widgets/login_screen.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
@@ -81,6 +83,20 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               ),
             );
           },
+          routes: [
+            GoRoute(
+              path: '/manual',
+              builder: (context, state) {
+                return IngresoManualScreen(
+                  viewmodel: IngresoManualViewmodel(
+                    log: context.read(),
+                    authRepository: context.read(),
+                    asistenciaRepository: context.read(),
+                  ),
+                );
+              }
+            ),
+          ],
         ),
         GoRoute(
           path: Routes.incidencias,
