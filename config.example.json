@@ -1,0 +1,9 @@
+{
+    "api_url": "http://localhost:8000",
+    // Generated on application launch
+    "device_id": "uuid",
+    // RH system empleados URL
+    "empleados_table_url": "",
+    // RH system practicantes URL
+    "practicantes_table_url": ""
+}
