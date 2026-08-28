@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -460,10 +462,20 @@ class _CameraDialogState extends State<_CameraDialog> {
   }
 
   void _capturePhoto() async {
-    if (context.mounted) {
-      final photo = await _controller!.takePicture();
-      // ignore: use_build_context_synchronously
-      context.pop(photo);
+    if (mounted) {
+      bool errored = false;
+      try {
+
+        final photo = await _controller!.takePicture();
+        context.pop(photo);
+      } on CameraException catch (e) {
+        errored = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, e.description ?? 'No se pudo capturar la foto')
+        );
+      } finally {
+        if (errored) context.pop();
+      }
     }
   }
 }
