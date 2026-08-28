@@ -169,6 +169,13 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     _endDateController = TextEditingController();
     _startTimeController = TextEditingController();
     _endTimeController = TextEditingController();
+
+    // Force horas extra to only allow hour input
+    switch (widget.category) {
+      case IncidenciaCategory.horasextra:
+        widget.viewmodel.onDateOptionChanged(1);
+      default:
+    }
   }
 
   @override
@@ -197,17 +204,20 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
           children: [
             FieldLabel(labelText: 'Fecha', required: true),
             const SizedBox(height: _labelMargin),
-            Row(
-              children: [
-                FieldSwitcher(
-                  selectedIndex: widget.viewmodel.dateOption.index,
-                  onSelected: widget.viewmodel.onDateOptionChanged,
-                  options: widget.viewmodel.dateOptionLabels,
+            if (widget.category != IncidenciaCategory.horasextra)
+              ...[
+                Row(
+                  children: [
+                    FieldSwitcher(
+                      selectedIndex: widget.viewmodel.dateOption.index,
+                      onSelected: widget.viewmodel.onDateOptionChanged,
+                      options: widget.viewmodel.dateOptionLabels,
+                    ),
+                    Expanded(child: SizedBox()),
+                  ],
                 ),
-                Expanded(child: SizedBox()),
+                const SizedBox(height: 8),
               ],
-            ),
-            const SizedBox(height: 8),
             if (widget.viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE)
               Row(
                 spacing: 16,
