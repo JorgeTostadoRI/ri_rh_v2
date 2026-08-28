@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
@@ -33,6 +34,10 @@ class AsistenciaViewmodel extends ChangeNotifier {
       (scan) => scanFingerprint.execute(scan.template),
       onError: (e) {
         _log.error('AsistenciaViewmodel | Capture stream error', error: e);
+        if (e is NoScannerAvailable) {
+          _scannerAvailable = false;
+          notifyListeners();
+        }
       }
     );
   }
@@ -52,6 +57,8 @@ class AsistenciaViewmodel extends ChangeNotifier {
   String get fingerName => _fingerNames[_fingerIndex];
 
   late final StreamSubscription<Scan> _capturesSub;
+  bool _scannerAvailable = true;
+  bool get scannerAvailable => _scannerAvailable; 
 
   bool _manualEntryEnabled = false;
   bool get manualEntryEnabled => _manualEntryEnabled;

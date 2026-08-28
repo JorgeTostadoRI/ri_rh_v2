@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
@@ -28,7 +29,11 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
 
   @override
   Stream<Scan> capture() {
-    return _fingerScanService.captureStream();
+    try {
+      return _fingerScanService.captureStream();
+    } on NoScannerAvailable {
+      return Stream<Scan>.error(NoScannerAvailable());
+    }
   }
 
   @override

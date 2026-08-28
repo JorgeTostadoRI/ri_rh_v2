@@ -53,54 +53,111 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
       constraints: BoxConstraints(maxWidth: 384, maxHeight: 384),
       contentPadding: EdgeInsets.all(32),
       backgroundColor: Colors.white,
-      content: Column(
-        mainAxisSize: .min,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Icon(
-              LucideIcons.fingerprintPattern,
-              color: primaryColor,
-              size: 44,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Verificación de identidad',
-            style: TextStyle(
-              color: headingTextColor,
-              fontSize: 20,
-              fontWeight: .w900,
-              height: 1.4,
-            ),
-          ),
-          Text(
-            'Coloca tu dedo en el lector de huella digital para confirmar y enviar tu solicitud',
-            style: TextStyle(
-              color: labelTextColor,
-              fontSize: 14,
-              height: 1.4
-            ),
-          ),
-          const SizedBox(height: 40),
-          Row(
+      content: ListenableBuilder(
+        listenable: widget.viewmodel,
+        builder: (context, _) {
+          if (!widget.viewmodel.scannerAvailable) {
+            return Column(
+              mainAxisSize: .min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(
+                    LucideIcons.circleX,
+                    color: Colors.red,
+                    size: 44,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Verificación de identidad',
+                  style: TextStyle(
+                    color: headingTextColor,
+                    fontSize: 20,
+                    fontWeight: .w900,
+                    height: 1.4,
+                  ),
+                ),
+                Text(
+                  'No hay conexión con el escaner, conecta el escaner y reinicia la aplicación',
+                  style: TextStyle(
+                    color: labelTextColor,
+                    fontSize: 14,
+                    height: 1.4
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(context, Result.ok(false));
+                        },
+                        child: Text('Entendido'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          }
+
+          return Column(
+            mainAxisSize: .min,
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context, Result.ok(false));
-                  },
-                  child: Text('Cancelar'),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(
+                  LucideIcons.fingerprintPattern,
+                  color: primaryColor,
+                  size: 44,
                 ),
               ),
+              const SizedBox(height: 24),
+              Text(
+                'Verificación de identidad',
+                style: TextStyle(
+                  color: headingTextColor,
+                  fontSize: 20,
+                  fontWeight: .w900,
+                  height: 1.4,
+                ),
+              ),
+              Text(
+                'Coloca tu dedo en el lector de huella digital para confirmar y enviar tu solicitud',
+                style: TextStyle(
+                  color: labelTextColor,
+                  fontSize: 14,
+                  height: 1.4
+                ),
+              ),
+              const SizedBox(height: 40),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context, Result.ok(false));
+                      },
+                      child: Text('Cancelar'),
+                    ),
+                  ),
+                ],
+              ),
             ],
-          ),
-        ],
+          );
+        }
       ),
     );
   }
