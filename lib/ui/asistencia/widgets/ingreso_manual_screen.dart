@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -306,14 +308,20 @@ class _CameraDialog extends StatefulWidget {
 }
 
 class _CameraDialogState extends State<_CameraDialog> {
+  late Future<List<CameraDescription>> _availableCameras;
+  CameraDescription? _currentCamera;
   CameraController? _controller;
 
+  final ResolutionPreset _resolution = ResolutionPreset.medium;
+
   Future<void> _initializeCamera() async { 
-    final cameras = await availableCameras();
+    final cameras = await _availableCameras;
+    _currentCamera ??= cameras[0];
+
     if (_controller == null) {
       _controller = CameraController(
-        cameras[0],
-        ResolutionPreset.medium,
+        _currentCamera!,
+        _resolution,
       );
       await _controller!.initialize();
     }
@@ -323,6 +331,7 @@ class _CameraDialogState extends State<_CameraDialog> {
   @override
   void initState() {
     super.initState();
+    _availableCameras = availableCameras();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeCamera();
     });
@@ -349,6 +358,39 @@ class _CameraDialogState extends State<_CameraDialog> {
             style: textTheme.bodyMedium,
           ),
           _buildPreview(),
+          FutureBuilder(
+            future: _availableCameras,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return SizedBox.shrink();
+              }
+
+              if (snapshot.hasError) {
+                return _buildErrorDescription(snapshot.error);
+              }
+
+              return DropdownButtonFormField<CameraDescription>(
+                initialValue: _currentCamera,
+                items: snapshot.data!.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.name))).toList(),
+                onChanged: (camera) async {
+                  if (camera != null) {
+                    await _controller?.dispose();
+                    _currentCamera = camera;
+                    _controller = CameraController(
+                      _currentCamera!,
+                      _resolution,
+                    );
+                    await _controller?.initialize();
+
+                    // Rebuild preview
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  }
+                },
+              );
+            },
+          ),
         ],
       ),
       actions: [
@@ -394,11 +436,46 @@ class _CameraDialogState extends State<_CameraDialog> {
     );
   }
 
+  Widget _buildErrorDescription(Object? e) {
+    if (e is CameraException) {
+      if (e.code == 'CameraAccessDenied') {
+        return ListTile(
+          iconColor: Colors.red,
+          leading: Icon(LucideIcons.circleX),
+          title: Text('Acceso a cámara denegado'),
+          subtitle: Text('Asegurate de permitir el uso de la cámara en el sitio y recargar.'),
+        );
+      }
+      return ListTile(
+        iconColor: Colors.red,
+        leading: Icon(LucideIcons.circleX),
+        title: Text(e.code),
+        subtitle: Text(e.description ?? "Sin información adicional"),
+      );
+    }
+    return ListTile(
+      iconColor: Colors.red,
+      leading: Icon(LucideIcons.circleX),
+      title: Text('Error desconocido'),
+      subtitle: Text(e.toString(), overflow: .ellipsis, maxLines: 2),
+    );
+  }
+
   void _capturePhoto() async {
-    if (context.mounted) {
-      final photo = await _controller!.takePicture();
-      // ignore: use_build_context_synchronously
-      context.pop(photo);
+    if (mounted) {
+      bool errored = false;
+      try {
+
+        final photo = await _controller!.takePicture();
+        context.pop(photo);
+      } on CameraException catch (e) {
+        errored = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, e.description ?? 'No se pudo capturar la foto')
+        );
+      } finally {
+        if (errored) context.pop();
+      }
     }
   }
 }
