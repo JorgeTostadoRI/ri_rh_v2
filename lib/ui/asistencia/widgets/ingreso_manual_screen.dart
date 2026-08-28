@@ -306,14 +306,20 @@ class _CameraDialog extends StatefulWidget {
 }
 
 class _CameraDialogState extends State<_CameraDialog> {
+  late Future<List<CameraDescription>> _availableCameras;
+  CameraDescription? _currentCamera;
   CameraController? _controller;
 
+  final ResolutionPreset _resolution = ResolutionPreset.medium;
+
   Future<void> _initializeCamera() async { 
-    final cameras = await availableCameras();
+    final cameras = await _availableCameras;
+    _currentCamera ??= cameras[0];
+
     if (_controller == null) {
       _controller = CameraController(
-        cameras[0],
-        ResolutionPreset.medium,
+        _currentCamera!,
+        _resolution,
       );
       await _controller!.initialize();
     }
@@ -323,6 +329,7 @@ class _CameraDialogState extends State<_CameraDialog> {
   @override
   void initState() {
     super.initState();
+    _availableCameras = availableCameras();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeCamera();
     });
@@ -349,6 +356,39 @@ class _CameraDialogState extends State<_CameraDialog> {
             style: textTheme.bodyMedium,
           ),
           _buildPreview(),
+          FutureBuilder(
+            future: _availableCameras,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return SizedBox.shrink();
+              }
+
+              if (snapshot.hasError) {
+                return _buildErrorDescription(snapshot.error);
+              }
+
+              return DropdownButtonFormField<CameraDescription>(
+                initialValue: _currentCamera,
+                items: snapshot.data!.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.name))).toList(),
+                onChanged: (camera) async {
+                  if (camera != null) {
+                    await _controller?.dispose();
+                    _currentCamera = camera;
+                    _controller = CameraController(
+                      _currentCamera!,
+                      _resolution,
+                    );
+                    await _controller?.initialize();
+
+                    // Rebuild preview
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  }
+                },
+              );
+            },
+          ),
         ],
       ),
       actions: [
@@ -391,6 +431,31 @@ class _CameraDialogState extends State<_CameraDialog> {
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         child: CameraPreview(_controller!),
       ),
+    );
+  }
+
+  Widget _buildErrorDescription(Object? e) {
+    if (e is CameraException) {
+      if (e.code == 'CameraAccessDenied') {
+        return ListTile(
+          iconColor: Colors.red,
+          leading: Icon(LucideIcons.circleX),
+          title: Text('Acceso a cámara denegado'),
+          subtitle: Text('Asegurate de permitir el uso de la cámara en el sitio y recargar.'),
+        );
+      }
+      return ListTile(
+        iconColor: Colors.red,
+        leading: Icon(LucideIcons.circleX),
+        title: Text(e.code),
+        subtitle: Text(e.description ?? "Sin información adicional"),
+      );
+    }
+    return ListTile(
+      iconColor: Colors.red,
+      leading: Icon(LucideIcons.circleX),
+      title: Text('Error desconocido'),
+      subtitle: Text(e.toString(), overflow: .ellipsis, maxLines: 2),
     );
   }
 
