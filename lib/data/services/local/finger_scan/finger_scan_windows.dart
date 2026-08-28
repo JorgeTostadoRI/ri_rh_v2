@@ -22,13 +22,18 @@ class FingerScanServiceImpl extends FingerScanService {
   @override
   void init() {
     if (!_initialized) {
-      _sdk = ZKFinger();
-      _controller = StreamController<Scan>.broadcast(
-        onListen: _connectDevice,
-        onCancel: _closeDevice,
-      );
-      _log.info('Initialized fingerprint scanner');
-      _initialized = true;
+      try {
+        _sdk = ZKFinger();
+        _controller = StreamController<Scan>.broadcast(
+          onListen: _connectDevice,
+          onCancel: _closeDevice,
+        );
+        _log.info('Initialized fingerprint scanner');
+        _initialized = true;
+      } catch (e, stackTrace) {
+        _log.error('Failed to initialize ZKFinger', error: e, stackTrace: stackTrace);
+        _initialized = false;
+      }
     }
   }
 
