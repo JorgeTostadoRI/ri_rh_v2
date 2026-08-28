@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
@@ -28,6 +29,9 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
       (scan) => login.execute(scan.template),
       onError: (e) {
         _log.error('NewIncidenciaViewmodel | Capture stream error', error: e);
+        if (e is NoScannerAvailable) {
+          _scannerAvailable = false;
+        }
       }
     );
   }
@@ -40,6 +44,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   late Command1<void, Uint8List> login;
 
   late final StreamSubscription<Scan> _capturesSub;
+  bool _scannerAvailable = true;
+  bool get scannerAvailable => _scannerAvailable;
 
   IncidenciaDateOption _dateOption = IncidenciaDateOption.DATE_RANGE;
   IncidenciaDateOption get dateOption => _dateOption;

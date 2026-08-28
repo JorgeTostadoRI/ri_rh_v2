@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/scanner_status.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/fingerprint_button.dart';
@@ -157,149 +158,160 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 48.0),
-          child: Flex(
-            direction: .horizontal,
-            children: [
-              // FECHA-HORA Y AVISOS
-              Flexible(
-                flex: 70,
-                fit: .tight,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 64.0),
-                  child: Column(
-                    mainAxisAlignment: .start,
-                    mainAxisSize: .max,
-                    crossAxisAlignment: .start,
-                    children: [
-                      Text(
-                        'SISTEMA DE REGISTRO',
-                        style: TextTheme.of(context).titleSmall?.copyWith(
-                          color: primaryColor,
-                          letterSpacing: 0.35,
-                        ),
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48.0),
+              child: Flex(
+                direction: .horizontal,
+                children: [
+                  // FECHA-HORA Y AVISOS
+                  Flexible(
+                    flex: 70,
+                    fit: .tight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                      child: Column(
+                        mainAxisAlignment: .start,
+                        mainAxisSize: .max,
+                        crossAxisAlignment: .start,
+                        children: [
+                          Text(
+                            'SISTEMA DE REGISTRO',
+                            style: TextTheme.of(context).titleSmall?.copyWith(
+                              color: primaryColor,
+                              letterSpacing: 0.35,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '¡Bienvenido!',
+                            style: TextTheme.of(context).displayLarge?.copyWith(
+                              color: headingTextColor,
+                              fontSize: 72,
+                              fontWeight: .w900,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Clock(),
+                          MotdList(viewmodel: widget.viewmodel),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '¡Bienvenido!',
-                        style: TextTheme.of(context).displayLarge?.copyWith(
-                          color: headingTextColor,
-                          fontSize: 72,
-                          fontWeight: .w900,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Clock(),
-                      MotdList(viewmodel: widget.viewmodel),
-                    ],
-                  ),
-                ),
-              ),
-              // DIVIDER
-              Center(
-                child: Container(
-                  width: 1,
-                  height: 600,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: .topCenter,
-                      end: .bottomCenter,
-                      colors: [
-                        Color(0xFFFDDEB0).withAlpha(0),
-                        Color(0xFFFDDEB0),
-                        Color(0xFFFDDEB0),
-                        Color(0xFFFDDEB0).withAlpha(0),
-                      ],
-                      stops: [0, 0.3, 0.7, 1],
                     ),
                   ),
-                ),
-              ),
-              // LECTOR DE HUELLA
-              Flexible(
-                flex: 30,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: .max,
-                      crossAxisAlignment: .center,
-                      spacing: 32,
-                      children: [
-                        Column(
-                          spacing: 8,
-                          children: [
-                            Text(
-                              'Registra tu entrada',
-                              style: TextTheme.of(context).bodyMedium?.copyWith(
-                                color: headingTextColor,
-                                fontSize: 24,
-                                fontWeight: .w700,
-                              ),
-                              textAlign: .center,
-                            ),
-                            Text(
-                              'con tu huella y foto',
-                              style: TextTheme.of(context).bodyMedium?.copyWith(
-                                color: labelTextColor,
-                                fontWeight: .w500,
-                              ),
-                              textAlign: .center,
-                            ),
+                  // DIVIDER
+                  Center(
+                    child: Container(
+                      width: 1,
+                      height: 600,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: .topCenter,
+                          end: .bottomCenter,
+                          colors: [
+                            Color(0xFFFDDEB0).withAlpha(0),
+                            Color(0xFFFDDEB0),
+                            Color(0xFFFDDEB0),
+                            Color(0xFFFDDEB0).withAlpha(0),
                           ],
+                          stops: [0, 0.3, 0.7, 1],
                         ),
-                        FingerprintButton(
-                          viewmodel: widget.viewmodel,
-                        ),
-                        Text(
-                          'Si tienes problemas con el registro, contacta a Recursos Humanos.',
-                          style: TextTheme.of(context).bodySmall?.copyWith(color: Color(0xFFC4A47A)),
-                          textAlign: .center,
-                        ),
-                        if (kIsWeb)
-                          Text.rich(
-                            TextSpan(
-                              style: TextTheme.of(context).bodySmall?.copyWith(
-                                color: Color(0xFFC4A47A),
-                              ),
+                      ),
+                    ),
+                  ),
+                  // LECTOR DE HUELLA
+                  Flexible(
+                    flex: 30,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: .max,
+                          crossAxisAlignment: .center,
+                          spacing: 32,
+                          children: [
+                            Column(
+                              spacing: 8,
                               children: [
-                                const TextSpan(
-                                  text: '¿Eres posición remota?\n',
+                                Text(
+                                  'Registra tu entrada',
+                                  style: TextTheme.of(context).bodyMedium?.copyWith(
+                                    color: headingTextColor,
+                                    fontSize: 24,
+                                    fontWeight: .w700,
+                                  ),
+                                  textAlign: .center,
                                 ),
-                                TextSpan(
-                                  text: 'Registra tu asistencia aquí',
-                                  style: TextTheme.of(context).bodySmall?.copyWith(color: primaryColor),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      final currentUser = widget.viewmodel.currentUser;
-                                      if (currentUser != null && !currentUser.isRemote) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text('Lo sentimos pero no estás permitido para registrar tu asistencia remotamente.'),
-                                          ),
-                                        );
-                                        return;
-                                      }
-
-                                      context.go(Routes.ingresoManual);
-                                    },
+                                Text(
+                                  'con tu huella y foto',
+                                  style: TextTheme.of(context).bodyMedium?.copyWith(
+                                    color: labelTextColor,
+                                    fontWeight: .w500,
+                                  ),
+                                  textAlign: .center,
                                 ),
                               ],
                             ),
-                            textAlign: .center,
-                          ),
-                      ],
+                            FingerprintButton(
+                              viewmodel: widget.viewmodel,
+                            ),
+                            Text(
+                              'Si tienes problemas con el registro, contacta a Recursos Humanos.',
+                              style: TextTheme.of(context).bodySmall?.copyWith(color: Color(0xFFC4A47A)),
+                              textAlign: .center,
+                            ),
+                            if (kIsWeb)
+                              Text.rich(
+                                TextSpan(
+                                  style: TextTheme.of(context).bodySmall?.copyWith(
+                                    color: Color(0xFFC4A47A),
+                                  ),
+                                  children: [
+                                    const TextSpan(
+                                      text: '¿Eres posición remota?\n',
+                                    ),
+                                    TextSpan(
+                                      text: 'Registra tu asistencia aquí',
+                                      style: TextTheme.of(context).bodySmall?.copyWith(color: primaryColor),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          final currentUser = widget.viewmodel.currentUser;
+                                          if (currentUser != null && !currentUser.isRemote) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Lo sentimos pero no estás permitido para registrar tu asistencia remotamente.'),
+                                              ),
+                                            );
+                                            return;
+                                          }
+        
+                                          context.go(Routes.ingresoManual);
+                                        },
+                                    ),
+                                  ],
+                                ),
+                                textAlign: .center,
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 40.0),
+          child: Align(
+            alignment: .bottomCenter,
+            child: ScannerStatus(viewmodel: widget.viewmodel),
+          ),
+        ),
+      ],
     );
   }
 }
