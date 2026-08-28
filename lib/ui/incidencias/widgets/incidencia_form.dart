@@ -3,9 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/verify_identity_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -119,22 +121,20 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       if (!authenticated) return;
 
       final result = await widget.viewmodel.submitData(widget.category);
-      if (result is Ok) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Incidencia creada'),
-            ),
-          );
-
-          context.go(Routes.incidencias);
-        }
-      } else {
+      switch (result) {
+        case Error():
+          _handleSubmitError(result.error);
+          return;
+        case Ok():
+      }
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Ha ocurrido un error'),
+            content: Text('Incidencia creada'),
           ),
         );
+
+        context.go(Routes.incidencias);
       }
     }
   }
@@ -148,6 +148,18 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     );
 
     if (result != null) widget.viewmodel.addFiles(result.files);
+  }
+
+  void _handleSubmitError(Exception e) {
+    if (e is InvalidForm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, e.message),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'Ha ocurrido un error', error: e),
+      );
+    }
   }
 
   @override
