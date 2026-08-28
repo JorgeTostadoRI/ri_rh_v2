@@ -114,6 +114,13 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                   return Column(
                     children: [
                       _NavItem(
+                        icon: LucideIcons.home,
+                        label: 'Inicio',
+                        route: Routes.home,
+                        strictMatch: true,
+                        isCollapsed: isCollapsed,
+                      ),
+                      _NavItem(
                         icon: LucideIcons.clock,
                         label: 'Ingreso',
                         route: Routes.ingreso,
@@ -159,6 +166,14 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
 
               return Column(
                 children: [
+                  _NavItem(
+                    icon: LucideIcons.home,
+                    label: 'Inicio',
+                    route: Routes.home,
+                    alternativeRoute: Routes.login,
+                    strictMatch: true,
+                    isCollapsed: isCollapsed,
+                  ),
                   _NavItem(
                     icon: LucideIcons.clock,
                     label: 'Ingreso',
@@ -209,6 +224,8 @@ class _NavItem extends StatelessWidget {
     required this.label,
     required this.route,
     required this.isCollapsed,
+    this.strictMatch = false,
+    this.alternativeRoute,
     this.trailing,
   });
 
@@ -216,6 +233,8 @@ class _NavItem extends StatelessWidget {
   final String label;
   final String route;
   final bool isCollapsed;
+  final bool strictMatch;
+  final String? alternativeRoute;
   final Widget? trailing;
 
   @override
@@ -223,7 +242,10 @@ class _NavItem extends StatelessWidget {
     final state = GoRouterState.of(context);
     final fullPath = state.fullPath ?? '';
     final Color textColor = Color(0xFF9A7B5A);
-    final selected = fullPath.startsWith(route);
+    // needed this so I can display the Routes.home as selected if you are either at home or login screen
+    final selected = strictMatch
+      ? (fullPath == route || fullPath == alternativeRoute)
+      : fullPath.startsWith(route);
 
     return Material(
       color: Colors.white,

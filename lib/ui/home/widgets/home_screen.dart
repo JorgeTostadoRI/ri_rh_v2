@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
+import 'package:ri_rh_v2/ui/core/ui/version_label.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 
@@ -56,123 +57,129 @@ class _HomeScreenState extends State<HomeScreen> {
 
             return Padding(
               padding: const EdgeInsets.all(48),
-              child: SizedBox(
-                width: 400,
-                child: ElevatedContainer(
-                  child: Column(
-                    spacing: 24,
-                    children: [
-                      if (user != null)
-                        Row(
-                          spacing: 24,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: primaryColor,
-                              child: Text(
-                                initials.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: .w900,
-                                  color: Colors.white,
+              child: Column(
+                spacing: 24,
+                children: [
+                  SizedBox(
+                    width: 400,
+                    child: ElevatedContainer(
+                      child: Column(
+                        spacing: 24,
+                        children: [
+                          if (user != null)
+                            Row(
+                              spacing: 24,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: primaryColor,
+                                  child: Text(
+                                    initials.toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: .w900,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text(user.nombre, style: textTheme.headlineMedium),
+                                      Text(
+                                        '${user.rol?.capitalize() ?? "Sin rol"} - ${user.departamento?.nombre ?? "Sin departamento"}',
+                                        style: textTheme.labelLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: .start,
-                                children: [
-                                  Text(user.nombre, style: textTheme.headlineMedium),
-                                  Text(
-                                    '${user.rol?.capitalize() ?? "Sin rol"} - ${user.departamento?.nombre ?? "Sin departamento"}',
-                                    style: textTheme.labelLarge,
+                          ListenableBuilder(
+                            listenable: widget.viewmodel.updateRole,
+                            builder: (context, _) {
+                              final running = widget.viewmodel.updateRole.running;
+                  
+                              return DropdownButtonFormField<String?>(
+                                decoration: InputDecoration(
+                                  labelText: 'Rol',
+                                  hintText: 'Selecciona un rol',
+                                  prefixIcon: running
+                                    ? Icon(LucideIcons.loaderCircle)
+                                    : Icon(LucideIcons.user),
+                                ),
+                                initialValue: user?.rol,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 'OPERADOR',
+                                    child: Text('Operador'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'LIDER',
+                                    child: Text('Lider'),
                                   ),
                                 ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ListenableBuilder(
-                        listenable: widget.viewmodel.updateRole,
-                        builder: (context, _) {
-                          final running = widget.viewmodel.updateRole.running;
-
-                          return DropdownButtonFormField<String?>(
-                            decoration: InputDecoration(
-                              labelText: 'Rol',
-                              hintText: 'Selecciona un rol',
-                              prefixIcon: running
-                                ? Icon(LucideIcons.loaderCircle)
-                                : Icon(LucideIcons.user),
-                            ),
-                            initialValue: user?.rol,
-                            items: [
-                              DropdownMenuItem(
-                                value: 'OPERADOR',
-                                child: Text('Operador'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'LIDER',
-                                child: Text('Lider'),
+                                onChanged: (role) {
+                                  if (role != null) {
+                                    widget.viewmodel.updateRole.execute(role);
+                                  }
+                                },
+                              );
+                            }
+                          ),
+                          ListenableBuilder(
+                            listenable: widget.viewmodel.updateDepartment,
+                            builder: (context, _) {
+                              final running = widget.viewmodel.updateDepartment.running;
+                  
+                              return DropdownButtonFormField<Departamento?>(
+                                decoration: InputDecoration(
+                                  labelText: 'Departamento',
+                                  hintText: 'Selecciona un departamento',
+                                  prefixIcon: running
+                                    ? Icon(LucideIcons.loaderCircle)
+                                    : Icon(LucideIcons.building2),
+                                ),
+                                initialValue: user?.departamento,
+                                items: user?.departamentosPermitidos
+                                .map(
+                                  (Departamento dep) => DropdownMenuItem(
+                                    value: dep,
+                                    child: Text(dep.nombre),
+                                  )
+                                ).toList() ?? [],
+                                onChanged: (department) {
+                                  if (department != null) {
+                                    widget.viewmodel.updateDepartment.execute(department);
+                                  }
+                                },
+                              );
+                            }
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    widget.viewmodel.logout.execute();
+                                    final notificationVM = context.read<NotificationViewmodel>();
+                                    notificationVM.clear.execute(); // clear notification counters
+                                  },
+                                  icon: Icon(LucideIcons.logOut),
+                                  label: Text('Cerrar sesión'),
+                                ),
                               ),
                             ],
-                            onChanged: (role) {
-                              if (role != null) {
-                                widget.viewmodel.updateRole.execute(role);
-                              }
-                            },
-                          );
-                        }
-                      ),
-                      ListenableBuilder(
-                        listenable: widget.viewmodel.updateDepartment,
-                        builder: (context, _) {
-                          final running = widget.viewmodel.updateDepartment.running;
-
-                          return DropdownButtonFormField<Departamento?>(
-                            decoration: InputDecoration(
-                              labelText: 'Departamento',
-                              hintText: 'Selecciona un departamento',
-                              prefixIcon: running
-                                ? Icon(LucideIcons.loaderCircle)
-                                : Icon(LucideIcons.building2),
-                            ),
-                            initialValue: user?.departamento,
-                            items: user?.departamentosPermitidos
-                            .map(
-                              (Departamento dep) => DropdownMenuItem(
-                                value: dep,
-                                child: Text(dep.nombre),
-                              )
-                            ).toList() ?? [],
-                            onChanged: (department) {
-                              if (department != null) {
-                                widget.viewmodel.updateDepartment.execute(department);
-                              }
-                            },
-                          );
-                        }
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              onPressed: () {
-                                widget.viewmodel.logout.execute();
-                                final notificationVM = context.read<NotificationViewmodel>();
-                                notificationVM.clear.execute(); // clear notification counters
-                              },
-                              icon: Icon(LucideIcons.logOut),
-                              label: Text('Cerrar sesión'),
-                            ),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  const VersionLabel(),
+                ],
               ),
             );
           }
