@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
@@ -10,6 +9,7 @@ import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
+import 'package:ri_rh_v2/ui/core/ui/version_label.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -29,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   bool showPassword = false;
-  late final Future<PackageInfo> packageInfoFuture;
 
   void _onResult() {
     if (widget.viewmodel.login.completed) {
@@ -51,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    packageInfoFuture = PackageInfo.fromPlatform();
     widget.viewmodel.login.addListener(_onResult);
   }
 
@@ -176,24 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              FutureBuilder(
-                future: packageInfoFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        'v${snapshot.data!.version}',
-                        style: textTheme.labelSmall,
-                      );
-                    }
-                  }
-      
-                  return Text(
-                    'Cargando versión...',
-                    style: textTheme.labelSmall,
-                  );
-                },
-              ),
+              const VersionLabel(),
             ],
           ),
         ),
