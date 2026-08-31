@@ -55,6 +55,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   DateTime? _startDate;
   DateTime? _endDate;
 
+  final TimeOfDay _min = const TimeOfDay(hour: 0, minute: 0);
+  final TimeOfDay _max = const TimeOfDay(hour: 23, minute: 59);
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
 
@@ -96,6 +98,23 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
 
   /// Should only be called once the form has been validated and the user is authenticated
   Future<Result<void>> submitData(IncidenciaCategory category) async {
+    late final DateTime start;
+    late final DateTime end;
+
+    switch (_dateOption) {
+      case IncidenciaDateOption.DATE_RANGE:
+        start = _constructDate(_startDate!, _min);
+        end = _constructDate(_endDate ?? _startDate!, _max);
+      case IncidenciaDateOption.HOUR_RANGE:
+        start = _constructDate(_startDate!, _startTime!);
+        end = _constructDate(_startDate!, _endTime!);
+    }
+
+    final comparison = end.compareTo(start);
+    if (comparison == -1 || comparison == 0) {
+      return Result.error(InvalidForm('La fecha solicitada es inválida, recuerda usar formato de 24h'));
+    }
+
     final user = _authRepository.getCurrentUser();
 
     final incidenciaFiles = _files.map((f) => IncidenciaFile(
@@ -104,8 +123,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     )).toList();
 
     final incidencia = Incidencia(
-      start: _constructDate(_startDate!, _startTime),
-      end: _constructDate(_endDate ?? _startDate!, _endTime),
+      start: start,
+      end: end,
       reason: _reason!,
       solicitor: user!,
       category: category,
@@ -133,19 +152,13 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     return _authRepository.loginViaChallenge(userinfo.username);
   }
 
-  DateTime _constructDate(DateTime initialDate, TimeOfDay? tod) {
-    switch (_dateOption) {
-      case IncidenciaDateOption.DATE_RANGE:
-        return initialDate;
-      case IncidenciaDateOption.HOUR_RANGE:
-        if (tod == null) throw ArgumentError('tod must not be null if _dateOption is HOUR_RANGE');
-        return DateTime(
-          initialDate.year,
-          initialDate.month,
-          initialDate.day,
-          tod.hour,
-          tod.minute,
-        );
-    }
+  DateTime _constructDate(DateTime initialDate, TimeOfDay tod) {
+    return DateTime(
+      initialDate.year,
+      initialDate.month,
+      initialDate.day,
+      tod.hour,
+      tod.minute,
+    );
   }
 }
