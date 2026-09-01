@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
@@ -25,6 +26,11 @@ class _AvisoCardState extends State<AvisoCard> {
   bool _hovering = false;
   
   Color get _bgColor => _hovering ? Colors.white : const Color(0xFFFDF6EE);
+
+  String _sanitizeUrl(String url) {
+    if (kDebugMode) return url;
+    return url.startsWith('http://') ? url.replaceFirst('http://', 'https://') : url;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +112,7 @@ class _AvisoCardState extends State<AvisoCard> {
               ClipRRect(
                 borderRadius: BorderRadiusGeometry.circular(16),
                 child: Image.network(
-                  widget.aviso.attachment!,
+                  _sanitizeUrl(widget.aviso.attachment!),
                   width: double.infinity,
                   height: 150,
                   fit: .cover,
