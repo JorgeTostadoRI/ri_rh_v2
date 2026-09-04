@@ -15,4 +15,12 @@ class HorarioRepositoryLocal extends HorarioRepository {
     final horarios = _localDataService.getHorarios();
     return Result.ok(horarios);
   }
+
+  @override
+  Future<Result<Horario>> createHorario(Horario horario) async {
+    return Result.ok(horario.copyWith(id: DateTime.now().millisecondsSinceEpoch));
+  }
+
+  @override
+  void invalidateCache() {}
 }

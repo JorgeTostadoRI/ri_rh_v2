@@ -303,7 +303,7 @@ as List<ReporteAsistenciaResponseItem>,
 /// @nodoc
 mixin _$ReporteAsistenciaResponseItem implements DiagnosticableTreeMixin {
 
- int get id; String get username; String get nombre; String get rol;@JsonKey(name: 'departamento') int get departamentoRef; int get totalMinutesLate; List<AsistenciaDailyApiModel> get asistencia;
+ int get id; String get username; String get nombre; String? get rol;@JsonKey(name: 'departamento') int? get departamentoRef; int get totalMinutesLate; List<AsistenciaDailyApiModel> get asistencia;
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -342,7 +342,7 @@ abstract mixin class $ReporteAsistenciaResponseItemCopyWith<$Res>  {
   factory $ReporteAsistenciaResponseItemCopyWith(ReporteAsistenciaResponseItem value, $Res Function(ReporteAsistenciaResponseItem) _then) = _$ReporteAsistenciaResponseItemCopyWithImpl;
 @useResult
 $Res call({
- int id, String username, String nombre, String rol,@JsonKey(name: 'departamento') int departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia
+ int id, String username, String nombre, String? rol,@JsonKey(name: 'departamento') int? departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia
 });
 
 
@@ -359,14 +359,14 @@ class _$ReporteAsistenciaResponseItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = null,Object? departamentoRef = null,Object? totalMinutesLate = null,Object? asistencia = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = freezed,Object? departamentoRef = freezed,Object? totalMinutesLate = null,Object? asistencia = null,}) {
   return _then(ReporteAsistenciaResponseItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,nombre: null == nombre ? _self.nombre : nombre // ignore: cast_nullable_to_non_nullable
-as String,rol: null == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
-as String,departamentoRef: null == departamentoRef ? _self.departamentoRef : departamentoRef // ignore: cast_nullable_to_non_nullable
-as int,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
+as String,rol: freezed == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
+as String?,departamentoRef: freezed == departamentoRef ? _self.departamentoRef : departamentoRef // ignore: cast_nullable_to_non_nullable
+as int?,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
 as int,asistencia: null == asistencia ? _self.asistencia : asistencia // ignore: cast_nullable_to_non_nullable
 as List<AsistenciaDailyApiModel>,
   ));
@@ -453,7 +453,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String rol, @JsonKey(name: 'departamento')  int departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaResponseItem() when $default != null:
 return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia);case _:
@@ -474,7 +474,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departament
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String rol, @JsonKey(name: 'departamento')  int departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaResponseItem():
 return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia);case _:
@@ -494,7 +494,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departament
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String rol, @JsonKey(name: 'departamento')  int departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)?  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaResponseItem() when $default != null:
 return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia);case _:
@@ -509,14 +509,14 @@ return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departament
 @JsonSerializable()
 
 class _ReporteAsistenciaResponseItem with DiagnosticableTreeMixin implements ReporteAsistenciaResponseItem {
-  const _ReporteAsistenciaResponseItem({required this.id, required this.username, required this.nombre, required this.rol, @JsonKey(name: 'departamento') required this.departamentoRef, required this.totalMinutesLate, required  List<AsistenciaDailyApiModel> asistencia}): _asistencia = asistencia;
+  const _ReporteAsistenciaResponseItem({required this.id, required this.username, required this.nombre, this.rol, @JsonKey(name: 'departamento') this.departamentoRef, required this.totalMinutesLate, required  List<AsistenciaDailyApiModel> asistencia}): _asistencia = asistencia;
   factory _ReporteAsistenciaResponseItem.fromJson(Map<String, dynamic> json) => _$ReporteAsistenciaResponseItemFromJson(json);
 
 @override final  int id;
 @override final  String username;
 @override final  String nombre;
-@override final  String rol;
-@override@JsonKey(name: 'departamento') final  int departamentoRef;
+@override final  String? rol;
+@override@JsonKey(name: 'departamento') final  int? departamentoRef;
 @override final  int totalMinutesLate;
  final  List<AsistenciaDailyApiModel> _asistencia;
 @override List<AsistenciaDailyApiModel> get asistencia {
@@ -565,7 +565,7 @@ abstract mixin class _$ReporteAsistenciaResponseItemCopyWith<$Res> implements $R
   factory _$ReporteAsistenciaResponseItemCopyWith(_ReporteAsistenciaResponseItem value, $Res Function(_ReporteAsistenciaResponseItem) _then) = __$ReporteAsistenciaResponseItemCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String username, String nombre, String rol,@JsonKey(name: 'departamento') int departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia
+ int id, String username, String nombre, String? rol,@JsonKey(name: 'departamento') int? departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia
 });
 
 
@@ -582,14 +582,14 @@ class __$ReporteAsistenciaResponseItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = null,Object? departamentoRef = null,Object? totalMinutesLate = null,Object? asistencia = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = freezed,Object? departamentoRef = freezed,Object? totalMinutesLate = null,Object? asistencia = null,}) {
   return _then(_ReporteAsistenciaResponseItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,nombre: null == nombre ? _self.nombre : nombre // ignore: cast_nullable_to_non_nullable
-as String,rol: null == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
-as String,departamentoRef: null == departamentoRef ? _self.departamentoRef : departamentoRef // ignore: cast_nullable_to_non_nullable
-as int,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
+as String,rol: freezed == rol ? _self.rol : rol // ignore: cast_nullable_to_non_nullable
+as String?,departamentoRef: freezed == departamentoRef ? _self.departamentoRef : departamentoRef // ignore: cast_nullable_to_non_nullable
+as int?,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
 as int,asistencia: null == asistencia ? _self._asistencia : asistencia // ignore: cast_nullable_to_non_nullable
 as List<AsistenciaDailyApiModel>,
   ));

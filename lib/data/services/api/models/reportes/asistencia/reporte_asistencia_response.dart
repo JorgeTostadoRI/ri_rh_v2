@@ -23,9 +23,9 @@ abstract class ReporteAsistenciaResponseItem with _$ReporteAsistenciaResponseIte
     required int id,
     required String username,
     required String nombre,
-    required String rol,
+    String? rol,
     @JsonKey(name: 'departamento')
-    required int departamentoRef,
+    int? departamentoRef,
     required int totalMinutesLate,
     required List<AsistenciaDailyApiModel> asistencia,
   }) = _ReporteAsistenciaResponseItem;

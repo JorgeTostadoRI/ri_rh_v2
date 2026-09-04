@@ -38,4 +38,10 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
 
     return Result.ok(_empleados[index]);
   }
+
+  @override
+  void invalidateCache() {
+    _initialized = false;
+    _empleados.clear();
+  }
 }

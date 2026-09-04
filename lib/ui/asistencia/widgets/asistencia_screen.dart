@@ -65,6 +65,28 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
           );
           return;
         }
+
+        if (error.errorCode == ApiErrorCodes.noHorario) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Horario no asignado'),
+                content: Text(
+                  'No cuentas con un horario de entrada asignado. '
+                  'Contacta al departamento de Recursos Humanos para que te asignen uno.'
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => context.pop(),
+                    child: Text('Entendido'),
+                  ),
+                ],
+              );
+            }
+          );
+          return;
+        }
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

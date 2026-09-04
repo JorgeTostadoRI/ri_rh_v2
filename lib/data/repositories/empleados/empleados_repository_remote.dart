@@ -119,5 +119,12 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
 
   bool get isEmpleadosCacheExpired {
     return _cachedEmpleados == null || _cacheTime.difference(DateTime.now()).abs().inMinutes > 5;
-  } 
+  }
+
+  @override
+  void invalidateCache() {
+    _cachedUsers = null;
+    _cachedEmpleados = null;
+    _cacheTime = DateTime(1970, 01, 01);
+  }
 }

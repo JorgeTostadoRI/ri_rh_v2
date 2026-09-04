@@ -23,6 +23,7 @@ _UserApiModel _$UserApiModelFromJson(
       .toList(),
   liderPermitido: json['lider_permitido'] as bool,
   isRemote: json['is_remote'] as bool? ?? false,
+  horarioId: (json['horario_id'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$UserApiModelToJson(_UserApiModel instance) =>
@@ -37,6 +38,7 @@ Map<String, dynamic> _$UserApiModelToJson(_UserApiModel instance) =>
       'departamentos_permitidos': instance.departamentosPermitidos,
       'lider_permitido': instance.liderPermitido,
       'is_remote': instance.isRemote,
+      'horario_id': instance.horarioId,
     };
 
 _DepartamentoApiModel _$DepartamentoApiModelFromJson(

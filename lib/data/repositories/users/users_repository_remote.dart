@@ -21,4 +21,17 @@ class UsersRepositoryRemote extends UsersRepository {
     }
     return Result.ok(result.value);
   }
+
+  @override
+  Future<Result<void>> updateUserHorario(int userId, int? horarioId) async {
+    final result = await _apiClient.patchUser(userId, {
+      'horario_id': horarioId,
+    });
+    switch (result) {
+      case Error():
+        return Result.error(result.error);
+      case Ok():
+    }
+    return const Result.ok(null);
+  }
 }

@@ -183,6 +183,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     empleadoId: empleadoId,
                     log: context.read(),
                     empleadosRepository: context.read(),
+                    usersRepository: context.read(),
+                    horarioRepository: context.read(),
                   ),
                 );
               },
@@ -234,6 +236,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     practicanteId: practicanteId,
                     log: context.read(),
                     practicantesRepository: context.read(),
+                    usersRepository: context.read(),
+                    horarioRepository: context.read(),
                   ),
                 );
               },

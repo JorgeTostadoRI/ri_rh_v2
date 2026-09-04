@@ -15,25 +15,40 @@ _Horario _$HorarioFromJson(Map<String, dynamic> json) => _Horario(
       ? null
       : DateTime.parse(json['updated_at'] as String),
   name: json['name'] as String,
-  firstStartTime: const TimeConverter().fromJson(
-    json['first_start_time'] as String,
+  scheduleType:
+      $enumDecodeNullable(
+        _$HorarioScheduleTypeEnumMap,
+        json['schedule_type'],
+      ) ??
+      HorarioScheduleType.uniform,
+  firstStartTime: _$JsonConverterFromJson<String, Time>(
+    json['first_start_time'],
+    const TimeConverter().fromJson,
   ),
-  firstEndTime: const TimeConverter().fromJson(
-    json['first_end_time'] as String,
+  firstEndTime: _$JsonConverterFromJson<String, Time>(
+    json['first_end_time'],
+    const TimeConverter().fromJson,
   ),
-  secondStartTime: const TimeConverter().fromJson(
-    json['second_start_time'] as String,
+  secondStartTime: _$JsonConverterFromJson<String, Time>(
+    json['second_start_time'],
+    const TimeConverter().fromJson,
   ),
-  secondEndTime: const TimeConverter().fromJson(
-    json['second_end_time'] as String,
+  secondEndTime: _$JsonConverterFromJson<String, Time>(
+    json['second_end_time'],
+    const TimeConverter().fromJson,
   ),
-  mon: json['mon'] as bool,
-  tue: json['tue'] as bool,
-  wed: json['wed'] as bool,
-  thu: json['thu'] as bool,
-  fri: json['fri'] as bool,
-  sat: json['sat'] as bool,
-  sun: json['sun'] as bool,
+  mon: json['mon'] as bool? ?? false,
+  tue: json['tue'] as bool? ?? false,
+  wed: json['wed'] as bool? ?? false,
+  thu: json['thu'] as bool? ?? false,
+  fri: json['fri'] as bool? ?? false,
+  sat: json['sat'] as bool? ?? false,
+  sun: json['sun'] as bool? ?? false,
+  dias:
+      (json['dias'] as List<dynamic>?)
+          ?.map((e) => HorarioDia.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <HorarioDia>[],
 );
 
 Map<String, dynamic> _$HorarioToJson(_Horario instance) => <String, dynamic>{
@@ -41,10 +56,23 @@ Map<String, dynamic> _$HorarioToJson(_Horario instance) => <String, dynamic>{
   'created_at': instance.createdAt?.toIso8601String(),
   'updated_at': instance.updatedAt?.toIso8601String(),
   'name': instance.name,
-  'first_start_time': const TimeConverter().toJson(instance.firstStartTime),
-  'first_end_time': const TimeConverter().toJson(instance.firstEndTime),
-  'second_start_time': const TimeConverter().toJson(instance.secondStartTime),
-  'second_end_time': const TimeConverter().toJson(instance.secondEndTime),
+  'schedule_type': _$HorarioScheduleTypeEnumMap[instance.scheduleType]!,
+  'first_start_time': _$JsonConverterToJson<String, Time>(
+    instance.firstStartTime,
+    const TimeConverter().toJson,
+  ),
+  'first_end_time': _$JsonConverterToJson<String, Time>(
+    instance.firstEndTime,
+    const TimeConverter().toJson,
+  ),
+  'second_start_time': _$JsonConverterToJson<String, Time>(
+    instance.secondStartTime,
+    const TimeConverter().toJson,
+  ),
+  'second_end_time': _$JsonConverterToJson<String, Time>(
+    instance.secondEndTime,
+    const TimeConverter().toJson,
+  ),
   'mon': instance.mon,
   'tue': instance.tue,
   'wed': instance.wed,
@@ -52,4 +80,20 @@ Map<String, dynamic> _$HorarioToJson(_Horario instance) => <String, dynamic>{
   'fri': instance.fri,
   'sat': instance.sat,
   'sun': instance.sun,
+  'dias': instance.dias,
 };
+
+const _$HorarioScheduleTypeEnumMap = {
+  HorarioScheduleType.uniform: 'uniform',
+  HorarioScheduleType.custom: 'custom',
+};
+
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) => json == null ? null : fromJson(json as Json);
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) => value == null ? null : toJson(value);
