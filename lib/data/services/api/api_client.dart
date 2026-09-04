@@ -555,6 +555,22 @@ class ApiClient {
     }
   }
 
+  Future<Result<Horario>> createHorario(Horario horario) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/horarios/', data: horario.toJson());
+      final result = Horario.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // DEPARTAMENTOS
   Future<Result<List<Departamento>>> getDepartamentos() async {
     final dio = _dioFactory();

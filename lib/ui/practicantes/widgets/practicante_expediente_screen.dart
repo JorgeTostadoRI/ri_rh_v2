@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_files.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
 
 class PracticanteExpedienteScreen extends StatefulWidget {
@@ -79,6 +80,13 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                           ExpedienteFiles(
                             files: practicante.base.files,
                             altaPracticante: practicante.alta,
+                          ),
+                          HorarioCard(
+                            horarios: widget.viewmodel.horarios,
+                            selectedHorarioId: practicante.base.user?.horarioId,
+                            userNombre: practicante.base.nombre,
+                            assignHorario: widget.viewmodel.assignHorario,
+                            createCustomHorario: widget.viewmodel.createCustomHorario,
                           ),
                           Badge(
                             backgroundColor: statusWarningColor,

@@ -16,6 +16,9 @@ import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository_remote
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/fingerprint/fingerprint_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/horario/horario_repository.dart';
+import 'package:ri_rh_v2/data/repositories/horario/horario_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/horario/horario_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
@@ -148,6 +151,11 @@ Future<List<SingleChildWidget>> get providersLocal async {
         localDataService: context.read(),
       ) as UsersRepository
     ),
+    Provider(create: (context) =>
+      HorarioRepositoryLocal(
+        localDataService: context.read(),
+      ) as HorarioRepository
+    ),
     ..._sharedViewmodels,
   ];
 }
@@ -235,6 +243,11 @@ Future<List<SingleChildWidget>> get providersRemote async {
       UsersRepositoryRemote(
         apiClient: context.read(),
       ) as UsersRepository
+    ),
+    Provider(create: (context) =>
+      HorarioRepositoryRemote(
+        apiClient: context.read(),
+      ) as HorarioRepository
     ),
     ..._sharedViewmodels,
   ];

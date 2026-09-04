@@ -39,7 +39,9 @@ abstract class ReporteAsistenciaItem with _$ReporteAsistenciaItem {
         telefono: '',
         correo: '',
         rol: model.rol,
-        departamento: departamentos.firstWhere((dep) => dep.id == model.departamentoRef),
+        departamento: model.departamentoRef == null
+            ? null
+            : departamentos.firstWhere((dep) => dep.id == model.departamentoRef),
         departamentosPermitidos: [],
         liderPermitido: false,
       );

@@ -7,4 +7,8 @@ abstract class PracticantesRepository {
 
   /// Retrieve practicante.
   Future<Result<Practicante>> getPracticante(int id);
+
+  /// Forces the next [getPracticantes]/[getPracticante] call to fetch fresh
+  /// data instead of returning a cached result.
+  void invalidateCache();
 }

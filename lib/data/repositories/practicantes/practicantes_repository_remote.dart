@@ -118,4 +118,9 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
       _cachedUniversidades = resultUniversidades.value;
     }
   }
+
+  @override
+  void invalidateCache() {
+    _cachedUsers = null;
+  }
 }

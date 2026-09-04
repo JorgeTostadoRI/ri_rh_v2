@@ -16,7 +16,7 @@ class GeneralAttendanceTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
-    final yMd = DateFormat.yMd();
+    final yMd = DateFormat.yMd('en_US');
 
     return DataTable(
       headingRowHeight: 80,
@@ -130,7 +130,7 @@ class GeneralAttendanceTable extends StatelessWidget {
   }
 
   List<TableRow> _buildCheckInTableRow(AsistenciaDaily attendance) {
-    final jm = DateFormat.jm();
+    final jm = DateFormat.jm('en_US');
 
     return switch(attendance.status) {
       AsistenciaStatus.present => [TableRow(children: [

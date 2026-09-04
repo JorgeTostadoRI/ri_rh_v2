@@ -37,4 +37,9 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
 
     return Result.ok(_cachedPracticantes![index]);
   }
+
+  @override
+  void invalidateCache() {
+    _cachedPracticantes = null;
+  }
 }

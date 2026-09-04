@@ -39,5 +39,13 @@ class TimeConverter implements JsonConverter<Time, String> {
   }
 
   @override
-  String toJson(Time object) => object.toString();
+  String toJson(Time object) {
+    // Time overrides toString() above, but freezed generates `_Time
+    // implements Time` (not `extends`), so that override is never actually
+    // inherited by instances — build the string directly instead.
+    final hh = object.hour.toString().padLeft(2, '0');
+    final mm = object.minute.toString().padLeft(2, '0');
+    final ss = object.second.toString().padLeft(2, '0');
+    return '$hh:$mm:$ss';
+  }
 }

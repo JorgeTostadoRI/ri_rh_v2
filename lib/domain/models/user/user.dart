@@ -20,6 +20,7 @@ abstract class User with _$User {
         required bool liderPermitido,
         @Default(false)
         bool isRemote,
+        int? horarioId,
     }) = _User;
 
   factory User.fromJson(Map<String, Object?> json) => _$UserFromJson(json);
@@ -51,6 +52,7 @@ abstract class User with _$User {
       ).toList(),
       liderPermitido: model.liderPermitido,
       isRemote: model.isRemote,
+      horarioId: model.horarioId,
     );
   }
 }

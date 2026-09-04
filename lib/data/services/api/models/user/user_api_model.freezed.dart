@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserApiModel implements DiagnosticableTreeMixin {
 
- int get id; String get username; String get nombre; String get telefono; String get correo; String get rol; DepartamentoApiModel get departamento; List<DepartamentoApiModel> get departamentosPermitidos; bool get liderPermitido; bool get isRemote;
+ int get id; String get username; String get nombre; String get telefono; String get correo; String get rol; DepartamentoApiModel get departamento; List<DepartamentoApiModel> get departamentosPermitidos; bool get liderPermitido; bool get isRemote; int? get horarioId;
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $UserApiModelCopyWith<UserApiModel> get copyWith => _$UserApiModelCopyWithImpl<U
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'UserApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote))..add(DiagnosticsProperty('horarioId', horarioId));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other.departamentosPermitidos, departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other.departamentosPermitidos, departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote)&&(identical(other.horarioId, horarioId) || other.horarioId == horarioId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(departamentosPermitidos),liderPermitido,isRemote);
+int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(departamentosPermitidos),liderPermitido,isRemote,horarioId);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote)';
+  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote, horarioId: $horarioId)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $UserApiModelCopyWith<$Res>  {
   factory $UserApiModelCopyWith(UserApiModel value, $Res Function(UserApiModel) _then) = _$UserApiModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, bool isRemote
+ int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, bool isRemote, int? horarioId
 });
 
 
@@ -72,7 +72,7 @@ class _$UserApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,Object? horarioId = freezed,}) {
   return _then(UserApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -84,7 +84,8 @@ as String,departamento: null == departamento ? _self.departamento : departamento
 as DepartamentoApiModel,departamentosPermitidos: null == departamentosPermitidos ? _self.departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
 as List<DepartamentoApiModel>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
 as bool,isRemote: null == isRemote ? _self.isRemote : isRemote // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,horarioId: freezed == horarioId ? _self.horarioId : horarioId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 /// Create a copy of UserApiModel
@@ -178,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserApiModel() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId);case _:
   return orElse();
 
 }
@@ -199,10 +200,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId)  $default,) {final _that = this;
 switch (_that) {
 case _UserApiModel():
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -219,10 +220,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String rol,  DepartamentoApiModel departamento,  List<DepartamentoApiModel> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId)?  $default,) {final _that = this;
 switch (_that) {
 case _UserApiModel() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId);case _:
   return null;
 
 }
@@ -234,7 +235,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 @JsonSerializable()
 
 class _UserApiModel with DiagnosticableTreeMixin implements UserApiModel {
-  const _UserApiModel({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, required this.rol, required this.departamento, required  List<DepartamentoApiModel> departamentosPermitidos, required this.liderPermitido, this.isRemote = false}): _departamentosPermitidos = departamentosPermitidos;
+  const _UserApiModel({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, required this.rol, required this.departamento, required  List<DepartamentoApiModel> departamentosPermitidos, required this.liderPermitido, this.isRemote = false, this.horarioId}): _departamentosPermitidos = departamentosPermitidos;
   factory _UserApiModel.fromJson(Map<String, dynamic> json) => _$UserApiModelFromJson(json);
 
 @override final  int id;
@@ -253,6 +254,7 @@ class _UserApiModel with DiagnosticableTreeMixin implements UserApiModel {
 
 @override final  bool liderPermitido;
 @override@JsonKey() final  bool isRemote;
+@override final  int? horarioId;
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
@@ -268,21 +270,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'UserApiModel'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote))..add(DiagnosticsProperty('horarioId', horarioId));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other._departamentosPermitidos, _departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other._departamentosPermitidos, _departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote)&&(identical(other.horarioId, horarioId) || other.horarioId == horarioId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(_departamentosPermitidos),liderPermitido,isRemote);
+int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(_departamentosPermitidos),liderPermitido,isRemote,horarioId);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote)';
+  return 'UserApiModel(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote, horarioId: $horarioId)';
 }
 
 
@@ -293,7 +295,7 @@ abstract mixin class _$UserApiModelCopyWith<$Res> implements $UserApiModelCopyWi
   factory _$UserApiModelCopyWith(_UserApiModel value, $Res Function(_UserApiModel) _then) = __$UserApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, bool isRemote
+ int id, String username, String nombre, String telefono, String correo, String rol, DepartamentoApiModel departamento, List<DepartamentoApiModel> departamentosPermitidos, bool liderPermitido, bool isRemote, int? horarioId
 });
 
 
@@ -310,7 +312,7 @@ class __$UserApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = null,Object? departamento = null,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,Object? horarioId = freezed,}) {
   return _then(_UserApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -322,7 +324,8 @@ as String,departamento: null == departamento ? _self.departamento : departamento
 as DepartamentoApiModel,departamentosPermitidos: null == departamentosPermitidos ? _self._departamentosPermitidos : departamentosPermitidos // ignore: cast_nullable_to_non_nullable
 as List<DepartamentoApiModel>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
 as bool,isRemote: null == isRemote ? _self.isRemote : isRemote // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,horarioId: freezed == horarioId ? _self.horarioId : horarioId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

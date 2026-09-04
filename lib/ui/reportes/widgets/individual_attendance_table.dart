@@ -19,8 +19,8 @@ class IndividualAttendanceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final yMd = DateFormat.yMd();
-    final jm = DateFormat.jm();
+    final yMd = DateFormat.yMd('en_US');
+    final jm = DateFormat.jm('en_US');
     final totalMinutesLate = item.asistencia.entries.fold(0, (sum, asist) => sum + asist.value.minutesLate);
 
     return Container(

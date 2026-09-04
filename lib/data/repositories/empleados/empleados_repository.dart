@@ -5,4 +5,8 @@ abstract class EmpleadosRepository {
   Future<Result<List<Empleado>>> getEmpleados();
 
   Future<Result<Empleado>> getEmpleado(int id);
+
+  /// Forces the next [getEmpleados]/[getEmpleado] call to fetch fresh data
+  /// instead of returning a cached result.
+  void invalidateCache();
 }

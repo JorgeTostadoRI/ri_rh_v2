@@ -26,4 +26,14 @@ class HorarioRepositoryRemote extends HorarioRepository {
 
     return Result.ok(_cachedHorarios!);
   }
+
+  @override
+  Future<Result<Horario>> createHorario(Horario horario) async {
+    return _apiClient.createHorario(horario);
+  }
+
+  @override
+  void invalidateCache() {
+    _cachedHorarios = null;
+  }
 }

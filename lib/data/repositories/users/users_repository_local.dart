@@ -16,4 +16,9 @@ class UsersRepositoryLocal extends UsersRepository {
     final users = _localDataService.getUsers();
     return Result.ok(users);
   }
+
+  @override
+  Future<Result<void>> updateUserHorario(int userId, int? horarioId) async {
+    return const Result.ok(null);
+  }
 }
