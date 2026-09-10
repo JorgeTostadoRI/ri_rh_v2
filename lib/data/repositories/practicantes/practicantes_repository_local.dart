@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
@@ -41,5 +42,13 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
   @override
   void invalidateCache() {
     _cachedPracticantes = null;
+  }
+
+  @override
+  Future<Result<String>> cambiarEstado(int practicanteId, StatusPracticante nuevoEstado, {
+    DateTime? fechaBaja,
+    PlatformFile? cartaLiberacion,
+  }) async {
+    return const Result.ok('Estado actualizado correctamente');
   }
 }

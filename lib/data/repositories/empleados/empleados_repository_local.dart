@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
@@ -43,5 +44,17 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   void invalidateCache() {
     _initialized = false;
     _empleados.clear();
+  }
+
+  @override
+  Future<Result<String>> cambiarEstatus(int empleadoId, EmpleadoEstatus nuevoEstatus, {
+    DateTime? fechaBaja,
+    PlatformFile? cartaRenuncia,
+    PlatformFile? finiquitoFirmado,
+    PlatformFile? bajaImss,
+    PlatformFile? comprobanteTransferencia,
+    PlatformFile? convenioTerminacion,
+  }) async {
+    return const Result.ok('Estatus actualizado correctamente');
   }
 }

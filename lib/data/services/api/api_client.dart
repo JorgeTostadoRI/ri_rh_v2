@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
@@ -390,6 +391,45 @@ class ApiClient {
     }
   }
 
+  Future<Result<String>> cambiarEstatusEmpleado(int id, {
+    required String estatus,
+    DateTime? fechaBaja,
+    PlatformFile? cartaRenuncia,
+    PlatformFile? finiquitoFirmado,
+    PlatformFile? bajaImss,
+    PlatformFile? comprobanteTransferencia,
+    PlatformFile? convenioTerminacion,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      MultipartFile? toMultipart(PlatformFile? file) => file == null ? null : MultipartFile.fromBytes(
+        file.bytes!,
+        filename: file.name,
+        contentType: getMediaTypeFromExtension(file.extension!),
+      );
+      final formData = FormData.fromMap({
+        'estatus': estatus,
+        if (fechaBaja != null) 'fecha_baja': fechaBaja.toShortIsoString(),
+        'carta_renuncia': toMultipart(cartaRenuncia),
+        'finiquito_firmado': toMultipart(finiquitoFirmado),
+        'baja_imss': toMultipart(bajaImss),
+        'comprobante_transferencia_finiquito': toMultipart(comprobanteTransferencia),
+        'convenio_terminacion': toMultipart(convenioTerminacion),
+      });
+      final response = await dio.patch('/api/rh/empleados/$id/cambiar-estatus/', data: formData);
+      final data = response.data as Map<String, dynamic>;
+      final message = (data['detalle'] ?? data['status'] ?? 'Estatus actualizado correctamente') as String;
+      return Result.ok(message);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<Result<List<EmpleadoApiModel>>> getEmpleados() async {
     final dio = _dioFactory();
     try {
@@ -434,6 +474,36 @@ class ApiClient {
       final response = await dio.get('/api/rh/PracticantesResidentes/$id/');
       final result = PracticanteApiModel.fromJson(response.data);
       return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<String>> cambiarEstadoPracticante(int id, {
+    required String estado,
+    DateTime? fechaBaja,
+    PlatformFile? cartaLiberacion,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'estado': estado,
+        if (fechaBaja != null) 'fecha_baja': fechaBaja.toShortIsoString(),
+        if (cartaLiberacion != null) 'carta_liberacion': MultipartFile.fromBytes(
+          cartaLiberacion.bytes!,
+          filename: cartaLiberacion.name,
+          contentType: getMediaTypeFromExtension(cartaLiberacion.extension!),
+        ),
+      });
+      final response = await dio.patch('/api/rh/PracticantesResidentes/$id/cambiar-estado/', data: formData);
+      final data = response.data as Map<String, dynamic>;
+      final message = (data['detalle'] ?? data['message'] ?? 'Estado actualizado correctamente') as String;
+      return Result.ok(message);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {

@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_actions_menu.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_status_chip.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 
@@ -130,6 +131,10 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                       statusChip: PracticanteStatusChip(status: practicante.status!),
                       onExpedientePressed: () => context.go(Routes.expedienteOfPracticante(practicante)),
                       hasPendingActions: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
+                      actionsMenu: PracticanteActionsMenu(
+                        practicante: practicante,
+                        cambiarEstado: widget.viewmodel.cambiarEstado,
+                      ),
                     );
                   }
                 );

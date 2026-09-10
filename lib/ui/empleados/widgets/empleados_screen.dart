@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/base_empleado_card.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/empleado_actions_menu.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleado_status_chip.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 
@@ -138,6 +139,10 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                       statusChip: EmpleadoStatusChip(status: empleado.estatus),
                       onExpedientePressed: () => context.go(Routes.expedienteOfEmpleado(empleado)),
                       hasPendingActions: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
+                      actionsMenu: EmpleadoActionsMenu(
+                        empleado: empleado,
+                        cambiarEstatus: widget.viewmodel.cambiarEstatus,
+                      ),
                     );
                   },
                 );
