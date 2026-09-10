@@ -5,6 +5,8 @@ import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
+import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -20,6 +22,8 @@ class EmpleadoExpedienteViewmodel extends ChangeNotifier {
     loadHorarios = Command0(_loadHorarios)..execute();
     assignHorario = Command1(_assignHorario);
     createCustomHorario = Command1(_createCustomHorario);
+    loadJefes = Command0(_loadJefes)..execute();
+    assignJefe = Command1(_assignJefe);
   }
 
   final int empleadoId;
@@ -38,6 +42,12 @@ class EmpleadoExpedienteViewmodel extends ChangeNotifier {
 
   late final Command1<void, int> assignHorario;
   late final Command1<Horario, Horario> createCustomHorario;
+
+  late final Command0 loadJefes;
+  List<User> _jefes = [];
+  List<User> get jefes => _jefes;
+
+  late final Command1<void, int> assignJefe;
 
   Future<Result<Empleado>> _load(int id) async {
     final result = await _empleadosRepository.getEmpleado(id);
@@ -92,5 +102,37 @@ class EmpleadoExpedienteViewmodel extends ChangeNotifier {
       case Ok():
     }
     return result;
+  }
+
+  Future<Result<void>> _loadJefes() async {
+    final result = await _usersRepository.getUsers(query: UserQuery(active: true, order: UserQueryOrder.nombre));
+    switch (result) {
+      case Error():
+        _log.warning('Failed to load jefes', error: result.error);
+        return result;
+      case Ok():
+    }
+    _jefes = result.value;
+    notifyListeners();
+    return const Result.ok(null);
+  }
+
+  Future<Result<void>> _assignJefe(int jefeId) async {
+    final userId = _empleado.base.user?.id;
+    if (userId == null) {
+      return Result.error(Exception('Empleado sin usuario asociado'));
+    }
+
+    final result = await _usersRepository.updateUserJefe(userId, jefeId);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to assign jefe', error: result.error);
+        return result;
+      case Ok():
+    }
+
+    _empleadosRepository.invalidateCache();
+    await load.execute(empleadoId);
+    return const Result.ok(null);
   }
 }
