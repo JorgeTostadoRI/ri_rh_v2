@@ -20,6 +20,7 @@ abstract class UserApiModel with _$UserApiModel {
         @Default(false)
         bool isRemote,
         int? horarioId,
+        int? jefeId,
     }) = _UserApiModel;
 
   factory UserApiModel.fromJson(Map<String, Object?> json) => _$UserApiModelFromJson(json);

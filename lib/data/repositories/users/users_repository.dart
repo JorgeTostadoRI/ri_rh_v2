@@ -5,4 +5,5 @@ import 'package:ri_rh_v2/utils/result.dart';
 abstract class UsersRepository {
   Future<Result<List<User>>> getUsers({UserQuery? query});
   Future<Result<void>> updateUserHorario(int userId, int? horarioId);
+  Future<Result<void>> updateUserJefe(int userId, int? jefeId);
 }

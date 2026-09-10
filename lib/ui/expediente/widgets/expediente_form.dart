@@ -2,19 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/jefe_field.dart';
+import 'package:ri_rh_v2/utils/command.dart';
 
 class ExpedienteForm extends StatefulWidget {
   const ExpedienteForm({
     super.key,
     required this.baseEmpleado,
     required this.readOnly,
+    required this.jefeCandidates,
+    required this.assignJefe,
   });
 
   final BaseEmpleado baseEmpleado;
   final bool readOnly;
+  final List<User> jefeCandidates;
+  final Command1<void, int> assignJefe;
 
   @override
   State<ExpedienteForm> createState() => _ExpedienteFormState();
@@ -34,7 +41,6 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
   late final TextEditingController _nombreEmergencia;
   late final TextEditingController _contactoEmergencia;
   late final TextEditingController _direccion;
-  late final TextEditingController _jefe;
   late final TextEditingController _usuario;
 
   @override
@@ -51,7 +57,6 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
     _nombreEmergencia = TextEditingController(text: base.numeroContacto);
     _contactoEmergencia = TextEditingController(text: base.contactoEmergencia);
     _direccion = TextEditingController(text: base.direccion);
-    _jefe = TextEditingController(text: base.jefe?.nombre);
     _usuario = TextEditingController(text: base.user?.username);
   }
 
@@ -179,12 +184,11 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                   ),
                 ),
                 Flexible(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: _jefe,
-                    decoration: InputDecoration(
-                      labelText: 'JEFE DIRECTO',
-                    ),
+                  child: JefeField(
+                    candidates: widget.jefeCandidates,
+                    currentUserId: widget.baseEmpleado.user!.id,
+                    selectedJefeId: widget.baseEmpleado.user?.jefeId,
+                    assignJefe: widget.assignJefe,
                   ),
                 ),
               ],

@@ -30,7 +30,11 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
       child: Container(
         padding: const EdgeInsets.all(40),
         child: ListenableBuilder(
-          listenable: widget.viewmodel.load,
+          listenable: Listenable.merge([
+            widget.viewmodel.load,
+            widget.viewmodel.loadHorarios,
+            widget.viewmodel.loadJefes,
+          ]),
           builder: (context, _) {
             if (widget.viewmodel.load.running) {
               return const Center(child: CircularProgressIndicator());
@@ -70,6 +74,8 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                       child: ExpedienteForm(
                         baseEmpleado: practicante.base,
                         readOnly: true,
+                        jefeCandidates: widget.viewmodel.jefes,
+                        assignJefe: widget.viewmodel.assignJefe,
                       ),
                     ),
                     Flexible(

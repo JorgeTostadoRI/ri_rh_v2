@@ -161,7 +161,7 @@ class _CategoriesDialogState extends State<_CategoriesDialog> {
   @override
   void initState() {
     super.initState();
-    _currentSelection = widget.categories;
+    _currentSelection = widget.categories.toList(); // copy the list so we can modify it
   }
 
   @override

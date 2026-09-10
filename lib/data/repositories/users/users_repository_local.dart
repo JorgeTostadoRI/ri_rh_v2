@@ -21,4 +21,9 @@ class UsersRepositoryLocal extends UsersRepository {
   Future<Result<void>> updateUserHorario(int userId, int? horarioId) async {
     return const Result.ok(null);
   }
+
+  @override
+  Future<Result<void>> updateUserJefe(int userId, int? jefeId) async {
+    return const Result.ok(null);
+  }
 }

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User implements DiagnosticableTreeMixin {
 
- int get id; String get username; String get nombre; String get telefono; String get correo; String? get rol; Departamento? get departamento; List<Departamento> get departamentosPermitidos; bool get liderPermitido; bool get isRemote; int? get horarioId;
+ int get id; String get username; String get nombre; String get telefono; String get correo; String? get rol; Departamento? get departamento; List<Departamento> get departamentosPermitidos; bool get liderPermitido; bool get isRemote; int? get horarioId; int? get jefeId;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $UserCopyWith<User> get copyWith => _$UserCopyWithImpl<User>(this as User, _$ide
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'User'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote))..add(DiagnosticsProperty('horarioId', horarioId));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote))..add(DiagnosticsProperty('horarioId', horarioId))..add(DiagnosticsProperty('jefeId', jefeId));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other.departamentosPermitidos, departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote)&&(identical(other.horarioId, horarioId) || other.horarioId == horarioId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other.departamentosPermitidos, departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote)&&(identical(other.horarioId, horarioId) || other.horarioId == horarioId)&&(identical(other.jefeId, jefeId) || other.jefeId == jefeId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(departamentosPermitidos),liderPermitido,isRemote,horarioId);
+int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(departamentosPermitidos),liderPermitido,isRemote,horarioId,jefeId);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'User(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote, horarioId: $horarioId)';
+  return 'User(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote, horarioId: $horarioId, jefeId: $jefeId)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String? rol, Departamento? departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, bool isRemote, int? horarioId
+ int id, String username, String nombre, String telefono, String correo, String? rol, Departamento? departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, bool isRemote, int? horarioId, int? jefeId
 });
 
 
@@ -72,7 +72,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = freezed,Object? departamento = freezed,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,Object? horarioId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = freezed,Object? departamento = freezed,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,Object? horarioId = freezed,Object? jefeId = freezed,}) {
   return _then(User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -85,6 +85,7 @@ as Departamento?,departamentosPermitidos: null == departamentosPermitidos ? _sel
 as List<Departamento>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
 as bool,isRemote: null == isRemote ? _self.isRemote : isRemote // ignore: cast_nullable_to_non_nullable
 as bool,horarioId: freezed == horarioId ? _self.horarioId : horarioId // ignore: cast_nullable_to_non_nullable
+as int?,jefeId: freezed == jefeId ? _self.jefeId : jefeId // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -182,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId,  int? jefeId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId,_that.jefeId);case _:
   return orElse();
 
 }
@@ -203,10 +204,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId,  int? jefeId)  $default,) {final _that = this;
 switch (_that) {
 case _User():
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId,_that.jefeId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -223,10 +224,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String telefono,  String correo,  String? rol,  Departamento? departamento,  List<Departamento> departamentosPermitidos,  bool liderPermitido,  bool isRemote,  int? horarioId,  int? jefeId)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo,_that.rol,_that.departamento,_that.departamentosPermitidos,_that.liderPermitido,_that.isRemote,_that.horarioId,_that.jefeId);case _:
   return null;
 
 }
@@ -238,7 +239,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.telefono,_that.correo
 @JsonSerializable()
 
 class _User with DiagnosticableTreeMixin implements User {
-  const _User({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, this.rol, this.departamento, required  List<Departamento> departamentosPermitidos, required this.liderPermitido, this.isRemote = false, this.horarioId}): _departamentosPermitidos = departamentosPermitidos;
+  const _User({required this.id, required this.username, required this.nombre, required this.telefono, required this.correo, this.rol, this.departamento, required  List<Departamento> departamentosPermitidos, required this.liderPermitido, this.isRemote = false, this.horarioId, this.jefeId}): _departamentosPermitidos = departamentosPermitidos;
   factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override final  int id;
@@ -258,6 +259,7 @@ class _User with DiagnosticableTreeMixin implements User {
 @override final  bool liderPermitido;
 @override@JsonKey() final  bool isRemote;
 @override final  int? horarioId;
+@override final  int? jefeId;
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
@@ -273,21 +275,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'User'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote))..add(DiagnosticsProperty('horarioId', horarioId));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('telefono', telefono))..add(DiagnosticsProperty('correo', correo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamento', departamento))..add(DiagnosticsProperty('departamentosPermitidos', departamentosPermitidos))..add(DiagnosticsProperty('liderPermitido', liderPermitido))..add(DiagnosticsProperty('isRemote', isRemote))..add(DiagnosticsProperty('horarioId', horarioId))..add(DiagnosticsProperty('jefeId', jefeId));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other._departamentosPermitidos, _departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote)&&(identical(other.horarioId, horarioId) || other.horarioId == horarioId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.telefono, telefono) || other.telefono == telefono)&&(identical(other.correo, correo) || other.correo == correo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamento, departamento) || other.departamento == departamento)&&const DeepCollectionEquality().equals(other._departamentosPermitidos, _departamentosPermitidos)&&(identical(other.liderPermitido, liderPermitido) || other.liderPermitido == liderPermitido)&&(identical(other.isRemote, isRemote) || other.isRemote == isRemote)&&(identical(other.horarioId, horarioId) || other.horarioId == horarioId)&&(identical(other.jefeId, jefeId) || other.jefeId == jefeId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(_departamentosPermitidos),liderPermitido,isRemote,horarioId);
+int get hashCode => Object.hash(runtimeType,id,username,nombre,telefono,correo,rol,departamento,const DeepCollectionEquality().hash(_departamentosPermitidos),liderPermitido,isRemote,horarioId,jefeId);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'User(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote, horarioId: $horarioId)';
+  return 'User(id: $id, username: $username, nombre: $nombre, telefono: $telefono, correo: $correo, rol: $rol, departamento: $departamento, departamentosPermitidos: $departamentosPermitidos, liderPermitido: $liderPermitido, isRemote: $isRemote, horarioId: $horarioId, jefeId: $jefeId)';
 }
 
 
@@ -298,7 +300,7 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String username, String nombre, String telefono, String correo, String? rol, Departamento? departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, bool isRemote, int? horarioId
+ int id, String username, String nombre, String telefono, String correo, String? rol, Departamento? departamento, List<Departamento> departamentosPermitidos, bool liderPermitido, bool isRemote, int? horarioId, int? jefeId
 });
 
 
@@ -315,7 +317,7 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = freezed,Object? departamento = freezed,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,Object? horarioId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? telefono = null,Object? correo = null,Object? rol = freezed,Object? departamento = freezed,Object? departamentosPermitidos = null,Object? liderPermitido = null,Object? isRemote = null,Object? horarioId = freezed,Object? jefeId = freezed,}) {
   return _then(_User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -328,6 +330,7 @@ as Departamento?,departamentosPermitidos: null == departamentosPermitidos ? _sel
 as List<Departamento>,liderPermitido: null == liderPermitido ? _self.liderPermitido : liderPermitido // ignore: cast_nullable_to_non_nullable
 as bool,isRemote: null == isRemote ? _self.isRemote : isRemote // ignore: cast_nullable_to_non_nullable
 as bool,horarioId: freezed == horarioId ? _self.horarioId : horarioId // ignore: cast_nullable_to_non_nullable
+as int?,jefeId: freezed == jefeId ? _self.jefeId : jefeId // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }

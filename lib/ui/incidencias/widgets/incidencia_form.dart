@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/config/app_error.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
+import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
@@ -155,11 +157,34 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       ScaffoldMessenger.of(context).showSnackBar(
         errorSnackBar(context, e.message),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        errorSnackBar(context, 'Ha ocurrido un error', error: e),
-      );
+      return;
     }
+
+    if (e is ApiException && e.errorCode == ApiErrorCodes.noJefe) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Jefe directo no asignado'),
+            content: Text(
+              'No cuentas con un jefe directo asignado. '
+              'Contacta al departamento de Recursos Humanos para que te asignen uno.'
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => context.pop(),
+                child: Text('Entendido'),
+              ),
+            ],
+          );
+        }
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      errorSnackBar(context, 'Ha ocurrido un error', error: e),
+    );
   }
 
   @override

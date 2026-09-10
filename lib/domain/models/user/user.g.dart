@@ -22,6 +22,7 @@ _User _$UserFromJson(Map<String, dynamic> json) => _User(
   liderPermitido: json['lider_permitido'] as bool,
   isRemote: json['is_remote'] as bool? ?? false,
   horarioId: (json['horario_id'] as num?)?.toInt(),
+  jefeId: (json['jefe_id'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
@@ -36,4 +37,5 @@ Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'lider_permitido': instance.liderPermitido,
   'is_remote': instance.isRemote,
   'horario_id': instance.horarioId,
+  'jefe_id': instance.jefeId,
 };
