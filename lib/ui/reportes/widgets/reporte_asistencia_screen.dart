@@ -10,6 +10,7 @@ import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_asistencia_viewmodel.dar
 import 'package:ri_rh_v2/ui/reportes/widgets/general_attendance_table.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/individual_attendance_table.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class ReporteAsistenciaScreen extends StatefulWidget {
   final ReporteAsistenciaViewmodel viewmodel;
@@ -26,6 +27,17 @@ class ReporteAsistenciaScreen extends StatefulWidget {
 class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
   int viewSelectIndex = 0;
   final List<String> viewSelectionLabels = ['Empresa', 'Empleados'];
+
+  final TextEditingController _employeeSearchController = TextEditingController();
+  final Debouncer _employeeSearchDebouncer = Debouncer(milliseconds: 300);
+  String _employeeSearchQuery = '';
+
+  @override
+  void dispose() {
+    _employeeSearchController.dispose();
+    _employeeSearchDebouncer.dispose();
+    super.dispose();
+  }
 
   String _formatSearchRange() {
     final dateFormat = DateFormat.yMMMMd();
@@ -161,20 +173,57 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                 }
 
                 if (viewSelectIndex == 1) {
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: reporte.items.length,
-                    itemBuilder: (context, index) {
-                      return _TableWrapper(
-                        table: IndividualAttendanceTable(
-                          item: reporte.items[index],
-                          dates: reporte.dates,
+                  final query = _employeeSearchQuery.trim().toLowerCase();
+                  final queryWords = query.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+                  final items = queryWords.isEmpty
+                      ? reporte.items
+                      : reporte.items.where((item) {
+                          final nameWords = item.user.nombre.toLowerCase().split(RegExp(r'\s+'));
+                          return queryWords.every((qw) => nameWords.any((nw) => nw.startsWith(qw)));
+                        }).toList();
+
+                  return Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      TextField(
+                        controller: _employeeSearchController,
+                        decoration: InputDecoration(
+                          hintText: 'Buscar empleado por nombre',
+                          prefixIcon: Icon(LucideIcons.search),
+                          prefixIconColor: const Color(0xFFC4A47A),
                         ),
-                      );
-                    },
-                    separatorBuilder: (context, _) {
-                      return SizedBox(height: 32);
-                    },
+                        onChanged: (value) => _employeeSearchDebouncer.run(
+                          () => setState(() => _employeeSearchQuery = value),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      if (items.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: Text('No se encontraron empleados que coincidan con "$query"'),
+                          ),
+                        )
+                      else
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            return _TableWrapper(
+                              key: ValueKey(item.user.id),
+                              table: IndividualAttendanceTable(
+                                item: item,
+                                dates: reporte.dates,
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, _) {
+                            return SizedBox(height: 32);
+                          },
+                        ),
+                    ],
                   );
                 }
 
@@ -192,6 +241,7 @@ class _TableWrapper extends StatefulWidget {
   final Widget table;
 
   const _TableWrapper({
+    super.key,
     required this.table,
   });
 
