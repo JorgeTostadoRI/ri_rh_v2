@@ -35,4 +35,15 @@ enum AsistenciaStatus {
   excused,
   rest,
   vacation,
+  @JsonValue('paid_leave')
+  paidLeave,
+  @JsonValue('unpaid_leave')
+  unpaidLeave,
+  @JsonValue('medical_leave')
+  medicalLeave,
+  termination,
+  @JsonValue('holiday_leave')
+  holidayLeave,
+  @JsonValue('holiday_worked')
+  holidayWorked,
 }

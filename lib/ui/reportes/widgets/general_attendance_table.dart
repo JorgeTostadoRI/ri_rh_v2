@@ -169,6 +169,42 @@ class GeneralAttendanceTable extends StatelessWidget {
         Text('VACACIONES'),
         Text('VACACIONES'),
       ])],
+      AsistenciaStatus.paidLeave => const [TableRow(children: [
+        Text('PERMISO CON GOCE'),
+        Text('PERMISO CON GOCE'),
+        Text('PERMISO CON GOCE'),
+        Text('PERMISO CON GOCE'),
+      ])],
+      AsistenciaStatus.unpaidLeave => const [TableRow(children: [
+        Text('PERMISO SIN GOCE'),
+        Text('PERMISO SIN GOCE'),
+        Text('PERMISO SIN GOCE'),
+        Text('PERMISO SIN GOCE'),
+      ])],
+      AsistenciaStatus.medicalLeave => const [TableRow(children: [
+        Text('INCAPACIDAD'),
+        Text('INCAPACIDAD'),
+        Text('INCAPACIDAD'),
+        Text('INCAPACIDAD'),
+      ])],
+      AsistenciaStatus.termination => const [TableRow(children: [
+        Text('BAJA'),
+        Text('BAJA'),
+        Text('BAJA'),
+        Text('BAJA'),
+      ])],
+      AsistenciaStatus.holidayLeave => const [TableRow(children: [
+        Text('FESTIVO'),
+        Text('FESTIVO'),
+        Text('FESTIVO'),
+        Text('FESTIVO'),
+      ])],
+      AsistenciaStatus.holidayWorked => [TableRow(children: [
+        Text(attendance.entryAt != null ? jm.format(attendance.entryAt!.toLocal()) : '-'),
+        Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!.toLocal()) : '-'),
+        Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!.toLocal()) : '-'),
+        Text(attendance.exitAt != null ? jm.format(attendance.exitAt!.toLocal()) : '-'),
+      ])],
     };
   }
 

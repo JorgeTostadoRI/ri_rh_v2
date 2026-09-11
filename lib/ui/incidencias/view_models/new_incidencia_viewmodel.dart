@@ -12,10 +12,11 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
+import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-class NewIncidenciaViewmodel extends ChangeNotifier {
+class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginController {
   NewIncidenciaViewmodel({
     required this._log,
     required this._authRepository,
@@ -24,9 +25,23 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
   }) {
     login = Command1(_login);
 
+    // Warms up the fingerprint match cache; without this, scans never
+    // resolve to a user unless the Ingreso screen was visited first.
+    _fingerprintRepository.loadFingerprints();
+
     _capturesSub = _fingerprintRepository.capture()
     .listen(
-      (scan) => login.execute(scan.template),
+      (scan) {
+        // The scanner keeps emitting capture events for as long as the
+        // finger stays on the sensor; without this debounce every single
+        // one of those events re-triggers a full login attempt.
+        final now = DateTime.now();
+        if (_lastScanAt != null && now.difference(_lastScanAt!) < _scanDebounce) {
+          return;
+        }
+        _lastScanAt = now;
+        login.execute(scan.template);
+      },
       onError: (e) {
         _log.error('NewIncidenciaViewmodel | Capture stream error', error: e);
         if (e is NoScannerAvailable) {
@@ -36,15 +51,20 @@ class NewIncidenciaViewmodel extends ChangeNotifier {
     );
   }
 
+  static const _scanDebounce = Duration(seconds: 2);
+  DateTime? _lastScanAt;
+
   final AppLogger _log;
   final AuthRepository _authRepository;
   final IncidenciasRepository _incidenciasRepository;
   final FingerprintRepository _fingerprintRepository;
 
+  @override
   late Command1<void, Uint8List> login;
 
   late final StreamSubscription<Scan> _capturesSub;
   bool _scannerAvailable = true;
+  @override
   bool get scannerAvailable => _scannerAvailable;
 
   IncidenciaDateOption _dateOption = IncidenciaDateOption.DATE_RANGE;

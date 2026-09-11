@@ -9,6 +9,7 @@ abstract final class Routes {
   static const ingresoManual = '$ingreso/manual';
   static const incidencias = '/incidencias';
   static const pendingIncidencias = '$incidencias-pending';
+  static const misIncidencias = '$incidencias-mine';
   static const newIncidencia = ':categoriaId/new';
   static const avisos = '/avisos';
   static const empleados = '/empleados';
