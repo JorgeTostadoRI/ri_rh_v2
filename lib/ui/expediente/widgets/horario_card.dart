@@ -87,6 +87,7 @@ class HorarioCard extends StatelessWidget {
     required this.userNombre,
     required this.assignHorario,
     required this.createCustomHorario,
+    this.loadingHorarios = false,
   });
 
   final List<Horario> horarios;
@@ -94,6 +95,12 @@ class HorarioCard extends StatelessWidget {
   final String userNombre;
   final Command1<void, int> assignHorario;
   final Command1<Horario, Horario> createCustomHorario;
+
+  /// True while the horarios catalog is still being fetched. `load` (which
+  /// resolves [selectedHorarioId]) and this fetch run in parallel, so without
+  /// this flag the card can briefly report "sin horario asignado" for a user
+  /// that does have one, just because the catalog hasn't arrived yet.
+  final bool loadingHorarios;
 
   Horario? _findSelected() {
     if (selectedHorarioId == null) return null;
@@ -105,6 +112,21 @@ class HorarioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (loadingHorarios) {
+      return IconCard(
+        icon: LucideIcons.clock,
+        title: 'Horario',
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
+          ),
+        ],
+      );
+    }
+
     final current = _findSelected();
 
     return Badge(
