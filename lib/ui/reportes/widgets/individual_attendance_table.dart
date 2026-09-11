@@ -175,6 +175,42 @@ class IndividualAttendanceTable extends StatelessWidget {
         DataCell(Text('VACACIONES')),
         DataCell(Text('VACACIONES')),
       ],
+      AsistenciaStatus.paidLeave => const [
+        DataCell(Text('PERMISO CON GOCE')),
+        DataCell(Text('PERMISO CON GOCE')),
+        DataCell(Text('PERMISO CON GOCE')),
+        DataCell(Text('PERMISO CON GOCE')),
+      ],
+      AsistenciaStatus.unpaidLeave => const [
+        DataCell(Text('PERMISO SIN GOCE')),
+        DataCell(Text('PERMISO SIN GOCE')),
+        DataCell(Text('PERMISO SIN GOCE')),
+        DataCell(Text('PERMISO SIN GOCE')),
+      ],
+      AsistenciaStatus.medicalLeave => const [
+        DataCell(Text('INCAPACIDAD')),
+        DataCell(Text('INCAPACIDAD')),
+        DataCell(Text('INCAPACIDAD')),
+        DataCell(Text('INCAPACIDAD')),
+      ],
+      AsistenciaStatus.termination => const [
+        DataCell(Text('BAJA')),
+        DataCell(Text('BAJA')),
+        DataCell(Text('BAJA')),
+        DataCell(Text('BAJA')),
+      ],
+      AsistenciaStatus.holidayLeave => const [
+        DataCell(Text('FESTIVO')),
+        DataCell(Text('FESTIVO')),
+        DataCell(Text('FESTIVO')),
+        DataCell(Text('FESTIVO')),
+      ],
+      AsistenciaStatus.holidayWorked => [
+        DataCell(Text(entryAt != null ? jm.format(entryAt) : '-')),
+        DataCell(Text(exitToLunchAt != null ? jm.format(exitToLunchAt) : '-')),
+        DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
+        DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
+      ],
     };
   }
 

@@ -34,6 +34,7 @@ class IncidenciasScreen extends StatelessWidget {
               subtitle: 'Selecciona el tipo de incidencia que deseas registrar.',
             ),
             _PendingReviewNotification(),
+            _MyIncidenciasBanner(),
             const SizedBox(height: 32),
             Center(
               child: Wrap(
@@ -216,5 +217,52 @@ class _PendingReviewNotification extends StatelessWidget {
     } else {
       return '$count solicitudes pendientes de revisión';
     }
+  }
+}
+
+class _MyIncidenciasBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          border: Border.fromBorderSide(BorderSide(
+            color: borderColor,
+            width: 0.8,
+          )),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          spacing: 12,
+          children: [
+            ColorIcon(
+              icon: LucideIcons.listChecks,
+              width: 36,
+              height: 36,
+              backgroundColor: const Color(0xFFF5E8D8),
+              shape: BoxShape.circle,
+            ),
+            Text(
+              'Consulta el estatus de tus solicitudes',
+              style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
+            ),
+            Spacer(),
+            IconButton.filled(
+              onPressed: () => context.push(Routes.misIncidencias),
+              icon: Icon(LucideIcons.arrowRight),
+              style: IconButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: primaryColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

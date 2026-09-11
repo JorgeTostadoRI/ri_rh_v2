@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
@@ -122,5 +123,25 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
   @override
   void invalidateCache() {
     _cachedUsers = null;
+  }
+
+  @override
+  Future<Result<String>> cambiarEstado(int practicanteId, StatusPracticante nuevoEstado, {
+    DateTime? fechaBaja,
+    PlatformFile? cartaLiberacion,
+  }) async {
+    final result = await _apiClient.cambiarEstadoPracticante(
+      practicanteId,
+      estado: nuevoEstado.name,
+      fechaBaja: fechaBaja,
+      cartaLiberacion: cartaLiberacion,
+    );
+    switch (result) {
+      case Error():
+        _log.warning('Failed to cambiar estado de practicante', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    return Result.ok(result.value);
   }
 }

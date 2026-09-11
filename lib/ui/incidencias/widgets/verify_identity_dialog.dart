@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -10,7 +10,7 @@ class VerifyIdentityDialog extends StatefulWidget {
     required this.viewmodel,
   });
 
-  final NewIncidenciaViewmodel viewmodel;
+  final FingerprintLoginController viewmodel;
 
   @override
   State<VerifyIdentityDialog> createState() => _VerifyIdentityDialogState();
@@ -54,7 +54,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
       contentPadding: EdgeInsets.all(32),
       backgroundColor: Colors.white,
       content: ListenableBuilder(
-        listenable: widget.viewmodel,
+        listenable: Listenable.merge([widget.viewmodel, widget.viewmodel.login]),
         builder: (context, _) {
           if (!widget.viewmodel.scannerAvailable) {
             return Column(
@@ -108,6 +108,8 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
             );
           }
 
+          final verifying = widget.viewmodel.login.running;
+
           return Column(
             mainAxisSize: .min,
             children: [
@@ -118,11 +120,16 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(50),
                 ),
-                child: Icon(
-                  LucideIcons.fingerprintPattern,
-                  color: primaryColor,
-                  size: 44,
-                ),
+                child: verifying
+                    ? Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: CircularProgressIndicator(color: primaryColor),
+                      )
+                    : Icon(
+                        LucideIcons.fingerprintPattern,
+                        color: primaryColor,
+                        size: 44,
+                      ),
               ),
               const SizedBox(height: 24),
               Text(
@@ -135,7 +142,9 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                 ),
               ),
               Text(
-                'Coloca tu dedo en el lector de huella digital para confirmar y enviar tu solicitud',
+                verifying
+                    ? 'Verificando tu huella, espera un momento...'
+                    : 'Coloca tu dedo en el lector de huella digital para confirmar y enviar tu solicitud',
                 style: TextStyle(
                   color: labelTextColor,
                   fontSize: 14,

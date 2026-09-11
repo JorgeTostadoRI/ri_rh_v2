@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
@@ -5,6 +6,12 @@ import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+
+String _estatusToApiValue(EmpleadoEstatus estatus) => switch (estatus) {
+  EmpleadoEstatus.activo => 'activo',
+  EmpleadoEstatus.procesoFiniquito => 'proceso_finiquito',
+  EmpleadoEstatus.finiquitado => 'finiquitado',
+};
 
 class EmpleadosRepositoryRemote extends EmpleadosRepository {
   EmpleadosRepositoryRemote({
@@ -126,5 +133,33 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
     _cachedUsers = null;
     _cachedEmpleados = null;
     _cacheTime = DateTime(1970, 01, 01);
+  }
+
+  @override
+  Future<Result<String>> cambiarEstatus(int empleadoId, EmpleadoEstatus nuevoEstatus, {
+    DateTime? fechaBaja,
+    PlatformFile? cartaRenuncia,
+    PlatformFile? finiquitoFirmado,
+    PlatformFile? bajaImss,
+    PlatformFile? comprobanteTransferencia,
+    PlatformFile? convenioTerminacion,
+  }) async {
+    final result = await _apiClient.cambiarEstatusEmpleado(
+      empleadoId,
+      estatus: _estatusToApiValue(nuevoEstatus),
+      fechaBaja: fechaBaja,
+      cartaRenuncia: cartaRenuncia,
+      finiquitoFirmado: finiquitoFirmado,
+      bajaImss: bajaImss,
+      comprobanteTransferencia: comprobanteTransferencia,
+      convenioTerminacion: convenioTerminacion,
+    );
+    switch (result) {
+      case Error():
+        _log.warning('Failed to cambiar estatus de empleado', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    return Result.ok(result.value);
   }
 }

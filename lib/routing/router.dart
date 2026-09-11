@@ -22,9 +22,11 @@ import 'package:ri_rh_v2/ui/empleados/widgets/empleado_huellas_screen.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/widgets/home_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/view_models/mis_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencias_screen.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/mis_incidencias_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/new_incidencia_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/not_found_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/pending_incidencias_screen.dart';
@@ -143,6 +145,19 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 authRepository: context.read(),
                 incidenciasRepository: context.read(),
                 usersRepository: context.read(),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: Routes.misIncidencias,
+          builder: (context, state) {
+            return MisIncidenciasScreen(
+              viewmodel: MisIncidenciasViewmodel(
+                log: context.read(),
+                authRepository: context.read(),
+                incidenciasRepository: context.read(),
+                fingerprintRepository: context.read(),
               ),
             );
           },

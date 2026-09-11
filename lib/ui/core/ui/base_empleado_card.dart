@@ -11,12 +11,14 @@ class BaseEmpleadoCard extends StatelessWidget {
     required this.statusChip,
     required this.onExpedientePressed,
     required this.hasPendingActions,
+    this.actionsMenu,
   });
 
   final BaseEmpleado baseEmpleado;
   final Widget statusChip;
   final void Function() onExpedientePressed;
   final bool hasPendingActions;
+  final Widget? actionsMenu;
 
 
   @override
@@ -121,15 +123,21 @@ class BaseEmpleadoCard extends StatelessWidget {
                       onPressed: onExpedientePressed,
                       child: Text('Ver Expediente', style: TextStyle(fontSize: 12)),
                     ),
-                    OutlinedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Esta funcionalidad no se encuentra disponible.'),
-                          ),
-                        );
-                      },
-                      child: Text('Estadísticas', style: TextStyle(fontSize: 12)),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Esta funcionalidad no se encuentra disponible.'),
+                              ),
+                            );
+                          },
+                          child: Text('Estadísticas', style: TextStyle(fontSize: 12)),
+                        ),
+                        ?actionsMenu,
+                      ],
                     ),
                   ],
                 ),
