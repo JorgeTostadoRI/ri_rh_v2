@@ -41,6 +41,11 @@ _PracticanteApiModel _$PracticanteApiModelFromJson(Map<String, dynamic> json) =>
       terminatedAt: json['fecha_baja'] == null
           ? null
           : DateTime.parse(json['fecha_baja'] as String),
+      credencialesGeneradas: json['credenciales_generadas'] == null
+          ? null
+          : CredencialesGeneradas.fromJson(
+              json['credenciales_generadas'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$PracticanteApiModelToJson(
@@ -75,6 +80,7 @@ Map<String, dynamic> _$PracticanteApiModelToJson(
   'curriculum_vitae': instance.cvUrl,
   'fecha_alta': instance.registeredAt?.toIso8601String(),
   'fecha_baja': instance.terminatedAt?.toIso8601String(),
+  'credenciales_generadas': instance.credencialesGeneradas,
 };
 
 const _$StatusPracticanteEnumMap = {

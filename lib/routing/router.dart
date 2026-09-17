@@ -16,9 +16,11 @@ import 'package:ri_rh_v2/ui/core/ui/main_scaffold.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/nuevo_empleado_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleados_screen.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleado_expediente_screen.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleado_huellas_screen.dart';
+import 'package:ri_rh_v2/ui/empleados/widgets/nuevo_empleado_screen.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/widgets/home_screen.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
@@ -33,9 +35,11 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/pending_incidencias_screen.dart'
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/viewmodels/nuevo_practicante_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_expediente_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_huellas_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicantes_screen.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/nuevo_practicante_screen.dart';
 import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_asistencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/reporte_asistencia_screen.dart';
 
@@ -186,6 +190,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           },
           routes: [
             GoRoute(
+              path: Routes.newEmpleado,
+              builder: (context, state) {
+                return NuevoEmpleadoScreen(
+                  viewmodel: NuevoEmpleadoViewmodel(
+                    log: context.read(),
+                    empleadosRepository: context.read(),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
               path: Routes.expedienteEmpleado,
               builder: (context, state) {
                 final empleadoId = int.tryParse(state.pathParameters['empleadoId']!);
@@ -238,6 +253,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             );
           },
           routes: [
+            GoRoute(
+              path: Routes.newPracticante,
+              builder: (context, state) {
+                return NuevoPracticanteScreen(
+                  viewmodel: NuevoPracticanteViewmodel(
+                    log: context.read(),
+                    practicantesRepository: context.read(),
+                  ),
+                );
+              },
+            ),
             GoRoute(
               path: Routes.expedientePracticante,
               builder: (context, state) {

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Empleado implements DiagnosticableTreeMixin {
 
- BaseEmpleado get base; Escolaridad get escolaridad; double get montoRetencionInfonavit; EmpleadoEstatus get estatus; int? get antiguedad; int? get diasVacaciones; AltaEmpleo get alta; BajaEmpleo get baja;
+ BaseEmpleado get base; Escolaridad get escolaridad; double get montoRetencionInfonavit; EmpleadoEstatus get estatus; int? get antiguedad; int? get diasVacaciones; AltaEmpleo get alta; BajaEmpleo get baja; CredencialesGeneradas? get credencialesGeneradas;
 /// Create a copy of Empleado
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,21 +27,21 @@ $EmpleadoCopyWith<Empleado> get copyWith => _$EmpleadoCopyWithImpl<Empleado>(thi
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Empleado'))
-    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('escolaridad', escolaridad))..add(DiagnosticsProperty('montoRetencionInfonavit', montoRetencionInfonavit))..add(DiagnosticsProperty('estatus', estatus))..add(DiagnosticsProperty('antiguedad', antiguedad))..add(DiagnosticsProperty('diasVacaciones', diasVacaciones))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('baja', baja));
+    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('escolaridad', escolaridad))..add(DiagnosticsProperty('montoRetencionInfonavit', montoRetencionInfonavit))..add(DiagnosticsProperty('estatus', estatus))..add(DiagnosticsProperty('antiguedad', antiguedad))..add(DiagnosticsProperty('diasVacaciones', diasVacaciones))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('baja', baja))..add(DiagnosticsProperty('credencialesGeneradas', credencialesGeneradas));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Empleado&&(identical(other.base, base) || other.base == base)&&(identical(other.escolaridad, escolaridad) || other.escolaridad == escolaridad)&&(identical(other.montoRetencionInfonavit, montoRetencionInfonavit) || other.montoRetencionInfonavit == montoRetencionInfonavit)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.antiguedad, antiguedad) || other.antiguedad == antiguedad)&&(identical(other.diasVacaciones, diasVacaciones) || other.diasVacaciones == diasVacaciones)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.baja, baja) || other.baja == baja));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Empleado&&(identical(other.base, base) || other.base == base)&&(identical(other.escolaridad, escolaridad) || other.escolaridad == escolaridad)&&(identical(other.montoRetencionInfonavit, montoRetencionInfonavit) || other.montoRetencionInfonavit == montoRetencionInfonavit)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.antiguedad, antiguedad) || other.antiguedad == antiguedad)&&(identical(other.diasVacaciones, diasVacaciones) || other.diasVacaciones == diasVacaciones)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.baja, baja) || other.baja == baja)&&(identical(other.credencialesGeneradas, credencialesGeneradas) || other.credencialesGeneradas == credencialesGeneradas));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,base,escolaridad,montoRetencionInfonavit,estatus,antiguedad,diasVacaciones,alta,baja);
+int get hashCode => Object.hash(runtimeType,base,escolaridad,montoRetencionInfonavit,estatus,antiguedad,diasVacaciones,alta,baja,credencialesGeneradas);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Empleado(base: $base, escolaridad: $escolaridad, montoRetencionInfonavit: $montoRetencionInfonavit, estatus: $estatus, antiguedad: $antiguedad, diasVacaciones: $diasVacaciones, alta: $alta, baja: $baja)';
+  return 'Empleado(base: $base, escolaridad: $escolaridad, montoRetencionInfonavit: $montoRetencionInfonavit, estatus: $estatus, antiguedad: $antiguedad, diasVacaciones: $diasVacaciones, alta: $alta, baja: $baja, credencialesGeneradas: $credencialesGeneradas)';
 }
 
 
@@ -52,11 +52,11 @@ abstract mixin class $EmpleadoCopyWith<$Res>  {
   factory $EmpleadoCopyWith(Empleado value, $Res Function(Empleado) _then) = _$EmpleadoCopyWithImpl;
 @useResult
 $Res call({
- BaseEmpleado base, Escolaridad escolaridad, double montoRetencionInfonavit, EmpleadoEstatus estatus, int? antiguedad, int? diasVacaciones, AltaEmpleo alta, BajaEmpleo baja
+ BaseEmpleado base, Escolaridad escolaridad, double montoRetencionInfonavit, EmpleadoEstatus estatus, int? antiguedad, int? diasVacaciones, AltaEmpleo alta, BajaEmpleo baja, CredencialesGeneradas? credencialesGeneradas
 });
 
 
-$BaseEmpleadoCopyWith<$Res> get base;$AltaEmpleoCopyWith<$Res> get alta;$BajaEmpleoCopyWith<$Res> get baja;
+$BaseEmpleadoCopyWith<$Res> get base;$AltaEmpleoCopyWith<$Res> get alta;$BajaEmpleoCopyWith<$Res> get baja;$CredencialesGeneradasCopyWith<$Res>? get credencialesGeneradas;
 
 }
 /// @nodoc
@@ -69,7 +69,7 @@ class _$EmpleadoCopyWithImpl<$Res>
 
 /// Create a copy of Empleado
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? base = null,Object? escolaridad = null,Object? montoRetencionInfonavit = null,Object? estatus = null,Object? antiguedad = freezed,Object? diasVacaciones = freezed,Object? alta = null,Object? baja = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? base = null,Object? escolaridad = null,Object? montoRetencionInfonavit = null,Object? estatus = null,Object? antiguedad = freezed,Object? diasVacaciones = freezed,Object? alta = null,Object? baja = null,Object? credencialesGeneradas = freezed,}) {
   return _then(Empleado(
 base: null == base ? _self.base : base // ignore: cast_nullable_to_non_nullable
 as BaseEmpleado,escolaridad: null == escolaridad ? _self.escolaridad : escolaridad // ignore: cast_nullable_to_non_nullable
@@ -79,7 +79,8 @@ as EmpleadoEstatus,antiguedad: freezed == antiguedad ? _self.antiguedad : antigu
 as int?,diasVacaciones: freezed == diasVacaciones ? _self.diasVacaciones : diasVacaciones // ignore: cast_nullable_to_non_nullable
 as int?,alta: null == alta ? _self.alta : alta // ignore: cast_nullable_to_non_nullable
 as AltaEmpleo,baja: null == baja ? _self.baja : baja // ignore: cast_nullable_to_non_nullable
-as BajaEmpleo,
+as BajaEmpleo,credencialesGeneradas: freezed == credencialesGeneradas ? _self.credencialesGeneradas : credencialesGeneradas // ignore: cast_nullable_to_non_nullable
+as CredencialesGeneradas?,
   ));
 }
 /// Create a copy of Empleado
@@ -108,6 +109,18 @@ $BajaEmpleoCopyWith<$Res> get baja {
   
   return $BajaEmpleoCopyWith<$Res>(_self.baja, (value) {
     return _then(_self.copyWith(baja: value));
+  });
+}/// Create a copy of Empleado
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CredencialesGeneradasCopyWith<$Res>? get credencialesGeneradas {
+    if (_self.credencialesGeneradas == null) {
+    return null;
+  }
+
+  return $CredencialesGeneradasCopyWith<$Res>(_self.credencialesGeneradas!, (value) {
+    return _then(_self.copyWith(credencialesGeneradas: value));
   });
 }
 }
@@ -191,10 +204,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BaseEmpleado base,  Escolaridad escolaridad,  double montoRetencionInfonavit,  EmpleadoEstatus estatus,  int? antiguedad,  int? diasVacaciones,  AltaEmpleo alta,  BajaEmpleo baja)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BaseEmpleado base,  Escolaridad escolaridad,  double montoRetencionInfonavit,  EmpleadoEstatus estatus,  int? antiguedad,  int? diasVacaciones,  AltaEmpleo alta,  BajaEmpleo baja,  CredencialesGeneradas? credencialesGeneradas)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Empleado() when $default != null:
-return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that.estatus,_that.antiguedad,_that.diasVacaciones,_that.alta,_that.baja);case _:
+return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that.estatus,_that.antiguedad,_that.diasVacaciones,_that.alta,_that.baja,_that.credencialesGeneradas);case _:
   return orElse();
 
 }
@@ -212,10 +225,10 @@ return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BaseEmpleado base,  Escolaridad escolaridad,  double montoRetencionInfonavit,  EmpleadoEstatus estatus,  int? antiguedad,  int? diasVacaciones,  AltaEmpleo alta,  BajaEmpleo baja)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BaseEmpleado base,  Escolaridad escolaridad,  double montoRetencionInfonavit,  EmpleadoEstatus estatus,  int? antiguedad,  int? diasVacaciones,  AltaEmpleo alta,  BajaEmpleo baja,  CredencialesGeneradas? credencialesGeneradas)  $default,) {final _that = this;
 switch (_that) {
 case _Empleado():
-return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that.estatus,_that.antiguedad,_that.diasVacaciones,_that.alta,_that.baja);case _:
+return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that.estatus,_that.antiguedad,_that.diasVacaciones,_that.alta,_that.baja,_that.credencialesGeneradas);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -232,10 +245,10 @@ return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BaseEmpleado base,  Escolaridad escolaridad,  double montoRetencionInfonavit,  EmpleadoEstatus estatus,  int? antiguedad,  int? diasVacaciones,  AltaEmpleo alta,  BajaEmpleo baja)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BaseEmpleado base,  Escolaridad escolaridad,  double montoRetencionInfonavit,  EmpleadoEstatus estatus,  int? antiguedad,  int? diasVacaciones,  AltaEmpleo alta,  BajaEmpleo baja,  CredencialesGeneradas? credencialesGeneradas)?  $default,) {final _that = this;
 switch (_that) {
 case _Empleado() when $default != null:
-return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that.estatus,_that.antiguedad,_that.diasVacaciones,_that.alta,_that.baja);case _:
+return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that.estatus,_that.antiguedad,_that.diasVacaciones,_that.alta,_that.baja,_that.credencialesGeneradas);case _:
   return null;
 
 }
@@ -247,7 +260,7 @@ return $default(_that.base,_that.escolaridad,_that.montoRetencionInfonavit,_that
 
 
 class _Empleado with DiagnosticableTreeMixin implements Empleado {
-  const _Empleado({required this.base, required this.escolaridad, required this.montoRetencionInfonavit, required this.estatus, this.antiguedad, this.diasVacaciones, required this.alta, required this.baja});
+  const _Empleado({required this.base, required this.escolaridad, required this.montoRetencionInfonavit, required this.estatus, this.antiguedad, this.diasVacaciones, required this.alta, required this.baja, this.credencialesGeneradas});
   
 
 @override final  BaseEmpleado base;
@@ -258,6 +271,7 @@ class _Empleado with DiagnosticableTreeMixin implements Empleado {
 @override final  int? diasVacaciones;
 @override final  AltaEmpleo alta;
 @override final  BajaEmpleo baja;
+@override final  CredencialesGeneradas? credencialesGeneradas;
 
 /// Create a copy of Empleado
 /// with the given fields replaced by the non-null parameter values.
@@ -270,21 +284,21 @@ _$EmpleadoCopyWith<_Empleado> get copyWith => __$EmpleadoCopyWithImpl<_Empleado>
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Empleado'))
-    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('escolaridad', escolaridad))..add(DiagnosticsProperty('montoRetencionInfonavit', montoRetencionInfonavit))..add(DiagnosticsProperty('estatus', estatus))..add(DiagnosticsProperty('antiguedad', antiguedad))..add(DiagnosticsProperty('diasVacaciones', diasVacaciones))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('baja', baja));
+    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('escolaridad', escolaridad))..add(DiagnosticsProperty('montoRetencionInfonavit', montoRetencionInfonavit))..add(DiagnosticsProperty('estatus', estatus))..add(DiagnosticsProperty('antiguedad', antiguedad))..add(DiagnosticsProperty('diasVacaciones', diasVacaciones))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('baja', baja))..add(DiagnosticsProperty('credencialesGeneradas', credencialesGeneradas));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Empleado&&(identical(other.base, base) || other.base == base)&&(identical(other.escolaridad, escolaridad) || other.escolaridad == escolaridad)&&(identical(other.montoRetencionInfonavit, montoRetencionInfonavit) || other.montoRetencionInfonavit == montoRetencionInfonavit)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.antiguedad, antiguedad) || other.antiguedad == antiguedad)&&(identical(other.diasVacaciones, diasVacaciones) || other.diasVacaciones == diasVacaciones)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.baja, baja) || other.baja == baja));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Empleado&&(identical(other.base, base) || other.base == base)&&(identical(other.escolaridad, escolaridad) || other.escolaridad == escolaridad)&&(identical(other.montoRetencionInfonavit, montoRetencionInfonavit) || other.montoRetencionInfonavit == montoRetencionInfonavit)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.antiguedad, antiguedad) || other.antiguedad == antiguedad)&&(identical(other.diasVacaciones, diasVacaciones) || other.diasVacaciones == diasVacaciones)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.baja, baja) || other.baja == baja)&&(identical(other.credencialesGeneradas, credencialesGeneradas) || other.credencialesGeneradas == credencialesGeneradas));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,base,escolaridad,montoRetencionInfonavit,estatus,antiguedad,diasVacaciones,alta,baja);
+int get hashCode => Object.hash(runtimeType,base,escolaridad,montoRetencionInfonavit,estatus,antiguedad,diasVacaciones,alta,baja,credencialesGeneradas);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Empleado(base: $base, escolaridad: $escolaridad, montoRetencionInfonavit: $montoRetencionInfonavit, estatus: $estatus, antiguedad: $antiguedad, diasVacaciones: $diasVacaciones, alta: $alta, baja: $baja)';
+  return 'Empleado(base: $base, escolaridad: $escolaridad, montoRetencionInfonavit: $montoRetencionInfonavit, estatus: $estatus, antiguedad: $antiguedad, diasVacaciones: $diasVacaciones, alta: $alta, baja: $baja, credencialesGeneradas: $credencialesGeneradas)';
 }
 
 
@@ -295,11 +309,11 @@ abstract mixin class _$EmpleadoCopyWith<$Res> implements $EmpleadoCopyWith<$Res>
   factory _$EmpleadoCopyWith(_Empleado value, $Res Function(_Empleado) _then) = __$EmpleadoCopyWithImpl;
 @override @useResult
 $Res call({
- BaseEmpleado base, Escolaridad escolaridad, double montoRetencionInfonavit, EmpleadoEstatus estatus, int? antiguedad, int? diasVacaciones, AltaEmpleo alta, BajaEmpleo baja
+ BaseEmpleado base, Escolaridad escolaridad, double montoRetencionInfonavit, EmpleadoEstatus estatus, int? antiguedad, int? diasVacaciones, AltaEmpleo alta, BajaEmpleo baja, CredencialesGeneradas? credencialesGeneradas
 });
 
 
-@override $BaseEmpleadoCopyWith<$Res> get base;@override $AltaEmpleoCopyWith<$Res> get alta;@override $BajaEmpleoCopyWith<$Res> get baja;
+@override $BaseEmpleadoCopyWith<$Res> get base;@override $AltaEmpleoCopyWith<$Res> get alta;@override $BajaEmpleoCopyWith<$Res> get baja;@override $CredencialesGeneradasCopyWith<$Res>? get credencialesGeneradas;
 
 }
 /// @nodoc
@@ -312,7 +326,7 @@ class __$EmpleadoCopyWithImpl<$Res>
 
 /// Create a copy of Empleado
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? base = null,Object? escolaridad = null,Object? montoRetencionInfonavit = null,Object? estatus = null,Object? antiguedad = freezed,Object? diasVacaciones = freezed,Object? alta = null,Object? baja = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? base = null,Object? escolaridad = null,Object? montoRetencionInfonavit = null,Object? estatus = null,Object? antiguedad = freezed,Object? diasVacaciones = freezed,Object? alta = null,Object? baja = null,Object? credencialesGeneradas = freezed,}) {
   return _then(_Empleado(
 base: null == base ? _self.base : base // ignore: cast_nullable_to_non_nullable
 as BaseEmpleado,escolaridad: null == escolaridad ? _self.escolaridad : escolaridad // ignore: cast_nullable_to_non_nullable
@@ -322,7 +336,8 @@ as EmpleadoEstatus,antiguedad: freezed == antiguedad ? _self.antiguedad : antigu
 as int?,diasVacaciones: freezed == diasVacaciones ? _self.diasVacaciones : diasVacaciones // ignore: cast_nullable_to_non_nullable
 as int?,alta: null == alta ? _self.alta : alta // ignore: cast_nullable_to_non_nullable
 as AltaEmpleo,baja: null == baja ? _self.baja : baja // ignore: cast_nullable_to_non_nullable
-as BajaEmpleo,
+as BajaEmpleo,credencialesGeneradas: freezed == credencialesGeneradas ? _self.credencialesGeneradas : credencialesGeneradas // ignore: cast_nullable_to_non_nullable
+as CredencialesGeneradas?,
   ));
 }
 
@@ -352,6 +367,18 @@ $BajaEmpleoCopyWith<$Res> get baja {
   
   return $BajaEmpleoCopyWith<$Res>(_self.baja, (value) {
     return _then(_self.copyWith(baja: value));
+  });
+}/// Create a copy of Empleado
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CredencialesGeneradasCopyWith<$Res>? get credencialesGeneradas {
+    if (_self.credencialesGeneradas == null) {
+    return null;
+  }
+
+  return $CredencialesGeneradasCopyWith<$Res>(_self.credencialesGeneradas!, (value) {
+    return _then(_self.copyWith(credencialesGeneradas: value));
   });
 }
 }

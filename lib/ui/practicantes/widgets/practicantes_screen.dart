@@ -67,19 +67,30 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
           mainAxisAlignment: .start,
           crossAxisAlignment: .start,
           children: [
-            Column(
+            Row(
+              mainAxisAlignment: .spaceBetween,
               crossAxisAlignment: .start,
-              spacing: 8,
               children: [
-                Text(
-                  'Listado de Practicantes',
-                  style: TextTheme.of(context).headlineLarge?.copyWith(
-                    fontSize: 48,
-                  ),
+                Column(
+                  crossAxisAlignment: .start,
+                  spacing: 8,
+                  children: [
+                    Text(
+                      'Listado de Practicantes',
+                      style: TextTheme.of(context).headlineLarge?.copyWith(
+                        fontSize: 48,
+                      ),
+                    ),
+                    Text(
+                      'Gestiona y visualiza la información de todos los practicantes y residentes.',
+                      style: TextTheme.of(context).titleSmall,
+                    ),
+                  ],
                 ),
-                Text(
-                  'Gestiona y visualiza la información de todos los practicantes y residentes.',
-                  style: TextTheme.of(context).titleSmall,
+                ElevatedButton.icon(
+                  onPressed: () => context.push('${Routes.practicantes}/${Routes.newPracticante}'),
+                  icon: Icon(LucideIcons.userPlus),
+                  label: Text('Nuevo Practicante'),
                 ),
               ],
             ),
@@ -134,6 +145,7 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                       actionsMenu: PracticanteActionsMenu(
                         practicante: practicante,
                         cambiarEstado: widget.viewmodel.cambiarEstado,
+                        regenerarPassword: widget.viewmodel.regenerarPassword,
                       ),
                     );
                   }

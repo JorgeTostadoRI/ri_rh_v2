@@ -94,29 +94,52 @@ class FingerScanServiceImpl extends FingerScanService {
 
   void _tick(_) {
     if (_device == null) {
-      throw Exception('Scanner device is null');
+      return;
     }
 
-    final capture = _device!.captureFingerprint();
-    if (capture != null) {
-      _log.info('Scanner captured a fingerprint');
-      _controller.add(Scan(
-        template: capture.template,
-        image: capture.image,
-        width: capture.width,
-        height: capture.height,
-      ));
+    try {
+      final capture = _device!.captureFingerprint();
+      if (capture != null) {
+        _log.info('Scanner captured a fingerprint');
+        _controller.add(Scan(
+          template: capture.template,
+          image: capture.image,
+          width: capture.width,
+          height: capture.height,
+        ));
+      }
+    } catch (e, stackTrace) {
+      // El lector se desconectó (cable flojo, driver falló) después de que
+      // la app ya estaba corriendo. Sin esto, esta excepción quedaba sin
+      // capturar en cada intento por segundo y nadie se enteraba de que el
+      // escaneo dejó de funcionar.
+      _log.error('Scanner capture failed, assuming device was disconnected', error: e, stackTrace: stackTrace);
+      _timer?.cancel();
+      _timer = null;
+      _controller.addError(NoScannerAvailable());
     }
   }
 
   void _connectDevice() {
-    if (_sdk.getDeviceCount() == 0) {
-      throw Exception('No scanners available');
-    }
-    _device = _sdk.openDevice();
+    try {
+      if (_sdk.getDeviceCount() == 0) {
+        throw NoScannerAvailable();
+      }
+      _device = _sdk.openDevice();
 
-    _timer = Timer.periodic(const Duration(seconds: 1), _tick);
-    _log.info('Connected to scanner, listening for fingerprints...');
+      _timer = Timer.periodic(const Duration(seconds: 1), _tick);
+      _log.info('Connected to scanner, listening for fingerprints...');
+    } catch (e, stackTrace) {
+      // Esto corre sincrónicamente dentro de onListen, la primera vez que
+      // algo se suscribe a captureStream() (típicamente al construir
+      // AsistenciaViewmodel). Si no hay lector conectado o falla al abrirlo
+      // y esto lanzara la excepción tal cual, se propagaría fuera de
+      // `.listen()` y podría tumbar la pantalla completa en vez de
+      // degradarse al banner de "sin conexión con escáner" como sí pasa con
+      // las demás fallas del escáner.
+      _log.error('Failed to connect to fingerprint scanner', error: e, stackTrace: stackTrace);
+      _controller.addError(NoScannerAvailable());
+    }
   }
 
   void _closeDevice() {

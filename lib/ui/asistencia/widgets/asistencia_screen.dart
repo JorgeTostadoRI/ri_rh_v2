@@ -98,26 +98,34 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   Future<void> _onScanResult() async {
     if (widget.viewmodel.scanFingerprint.completed) {
       widget.viewmodel.scanFingerprint.clearResult();
-      await _initializeCamera();
+
+      XFile? imageFile;
+      var cameraFailed = false;
+      try {
+        await _initializeCamera();
+        if (_controller != null) {
+          imageFile = await _controller!.takePicture();
+          // Dispose the camera after a while if it isn't used
+          _debouncer.run(_disposeCamera);
+        }
+      } catch (e) {
+        // Cubre tanto fallas al inicializar la cámara (sin cámaras
+        // detectadas, ocupada, sin driver) como fallas al tomar la foto.
+        // Antes solo la segunda tenía manejo de error — una falla al
+        // inicializar quedaba sin capturar y el registro nunca se
+        // completaba, sin ningún aviso para quien estaba escaneando.
+        cameraFailed = true;
+      }
 
       if (mounted) {
-        if (_controller != null) {
-          try {
-            final imageFile = await _controller!.takePicture();
-            widget.viewmodel.register.execute(imageFile);
-            // Dispose the camera after a while if it isn't used
-            _debouncer.run(_disposeCamera);
-          } on CameraException {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('No se pudo capturar imagen, se registrará asistencia sin imagen'),
-              ),
-            );
-            widget.viewmodel.register.execute(null);
-          }
-        } else {
-          widget.viewmodel.register.execute(null);
+        if (cameraFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('No se pudo capturar imagen, se registrará asistencia sin imagen'),
+            ),
+          );
         }
+        widget.viewmodel.register.execute(imageFile);
       }
     }
 
@@ -126,17 +134,26 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
     }
   }
 
-  Future<void> _initializeCamera() async { 
+  Future<void> _initializeCamera() async {
     if (kIsWeb) return;
+    if (_controller != null) return;
 
     final cameras = await _getAvailableCameras;
-    if (_controller == null) {
-      _controller = CameraController(
-        cameras[0],
-        ResolutionPreset.medium,
-      );
-      await _controller!.initialize();
+    if (cameras.isEmpty) {
+      throw CameraException('noCamerasAvailable', 'No se detectaron cámaras disponibles');
     }
+
+    final controller = CameraController(cameras[0], ResolutionPreset.medium);
+    try {
+      await controller.initialize();
+    } catch (_) {
+      // Se descarta el controlador a medio inicializar para que el
+      // siguiente intento vuelva a intentar desde cero, en vez de quedar
+      // atascado permanentemente con una cámara rota hasta reiniciar la app.
+      await controller.dispose();
+      rethrow;
+    }
+    _controller = controller;
   }
 
   void _disposeCamera() {

@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -27,6 +28,7 @@ class PracticantesViewmodel extends ChangeNotifier {
   }) {
     search = Command0(_search)..execute();
     cambiarEstado = Command1(_cambiarEstado);
+    regenerarPassword = Command1(_regenerarPassword);
   }
 
   final AppLogger _log;
@@ -34,6 +36,7 @@ class PracticantesViewmodel extends ChangeNotifier {
 
   late final Command0 search;
   late final Command1<String, CambiarEstadoPracticanteParams> cambiarEstado;
+  late final Command1<CredencialesGeneradas, int> regenerarPassword;
 
   List<Practicante> _practicantes = [];
   List<Practicante> get practicantes => _practicantes;
@@ -76,6 +79,14 @@ class PracticantesViewmodel extends ChangeNotifier {
 
     _practicantesRepository.invalidateCache();
     await search.execute();
+    return result;
+  }
+
+  Future<Result<CredencialesGeneradas>> _regenerarPassword(int practicanteId) async {
+    final result = await _practicantesRepository.regenerarPassword(practicanteId);
+    if (result case Error()) {
+      _log.warning('Failed to regenerar password de practicante', error: result.error);
+    }
     return result;
   }
 }

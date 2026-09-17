@@ -13,9 +13,11 @@ abstract final class Routes {
   static const newIncidencia = ':categoriaId/new';
   static const avisos = '/avisos';
   static const empleados = '/empleados';
+  static const newEmpleado = 'new';
   static const expedienteEmpleado = ':empleadoId';
   static const huellas = 'huellas';
   static const practicantes = '/practicantes';
+  static const newPracticante = 'new';
   static const expedientePracticante = ':practicanteId';
   static const reportes = '/reportes';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.url}/new';
