@@ -1,0 +1,17 @@
+# Normaliza los finales de línea a LF en el repositorio para todo archivo de
+# texto, sin importar el sistema operativo desde el que se edite. Evita
+# diffs ruidosos al alternar entre Windows/Linux/Mac y previene que un
+# script termine con CRLF y falle al correr en un entorno Linux/Mac
+# (los shebangs como #!/bin/bash no toleran el \r extra).
+* text=auto eol=lf
+
+# Binarios: nunca deben normalizarse ni compararse como texto.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
