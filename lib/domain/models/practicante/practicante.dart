@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -18,6 +19,7 @@ abstract class Practicante with _$Practicante {
     required AltaPracticante alta,
     StatusPracticante? status,
     User? user,
+    CredencialesGeneradas? credencialesGeneradas,
   }) = _Practicante;
 
   factory Practicante.fromApiModel({
@@ -96,6 +98,7 @@ abstract class Practicante with _$Practicante {
       status: model.status,
       type: model.type,
       university: university,
+      credencialesGeneradas: model.credencialesGeneradas,
     );
   }
 }

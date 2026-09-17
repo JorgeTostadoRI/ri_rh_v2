@@ -55,6 +55,10 @@ Dio _dioClient() {
       baseUrl: apiUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
+      // Sin esto, subir un archivo (ej. la foto de asistencia, documentos de
+      // alta) podía quedarse esperando indefinidamente con red inestable,
+      // pese a que connect/receive ya tenían límite.
+      sendTimeout: const Duration(seconds: 60),
     ),
   );
 }

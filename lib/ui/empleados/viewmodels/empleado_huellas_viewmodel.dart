@@ -165,6 +165,11 @@ class EmpleadoHuellasViewmodel extends ChangeNotifier {
     _empleado = _empleado.copyWith(
       base: _empleado.base.copyWith(hasSignature: true),
     );
+    // getEmpleado() caches the whole employee list for 5 minutes; without
+    // this, revisiting this employee (here or in the list) within that
+    // window serves the stale record and the signature looks like it
+    // "disappeared" even though it was saved correctly.
+    _empleadosRepository.invalidateCache();
     notifyListeners();
 
     _log.info('Added signature to user #${_empleado.base.user!.id}');

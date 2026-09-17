@@ -59,6 +59,11 @@ _EmpleadoApiModel _$EmpleadoApiModelFromJson(
   bajaImssUrl: json['baja_imss'] as String?,
   comprobanteFiniquitoUrl:
       json['comprobante_transferencia_finiquito'] as String?,
+  credencialesGeneradas: json['credenciales_generadas'] == null
+      ? null
+      : CredencialesGeneradas.fromJson(
+          json['credenciales_generadas'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$EmpleadoApiModelToJson(_EmpleadoApiModel instance) =>
@@ -107,6 +112,7 @@ Map<String, dynamic> _$EmpleadoApiModelToJson(_EmpleadoApiModel instance) =>
       'finiquito_firmado': instance.finiquitoUrl,
       'baja_imss': instance.bajaImssUrl,
       'comprobante_transferencia_finiquito': instance.comprobanteFiniquitoUrl,
+      'credenciales_generadas': instance.credencialesGeneradas,
     };
 
 const _$EscolaridadEnumMap = {

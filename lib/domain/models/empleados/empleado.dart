@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/model_exception.dart';
@@ -34,6 +35,7 @@ abstract class Empleado with _$Empleado {
     int? diasVacaciones,
     required AltaEmpleo alta,
     required BajaEmpleo baja,
+    CredencialesGeneradas? credencialesGeneradas,
   }) = _Empleado;
 
   factory Empleado.fromApiModel({
@@ -126,6 +128,7 @@ abstract class Empleado with _$Empleado {
         bajaImssUrl: model.bajaImssUrl,
         comprobanteFiniquitoUrl: model.comprobanteFiniquitoUrl,
       ),
+      credencialesGeneradas: model.credencialesGeneradas,
     );
   }
 }

@@ -67,19 +67,30 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
           mainAxisAlignment: .start,
           crossAxisAlignment: .start,
           children: [
-            Column(
+            Row(
+              mainAxisAlignment: .spaceBetween,
               crossAxisAlignment: .start,
-              spacing: 8,
               children: [
-                Text(
-                  'Listado de Empleados',
-                  style: TextTheme.of(context).headlineLarge?.copyWith(
-                    fontSize: 48,
-                  ),
+                Column(
+                  crossAxisAlignment: .start,
+                  spacing: 8,
+                  children: [
+                    Text(
+                      'Listado de Empleados',
+                      style: TextTheme.of(context).headlineLarge?.copyWith(
+                        fontSize: 48,
+                      ),
+                    ),
+                    Text(
+                      'Gestiona y visualiza la información de todo el personal activo.',
+                      style: TextTheme.of(context).titleSmall,
+                    ),
+                  ],
                 ),
-                Text(
-                  'Gestiona y visualiza la información de todo el personal activo.',
-                  style: TextTheme.of(context).titleSmall,
+                ElevatedButton.icon(
+                  onPressed: () => context.push('${Routes.empleados}/${Routes.newEmpleado}'),
+                  icon: Icon(LucideIcons.userPlus),
+                  label: Text('Nuevo Empleado'),
                 ),
               ],
             ),
@@ -142,6 +153,7 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                       actionsMenu: EmpleadoActionsMenu(
                         empleado: empleado,
                         cambiarEstatus: widget.viewmodel.cambiarEstatus,
+                        regenerarPassword: widget.viewmodel.regenerarPassword,
                       ),
                     );
                   },

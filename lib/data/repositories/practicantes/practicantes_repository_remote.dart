@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
@@ -20,6 +22,7 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
   List<User>? _cachedUsers;
   List<Puesto>? _cachedPuestos;
   List<Universidad>? _cachedUniversidades;
+  List<Departamento>? _cachedDepartamentos;
 
   @override
   Future<Result<List<Practicante>>> getPracticantes() async {
@@ -139,6 +142,107 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
     switch (result) {
       case Error():
         _log.warning('Failed to cambiar estado de practicante', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<Practicante>> createPracticante(PracticanteCreateParams params) async {
+    final result = await _apiClient.createPracticante(params);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to create practicante', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+
+    invalidateCache();
+
+    try {
+      await Future.wait([_cacheUsers(), _cachePuestos(), _cacheUniversidades()]);
+      final practicante = Practicante.fromApiModel(
+        model: result.value,
+        users: _cachedUsers!,
+        puestos: _cachedPuestos!,
+        universidades: _cachedUniversidades!,
+      );
+      return Result.ok(practicante);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed mapping newly created practicante', error: e, stackTrace: stackTrace);
+      return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<List<Puesto>>> getPuestos() async {
+    try {
+      await _cachePuestos();
+      return Result.ok(_cachedPuestos!);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<List<Universidad>>> getUniversidades() async {
+    try {
+      await _cacheUniversidades();
+      return Result.ok(_cachedUniversidades!);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
+    final result = await _apiClient.createPuesto(nombre, tipos);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to create puesto', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedPuestos = null;
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<Universidad>> createUniversidad(String nombre, String direccion, String numeroContacto) async {
+    final result = await _apiClient.createUniversidad(nombre, direccion, numeroContacto);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to create universidad', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedUniversidades = null;
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<List<Departamento>>> getDepartamentos() async {
+    if (_cachedDepartamentos != null) {
+      return Result.ok(_cachedDepartamentos!);
+    }
+    final result = await _apiClient.getDepartamentos();
+    switch (result) {
+      case Error():
+        _log.warning('Failed to fetch departamentos', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedDepartamentos = result.value;
+    return Result.ok(_cachedDepartamentos!);
+  }
+
+  @override
+  Future<Result<CredencialesGeneradas>> regenerarPassword(int practicanteId) async {
+    final result = await _apiClient.regenerarPasswordPracticante(practicanteId);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to regenerar password de practicante', error: result.error);
         return Result.error(result.error);
       case Ok():
     }

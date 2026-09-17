@@ -1,7 +1,11 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
+import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 class EmpleadosRepositoryLocal extends EmpleadosRepository {
@@ -56,5 +60,30 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
     PlatformFile? convenioTerminacion,
   }) async {
     return const Result.ok('Estatus actualizado correctamente');
+  }
+
+  @override
+  Future<Result<Empleado>> createEmpleado(EmpleadoCreateParams params) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<List<Puesto>>> getPuestos() async {
+    return const Result.ok([]);
+  }
+
+  @override
+  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
+    return Result.ok(Puesto(nombre: nombre, tipo: TipoPuesto.values.byName(tipos)));
+  }
+
+  @override
+  Future<Result<List<Departamento>>> getDepartamentos() async {
+    return const Result.ok([]);
+  }
+
+  @override
+  Future<Result<CredencialesGeneradas>> regenerarPassword(int empleadoId) async {
+    return Result.error(Exception('No soportado en modo local'));
   }
 }

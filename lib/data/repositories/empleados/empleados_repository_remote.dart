@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -23,6 +25,7 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
   final ApiClient _apiClient;
 
   List<Puesto>? _cachedPuestos;
+  List<Departamento>? _cachedDepartamentos;
   List<User>? _cachedUsers;
   List<Empleado>? _cachedEmpleados;
   DateTime _cacheTime = DateTime(1970, 01, 01);
@@ -136,6 +139,71 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
   }
 
   @override
+  Future<Result<Empleado>> createEmpleado(EmpleadoCreateParams params) async {
+    final result = await _apiClient.createEmpleado(params);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to create empleado', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+
+    invalidateCache();
+
+    try {
+      await Future.wait([_cachePuestos(), _cacheUsers()]);
+      final empleado = Empleado.fromApiModel(
+        model: result.value,
+        users: _cachedUsers!,
+        puestos: _cachedPuestos!,
+      );
+      return Result.ok(empleado);
+    } on Exception catch (e, stackTrace) {
+      _log.error('Failed mapping newly created empleado', error: e, stackTrace: stackTrace);
+      return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<List<Puesto>>> getPuestos() async {
+    try {
+      await _cachePuestos();
+      return Result.ok(_cachedPuestos!);
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
+    final result = await _apiClient.createPuesto(nombre, tipos);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to create puesto', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedPuestos = null;
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<List<Departamento>>> getDepartamentos() async {
+    if (_cachedDepartamentos != null) {
+      return Result.ok(_cachedDepartamentos!);
+    }
+    final result = await _apiClient.getDepartamentos();
+    switch (result) {
+      case Error():
+        _log.warning('Failed to fetch departamentos', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedDepartamentos = result.value;
+    return Result.ok(_cachedDepartamentos!);
+  }
+
+  @override
   Future<Result<String>> cambiarEstatus(int empleadoId, EmpleadoEstatus nuevoEstatus, {
     DateTime? fechaBaja,
     PlatformFile? cartaRenuncia,
@@ -157,6 +225,18 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
     switch (result) {
       case Error():
         _log.warning('Failed to cambiar estatus de empleado', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<CredencialesGeneradas>> regenerarPassword(int empleadoId) async {
+    final result = await _apiClient.regenerarPasswordEmpleado(empleadoId);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to regenerar password de empleado', error: result.error);
         return Result.error(result.error);
       case Ok():
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 
 part 'practicante_api_model.freezed.dart';
@@ -64,6 +65,8 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     DateTime? registeredAt,
     @JsonKey(name: 'fecha_baja')
     DateTime? terminatedAt,
+    @JsonKey(name: 'credenciales_generadas')
+    CredencialesGeneradas? credencialesGeneradas,
   }) = _PracticanteApiModel;
 
   factory PracticanteApiModel.fromJson(Map<String, Object?> json) => _$PracticanteApiModelFromJson(json);

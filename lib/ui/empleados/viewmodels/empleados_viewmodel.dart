@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -35,6 +36,7 @@ class EmpleadosViewmodel extends ChangeNotifier {
   }) {
     load = Command0(_load)..execute();
     cambiarEstatus = Command1(_cambiarEstatus);
+    regenerarPassword = Command1(_regenerarPassword);
   }
 
   final EmpleadosRepository _empleadosRepository;
@@ -42,6 +44,7 @@ class EmpleadosViewmodel extends ChangeNotifier {
   final AppLogger _log;
   late final Command0 load;
   late final Command1<String, CambiarEstatusEmpleadoParams> cambiarEstatus;
+  late final Command1<CredencialesGeneradas, int> regenerarPassword;
 
   List<Empleado> _empleados = [];
   List<Empleado> get empleados => _empleados;
@@ -85,6 +88,14 @@ class EmpleadosViewmodel extends ChangeNotifier {
 
     _empleadosRepository.invalidateCache();
     await load.execute();
+    return result;
+  }
+
+  Future<Result<CredencialesGeneradas>> _regenerarPassword(int empleadoId) async {
+    final result = await _empleadosRepository.regenerarPassword(empleadoId);
+    if (result case Error()) {
+      _log.warning('Failed to regenerar password de empleado', error: result.error);
+    }
     return result;
   }
 }

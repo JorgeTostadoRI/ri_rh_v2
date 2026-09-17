@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 
 part 'empleado_api_model.freezed.dart';
@@ -89,6 +90,8 @@ abstract class EmpleadoApiModel with _$EmpleadoApiModel {
     String? bajaImssUrl,
     @JsonKey(name: 'comprobante_transferencia_finiquito')
     String? comprobanteFiniquitoUrl,
+    @JsonKey(name: 'credenciales_generadas')
+    CredencialesGeneradas? credencialesGeneradas,
   }) = _EmpleadoApiModel;
 
   factory EmpleadoApiModel.fromJson(Map<String, Object?> json) => _$EmpleadoApiModelFromJson(json);

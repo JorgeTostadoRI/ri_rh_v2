@@ -13,15 +13,30 @@ class DateFormField extends StatefulWidget {
     this.decoration,
     this.required = false,
     this.readOnly = false,
+    this.fourDigitYear = false,
+    this.firstDate,
+    this.lastDate,
   });
 
   final TextEditingController? controller;
-  final String? initialValue; // e.g. "04/11/23"
+  final String? initialValue; // e.g. "04/11/23", or "04/11/1995" if fourDigitYear
   final ValueChanged<DateTime?>? onDateSaved;
   final String? validatorMessage;
   final InputDecoration? decoration;
   final bool required;
   final bool readOnly;
+
+  /// When true, accepts/produces dd/mm/aaaa (4-digit year) instead of the
+  /// default dd/mm/aa. Needed for dates that can go back decades, like a
+  /// fecha de nacimiento, where the default ±1-año-de-hoy range and 2-digit
+  /// year (always resolved as 20xx) don't make sense.
+  final bool fourDigitYear;
+
+  /// Earliest/latest selectable date in the picker. Only meaningful with
+  /// [fourDigitYear]; when omitted, preserves the existing ±1 año de hoy
+  /// behavior.
+  final DateTime? firstDate;
+  final DateTime? lastDate;
 
   @override
   State<DateFormField> createState() => _DateFormFieldState();
@@ -39,15 +54,13 @@ class _DateFormFieldState extends State<DateFormField> {
   }
 
   DateTime? _parseStrict(String value) {
-    // Expect exactly dd/mm/aa
-    if (!RegExp(r'^\d{2}/\d{2}/\d{2}$').hasMatch(value)) return null;
+    final pattern = widget.fourDigitYear ? r'^\d{2}/\d{2}/\d{4}$' : r'^\d{2}/\d{2}/\d{2}$';
+    if (!RegExp(pattern).hasMatch(value)) return null;
 
     final parts = value.split('/');
     final dd = int.parse(parts[0]);
     final mm = int.parse(parts[1]);
-    final yy = int.parse(parts[2]);
-
-    final fullYear = _twoDigitYearToFull(yy);
+    final fullYear = widget.fourDigitYear ? int.parse(parts[2]) : _twoDigitYearToFull(int.parse(parts[2]));
 
     // Strict check: DateTime will “roll over” invalid dates,
     // so we verify it matches the original components.
@@ -64,7 +77,11 @@ class _DateFormFieldState extends State<DateFormField> {
     }
 
     final dt = _parseStrict(value);
-    if (dt == null) return widget.validatorMessage ?? 'Ingresa una fecha válida (dd/mm/aa)';
+    if (dt == null) {
+      return widget.validatorMessage ?? (widget.fourDigitYear
+          ? 'Ingresa una fecha válida (dd/mm/aaaa)'
+          : 'Ingresa una fecha válida (dd/mm/aa)');
+    }
 
     return null;
   }
@@ -77,13 +94,13 @@ class _DateFormFieldState extends State<DateFormField> {
     final date = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: earliestDate.subtract(oneYear),
-      lastDate: earliestDate.add(oneYear),
+      firstDate: widget.firstDate ?? earliestDate.subtract(oneYear),
+      lastDate: widget.lastDate ?? earliestDate.add(oneYear),
     );
     if (date != null) {
       final paddedD = _padNumber(date.day);
       final paddedM = _padNumber(date.month);
-      final paddedY = _padNumber(date.year);
+      final paddedY = widget.fourDigitYear ? date.year.toString().padLeft(4, '0') : _padNumber(date.year);
       _controller.text = '$paddedD/$paddedM/$paddedY';
     }
   }
@@ -149,7 +166,7 @@ class _DateFormFieldState extends State<DateFormField> {
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        _DDMMYYFormatter(),
+        widget.fourDigitYear ? _DDMMYYYYFormatter() : _DDMMYYFormatter(),
       ],
       autovalidateMode: .onUserInteraction,
       validator: _validator,
@@ -179,6 +196,35 @@ class _DDMMYYFormatter extends TextInputFormatter {
     if (limited.length >= 6) out += limited.substring(5, 6);
 
     // Keep cursor at end for simplicity.
+    return TextEditingValue(
+      text: out,
+      selection: TextSelection.collapsed(offset: out.length),
+    );
+  }
+}
+
+/// Formats a digit-only stream into dd/mm/aaaa while typing.
+/// - Accepts up to 8 digits: DDMMYYYY
+/// - Produces: DD/MM/AAAA
+class _DDMMYYYYFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final limited = digits.length > 8 ? digits.substring(0, 8) : digits;
+
+    String out = '';
+    if (limited.length >= 1) out += limited.substring(0, 1);
+    if (limited.length >= 2) out += limited.substring(1, 2);
+    if (limited.length >= 3) out += '/${limited.substring(2, 3)}';
+    if (limited.length >= 4) out += limited.substring(3, 4);
+    if (limited.length >= 5) out += '/${limited.substring(4, 5)}';
+    if (limited.length >= 6) out += limited.substring(5, 6);
+    if (limited.length >= 7) out += limited.substring(6, 7);
+    if (limited.length >= 8) out += limited.substring(7, 8);
+
     return TextEditingValue(
       text: out,
       selection: TextSelection.collapsed(offset: out.length),

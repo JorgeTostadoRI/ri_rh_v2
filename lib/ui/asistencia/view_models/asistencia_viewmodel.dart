@@ -31,7 +31,17 @@ class AsistenciaViewmodel extends ChangeNotifier {
 
     _capturesSub = _fingerprintRepository.capture()
     .listen(
-      (scan) => scanFingerprint.execute(scan.template),
+      (scan) {
+        // Mientras haya un ciclo de match->foto->registro en curso, se
+        // ignoran nuevas lecturas del sensor. Sin este candado, si alguien
+        // más pone el dedo mientras se toma la foto de la persona anterior
+        // (la cámara sigue tomando la foto en ese momento), el match se
+        // sobreescribe y se puede registrar la asistencia de una persona
+        // con la foto de otra.
+        if (_awaitingRegistration) return;
+        _awaitingRegistration = true;
+        scanFingerprint.execute(scan.template);
+      },
       onError: (e) {
         _log.error('AsistenciaViewmodel | Capture stream error', error: e);
         if (e is NoScannerAvailable) {
@@ -64,6 +74,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
   bool get manualEntryEnabled => _manualEntryEnabled;
 
   UserInfo? _userinfo;
+  bool _awaitingRegistration = false;
 
   List<Aviso> _motds = [];
   List<Aviso> get motds => _motds;
@@ -82,6 +93,9 @@ class AsistenciaViewmodel extends ChangeNotifier {
   Future<Result<void>> _scanFingerprint(Uint8List template) async {
     final userinfo = _fingerprintRepository.matchFingerprintToUser(template);
     if (userinfo == null) {
+      // No va a haber registro para esta lectura: se libera el candado de
+      // inmediato para permitir reintentar con el siguiente dedo.
+      _awaitingRegistration = false;
       _setNextFingerRetry();
       return Result.error(Exception('Failed to match fingerprint'));
     }
@@ -91,35 +105,41 @@ class AsistenciaViewmodel extends ChangeNotifier {
   }
 
   Future<Result<Asistencia>> _register(XFile? photo) async {
-    final loggedIn = await _authRepository.loginViaChallenge(_userinfo!.username);
-    switch(loggedIn) {
-      case Ok():
-        break;
-      case Error():
-        return Result.error(Exception('Failed to log in'));
+    try {
+      final loggedIn = await _authRepository.loginViaChallenge(_userinfo!.username);
+      switch(loggedIn) {
+        case Ok():
+          break;
+        case Error():
+          return Result.error(Exception('Failed to log in'));
+      }
+
+      final currentUser = _authRepository.getCurrentUser();
+
+      final result = await _asistenciaRepository.createAsistencia(
+        Asistencia(
+          user: currentUser!,
+          photoFile: photo,
+        )
+      );
+
+      switch(result) {
+        case Ok():
+          _fingerIndex = 0;
+          _manualEntryEnabled = false;
+          if (!_disposed) notifyListeners();
+          _log.info('AsistenciaViewmodel | Attendance registered for ${_userinfo!.username}');
+        case Error():
+          _log.warning('AsistenciaViewmodel | Failed to register attendance', error: result.error);
+      }
+
+      await _authRepository.logout();
+      return result;
+    } finally {
+      // Se libera el candado hasta que el ciclo completo (match->foto->
+      // registro) haya terminado, sin importar si tuvo éxito o falló.
+      _awaitingRegistration = false;
     }
-
-    final currentUser = _authRepository.getCurrentUser();
-
-    final result = await _asistenciaRepository.createAsistencia(
-      Asistencia(
-        user: currentUser!,
-        photoFile: photo,
-      )
-    );
-
-    switch(result) {
-      case Ok():
-        _fingerIndex = 0;
-        _manualEntryEnabled = false;
-        if (!_disposed) notifyListeners();
-        _log.info('AsistenciaViewmodel | Attendance registered for ${_userinfo!.username}');
-      case Error():
-        _log.warning('AsistenciaViewmodel | Failed to register attendance', error: result.error);
-    }
-
-    await _authRepository.logout();
-    return result;
   }
 
   Future<Result<void>> registerManualEntry(String username, String password, XFile photo) async {

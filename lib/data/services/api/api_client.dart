@@ -11,8 +11,11 @@ import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_mode
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
+import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
+import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
@@ -25,11 +28,182 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 typedef AuthHeaderProvider = String? Function();
 
+/// Datos para dar de alta un nuevo Empleado. Agrupa los 13 campos que el
+/// backend exige + correo opcional (solo se usa para crear el Usuarios
+/// vinculado, no se persiste en el Empleado) + los 17 documentos opcionales
+/// del alta (no incluye los 5 exclusivos del flujo de finiquito).
+class EmpleadoCreateParams {
+  EmpleadoCreateParams({
+    required this.nombreCompleto,
+    required this.fechaNacimiento,
+    required this.escolaridad,
+    required this.salarioDiario,
+    required this.clabeInterbancaria,
+    required this.numeroContacto,
+    required this.contactoEmergencia,
+    required this.rfc,
+    required this.curp,
+    required this.numeroSeguroSocial,
+    required this.direccionCompleta,
+    required this.montoRetencionInfonavit,
+    required this.puestoId,
+    required this.telefono,
+    this.correo,
+    this.departamentoId,
+    this.rol,
+    this.fechaAlta,
+    this.identificacionOficial,
+    this.actaNacimiento,
+    this.constanciaEstudio,
+    this.estadoCuenta,
+    this.constanciaSituacionFiscal,
+    this.pdfCurp,
+    this.comprobanteNss,
+    this.altaImss,
+    this.comprobanteDomicilio,
+    this.avisoRetencionInfonavit,
+    this.cartaRecomendacion1,
+    this.cartaRecomendacion2,
+    this.cartaRecomendacion3,
+    this.cartaNoAntecedentesPenales,
+    this.contratoLaboral,
+    this.curriculumVitae,
+    this.cartaOferta,
+    this.examenMedico,
+  });
+
+  final String nombreCompleto;
+  final DateTime fechaNacimiento;
+  final Escolaridad escolaridad;
+  final double salarioDiario;
+  final String clabeInterbancaria;
+  final String numeroContacto;
+  final String contactoEmergencia;
+  final String rfc;
+  final String curp;
+  final String numeroSeguroSocial;
+  final String direccionCompleta;
+  final double montoRetencionInfonavit;
+  final int puestoId;
+  /// Teléfono propio del Usuarios que se crea y vincula al dar de alta. No
+  /// es un campo del Empleado (numero_contacto/contacto_emergencia son del
+  /// contacto de emergencia, no del propio empleado).
+  final String telefono;
+  final String? correo;
+  /// ID de Departamento para el Usuarios que se crea y vincula al dar de
+  /// alta. No es un campo del Empleado.
+  final int? departamentoId;
+  /// Rol (de `Usuarios.PUESTOS`) para ese mismo Usuarios. No es un campo del
+  /// Empleado.
+  final String? rol;
+  /// Por default el backend usa la fecha de hoy si se omite.
+  final DateTime? fechaAlta;
+
+  final PlatformFile? identificacionOficial;
+  final PlatformFile? actaNacimiento;
+  final PlatformFile? constanciaEstudio;
+  final PlatformFile? estadoCuenta;
+  final PlatformFile? constanciaSituacionFiscal;
+  final PlatformFile? pdfCurp;
+  final PlatformFile? comprobanteNss;
+  final PlatformFile? altaImss;
+  final PlatformFile? comprobanteDomicilio;
+  final PlatformFile? avisoRetencionInfonavit;
+  final PlatformFile? cartaRecomendacion1;
+  final PlatformFile? cartaRecomendacion2;
+  final PlatformFile? cartaRecomendacion3;
+  final PlatformFile? cartaNoAntecedentesPenales;
+  final PlatformFile? contratoLaboral;
+  final PlatformFile? curriculumVitae;
+  final PlatformFile? cartaOferta;
+  final PlatformFile? examenMedico;
+}
+
+/// Datos para dar de alta un nuevo Practicante/Residente. Mismo criterio que
+/// [EmpleadoCreateParams]: 13 campos requeridos + correo opcional + los 9
+/// documentos opcionales del alta (no incluye carta_liberacion, exclusiva
+/// del flujo de baja).
+class PracticanteCreateParams {
+  PracticanteCreateParams({
+    required this.nombreCompleto,
+    required this.tipo,
+    required this.universidadId,
+    required this.puestoId,
+    required this.fechaNacimiento,
+    required this.salarioDiario,
+    required this.clabeInterbancaria,
+    required this.numeroContacto,
+    required this.contactoEmergencia,
+    required this.rfc,
+    required this.curp,
+    required this.numeroSeguroSocial,
+    required this.direccionCompleta,
+    required this.telefono,
+    this.correo,
+    this.departamentoId,
+    this.rol,
+    this.fechaAlta,
+    this.identificacionOficial,
+    this.actaNacimiento,
+    this.estadoCuenta,
+    this.pdfRfc,
+    this.pdfCurp,
+    this.pdfNumeroSeguroSocial,
+    this.comprobanteDomicilio,
+    this.cartaPresentacion,
+    this.curriculumVitae,
+  });
+
+  final String nombreCompleto;
+  final TypePracticante tipo;
+  final int universidadId;
+  final int puestoId;
+  final DateTime fechaNacimiento;
+  final double salarioDiario;
+  final String clabeInterbancaria;
+  final String numeroContacto;
+  final String contactoEmergencia;
+  final String rfc;
+  final String curp;
+  final String numeroSeguroSocial;
+  final String direccionCompleta;
+  /// Teléfono propio del Usuarios que se crea y vincula al dar de alta. No
+  /// es un campo del PracticanteResidente (numero_contacto/contacto_emergencia
+  /// son del contacto de emergencia, no del propio practicante/residente).
+  final String telefono;
+  final String? correo;
+  /// ID de Departamento para el Usuarios que se crea y vincula al dar de
+  /// alta. No es un campo del PracticanteResidente.
+  final int? departamentoId;
+  /// Rol (de `Usuarios.PUESTOS`) para ese mismo Usuarios. No es un campo del
+  /// PracticanteResidente.
+  final String? rol;
+  /// Por default el backend usa la fecha de hoy si se omite.
+  final DateTime? fechaAlta;
+
+  final PlatformFile? identificacionOficial;
+  final PlatformFile? actaNacimiento;
+  final PlatformFile? estadoCuenta;
+  final PlatformFile? pdfRfc;
+  final PlatformFile? pdfCurp;
+  final PlatformFile? pdfNumeroSeguroSocial;
+  final PlatformFile? comprobanteDomicilio;
+  final PlatformFile? cartaPresentacion;
+  final PlatformFile? curriculumVitae;
+}
+
 class ApiClient {
   ApiClient({
     Dio Function()? dioFactory,
   })
-    : _dioFactory = dioFactory ?? (() => Dio());
+    // En la app real, `dependencies.dart` inyecta su propio dioFactory con
+    // estos mismos valores (`_dioClient`) — este default solo aplica cuando
+    // se construye ApiClient() sin pasar uno explícito (ej. en pruebas).
+    : _dioFactory = dioFactory ?? (() => Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 60),
+      )));
 
   final Dio Function() _dioFactory;
 
@@ -448,6 +622,81 @@ class ApiClient {
     }
   }
 
+  Future<Result<EmpleadoApiModel>> createEmpleado(EmpleadoCreateParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      MultipartFile? toMultipart(PlatformFile? file) => file == null ? null : MultipartFile.fromBytes(
+        file.bytes!,
+        filename: file.name,
+        contentType: getMediaTypeFromExtension(file.extension!),
+      );
+      final formData = FormData.fromMap({
+        'nombre_completo': params.nombreCompleto,
+        'fecha_nacimiento': params.fechaNacimiento.toShortIsoString(),
+        'escolaridad': params.escolaridad.name,
+        'salario_diario': params.salarioDiario.toString(),
+        'clabe_interbancaria': params.clabeInterbancaria,
+        'numero_contacto': params.numeroContacto,
+        'contacto_emergencia': params.contactoEmergencia,
+        'rfc': params.rfc,
+        'curp': params.curp,
+        'numero_seguro_social': params.numeroSeguroSocial,
+        'direccion_completa': params.direccionCompleta,
+        'monto_retencion_infonavit': params.montoRetencionInfonavit.toString(),
+        'puesto': params.puestoId,
+        'telefono': params.telefono,
+        if (params.correo != null) 'correo': params.correo,
+        if (params.departamentoId != null) 'departamento': params.departamentoId,
+        if (params.rol != null) 'rol': params.rol,
+        if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'identificacion_oficial': toMultipart(params.identificacionOficial),
+        'acta_nacimiento': toMultipart(params.actaNacimiento),
+        'constancia_estudio': toMultipart(params.constanciaEstudio),
+        'estado_cuenta': toMultipart(params.estadoCuenta),
+        'constancia_situacion_fiscal': toMultipart(params.constanciaSituacionFiscal),
+        'pdf_curp': toMultipart(params.pdfCurp),
+        'comprobante_nss': toMultipart(params.comprobanteNss),
+        'alta_imss': toMultipart(params.altaImss),
+        'comprobante_domicilio': toMultipart(params.comprobanteDomicilio),
+        'aviso_retencion_infonavit': toMultipart(params.avisoRetencionInfonavit),
+        'carta_recomendacion_1': toMultipart(params.cartaRecomendacion1),
+        'carta_recomendacion_2': toMultipart(params.cartaRecomendacion2),
+        'carta_recomendacion_3': toMultipart(params.cartaRecomendacion3),
+        'carta_no_antecedentes_penales': toMultipart(params.cartaNoAntecedentesPenales),
+        'contrato_laboral': toMultipart(params.contratoLaboral),
+        'curriculum_vitae': toMultipart(params.curriculumVitae),
+        'carta_oferta': toMultipart(params.cartaOferta),
+        'examen_medico': toMultipart(params.examenMedico),
+      });
+      final response = await dio.post('/api/rh/empleados/', data: formData);
+      final result = EmpleadoApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<CredencialesGeneradas>> regenerarPasswordEmpleado(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/empleados/$id/regenerar-password/');
+      final result = CredencialesGeneradas.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // PRACTICANTES
   Future<Result<List<PracticanteApiModel>>> getPracticantes() async {
     final dio = _dioFactory();
@@ -513,6 +762,72 @@ class ApiClient {
     }
   }
 
+  Future<Result<PracticanteApiModel>> createPracticante(PracticanteCreateParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      MultipartFile? toMultipart(PlatformFile? file) => file == null ? null : MultipartFile.fromBytes(
+        file.bytes!,
+        filename: file.name,
+        contentType: getMediaTypeFromExtension(file.extension!),
+      );
+      final formData = FormData.fromMap({
+        'nombre_completo': params.nombreCompleto,
+        'tipo': params.tipo.name,
+        'universidad': params.universidadId,
+        'puesto': params.puestoId,
+        'fecha_nacimiento': params.fechaNacimiento.toShortIsoString(),
+        'salario_diario': params.salarioDiario.toString(),
+        'clabe_interbancaria': params.clabeInterbancaria,
+        'numero_contacto': params.numeroContacto,
+        'contacto_emergencia': params.contactoEmergencia,
+        'rfc': params.rfc,
+        'curp': params.curp,
+        'numero_seguro_social': params.numeroSeguroSocial,
+        'direccion_completa': params.direccionCompleta,
+        'telefono': params.telefono,
+        if (params.correo != null) 'correo': params.correo,
+        if (params.departamentoId != null) 'departamento': params.departamentoId,
+        if (params.rol != null) 'rol': params.rol,
+        if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'identificacion_oficial': toMultipart(params.identificacionOficial),
+        'acta_nacimiento': toMultipart(params.actaNacimiento),
+        'estado_cuenta': toMultipart(params.estadoCuenta),
+        'pdf_rfc': toMultipart(params.pdfRfc),
+        'pdf_curp': toMultipart(params.pdfCurp),
+        'pdf_numero_seguro_social': toMultipart(params.pdfNumeroSeguroSocial),
+        'comprobante_domicilio': toMultipart(params.comprobanteDomicilio),
+        'carta_presentacion': toMultipart(params.cartaPresentacion),
+        'curriculum_vitae': toMultipart(params.curriculumVitae),
+      });
+      final response = await dio.post('/api/rh/PracticantesResidentes/', data: formData);
+      final result = PracticanteApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<CredencialesGeneradas>> regenerarPasswordPracticante(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/PracticantesResidentes/$id/regenerar-password/');
+      final result = CredencialesGeneradas.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // UNIVERSIDADES
   Future<Result<List<Universidad>>> getUniversidades() async {
     final dio = _dioFactory();
@@ -532,6 +847,26 @@ class ApiClient {
     }
   }
 
+  Future<Result<Universidad>> createUniversidad(String nombre, String direccion, String numeroContacto) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/Universidad/', data: {
+        'nombre': nombre,
+        'direccion': direccion,
+        'numero_contacto': numeroContacto,
+      });
+      final result = Universidad.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // PUESTOS
   Future<Result<List<Puesto>>> getPuestos() async {
     final dio = _dioFactory();
@@ -541,6 +876,25 @@ class ApiClient {
       final result = (response.data as List)
       .map((json) => Puesto.fromJson(json))
       .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/puesto/', data: {
+        'nombre': nombre,
+        'tipos': tipos,
+      });
+      final result = Puesto.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
