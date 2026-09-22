@@ -6,18 +6,23 @@ import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/field_switcher.dart';
 import 'package:ri_rh_v2/ui/core/ui/metric_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/core/ui/table_wrapper.dart';
 import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_incidencia_nomina_viewmodel.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/general_attendance_table.dart';
+import 'package:ri_rh_v2/ui/reportes/widgets/incidencia_nomina_report_view.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/individual_attendance_table.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 
 class ReporteAsistenciaScreen extends StatefulWidget {
   final ReporteAsistenciaViewmodel viewmodel;
+  final ReporteIncidenciaNominaViewmodel incidenciaNominaViewmodel;
 
   const ReporteAsistenciaScreen({
     super.key,
     required this.viewmodel,
+    required this.incidenciaNominaViewmodel,
   });
 
   @override
@@ -25,6 +30,9 @@ class ReporteAsistenciaScreen extends StatefulWidget {
 }
 
 class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
+  int reportTypeIndex = 0;
+  static const reportTypeLabels = ['Asistencia', 'Incidencias de Nómina'];
+
   int viewSelectIndex = 0;
   final List<String> viewSelectionLabels = ['Empresa', 'Empleados'];
 
@@ -63,6 +71,14 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
               title: 'Reporte de Asistencia',
               subtitle: 'Registros de ingreso por período',
             ),
+            FieldSwitcher(
+              selectedIndex: reportTypeIndex,
+              options: reportTypeLabels,
+              onSelected: (value) => setState(() => reportTypeIndex = value),
+            ),
+            if (reportTypeIndex == 1)
+              IncidenciaNominaReportView(viewmodel: widget.incidenciaNominaViewmodel)
+            else ...[
             Row(
               children: [
                 ListenableBuilder(
@@ -167,7 +183,7 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
 
                 final reporte = widget.viewmodel.reporte;
                 if (viewSelectIndex == 0) {
-                  return _TableWrapper(
+                  return TableWrapper(
                     table: GeneralAttendanceTable(reporte: reporte),
                   );
                 }
@@ -211,7 +227,7 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             final item = items[index];
-                            return _TableWrapper(
+                            return TableWrapper(
                               key: ValueKey(item.user.id),
                               table: IndividualAttendanceTable(
                                 item: item,
@@ -230,45 +246,8 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                 return SizedBox.shrink();
               },
             ),
+            ],
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TableWrapper extends StatefulWidget {
-  final Widget table;
-
-  const _TableWrapper({
-    super.key,
-    required this.table,
-  });
-
-  @override
-  State<_TableWrapper> createState() => _TableWrapperState();
-}
-
-class _TableWrapperState extends State<_TableWrapper> {
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      child: SingleChildScrollView(
-        scrollDirection: .horizontal,
-        controller: _scrollController,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: 800),
-          child: widget.table,
         ),
       ),
     );

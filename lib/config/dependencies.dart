@@ -10,6 +10,9 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/avisos/avisos_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/dias_festivos/dias_festivos_repository.dart';
+import 'package:ri_rh_v2/data/repositories/dias_festivos/dias_festivos_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/dias_festivos/dias_festivos_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository_remote.dart';
@@ -127,6 +130,11 @@ Future<List<SingleChildWidget>> get providersLocal async {
       ) as AvisosRepository
     ),
     Provider(create: (context) =>
+      DiasFestivosRepositoryLocal(
+        localDataService: context.read(),
+      ) as DiasFestivosRepository
+    ),
+    Provider(create: (context) =>
       FingerprintRepositoryLocal(
         log: context.read(),
         localDataService: context.read(),
@@ -211,6 +219,11 @@ Future<List<SingleChildWidget>> get providersRemote async {
       AvisosRepositoryRemote(
         apiClient: context.read(),
       ) as AvisosRepository
+    ),
+    Provider(create: (context) =>
+      DiasFestivosRepositoryRemote(
+        apiClient: context.read(),
+      ) as DiasFestivosRepository
     ),
     Provider(create: (context) =>
       FingerprintRepositoryRemote(

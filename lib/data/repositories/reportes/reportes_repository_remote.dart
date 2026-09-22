@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
+import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/utils/date.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -48,6 +49,36 @@ class ReportesRepositoryRemote extends ReportesRepository {
     final reporte = ReporteAsistencia(
       items: reporteItems,
       dates: dates,
+    );
+    return Result.ok(reporte);
+  }
+
+  @override
+  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime date) async {
+    if (_cachedDepartamentos == null) {
+      final resultDepartamentos = await _apiClient.getDepartamentos();
+      switch (resultDepartamentos) {
+        case Error():
+          return Result.error(resultDepartamentos.error);
+        case Ok():
+      }
+      _cachedDepartamentos = resultDepartamentos.value;
+    }
+
+    final resultReporte = await _apiClient.getReporteIncidenciaNomina(date);
+    switch (resultReporte) {
+      case Error():
+        return Result.error(resultReporte.error);
+      case Ok():
+    }
+
+    final items = resultReporte.value.items
+        .map((model) => ReporteIncidenciaNominaItem.fromApiModel(model, departamentos: _cachedDepartamentos!))
+        .toList();
+
+    final reporte = ReporteIncidenciaNomina(
+      date: resultReporte.value.date,
+      items: items,
     );
     return Result.ok(reporte);
   }

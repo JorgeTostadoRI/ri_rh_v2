@@ -10,9 +10,11 @@ import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
+import 'package:ri_rh_v2/data/services/api/models/reportes/incidencia_nomina/reporte_incidencia_nomina_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
+import 'package:ri_rh_v2/domain/models/dias_festivos/dia_festivo.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
@@ -483,6 +485,59 @@ class ApiClient {
       _authHeader(dio);
       await dio.delete('/api/rh/avisos/$id/');
       return Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  // DIAS FESTIVOS
+  Future<Result<List<DiaFestivo>>> getDiasFestivos() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/dias-festivos/');
+      final result = (response.data as List)
+        .map((json) => DiaFestivo.fromJson(json))
+        .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<DiaFestivo>> postDiaFestivo(DiaFestivo diaFestivo) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/dias-festivos/', data: {
+        'fecha': diaFestivo.fecha.toShortIsoString(),
+        'nombre': diaFestivo.nombre,
+      });
+      final result = DiaFestivo.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> deleteDiaFestivo(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.delete('/api/rh/dias-festivos/$id/');
+      return const Result.ok(null);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
@@ -1025,6 +1080,25 @@ class ApiClient {
       };
       final response = await dio.get('/api/rh/reportes/asistencias/', queryParameters: queryParams);
       final result = ReporteAsistenciaResponse.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<ReporteIncidenciaNominaResponse>> getReporteIncidenciaNomina(DateTime date) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get(
+        '/api/rh/reportes/incidencias-nomina/',
+        queryParameters: {'date': date.toShortIsoString()},
+      );
+      final result = ReporteIncidenciaNominaResponse.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));

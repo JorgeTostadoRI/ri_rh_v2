@@ -41,7 +41,10 @@ import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_huellas_screen.dart
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicantes_screen.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/nuevo_practicante_screen.dart';
 import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_incidencia_nomina_viewmodel.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/reporte_asistencia_screen.dart';
+import 'package:ri_rh_v2/ui/dias_festivos/viewmodels/dias_festivos_viewmodel.dart';
+import 'package:ri_rh_v2/ui/dias_festivos/widgets/dias_festivos_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
   initialLocation: Routes.home,
@@ -313,6 +316,22 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               viewmodel: ReporteAsistenciaViewmodel(
                 log: context.read(),
                 reportesRepository: context.read(),
+              ),
+              incidenciaNominaViewmodel: ReporteIncidenciaNominaViewmodel(
+                log: context.read(),
+                reportesRepository: context.read(),
+              ),
+            );
+          }
+        ),
+        GoRoute(
+          path: Routes.diasFestivos,
+          builder: (context, state) {
+            return DiasFestivosScreen(
+              viewmodel: DiasFestivosViewmodel(
+                log: context.read(),
+                diasFestivosRepository: context.read(),
+                authRepository: context.read(),
               ),
             );
           }

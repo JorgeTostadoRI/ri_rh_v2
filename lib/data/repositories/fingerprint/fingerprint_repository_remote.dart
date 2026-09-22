@@ -23,6 +23,11 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   // Una huella debe faltar en 3 sincronizaciones seguidas (~9 min con el
   // intervalo de arriba) antes de darla de baja localmente.
   static const _missingSyncStreakToDelete = 3;
+  // Evita golpear la red de nuevo si loadFingerprints() se llama varias
+  // veces seguidas en muy poco tiempo (ej. una pantalla que se reconstruye
+  // a medio flujo y crea una instancia extra del viewmodel, que también
+  // llama loadFingerprints() en su constructor).
+  static const _minSyncInterval = Duration(seconds: 5);
 
   final FingerScanService _fingerScanService;
   final ApiClient _apiClient;
@@ -34,6 +39,7 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   Set<int> _knownFids = {};
 
   Timer? _refreshTimer;
+  DateTime? _lastSyncAttempt;
 
   @override
   Stream<Scan> capture() {
@@ -54,7 +60,11 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
 
   @override
   Future<void> loadFingerprints() async {
-    await _syncFingerprints();
+    final now = DateTime.now();
+    if (_lastSyncAttempt == null || now.difference(_lastSyncAttempt!) >= _minSyncInterval) {
+      _lastSyncAttempt = now;
+      await _syncFingerprints();
+    }
     // Se reintenta periódicamente (no solo una vez al abrir la pantalla) para
     // que una falla de red momentánea al arrancar se resuelva sola, y para
     // que huellas dadas de alta/eliminadas desde otra sesión también se
