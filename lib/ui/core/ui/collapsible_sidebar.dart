@@ -159,6 +159,12 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                         route: Routes.reportes,
                         isCollapsed: isCollapsed,
                       ),
+                      _NavItem(
+                        icon: LucideIcons.calendarOff,
+                        label: 'Días Festivos',
+                        route: Routes.diasFestivos,
+                        isCollapsed: isCollapsed,
+                      ),
                     ],
                   );
                 }

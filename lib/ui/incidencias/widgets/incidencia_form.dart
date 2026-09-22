@@ -43,6 +43,14 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
   late final TextEditingController _startTimeController;
   late final TextEditingController _endTimeController;
 
+  // Capturado una sola vez: los datos del formulario (fechas, motivo,
+  // archivos) viven dentro del viewmodel. Si el router reconstruye esta
+  // ruta a medio flujo (ej. refreshListenable de GoRouter al completarse el
+  // login por huella al enviar), widget.viewmodel pasaría a apuntar a una
+  // instancia nueva y vacía — se perdería todo lo ya capturado. Usar
+  // siempre esta misma instancia lo evita.
+  late final NewIncidenciaViewmodel _viewmodel;
+
   Widget fileContainer(int index, PlatformFile file) {
     return Container(
       width: 200,
@@ -70,7 +78,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
             ),
           ),
           InkWell(
-            onTap: () => widget.viewmodel.removeFile(index),
+            onTap: () => _viewmodel.removeFile(index),
             child: Icon(LucideIcons.x, color: errorColor, size: 20),
           ),
         ],
@@ -79,13 +87,13 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
   }
 
   Future<bool> _validateAuth() async {
-    final isAuthenticated = await widget.viewmodel.isAuthenticated;
+    final isAuthenticated = await _viewmodel.isAuthenticated;
 
     if (!isAuthenticated) {
       final authenticated = await showDialog<Result<bool>>(
         context: context,
         builder: (context) => VerifyIdentityDialog(
-          viewmodel: widget.viewmodel,
+          viewmodel: _viewmodel,
         ),
         barrierDismissible: false,
       );
@@ -122,7 +130,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       final authenticated = await _validateAuth();
       if (!authenticated) return;
 
-      final result = await widget.viewmodel.submitData(widget.category);
+      final result = await _viewmodel.submitData(widget.category);
       switch (result) {
         case Error():
           _handleSubmitError(result.error);
@@ -149,7 +157,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
     );
 
-    if (result != null) widget.viewmodel.addFiles(result.files);
+    if (result != null) _viewmodel.addFiles(result.files);
   }
 
   void _handleSubmitError(Exception e) {
@@ -190,16 +198,29 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
   @override
   void initState() {
     super.initState();
+    _viewmodel = widget.viewmodel;
     _startDateController = TextEditingController();
     _endDateController = TextEditingController();
     _startTimeController = TextEditingController();
     _endTimeController = TextEditingController();
 
-    // Force horas extra to only allow hour input
+    // Force horas extra y retardo to only allow hour input
     switch (widget.category) {
       case IncidenciaCategory.horasextra:
-        widget.viewmodel.onDateOptionChanged(1);
+      case IncidenciaCategory.retardo:
+        _viewmodel.onDateOptionChanged(1);
       default:
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant IncidenciaForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.viewmodel != _viewmodel) {
+      // Instancia huérfana creada por la reconstrucción de la ruta: se
+      // descarta de inmediato para que no se quede escuchando el sensor de
+      // huella para siempre.
+      widget.viewmodel.dispose();
     }
   }
 
@@ -209,7 +230,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     _endDateController.dispose();
     _startTimeController.dispose();
     _endTimeController.dispose();
-    widget.viewmodel.dispose();
+    _viewmodel.dispose();
     super.dispose();
   }
 
@@ -234,16 +255,16 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                 Row(
                   children: [
                     FieldSwitcher(
-                      selectedIndex: widget.viewmodel.dateOption.index,
-                      onSelected: widget.viewmodel.onDateOptionChanged,
-                      options: widget.viewmodel.dateOptionLabels,
+                      selectedIndex: _viewmodel.dateOption.index,
+                      onSelected: _viewmodel.onDateOptionChanged,
+                      options: _viewmodel.dateOptionLabels,
                     ),
                     Expanded(child: SizedBox()),
                   ],
                 ),
                 const SizedBox(height: 8),
               ],
-            if (widget.viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE)
+            if (_viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE)
               Row(
                 spacing: 16,
                 children: [
@@ -256,7 +277,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         hintText: 'dd/mm/aa',
                       ),
                       required: true,
-                      onDateSaved: widget.viewmodel.onStartDateSaved,
+                      onDateSaved: _viewmodel.onStartDateSaved,
                     ),
                   ),
                   Flexible(
@@ -267,12 +288,12 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'HASTA (OPCIONAL)',
                         hintText: 'dd/mm/aa',
                       ),
-                      onDateSaved: widget.viewmodel.onEndDateSaved,
+                      onDateSaved: _viewmodel.onEndDateSaved,
                     ),
                   ),
                 ],
               ),
-            if (widget.viewmodel.dateOption == IncidenciaDateOption.HOUR_RANGE)
+            if (_viewmodel.dateOption == IncidenciaDateOption.HOUR_RANGE)
               Row(
                 spacing: 16,
                 children: [
@@ -284,7 +305,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'DÍA',
                         hintText: 'dd/mm/aa',
                       ),
-                      onDateSaved: widget.viewmodel.onStartDateSaved,
+                      onDateSaved: _viewmodel.onStartDateSaved,
                       required: true,
                     ),
                   ),
@@ -296,7 +317,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'HORA INICIO',
                         hintText: '--:--',
                       ),
-                      onTimeSaved: widget.viewmodel.onStartTimeSaved,
+                      onTimeSaved: _viewmodel.onStartTimeSaved,
                       required: true,
                     ),
                   ),
@@ -308,7 +329,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'HORA FIN',
                         hintText: '--:--',
                       ),
-                      onTimeSaved: widget.viewmodel.onEndTimeSaved,
+                      onTimeSaved: _viewmodel.onEndTimeSaved,
                       required: true,
                     ),
                   ),
@@ -328,7 +349,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                 }
                 return null;
               },
-              onChanged: widget.viewmodel.onReasonChanged,
+              onChanged: _viewmodel.onReasonChanged,
             ),
             const SizedBox(height: _fieldMargin),
             FieldLabel(labelText: 'Documentos'),
@@ -351,7 +372,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                for (final (index, file) in widget.viewmodel.files.indexed)
+                for (final (index, file) in _viewmodel.files.indexed)
                   fileContainer(index, file),
               ],
             ),

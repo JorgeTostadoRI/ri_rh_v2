@@ -46,4 +46,6 @@ enum AsistenciaStatus {
   holidayLeave,
   @JsonValue('holiday_worked')
   holidayWorked,
+  @JsonValue('authorized_late')
+  authorizedLate,
 }

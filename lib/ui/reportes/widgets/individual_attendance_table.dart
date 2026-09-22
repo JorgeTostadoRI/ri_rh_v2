@@ -211,6 +211,12 @@ class IndividualAttendanceTable extends StatelessWidget {
         DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
         DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
       ],
+      AsistenciaStatus.authorizedLate => const [
+        DataCell(Text('RETARDO')),
+        DataCell(Text('-')),
+        DataCell(Text('-')),
+        DataCell(Text('-')),
+      ],
     };
   }
 

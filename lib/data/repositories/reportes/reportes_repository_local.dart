@@ -2,6 +2,7 @@ import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
+import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/date.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -35,6 +36,29 @@ class ReportesRepositoryLocal extends ReportesRepository {
       items.add(ReporteAsistenciaItem(user: user, asistencia: checkins, totalMinutesLate: 0));
     }
     return items;
+  }
+
+  static const _mockCodigos = ['A', 'A', 'F', 'R', 'D', 'VAC'];
+
+  @override
+  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime date) async {
+    final users = _localDataService.getUsers();
+
+    final items = <ReporteIncidenciaNominaItem>[
+      for (final (index, user) in users.indexed)
+        ReporteIncidenciaNominaItem(
+          id: user.id,
+          username: user.username,
+          fullName: user.nombre,
+          isPracticante: false,
+          departamento: user.departamento,
+          codigo: _mockCodigos[index % _mockCodigos.length],
+          minutesLate: _mockCodigos[index % _mockCodigos.length] == 'R' ? 12 : 0,
+          extraHours: index % 4 == 0 ? 2.5 : 0,
+        ),
+    ];
+
+    return Result.ok(ReporteIncidenciaNomina(date: date, items: items));
   }
 
   Map<String, AsistenciaDaily> _generateCheckInsForUser(User user, List<DateTime> dates) {

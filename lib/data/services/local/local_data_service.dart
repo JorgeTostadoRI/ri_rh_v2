@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.da
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
+import 'package:ri_rh_v2/domain/models/dias_festivos/dia_festivo.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
@@ -102,6 +103,25 @@ class LocalDataService {
         updatedAt: yesterday,
         content: 'Siguiente lunes será día festivo',
         showAt: today,
+      ),
+    ];
+  }
+
+  List<DiaFestivo> getDiasFestivos() {
+    final today = DateTime.now().copyWith(
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    return [
+      DiaFestivo(
+        id: 1,
+        createdAt: today,
+        updatedAt: today,
+        fecha: DateTime(today.year, 12, 25),
+        nombre: 'Navidad',
       ),
     ];
   }

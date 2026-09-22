@@ -37,23 +37,40 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
 
   bool hidePassword = true;
 
+  // Capturado una sola vez: si el router reconstruye esta ruta a medio flujo
+  // (ej. refreshListenable de GoRouter al iniciar sesión), widget.viewmodel
+  // pasaría a apuntar a una instancia nueva. Usar siempre esta misma
+  // instancia evita perder el estado en curso.
+  late final IngresoManualViewmodel _viewmodel;
+
   @override
   void initState() {
     super.initState();
-    widget.viewmodel.register.addListener(_onRegister);
+    _viewmodel = widget.viewmodel;
+    _viewmodel.register.addListener(_onRegister);
   }
 
   @override
   void didUpdateWidget(covariant IngresoManualScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    widget.viewmodel.register.removeListener(_onRegister);
-    widget.viewmodel.register.addListener(_onRegister);
+    if (widget.viewmodel != _viewmodel) {
+      // Instancia huérfana creada por la reconstrucción de la ruta: se
+      // descarta de inmediato para que no se quede escuchando el sensor de
+      // huella para siempre.
+      widget.viewmodel.dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    _viewmodel.register.removeListener(_onRegister);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
-    final viewmodel = widget.viewmodel;
+    final viewmodel = _viewmodel;
 
     return SingleChildScrollView(
       child: Padding(
@@ -90,7 +107,7 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
                           Align(
                             alignment: .bottomEnd,
                             child: CommandButton.icon(
-                              command: widget.viewmodel.register,
+                              command: _viewmodel.register,
                               onPressed: _registerForUser,
                               icon: Icon(LucideIcons.circleCheck),
                               label: Text('Registrar'),
@@ -227,7 +244,7 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
         password: _password.text,
         photo: _photo!,
       );
-      widget.viewmodel.register.execute(params);
+      _viewmodel.register.execute(params);
     }
 
   }
@@ -248,20 +265,20 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
       password: '',
       photo: _photo!,
     );
-    widget.viewmodel.register.execute(params);
+    _viewmodel.register.execute(params);
   }
 
   void _onRegister() {
-    if (widget.viewmodel.register.completed) {
-      widget.viewmodel.register.clearResult();
+    if (_viewmodel.register.completed) {
+      _viewmodel.register.clearResult();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Se registró tu asistencia')),
       );
       context.pop();
     }
-    else if (widget.viewmodel.register.error) {
-      final error = (widget.viewmodel.register.result as result.Error).error;
-      widget.viewmodel.register.clearResult();
+    else if (_viewmodel.register.error) {
+      final error = (_viewmodel.register.result as result.Error).error;
+      _viewmodel.register.clearResult();
 
       if (error is LoginError) {
         ScaffoldMessenger.of(context).showSnackBar(

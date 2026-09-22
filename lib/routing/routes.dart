@@ -20,6 +20,7 @@ abstract final class Routes {
   static const newPracticante = 'new';
   static const expedientePracticante = ':practicanteId';
   static const reportes = '/reportes';
+  static const diasFestivos = '/dias-festivos';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.url}/new';
   static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}';
   static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}/$huellas';

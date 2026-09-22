@@ -29,27 +29,41 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
   bool _checkingAuth = true;
   bool _ownsSession = false;
 
+  // Capturado una sola vez: el router puede reconstruir esta ruta a medio
+  // flujo (ej. refreshListenable de GoRouter al completarse el login por
+  // huella), lo que nos pasaría una instancia nueva de MisIncidenciasViewmodel
+  // en widget.viewmodel. Seguimos usando siempre esta misma instancia para no
+  // perder lo que ya se cargó/está en curso.
+  late final MisIncidenciasViewmodel _viewmodel;
+
   @override
   void initState() {
     super.initState();
+    _viewmodel = widget.viewmodel;
     WidgetsBinding.instance.addPostFrameCallback((_) => _authenticate());
+  }
+
+  @override
+  void didUpdateWidget(covariant MisIncidenciasScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.viewmodel != _viewmodel) {
+      // Instancia huérfana creada por la reconstrucción de la ruta: se
+      // descarta de inmediato para que no se quede escuchando el sensor de
+      // huella para siempre.
+      widget.viewmodel.dispose();
+    }
   }
 
   @override
   void dispose() {
     if (_ownsSession) {
-      widget.viewmodel.endSession();
+      _viewmodel.endSession();
     }
     super.dispose();
   }
 
   Future<void> _authenticate() async {
-    // Captured once so this flow keeps talking to the same viewmodel instance
-    // even if the parent route gets rebuilt (e.g. GoRouter's refreshListenable
-    // firing as soon as the challenge login succeeds) while the dialog is open.
-    final viewmodel = widget.viewmodel;
-
-    final isAuthenticated = await viewmodel.isAuthenticated;
+    final isAuthenticated = await _viewmodel.isAuthenticated;
     if (!mounted) return;
 
     if (!isAuthenticated) {
@@ -57,7 +71,7 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) => VerifyIdentityDialog(
-          viewmodel: viewmodel,
+          viewmodel: _viewmodel,
         ),
       );
 
@@ -81,7 +95,7 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
 
     if (!mounted) return;
     setState(() => _checkingAuth = false);
-    viewmodel.load.execute();
+    _viewmodel.load.execute();
   }
 
   @override
@@ -104,13 +118,13 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
               showBackButton: true,
             ),
             ListenableBuilder(
-              listenable: Listenable.merge([widget.viewmodel.load, widget.viewmodel.download]),
+              listenable: Listenable.merge([_viewmodel.load, _viewmodel.download]),
               builder: (context, _) {
-                if (widget.viewmodel.load.running) {
+                if (_viewmodel.load.running) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (widget.viewmodel.load.error) {
+                if (_viewmodel.load.error) {
                   return Center(
                     child: Column(
                       spacing: 32,
@@ -118,7 +132,7 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
                       children: [
                         const Text('No se pudieron cargar tus incidencias'),
                         ElevatedButton.icon(
-                          onPressed: () => widget.viewmodel.load.execute(),
+                          onPressed: () => _viewmodel.load.execute(),
                           icon: Icon(LucideIcons.rotateCcw),
                           label: const Text('Reintentar'),
                         ),
@@ -127,7 +141,7 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
                   );
                 }
 
-                if (widget.viewmodel.incidencias?.isEmpty ?? true) {
+                if (_viewmodel.incidencias?.isEmpty ?? true) {
                   return Center(
                     child: Column(
                       spacing: 24,
@@ -149,12 +163,12 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: widget.viewmodel.incidencias!.length,
+                  itemCount: _viewmodel.incidencias!.length,
                   itemBuilder: (context, index) {
-                    final incidencia = widget.viewmodel.incidencias![index];
+                    final incidencia = _viewmodel.incidencias![index];
                     return _MiIncidenciaTile(
                       incidencia: incidencia,
-                      onDownload: (force) => widget.viewmodel.download.execute((incidencia: incidencia, force: force)),
+                      onDownload: (force) => _viewmodel.download.execute((incidencia: incidencia, force: force)),
                     );
                   },
                   separatorBuilder: (context, _) => const SizedBox(height: 12),

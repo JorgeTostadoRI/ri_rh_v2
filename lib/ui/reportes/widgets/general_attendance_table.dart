@@ -205,6 +205,12 @@ class GeneralAttendanceTable extends StatelessWidget {
         Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!.toLocal()) : '-'),
         Text(attendance.exitAt != null ? jm.format(attendance.exitAt!.toLocal()) : '-'),
       ])],
+      AsistenciaStatus.authorizedLate => const [TableRow(children: [
+        Text('RETARDO'),
+        Text('-'),
+        Text('-'),
+        Text('-'),
+      ])],
     };
   }
 

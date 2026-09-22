@@ -67,4 +67,5 @@ const _$AsistenciaStatusEnumMap = {
   AsistenciaStatus.termination: 'termination',
   AsistenciaStatus.holidayLeave: 'holiday_leave',
   AsistenciaStatus.holidayWorked: 'holiday_worked',
+  AsistenciaStatus.authorizedLate: 'authorized_late',
 };

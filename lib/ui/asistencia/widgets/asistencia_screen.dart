@@ -33,14 +33,23 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   late Future<List<CameraDescription>> _getAvailableCameras;
   final Debouncer _debouncer = Debouncer(milliseconds: 60000); // 1 minute
 
+  // Capturado una sola vez: AsistenciaViewmodel guarda el candado
+  // _awaitingRegistration y el match de huella en curso. Si el router
+  // reconstruye esta ruta a medio flujo (ej. refreshListenable de GoRouter
+  // al llamar loginViaChallenge a medio registro), widget.viewmodel pasaría
+  // a apuntar a una instancia nueva sin ese candado activo — reabriendo la
+  // condición de carrera entre huella y foto que ya se había cerrado. Usar
+  // siempre esta misma instancia lo evita.
+  late final AsistenciaViewmodel _viewmodel;
+
   void _onRegisterResult() {
-    if (widget.viewmodel.register.completed) {
-      Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
+    if (_viewmodel.register.completed) {
+      Future.delayed(const Duration(seconds: 2), () => _viewmodel.register.clearResult());
     }
 
-    if (widget.viewmodel.register.error) {
-      final error = (widget.viewmodel.register.result as result.Error).error;
-      Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.register.clearResult());
+    if (_viewmodel.register.error) {
+      final error = (_viewmodel.register.result as result.Error).error;
+      Future.delayed(const Duration(seconds: 2), () => _viewmodel.register.clearResult());
 
       if (error is ApiException) {
         if (error.errorCode == ApiErrorCodes.lateEntry) {
@@ -96,8 +105,8 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   }
 
   Future<void> _onScanResult() async {
-    if (widget.viewmodel.scanFingerprint.completed) {
-      widget.viewmodel.scanFingerprint.clearResult();
+    if (_viewmodel.scanFingerprint.completed) {
+      _viewmodel.scanFingerprint.clearResult();
 
       XFile? imageFile;
       var cameraFailed = false;
@@ -125,12 +134,12 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
             ),
           );
         }
-        widget.viewmodel.register.execute(imageFile);
+        _viewmodel.register.execute(imageFile);
       }
     }
 
-    if (widget.viewmodel.scanFingerprint.error) {
-      Future.delayed(const Duration(seconds: 2), () => widget.viewmodel.scanFingerprint.clearResult());
+    if (_viewmodel.scanFingerprint.error) {
+      Future.delayed(const Duration(seconds: 2), () => _viewmodel.scanFingerprint.clearResult());
     }
   }
 
@@ -168,8 +177,9 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   @override
   void initState() {
     super.initState();
-    widget.viewmodel.register.addListener(_onRegisterResult);
-    widget.viewmodel.scanFingerprint.addListener(_onScanResult);
+    _viewmodel = widget.viewmodel;
+    _viewmodel.register.addListener(_onRegisterResult);
+    _viewmodel.scanFingerprint.addListener(_onScanResult);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!kIsWeb) {
         _getAvailableCameras = availableCameras();
@@ -180,16 +190,19 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
   @override
   void didUpdateWidget(covariant AsistenciaScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    widget.viewmodel.register.removeListener(_onRegisterResult);
-    widget.viewmodel.register.addListener(_onRegisterResult);
-
-    widget.viewmodel.scanFingerprint.removeListener(_onScanResult);
-    widget.viewmodel.scanFingerprint.addListener(_onScanResult);
+    if (widget.viewmodel != _viewmodel) {
+      // Instancia huérfana creada por la reconstrucción de la ruta: se
+      // descarta de inmediato para que no se quede escuchando el sensor de
+      // huella para siempre.
+      widget.viewmodel.dispose();
+    }
   }
 
   @override
   void dispose() {
-    widget.viewmodel.dispose();
+    _viewmodel.register.removeListener(_onRegisterResult);
+    _viewmodel.scanFingerprint.removeListener(_onScanResult);
+    _viewmodel.dispose();
     _debouncer.dispose();
     _controller?.dispose();
     super.dispose();
@@ -235,7 +248,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                           ),
                           const SizedBox(height: 32),
                           Clock(),
-                          MotdList(viewmodel: widget.viewmodel),
+                          MotdList(viewmodel: _viewmodel),
                         ],
                       ),
                     ),
@@ -294,7 +307,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                               ],
                             ),
                             FingerprintButton(
-                              viewmodel: widget.viewmodel,
+                              viewmodel: _viewmodel,
                             ),
                             Text(
                               'Si tienes problemas con el registro, contacta a Recursos Humanos.',
@@ -316,7 +329,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                                       style: TextTheme.of(context).bodySmall?.copyWith(color: primaryColor),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          final currentUser = widget.viewmodel.currentUser;
+                                          final currentUser = _viewmodel.currentUser;
                                           if (currentUser != null && !currentUser.isRemote) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
@@ -347,7 +360,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
           padding: const EdgeInsets.only(bottom: 40.0),
           child: Align(
             alignment: .bottomCenter,
-            child: ScannerStatus(viewmodel: widget.viewmodel),
+            child: ScannerStatus(viewmodel: _viewmodel),
           ),
         ),
       ],
