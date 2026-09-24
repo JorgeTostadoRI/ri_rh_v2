@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/color_icon.dart';
 import 'package:ri_rh_v2/ui/core/ui/custom_tab_bar.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
+import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_filters.dart';
@@ -103,7 +104,7 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
   void _handleDialogStateResult(Incidencia incidencia, IncidenciaApproveDialogResult result) {
     switch (result.state) {
       case IncidenciaState.approved:
-        widget.viewmodel.approve.execute(incidencia);
+        widget.viewmodel.approve.execute((incidencia: incidencia, conGoce: result.conGoce));
       case IncidenciaState.rejected:
         widget.viewmodel.reject.execute((incidencia: incidencia, rejectionReason: result.rejectionReason));
       default:
@@ -171,29 +172,58 @@ class _IncidenciaListTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      leading: switch(incidencia.state!) {
-        IncidenciaState.pending => ColorIcon(
-          icon: LucideIcons.clock,
-          backgroundColor: statusWarningBgColor,
-        ),
-        IncidenciaState.rejected => ColorIcon(
-          icon: LucideIcons.x,
-          backgroundColor: statusFailureBgColor,
-          iconColor: statusFailureColor,
-        ),
-        IncidenciaState.approved => ColorIcon(
-          icon: LucideIcons.circleCheckBig,
-          backgroundColor: statusSuccessBgColor,
-          iconColor: statusSuccessColor,
-        ),
-      },
-      trailing: StepTimeline(
-        length: IncidenciaApprovalStage.values.length,
-        currentStep: incidencia.approvalStage.index,
+      leading: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          switch(incidencia.state!) {
+            IncidenciaState.pending => ColorIcon(
+              icon: LucideIcons.clock,
+              backgroundColor: statusWarningBgColor,
+            ),
+            IncidenciaState.rejected => ColorIcon(
+              icon: LucideIcons.x,
+              backgroundColor: statusFailureBgColor,
+              iconColor: statusFailureColor,
+            ),
+            IncidenciaState.approved => ColorIcon(
+              icon: LucideIcons.circleCheckBig,
+              backgroundColor: statusSuccessBgColor,
+              iconColor: statusSuccessColor,
+            ),
+          },
+          if (incidencia.checadorDiscrepancy?.isSuspicious ?? false)
+            Positioned(
+              top: -4,
+              right: -4,
+              child: Tooltip(
+                message: incidencia.checadorDiscrepancy!.message,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(color: Colors.white, shape: .circle),
+                  child: Icon(LucideIcons.triangleAlert, color: statusWarningColor, size: 16),
+                ),
+              ),
+            ),
+        ],
       ),
-      title: Text(
-        '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
-        style: textTheme.headlineSmall,
+      trailing: StepTimeline(
+        length: incidencia.totalApprovalSteps,
+        currentStep: incidencia.approvalStepIndex,
+      ),
+      title: Row(
+        mainAxisSize: .min,
+        spacing: 8,
+        children: [
+          Flexible(
+            child: Text(
+              '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
+              style: textTheme.headlineSmall,
+              overflow: .ellipsis,
+            ),
+          ),
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true)
+            StatusChip(type: StatusChipType.warning, label: 'CON GOCE'),
+        ],
       ),
       subtitle: Text(
         incidencia.reason,

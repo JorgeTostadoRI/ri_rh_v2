@@ -323,12 +323,13 @@ class ApiClient {
     }
   }
 
-  Future<Result<IncidenciaApiModel>> approveIncidencia(String category, int id) async {
+  Future<Result<IncidenciaApiModel>> approveIncidencia(String category, int id, {bool? conGoce}) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
 
-      final response = await dio.post('/api/rh/$category/$id/approve/');
+      final data = conGoce != null ? FormData.fromMap({'con_goce': conGoce}) : null;
+      final response = await dio.post('/api/rh/$category/$id/approve/', data: data);
       final result = IncidenciaApiModel.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {

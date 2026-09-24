@@ -29,6 +29,15 @@ _Incidencia _$IncidenciaFromJson(Map<String, dynamic> json) => _Incidencia(
       ? null
       : User.fromJson(json['rejected_by'] as Map<String, dynamic>),
   pdfUrl: json['pdf_url'] as String?,
+  checadorDiscrepancy: json['checador_discrepancy'] == null
+      ? null
+      : ChecadorDiscrepancy.fromJson(
+          json['checador_discrepancy'] as Map<String, dynamic>,
+        ),
+  conGoce: json['con_goce'] as bool?,
+  conGoceApprovedBy: json['con_goce_approved_by'] == null
+      ? null
+      : User.fromJson(json['con_goce_approved_by'] as Map<String, dynamic>),
   start: DateTime.parse(json['start'] as String),
   end: DateTime.parse(json['end'] as String),
   reason: json['reason'] as String,
@@ -50,6 +59,9 @@ Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
       'rejection_reason': instance.rejectionReason,
       'rejected_by': instance.rejectedBy,
       'pdf_url': instance.pdfUrl,
+      'checador_discrepancy': instance.checadorDiscrepancy,
+      'con_goce': instance.conGoce,
+      'con_goce_approved_by': instance.conGoceApprovedBy,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,

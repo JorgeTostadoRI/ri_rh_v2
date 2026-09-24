@@ -22,6 +22,13 @@ _IncidenciaApiModel _$IncidenciaApiModelFromJson(Map<String, dynamic> json) =>
       rejectionReason: json['rejection_reason'] as String?,
       rejectedByRef: (json['rejected_by'] as num?)?.toInt(),
       pdfUrl: json['pdf'] as String?,
+      checadorDiscrepancy: json['checador_discrepancy'] == null
+          ? null
+          : ChecadorDiscrepancy.fromJson(
+              json['checador_discrepancy'] as Map<String, dynamic>,
+            ),
+      conGoce: json['con_goce'] as bool?,
+      conGoceApprovedByRef: (json['con_goce_approved_by'] as num?)?.toInt(),
       start: DateTime.parse(json['start'] as String),
       end: DateTime.parse(json['end'] as String),
       reason: json['reason'] as String,
@@ -43,6 +50,9 @@ Map<String, dynamic> _$IncidenciaApiModelToJson(_IncidenciaApiModel instance) =>
       'rejection_reason': instance.rejectionReason,
       'rejected_by': instance.rejectedByRef,
       'pdf': instance.pdfUrl,
+      'checador_discrepancy': instance.checadorDiscrepancy,
+      'con_goce': instance.conGoce,
+      'con_goce_approved_by': instance.conGoceApprovedByRef,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,

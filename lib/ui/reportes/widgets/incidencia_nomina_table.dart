@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 
 class IncidenciaNominaTable extends StatelessWidget {
   final ReporteIncidenciaNomina reporte;
@@ -83,17 +82,25 @@ class _CodigoChip extends StatelessWidget {
 
   final String codigo;
 
-  // Mapeo puramente presentacional (no es la fuente de verdad del codigo,
-  // esa vive en STATUS_CODE_MAP del backend) -- agrupa los codigos en los 3
-  // tonos semanticos que ya existen en el sistema de diseno.
-  static const _failureCodes = {'F', 'FJ', 'PSG', 'INC'};
-  static const _warningCodes = {'R', 'D', 'FNL'};
-
-  StatusChipType get _type {
-    if (_failureCodes.contains(codigo)) return StatusChipType.failure;
-    if (_warningCodes.contains(codigo)) return StatusChipType.warning;
-    return StatusChipType.success;
-  }
+  // Mismos colores que la tabla "CLAVES DE INCIDENCIA" del PDF semanal
+  // (ri_rh/templates/reportes/incidencias_nomina_report.html, clases
+  // cell-ok/cell-red/cell-blue/cell-lightblue/cell-violet/cell-yellow/
+  // cell-green/cell-orange) -- mapeo puramente presentacional, no es la
+  // fuente de verdad del codigo, esa vive en STATUS_CODE_MAP del backend.
+  static const _colors = <String, (Color background, Color foreground)>{
+    'A': (Colors.white, Colors.black),
+    'F': (Colors.red, Colors.white),
+    'FJ': (Colors.red, Colors.white),
+    'B': (Colors.red, Colors.white),
+    'INC': (Color(0xFF87CEFA), Colors.black), // lightskyblue
+    'VAC': (Color(0xFF90EE90), Colors.black), // lightgreen
+    'D': (Colors.yellow, Colors.black),
+    'R': (Color(0xFF4682B4), Colors.white), // steelblue
+    'PSG': (Color(0xFFEE82EE), Colors.white), // violet
+    'PCG': (Colors.orange, Colors.black),
+    'FT': (Color(0xFFEE82EE), Colors.white), // violet
+    'FNL': (Colors.red, Colors.white),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +108,24 @@ class _CodigoChip extends StatelessWidget {
       return Text('—', style: TextTheme.of(context).labelLarge);
     }
 
-    return StatusChip(type: _type, label: codigo);
+    final (background, foreground) = _colors[codigo] ?? (Colors.grey.shade300, Colors.black);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderColor, width: 0.8),
+      ),
+      child: Text(
+        codigo,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: .w900,
+          height: 1.5,
+          color: foreground,
+        ),
+      ),
+    );
   }
 }
