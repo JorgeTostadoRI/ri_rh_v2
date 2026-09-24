@@ -71,7 +71,7 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia) async {
+  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce}) async {
     final currentUser = _authRepository.getCurrentUser();
     if (currentUser == null) {
       return Result.error(Exception('Not logged in'));

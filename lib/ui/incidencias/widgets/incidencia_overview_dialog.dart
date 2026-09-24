@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_authorized_by_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -48,8 +49,17 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
 
     return AlertDialog(
       scrollable: true,
-      title: Text(
-        '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatTitleDates()}',
+      title: Column(
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
+        spacing: 8,
+        children: [
+          Text(
+            '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatTitleDates()}',
+          ),
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true)
+            StatusChip(type: StatusChipType.warning, label: 'CON GOCE'),
+        ],
       ),
       content: Column(
         crossAxisAlignment: .start,
@@ -68,6 +78,8 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
           const SizedBox(height: 24),
           Text('Fechas solicitadas', style: textTheme.headlineSmall),
           Text(_formatRequestedDates()),
+          const SizedBox(height: 24),
+          IncidenciaAuthorizedBySection(incidencia: incidencia),
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(incidencia.reason, style: textTheme.bodyMedium),

@@ -12,8 +12,11 @@ abstract class IncidenciasRepository {
   /// Obten un [List<Incidencia>] pendientes de revisión
   Future<Result<List<Incidencia>>> getIncidenciasToReview({IncidenciaQuery? query});
 
-  /// Aprueba una [Incidencia]
-  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia);
+  /// Aprueba una [Incidencia].
+  ///
+  /// [conGoce] solo aplica cuando es un Permiso y lo aprueba el jefe
+  /// directo (primer paso) -- decide si es con o sin goce de sueldo.
+  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce});
 
   /// Rechaza una [Incidencia].
   /// 

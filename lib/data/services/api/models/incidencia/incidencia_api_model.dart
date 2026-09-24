@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/checador_discrepancy.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 
@@ -31,7 +32,16 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
 
         @JsonKey(name: 'pdf')
         String? pdfUrl,
-        
+
+        @JsonKey(name: 'checador_discrepancy')
+        ChecadorDiscrepancy? checadorDiscrepancy,
+
+        // Solo aplican para Permiso
+        @JsonKey(name: 'con_goce')
+        bool? conGoce,
+        @JsonKey(name: 'con_goce_approved_by')
+        int? conGoceApprovedByRef,
+
         required DateTime start,
         required DateTime end,
         required String reason,

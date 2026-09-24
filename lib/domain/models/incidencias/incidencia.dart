@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/checador_discrepancy.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/model_exception.dart';
@@ -60,7 +61,15 @@ abstract class Incidencia with _$Incidencia {
         User? rejectedBy,
 
         String? pdfUrl,
-        
+
+        /// Solo aplica (no-null) para Horas Extra con horario asignado.
+        ChecadorDiscrepancy? checadorDiscrepancy,
+
+        /// Solo aplican para Permiso.
+        bool? conGoce,
+        /// Quien dio la aprobacion especial de con goce (ver [conGoce]).
+        User? conGoceApprovedBy,
+
         required DateTime start,
         required DateTime end,
         required String reason,
@@ -78,6 +87,7 @@ abstract class Incidencia with _$Incidencia {
       late final User? approvedBy;
       late final User? rhApprovedBy;
       late final User? rejectedBy;
+      late final User? conGoceApprovedBy;
 
       try {
         solicitor = users.firstWhere((user) => user.id == model.solicitorRef);
@@ -95,6 +105,11 @@ abstract class Incidencia with _$Incidencia {
           rejectedBy = users.firstWhere((user) => user.id == model.rejectedByRef);
         } else {
           rejectedBy = null;
+        }
+        if (model.conGoceApprovedByRef != null) {
+          conGoceApprovedBy = users.firstWhere((user) => user.id == model.conGoceApprovedByRef);
+        } else {
+          conGoceApprovedBy = null;
         }
       } on StateError {
         throw ModelException(
@@ -122,6 +137,9 @@ abstract class Incidencia with _$Incidencia {
         rejectionReason: model.rejectionReason,
         rejectedBy: rejectedBy,
         pdfUrl: model.pdfUrl,
+        checadorDiscrepancy: model.checadorDiscrepancy,
+        conGoce: model.conGoce,
+        conGoceApprovedBy: conGoceApprovedBy,
         start: model.start,
         end: model.end,
         reason: model.reason,
@@ -133,6 +151,8 @@ abstract class Incidencia with _$Incidencia {
 
 enum IncidenciaApprovalStage {
   awaitingBoss,
+  /// Solo aplica a Permiso con goce de sueldo.
+  awaitingConGoceApprover,
   awaitingRH,
   done
 }
@@ -150,15 +170,43 @@ extension IncidenciaGetters on Incidencia {
     };
   }
 
+  bool get _requiresConGoceApprover => category == IncidenciaCategory.permiso && conGoce == true;
+
   IncidenciaApprovalStage get approvalStage {
     if (state == IncidenciaState.approved) {
       return IncidenciaApprovalStage.done;
     }
 
-    if (rhApprovedBy == null && approvedBy != null) {
-      return IncidenciaApprovalStage.awaitingRH;
+    if (approvedBy == null) {
+      return IncidenciaApprovalStage.awaitingBoss;
     }
 
-    return IncidenciaApprovalStage.awaitingBoss;
+    if (_requiresConGoceApprover && conGoceApprovedBy == null) {
+      return IncidenciaApprovalStage.awaitingConGoceApprover;
+    }
+
+    return IncidenciaApprovalStage.awaitingRH;
+  }
+
+  /// Numero total de pasos de aprobacion de esta incidencia especifica --
+  /// varia porque solo Permiso con goce tiene el paso extra de
+  /// [IncidenciaApprovalStage.awaitingConGoceApprover].
+  int get totalApprovalSteps => _requiresConGoceApprover ? 4 : 3;
+
+  /// Indice (0-based) del paso actual, consistente con [totalApprovalSteps] --
+  /// no se debe usar [IncidenciaApprovalStage.index] directamente para esto,
+  /// porque ese indice es fijo para el enum completo (4 valores), sin importar
+  /// si esta incidencia en particular solo tiene 3 pasos.
+  int get approvalStepIndex {
+    if (state == IncidenciaState.approved) {
+      return totalApprovalSteps - 1;
+    }
+    if (approvedBy == null) {
+      return 0;
+    }
+    if (_requiresConGoceApprover) {
+      return conGoceApprovedBy == null ? 1 : 2;
+    }
+    return 1;
   }
 }
