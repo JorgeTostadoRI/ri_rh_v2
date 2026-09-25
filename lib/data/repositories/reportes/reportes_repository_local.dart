@@ -41,8 +41,9 @@ class ReportesRepositoryLocal extends ReportesRepository {
   static const _mockCodigos = ['A', 'A', 'F', 'R', 'D', 'VAC'];
 
   @override
-  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime date) async {
+  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime start, DateTime end) async {
     final users = _localDataService.getUsers();
+    final dates = listDaysBetween(start, end);
 
     final items = <ReporteIncidenciaNominaItem>[
       for (final (index, user) in users.indexed)
@@ -52,13 +53,16 @@ class ReportesRepositoryLocal extends ReportesRepository {
           fullName: user.nombre,
           isPracticante: false,
           departamento: user.departamento,
-          codigo: _mockCodigos[index % _mockCodigos.length],
+          codigosPorDia: {
+            for (final (dayIdx, day) in dates.indexed)
+              day.toShortIsoString(): _mockCodigos[(index + dayIdx) % _mockCodigos.length],
+          },
           minutesLate: _mockCodigos[index % _mockCodigos.length] == 'R' ? 12 : 0,
           extraHours: index % 4 == 0 ? 2.5 : 0,
         ),
     ];
 
-    return Result.ok(ReporteIncidenciaNomina(date: date, items: items));
+    return Result.ok(ReporteIncidenciaNomina(dates: dates, items: items));
   }
 
   Map<String, AsistenciaDaily> _generateCheckInsForUser(User user, List<DateTime> dates) {

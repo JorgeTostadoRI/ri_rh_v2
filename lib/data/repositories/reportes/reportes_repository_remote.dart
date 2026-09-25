@@ -54,7 +54,7 @@ class ReportesRepositoryRemote extends ReportesRepository {
   }
 
   @override
-  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime date) async {
+  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime start, DateTime end) async {
     if (_cachedDepartamentos == null) {
       final resultDepartamentos = await _apiClient.getDepartamentos();
       switch (resultDepartamentos) {
@@ -65,7 +65,7 @@ class ReportesRepositoryRemote extends ReportesRepository {
       _cachedDepartamentos = resultDepartamentos.value;
     }
 
-    final resultReporte = await _apiClient.getReporteIncidenciaNomina(date);
+    final resultReporte = await _apiClient.getReporteIncidenciaNomina(start, end);
     switch (resultReporte) {
       case Error():
         return Result.error(resultReporte.error);
@@ -77,7 +77,7 @@ class ReportesRepositoryRemote extends ReportesRepository {
         .toList();
 
     final reporte = ReporteIncidenciaNomina(
-      date: resultReporte.value.date,
+      dates: listDaysBetween(start, end),
       items: items,
     );
     return Result.ok(reporte);

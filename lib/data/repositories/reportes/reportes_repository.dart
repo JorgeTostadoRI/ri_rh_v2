@@ -4,5 +4,5 @@ import 'package:ri_rh_v2/utils/result.dart';
 
 abstract class ReportesRepository {
   Future<Result<ReporteAsistencia>> getReporteAsistencia(DateTime start, DateTime end);
-  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime date);
+  Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime start, DateTime end);
 }
