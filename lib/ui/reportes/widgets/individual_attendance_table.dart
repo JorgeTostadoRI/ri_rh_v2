@@ -151,11 +151,11 @@ class IndividualAttendanceTable extends StatelessWidget {
         DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
         DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
       ],
-      AsistenciaStatus.excused => [
-        DataCell(Text(entryAt != null ? jm.format(entryAt) : '-')),
-        DataCell(Text(exitToLunchAt != null ? jm.format(exitToLunchAt) : '-')),
-        DataCell(Text(entryFromLunchAt != null ? jm.format(entryFromLunchAt) : '-')),
-        DataCell(Text(exitAt != null ? jm.format(exitAt) : '-')),
+      AsistenciaStatus.excused => const [
+        DataCell(Text('FALTA JUSTIFICADA')),
+        DataCell(Text('FALTA JUSTIFICADA')),
+        DataCell(Text('FALTA JUSTIFICADA')),
+        DataCell(Text('FALTA JUSTIFICADA')),
       ],
       AsistenciaStatus.absent => const [
         DataCell(Text('FALTA')),

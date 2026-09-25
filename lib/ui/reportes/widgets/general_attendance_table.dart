@@ -145,11 +145,11 @@ class GeneralAttendanceTable extends StatelessWidget {
         Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!.toLocal()) : '-'),
         Text(attendance.exitAt != null ? jm.format(attendance.exitAt!.toLocal()) : '-'),
       ])],
-      AsistenciaStatus.excused => [TableRow(children: [
-        Text(attendance.entryAt != null ? jm.format(attendance.entryAt!.toLocal()) : '-'),
-        Text(attendance.exitToLunchAt != null ? jm.format(attendance.exitToLunchAt!.toLocal()) : '-'),
-        Text(attendance.entryFromLunchAt != null ? jm.format(attendance.entryFromLunchAt!.toLocal()) : '-'),
-        Text(attendance.exitAt != null ? jm.format(attendance.exitAt!.toLocal()) : '-'),
+      AsistenciaStatus.excused => const [TableRow(children: [
+        Text('FALTA JUSTIFICADA'),
+        Text('FALTA JUSTIFICADA'),
+        Text('FALTA JUSTIFICADA'),
+        Text('FALTA JUSTIFICADA'),
       ])],
       AsistenciaStatus.absent => const [TableRow(children: [
         Text('FALTA'),

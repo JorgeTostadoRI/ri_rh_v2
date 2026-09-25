@@ -7,7 +7,8 @@ part 'reporte_incidencia_nomina_response.g.dart';
 abstract class ReporteIncidenciaNominaResponse
     with _$ReporteIncidenciaNominaResponse {
   const factory ReporteIncidenciaNominaResponse({
-    required DateTime date,
+    @JsonKey(name: 'start_date') required DateTime startDate,
+    @JsonKey(name: 'end_date') required DateTime endDate,
     required List<ReporteIncidenciaNominaResponseItem> items,
   }) = _ReporteIncidenciaNominaResponse;
 
@@ -25,7 +26,7 @@ abstract class ReporteIncidenciaNominaResponseItem
     @JsonKey(name: 'full_name') required String fullName,
     @JsonKey(name: 'is_practicante') required bool isPracticante,
     @JsonKey(name: 'departamento') int? departamentoRef,
-    required String codigo,
+    required List<ReporteIncidenciaNominaResponseDia> dias,
     @JsonKey(name: 'minutes_late') required int minutesLate,
     @JsonKey(name: 'extra_hours') required double extraHours,
   }) = _ReporteIncidenciaNominaResponseItem;
@@ -33,4 +34,17 @@ abstract class ReporteIncidenciaNominaResponseItem
   factory ReporteIncidenciaNominaResponseItem.fromJson(
     Map<String, Object?> json,
   ) => _$ReporteIncidenciaNominaResponseItemFromJson(json);
+}
+
+@freezed
+abstract class ReporteIncidenciaNominaResponseDia
+    with _$ReporteIncidenciaNominaResponseDia {
+  const factory ReporteIncidenciaNominaResponseDia({
+    required DateTime date,
+    required String codigo,
+  }) = _ReporteIncidenciaNominaResponseDia;
+
+  factory ReporteIncidenciaNominaResponseDia.fromJson(
+    Map<String, Object?> json,
+  ) => _$ReporteIncidenciaNominaResponseDiaFromJson(json);
 }

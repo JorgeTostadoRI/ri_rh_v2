@@ -13,28 +13,17 @@ class ReporteIncidenciaNominaViewmodel extends ChangeNotifier {
     required this._log,
     required this._reportesRepository,
   }) {
-    _selectedDate = DateTime.now().copyWith(
-      hour: 0,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-      microsecond: 0,
-    );
+    final today = DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+    _searchRange = DateTimeRange(start: today, end: today);
     load = Command0(_load)..execute();
   }
 
   late final Command0 load;
 
-  late DateTime _selectedDate;
-  DateTime get selectedDate => _selectedDate;
-  set selectedDate(DateTime value) {
-    _selectedDate = value.copyWith(
-      hour: 0,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-      microsecond: 0,
-    );
+  late DateTimeRange _searchRange;
+  DateTimeRange get searchRange => _searchRange;
+  set searchRange(DateTimeRange value) {
+    _searchRange = value;
     notifyListeners();
   }
 
@@ -42,10 +31,11 @@ class ReporteIncidenciaNominaViewmodel extends ChangeNotifier {
   ReporteIncidenciaNomina get reporte => _reporte!;
 
   Future<Result<void>> _load() async {
-    _log.debug('Search: $_selectedDate');
+    _log.debug('Search: $_searchRange');
 
     final result = await _reportesRepository.getReporteIncidenciaNomina(
-      _selectedDate,
+      _searchRange.start,
+      _searchRange.end,
     );
     switch (result) {
       case Error():

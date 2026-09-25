@@ -1091,13 +1091,16 @@ class ApiClient {
     }
   }
 
-  Future<Result<ReporteIncidenciaNominaResponse>> getReporteIncidenciaNomina(DateTime date) async {
+  Future<Result<ReporteIncidenciaNominaResponse>> getReporteIncidenciaNomina(DateTime start, DateTime end) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
       final response = await dio.get(
         '/api/rh/reportes/incidencias-nomina/',
-        queryParameters: {'date': date.toShortIsoString()},
+        queryParameters: {
+          'start_date': start.toShortIsoString(),
+          'end_date': end.toShortIsoString(),
+        },
       );
       final result = ReporteIncidenciaNominaResponse.fromJson(response.data);
       return Result.ok(result);

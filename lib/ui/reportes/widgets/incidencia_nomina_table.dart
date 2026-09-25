@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IncidenciaNominaTable extends StatelessWidget {
   final ReporteIncidenciaNomina reporte;
@@ -10,6 +12,7 @@ class IncidenciaNominaTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
+    final yMd = DateFormat.yMd('en_US');
 
     return DataTable(
       decoration: BoxDecoration(
@@ -23,7 +26,10 @@ class IncidenciaNominaTable extends StatelessWidget {
         DataColumn(label: Text('EMPLEADO')),
         DataColumn(label: Text('TIPO')),
         DataColumn(label: Text('DEPARTAMENTO')),
-        DataColumn(label: Text('CÓDIGO')),
+        ...List<DataColumn>.generate(
+          reporte.dates.length,
+          (int index) => DataColumn(label: Text(yMd.format(reporte.dates[index]))),
+        ),
         DataColumn(label: Text('MIN. RETARDO')),
         DataColumn(label: Text('HORAS EXTRA')),
       ],
@@ -54,7 +60,10 @@ class IncidenciaNominaTable extends StatelessWidget {
                 style: textTheme.labelLarge,
               ),
             ),
-            DataCell(_CodigoChip(codigo: item.codigo)),
+            ...List<DataCell>.generate(reporte.dates.length, (int dayIdx) {
+              final dayKey = reporte.dates[dayIdx].toShortIsoString();
+              return DataCell(_CodigoChip(codigo: item.codigosPorDia[dayKey] ?? ''));
+            }),
             DataCell(
               Text(
                 '${item.minutesLate} min',
