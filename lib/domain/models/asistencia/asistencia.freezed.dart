@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Asistencia implements DiagnosticableTreeMixin {
 
- int get id; DateTime? get createdAt; DateTime? get updatedAt; DateTime? get attendedAt; AsistenciaType? get type; String? get photoUrl;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get photoFile; User get user;
+ int get id; DateTime? get createdAt; DateTime? get updatedAt; DateTime? get attendedAt; AsistenciaType? get type; DateTime? get faltaNoReportada; DateTime? get faltaNoReportadaHoraAviso; DateTime? get faltaNoReportadaHoraLimite; String? get photoUrl;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get photoFile; User get user;
 /// Create a copy of Asistencia
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,21 +30,21 @@ $AsistenciaCopyWith<Asistencia> get copyWith => _$AsistenciaCopyWithImpl<Asisten
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Asistencia'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('attendedAt', attendedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('photoUrl', photoUrl))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('user', user));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('attendedAt', attendedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('faltaNoReportada', faltaNoReportada))..add(DiagnosticsProperty('faltaNoReportadaHoraAviso', faltaNoReportadaHoraAviso))..add(DiagnosticsProperty('faltaNoReportadaHoraLimite', faltaNoReportadaHoraLimite))..add(DiagnosticsProperty('photoUrl', photoUrl))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('user', user));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Asistencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.user, user) || other.user == user));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Asistencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.faltaNoReportada, faltaNoReportada) || other.faltaNoReportada == faltaNoReportada)&&(identical(other.faltaNoReportadaHoraAviso, faltaNoReportadaHoraAviso) || other.faltaNoReportadaHoraAviso == faltaNoReportadaHoraAviso)&&(identical(other.faltaNoReportadaHoraLimite, faltaNoReportadaHoraLimite) || other.faltaNoReportadaHoraLimite == faltaNoReportadaHoraLimite)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.user, user) || other.user == user));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,attendedAt,type,photoUrl,photoFile,user);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,attendedAt,type,faltaNoReportada,faltaNoReportadaHoraAviso,faltaNoReportadaHoraLimite,photoUrl,photoFile,user);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Asistencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, attendedAt: $attendedAt, type: $type, photoUrl: $photoUrl, photoFile: $photoFile, user: $user)';
+  return 'Asistencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, attendedAt: $attendedAt, type: $type, faltaNoReportada: $faltaNoReportada, faltaNoReportadaHoraAviso: $faltaNoReportadaHoraAviso, faltaNoReportadaHoraLimite: $faltaNoReportadaHoraLimite, photoUrl: $photoUrl, photoFile: $photoFile, user: $user)';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $AsistenciaCopyWith<$Res>  {
   factory $AsistenciaCopyWith(Asistencia value, $Res Function(Asistencia) _then) = _$AsistenciaCopyWithImpl;
 @useResult
 $Res call({
- int id, DateTime? createdAt, DateTime? updatedAt, DateTime? attendedAt, AsistenciaType? type, String? photoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, User user
+ int id, DateTime? createdAt, DateTime? updatedAt, DateTime? attendedAt, AsistenciaType? type, DateTime? faltaNoReportada, DateTime? faltaNoReportadaHoraAviso, DateTime? faltaNoReportadaHoraLimite, String? photoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, User user
 });
 
 
@@ -72,14 +72,17 @@ class _$AsistenciaCopyWithImpl<$Res>
 
 /// Create a copy of Asistencia
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? attendedAt = freezed,Object? type = freezed,Object? photoUrl = freezed,Object? photoFile = freezed,Object? user = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? attendedAt = freezed,Object? type = freezed,Object? faltaNoReportada = freezed,Object? faltaNoReportadaHoraAviso = freezed,Object? faltaNoReportadaHoraLimite = freezed,Object? photoUrl = freezed,Object? photoFile = freezed,Object? user = null,}) {
   return _then(Asistencia(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,attendedAt: freezed == attendedAt ? _self.attendedAt : attendedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as AsistenciaType?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
+as AsistenciaType?,faltaNoReportada: freezed == faltaNoReportada ? _self.faltaNoReportada : faltaNoReportada // ignore: cast_nullable_to_non_nullable
+as DateTime?,faltaNoReportadaHoraAviso: freezed == faltaNoReportadaHoraAviso ? _self.faltaNoReportadaHoraAviso : faltaNoReportadaHoraAviso // ignore: cast_nullable_to_non_nullable
+as DateTime?,faltaNoReportadaHoraLimite: freezed == faltaNoReportadaHoraLimite ? _self.faltaNoReportadaHoraLimite : faltaNoReportadaHoraLimite // ignore: cast_nullable_to_non_nullable
+as DateTime?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String?,photoFile: freezed == photoFile ? _self.photoFile : photoFile // ignore: cast_nullable_to_non_nullable
 as XFile?,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,
@@ -176,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? attendedAt,  AsistenciaType? type,  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  User user)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? attendedAt,  AsistenciaType? type,  DateTime? faltaNoReportada,  DateTime? faltaNoReportadaHoraAviso,  DateTime? faltaNoReportadaHoraLimite,  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  User user)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Asistencia() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.type,_that.photoUrl,_that.photoFile,_that.user);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.type,_that.faltaNoReportada,_that.faltaNoReportadaHoraAviso,_that.faltaNoReportadaHoraLimite,_that.photoUrl,_that.photoFile,_that.user);case _:
   return orElse();
 
 }
@@ -197,10 +200,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? attendedAt,  AsistenciaType? type,  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  User user)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? attendedAt,  AsistenciaType? type,  DateTime? faltaNoReportada,  DateTime? faltaNoReportadaHoraAviso,  DateTime? faltaNoReportadaHoraLimite,  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  User user)  $default,) {final _that = this;
 switch (_that) {
 case _Asistencia():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.type,_that.photoUrl,_that.photoFile,_that.user);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.type,_that.faltaNoReportada,_that.faltaNoReportadaHoraAviso,_that.faltaNoReportadaHoraLimite,_that.photoUrl,_that.photoFile,_that.user);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +220,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? attendedAt,  AsistenciaType? type,  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  User user)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? attendedAt,  AsistenciaType? type,  DateTime? faltaNoReportada,  DateTime? faltaNoReportadaHoraAviso,  DateTime? faltaNoReportadaHoraLimite,  String? photoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? photoFile,  User user)?  $default,) {final _that = this;
 switch (_that) {
 case _Asistencia() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.type,_that.photoUrl,_that.photoFile,_that.user);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.type,_that.faltaNoReportada,_that.faltaNoReportadaHoraAviso,_that.faltaNoReportadaHoraLimite,_that.photoUrl,_that.photoFile,_that.user);case _:
   return null;
 
 }
@@ -232,7 +235,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.attendedAt,_that.
 @JsonSerializable()
 
 class _Asistencia with DiagnosticableTreeMixin implements Asistencia {
-  const _Asistencia({this.id = 0, this.createdAt, this.updatedAt, this.attendedAt, this.type, this.photoUrl, @JsonKey(includeFromJson: false, includeToJson: false) this.photoFile, required this.user});
+  const _Asistencia({this.id = 0, this.createdAt, this.updatedAt, this.attendedAt, this.type, this.faltaNoReportada, this.faltaNoReportadaHoraAviso, this.faltaNoReportadaHoraLimite, this.photoUrl, @JsonKey(includeFromJson: false, includeToJson: false) this.photoFile, required this.user});
   factory _Asistencia.fromJson(Map<String, dynamic> json) => _$AsistenciaFromJson(json);
 
 @override@JsonKey() final  int id;
@@ -240,6 +243,9 @@ class _Asistencia with DiagnosticableTreeMixin implements Asistencia {
 @override final  DateTime? updatedAt;
 @override final  DateTime? attendedAt;
 @override final  AsistenciaType? type;
+@override final  DateTime? faltaNoReportada;
+@override final  DateTime? faltaNoReportadaHoraAviso;
+@override final  DateTime? faltaNoReportadaHoraLimite;
 @override final  String? photoUrl;
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  XFile? photoFile;
 @override final  User user;
@@ -258,21 +264,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Asistencia'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('attendedAt', attendedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('photoUrl', photoUrl))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('user', user));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('attendedAt', attendedAt))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('faltaNoReportada', faltaNoReportada))..add(DiagnosticsProperty('faltaNoReportadaHoraAviso', faltaNoReportadaHoraAviso))..add(DiagnosticsProperty('faltaNoReportadaHoraLimite', faltaNoReportadaHoraLimite))..add(DiagnosticsProperty('photoUrl', photoUrl))..add(DiagnosticsProperty('photoFile', photoFile))..add(DiagnosticsProperty('user', user));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Asistencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.user, user) || other.user == user));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Asistencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.type, type) || other.type == type)&&(identical(other.faltaNoReportada, faltaNoReportada) || other.faltaNoReportada == faltaNoReportada)&&(identical(other.faltaNoReportadaHoraAviso, faltaNoReportadaHoraAviso) || other.faltaNoReportadaHoraAviso == faltaNoReportadaHoraAviso)&&(identical(other.faltaNoReportadaHoraLimite, faltaNoReportadaHoraLimite) || other.faltaNoReportadaHoraLimite == faltaNoReportadaHoraLimite)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.photoFile, photoFile) || other.photoFile == photoFile)&&(identical(other.user, user) || other.user == user));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,attendedAt,type,photoUrl,photoFile,user);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,attendedAt,type,faltaNoReportada,faltaNoReportadaHoraAviso,faltaNoReportadaHoraLimite,photoUrl,photoFile,user);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Asistencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, attendedAt: $attendedAt, type: $type, photoUrl: $photoUrl, photoFile: $photoFile, user: $user)';
+  return 'Asistencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, attendedAt: $attendedAt, type: $type, faltaNoReportada: $faltaNoReportada, faltaNoReportadaHoraAviso: $faltaNoReportadaHoraAviso, faltaNoReportadaHoraLimite: $faltaNoReportadaHoraLimite, photoUrl: $photoUrl, photoFile: $photoFile, user: $user)';
 }
 
 
@@ -283,7 +289,7 @@ abstract mixin class _$AsistenciaCopyWith<$Res> implements $AsistenciaCopyWith<$
   factory _$AsistenciaCopyWith(_Asistencia value, $Res Function(_Asistencia) _then) = __$AsistenciaCopyWithImpl;
 @override @useResult
 $Res call({
- int id, DateTime? createdAt, DateTime? updatedAt, DateTime? attendedAt, AsistenciaType? type, String? photoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, User user
+ int id, DateTime? createdAt, DateTime? updatedAt, DateTime? attendedAt, AsistenciaType? type, DateTime? faltaNoReportada, DateTime? faltaNoReportadaHoraAviso, DateTime? faltaNoReportadaHoraLimite, String? photoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? photoFile, User user
 });
 
 
@@ -300,14 +306,17 @@ class __$AsistenciaCopyWithImpl<$Res>
 
 /// Create a copy of Asistencia
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? attendedAt = freezed,Object? type = freezed,Object? photoUrl = freezed,Object? photoFile = freezed,Object? user = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? attendedAt = freezed,Object? type = freezed,Object? faltaNoReportada = freezed,Object? faltaNoReportadaHoraAviso = freezed,Object? faltaNoReportadaHoraLimite = freezed,Object? photoUrl = freezed,Object? photoFile = freezed,Object? user = null,}) {
   return _then(_Asistencia(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,attendedAt: freezed == attendedAt ? _self.attendedAt : attendedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as AsistenciaType?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
+as AsistenciaType?,faltaNoReportada: freezed == faltaNoReportada ? _self.faltaNoReportada : faltaNoReportada // ignore: cast_nullable_to_non_nullable
+as DateTime?,faltaNoReportadaHoraAviso: freezed == faltaNoReportadaHoraAviso ? _self.faltaNoReportadaHoraAviso : faltaNoReportadaHoraAviso // ignore: cast_nullable_to_non_nullable
+as DateTime?,faltaNoReportadaHoraLimite: freezed == faltaNoReportadaHoraLimite ? _self.faltaNoReportadaHoraLimite : faltaNoReportadaHoraLimite // ignore: cast_nullable_to_non_nullable
+as DateTime?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String?,photoFile: freezed == photoFile ? _self.photoFile : photoFile // ignore: cast_nullable_to_non_nullable
 as XFile?,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,

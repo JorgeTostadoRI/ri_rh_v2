@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/ingreso_manual_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/confirm_action_dialog.dart';
@@ -268,13 +269,29 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
     _viewmodel.register.execute(params);
   }
 
-  void _onRegister() {
+  Future<void> _onRegister() async {
     if (_viewmodel.register.completed) {
+      final asistencia = (_viewmodel.register.result as result.Ok).value;
       _viewmodel.register.clearResult();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Se registró tu asistencia')),
       );
-      context.pop();
+
+      final faltaNoReportada = asistencia.faltaNoReportada;
+      if (faltaNoReportada != null) {
+        await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => FaltaNoReportadaDialog(
+            nombre: asistencia.user.nombre,
+            fecha: faltaNoReportada,
+            horaAviso: asistencia.faltaNoReportadaHoraAviso,
+            horaLimite: asistencia.faltaNoReportadaHoraLimite,
+          ),
+        );
+      }
+
+      if (mounted) context.pop();
     }
     else if (_viewmodel.register.error) {
       final error = (_viewmodel.register.result as result.Error).error;
@@ -298,6 +315,24 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
                 'No se ha registrado tu entrada debido a que intentaste registrar fuera de tu hora permitida de entrada. '
                 'Ten en cuenta que tienes 10 minutos de gracia para tu entrada. '
                 'No laboré hoy porque NO se le dará compensación por el trabajo.'
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => context.pop(),
+                  child: Text('Entendido'),
+                ),
+              ],
+            );
+          }
+        );
+      } else if (error is ApiException && error.errorCode == ApiErrorCodes.faltaNoReportada) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Falta sin reportar'),
+              content: Text(
+                'No reportaste tu incidencia por lo tanto se te considera falta el día de hoy.'
               ),
               actions: [
                 ElevatedButton(

@@ -42,6 +42,7 @@ abstract class ReporteIncidenciaNominaResponseDia
   const factory ReporteIncidenciaNominaResponseDia({
     required DateTime date,
     required String codigo,
+    required String status,
   }) = _ReporteIncidenciaNominaResponseDia;
 
   factory ReporteIncidenciaNominaResponseDia.fromJson(

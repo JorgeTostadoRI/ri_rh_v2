@@ -36,11 +36,25 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
 
   bool _conGoce = false;
 
+  /// Un Permiso "por horas" (rango de horas dentro del mismo dia, no un dia
+  /// completo) nunca pide con/sin goce -- se trata siempre como un Retardo
+  /// (ver Fase G). Mismo criterio que el backend (es_permiso_por_horas en
+  /// ri_rh/models/asistencia.py): mismo dia calendario y no cubre el dia
+  /// completo (00:00-23:59, la convencion que ya usa el resto del sistema).
+  bool get _esPermisoPorHoras {
+    if (widget.incidencia.category != IncidenciaCategory.permiso) return false;
+    if (!_localStart.isSameDay(_localEnd)) return false;
+    final esDiaCompleto = _localStart.hour == 0 && _localStart.minute == 0 && _localEnd.hour == 23 && _localEnd.minute == 59;
+    return !esDiaCompleto;
+  }
+
   /// Solo el jefe directo (primer paso de aprobacion) decide si un Permiso
-  /// es con o sin goce de sueldo -- RH ya no puede cambiarlo en su paso.
+  /// de dia completo es con o sin goce de sueldo -- RH ya no puede
+  /// cambiarlo en su paso.
   bool get _askConGoce =>
       widget.incidencia.category == IncidenciaCategory.permiso &&
-      widget.incidencia.approvalStage == IncidenciaApprovalStage.awaitingBoss;
+      widget.incidencia.approvalStage == IncidenciaApprovalStage.awaitingBoss &&
+      !_esPermisoPorHoras;
 
   bool get _isConGoceApproverTurn =>
       widget.incidencia.approvalStage == IncidenciaApprovalStage.awaitingConGoceApprover;

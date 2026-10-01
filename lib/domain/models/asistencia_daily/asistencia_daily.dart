@@ -49,3 +49,25 @@ enum AsistenciaStatus {
   @JsonValue('authorized_late')
   authorizedLate,
 }
+
+extension AsistenciaStatusValue on AsistenciaStatus {
+  String get jsonValue => _$AsistenciaStatusEnumMap[this]!;
+}
+
+extension AsistenciaStatusLabel on AsistenciaStatus {
+  String get label => switch (this) {
+    AsistenciaStatus.present => 'Presente',
+    AsistenciaStatus.absent => 'Falta',
+    AsistenciaStatus.late => 'Retardo',
+    AsistenciaStatus.excused => 'Falta Justificada',
+    AsistenciaStatus.rest => 'Descanso',
+    AsistenciaStatus.vacation => 'Vacaciones',
+    AsistenciaStatus.paidLeave => 'Permiso con goce',
+    AsistenciaStatus.unpaidLeave => 'Permiso sin goce',
+    AsistenciaStatus.medicalLeave => 'Incapacidad',
+    AsistenciaStatus.termination => 'Baja',
+    AsistenciaStatus.holidayLeave => 'Festivo no trabajado',
+    AsistenciaStatus.holidayWorked => 'Festivo trabajado',
+    AsistenciaStatus.authorizedLate => 'Retardo autorizado',
+  };
+}
