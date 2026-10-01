@@ -39,6 +39,16 @@ abstract class Asistencia with _$Asistencia {
         DateTime? attendedAt,
         AsistenciaType? type,
 
+        // Solo presente cuando type == entry y el usuario tiene una falta
+        // sin reportar del ultimo dia laboral anterior.
+        DateTime? faltaNoReportada,
+        // Hora sugerida para reportarla y hora limite antes de perder la
+        // asistencia de hoy (personalizadas segun la hora de entrada del
+        // usuario ese dia). Solo presentes junto con faltaNoReportada, y
+        // solo si el backend pudo determinarlas.
+        DateTime? faltaNoReportadaHoraAviso,
+        DateTime? faltaNoReportadaHoraLimite,
+
         String? photoUrl,
         // Debe ser populado para subir imagen
         @JsonKey(includeFromJson: false, includeToJson: false)
@@ -60,6 +70,9 @@ abstract class Asistencia with _$Asistencia {
       updatedAt: model.updatedAt,
       attendedAt: model.attendedAt,
       type: model.type,
+      faltaNoReportada: model.faltaNoReportada,
+      faltaNoReportadaHoraAviso: model.faltaNoReportadaHoraAviso,
+      faltaNoReportadaHoraLimite: model.faltaNoReportadaHoraLimite,
       photoUrl: model.photoUrl,
       user: user,
     );

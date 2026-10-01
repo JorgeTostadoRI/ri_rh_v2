@@ -26,12 +26,12 @@ class IngresoManualViewmodel extends ChangeNotifier {
   final AuthRepository _authRepository;
   final AsistenciaRepository _asistenciaRepository;
 
-  late final Command1<void, RegisterParams>  register;
+  late final Command1<Asistencia, RegisterParams>  register;
 
   late Future<bool> isAuthenticated;
   User? get currentUser => _authRepository.getCurrentUser();
 
-  Future<Result<void>> _register(RegisterParams params) async {
+  Future<Result<Asistencia>> _register(RegisterParams params) async {
     final isAuthenticated = await _authRepository.isAuthenticated;
 
     if (!isAuthenticated) {
@@ -69,6 +69,6 @@ class IngresoManualViewmodel extends ChangeNotifier {
         _log.info('Attendance registered for ${result.value.user.username}');
     }
 
-    return const Result.ok(null);
+    return result;
   }
 }

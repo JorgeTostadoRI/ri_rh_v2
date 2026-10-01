@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IncidenciaNominaTable extends StatelessWidget {
   final ReporteIncidenciaNomina reporte;
+  final void Function(int usuarioId, DateTime fecha, AsistenciaStatus statusActual)? onEditCodigo;
+  final void Function(int usuarioId, DateTime fecha, int minutosActual)? onEditMinutosRetardo;
+  final void Function(int usuarioId, DateTime fecha, double horasActual)? onEditHorasExtra;
 
-  const IncidenciaNominaTable({super.key, required this.reporte});
+  const IncidenciaNominaTable({
+    super.key,
+    required this.reporte,
+    this.onEditCodigo,
+    this.onEditMinutosRetardo,
+    this.onEditHorasExtra,
+  });
+
+  // Minutos de retardo y horas extra son un total agregado del rango
+  // seleccionado -- solo tienen sentido para editarse cuando ese rango es
+  // exactamente un dia (si no, no queda claro a que dia correguir).
+  bool get _puedeEditarAgregados => reporte.dates.length == 1;
 
   @override
   Widget build(BuildContext context) {
@@ -61,22 +77,61 @@ class IncidenciaNominaTable extends StatelessWidget {
               ),
             ),
             ...List<DataCell>.generate(reporte.dates.length, (int dayIdx) {
-              final dayKey = reporte.dates[dayIdx].toShortIsoString();
-              return DataCell(_CodigoChip(codigo: item.codigosPorDia[dayKey] ?? ''));
+              final fecha = reporte.dates[dayIdx];
+              final dayKey = fecha.toShortIsoString();
+              final codigo = item.codigosPorDia[dayKey] ?? '';
+              final statusActual = _parseStatus(item.statusPorDia[dayKey]);
+
+              return DataCell(
+                InkWell(
+                  onTap: onEditCodigo == null || statusActual == null
+                      ? null
+                      : () => onEditCodigo!(item.id, fecha, statusActual),
+                  child: _CodigoChip(codigo: codigo),
+                ),
+              );
             }),
             DataCell(
-              Text(
-                '${item.minutesLate} min',
-                style: TextStyle(color: errorColor, fontWeight: .w700),
+              Row(
+                mainAxisSize: .min,
+                children: [
+                  Text(
+                    '${item.minutesLate} min',
+                    style: TextStyle(color: errorColor, fontWeight: .w700),
+                  ),
+                  if (_puedeEditarAgregados && onEditMinutosRetardo != null)
+                    IconButton(
+                      icon: Icon(LucideIcons.pencil, size: 14),
+                      onPressed: () => onEditMinutosRetardo!(item.id, reporte.dates.first, item.minutesLate),
+                    ),
+                ],
               ),
             ),
             DataCell(
-              Text(_formatHours(item.extraHours), style: textTheme.labelLarge),
+              Row(
+                mainAxisSize: .min,
+                children: [
+                  Text(_formatHours(item.extraHours), style: textTheme.labelLarge),
+                  if (_puedeEditarAgregados && onEditHorasExtra != null)
+                    IconButton(
+                      icon: Icon(LucideIcons.pencil, size: 14),
+                      onPressed: () => onEditHorasExtra!(item.id, reporte.dates.first, item.extraHours),
+                    ),
+                ],
+              ),
             ),
           ],
         );
       }),
     );
+  }
+
+  AsistenciaStatus? _parseStatus(String? raw) {
+    if (raw == null) return null;
+    for (final status in AsistenciaStatus.values) {
+      if (status.jsonValue == raw) return status;
+    }
+    return null;
   }
 
   String _formatHours(double hours) {

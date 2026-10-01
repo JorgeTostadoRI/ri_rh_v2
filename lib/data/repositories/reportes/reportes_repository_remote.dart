@@ -82,4 +82,27 @@ class ReportesRepositoryRemote extends ReportesRepository {
     );
     return Result.ok(reporte);
   }
+
+  @override
+  Future<Result<void>> corregirAsistencia({
+    required int usuarioId,
+    required DateTime fecha,
+    required String campo,
+    required String valor,
+  }) {
+    return _apiClient.patchAsistenciaCorreccion(
+      usuarioId: usuarioId,
+      fecha: fecha,
+      campo: campo,
+      valor: valor,
+    );
+  }
+
+  @override
+  Future<Result<String?>> generarReporteIncidenciaNomina({
+    required DateTime date,
+    required bool force,
+  }) {
+    return _apiClient.postGenerateIncidenciaNomina(date: date, force: force);
+  }
 }

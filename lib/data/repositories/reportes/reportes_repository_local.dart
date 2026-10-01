@@ -39,6 +39,8 @@ class ReportesRepositoryLocal extends ReportesRepository {
   }
 
   static const _mockCodigos = ['A', 'A', 'F', 'R', 'D', 'VAC'];
+  // Mismo indice que _mockCodigos -- status real correspondiente a cada codigo mock.
+  static const _mockStatuses = ['present', 'present', 'absent', 'late', 'rest', 'vacation'];
 
   @override
   Future<Result<ReporteIncidenciaNomina>> getReporteIncidenciaNomina(DateTime start, DateTime end) async {
@@ -57,12 +59,36 @@ class ReportesRepositoryLocal extends ReportesRepository {
             for (final (dayIdx, day) in dates.indexed)
               day.toShortIsoString(): _mockCodigos[(index + dayIdx) % _mockCodigos.length],
           },
+          statusPorDia: {
+            for (final (dayIdx, day) in dates.indexed)
+              day.toShortIsoString(): _mockStatuses[(index + dayIdx) % _mockStatuses.length],
+          },
           minutesLate: _mockCodigos[index % _mockCodigos.length] == 'R' ? 12 : 0,
           extraHours: index % 4 == 0 ? 2.5 : 0,
         ),
     ];
 
     return Result.ok(ReporteIncidenciaNomina(dates: dates, items: items));
+  }
+
+  @override
+  Future<Result<void>> corregirAsistencia({
+    required int usuarioId,
+    required DateTime fecha,
+    required String campo,
+    required String valor,
+  }) async {
+    // No hay datos reales que corregir en modo local/mock.
+    return Result.ok(null);
+  }
+
+  @override
+  Future<Result<String?>> generarReporteIncidenciaNomina({
+    required DateTime date,
+    required bool force,
+  }) async {
+    // No hay PDF real que generar en modo local/mock.
+    return Result.ok(null);
   }
 
   Map<String, AsistenciaDaily> _generateCheckInsForUser(User user, List<DateTime> dates) {

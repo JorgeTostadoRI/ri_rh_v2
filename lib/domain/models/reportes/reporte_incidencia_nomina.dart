@@ -27,6 +27,11 @@ abstract class ReporteIncidenciaNominaItem with _$ReporteIncidenciaNominaItem {
     // es el iso string de la fecha (mismo patron que
     // ReporteAsistenciaItem.asistencia).
     required Map<String, String> codigosPorDia,
+    // Status real (AsistenciaDaily.status) de cada dia -- necesario para
+    // preseleccionar correctamente el valor actual al editar, ya que el
+    // codigo de nomina no es reversible a un status (LATE y
+    // AUTHORIZED_LATE comparten codigo 'R'). Misma llave que codigosPorDia.
+    required Map<String, String> statusPorDia,
     required int minutesLate,
     required double extraHours,
   }) = _ReporteIncidenciaNominaItem;
@@ -55,6 +60,9 @@ abstract class ReporteIncidenciaNominaItem with _$ReporteIncidenciaNominaItem {
     final Map<String, String> codigosPorDia = {
       for (final dia in model.dias) dia.date.toShortIsoString(): dia.codigo,
     };
+    final Map<String, String> statusPorDia = {
+      for (final dia in model.dias) dia.date.toShortIsoString(): dia.status,
+    };
 
     return ReporteIncidenciaNominaItem(
       id: model.id,
@@ -63,6 +71,7 @@ abstract class ReporteIncidenciaNominaItem with _$ReporteIncidenciaNominaItem {
       isPracticante: model.isPracticante,
       departamento: departamento,
       codigosPorDia: codigosPorDia,
+      statusPorDia: statusPorDia,
       minutesLate: model.minutesLate,
       extraHours: model.extraHours,
     );

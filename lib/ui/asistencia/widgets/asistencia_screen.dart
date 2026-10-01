@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/scanner_status.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
@@ -44,6 +45,20 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
 
   void _onRegisterResult() {
     if (_viewmodel.register.completed) {
+      final asistencia = (_viewmodel.register.result as result.Ok).value;
+      final faltaNoReportada = asistencia.faltaNoReportada;
+      if (faltaNoReportada != null) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => FaltaNoReportadaDialog(
+            nombre: asistencia.user.nombre,
+            fecha: faltaNoReportada,
+            horaAviso: asistencia.faltaNoReportadaHoraAviso,
+            horaLimite: asistencia.faltaNoReportadaHoraLimite,
+          ),
+        );
+      }
       Future.delayed(const Duration(seconds: 2), () => _viewmodel.register.clearResult());
     }
 
@@ -62,6 +77,27 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                   'No se ha registrado tu entrada debido a que intentaste registrar fuera de tu hora permitida de entrada. '
                   'Ten en cuenta que tienes 10 minutos de gracia para tu entrada. '
                   'No entré a laborar hoy porque NO se le dará compensación por el trabajo.'
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => context.pop(),
+                    child: Text('Entendido'),
+                  ),
+                ],
+              );
+            }
+          );
+          return;
+        }
+
+        if (error.errorCode == ApiErrorCodes.faltaNoReportada) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Falta sin reportar'),
+                content: Text(
+                  'No reportaste tu incidencia por lo tanto se te considera falta el día de hoy.'
                 ),
                 actions: [
                   ElevatedButton(

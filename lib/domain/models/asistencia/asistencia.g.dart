@@ -18,6 +18,15 @@ _Asistencia _$AsistenciaFromJson(Map<String, dynamic> json) => _Asistencia(
       ? null
       : DateTime.parse(json['attended_at'] as String),
   type: $enumDecodeNullable(_$AsistenciaTypeEnumMap, json['type']),
+  faltaNoReportada: json['falta_no_reportada'] == null
+      ? null
+      : DateTime.parse(json['falta_no_reportada'] as String),
+  faltaNoReportadaHoraAviso: json['falta_no_reportada_hora_aviso'] == null
+      ? null
+      : DateTime.parse(json['falta_no_reportada_hora_aviso'] as String),
+  faltaNoReportadaHoraLimite: json['falta_no_reportada_hora_limite'] == null
+      ? null
+      : DateTime.parse(json['falta_no_reportada_hora_limite'] as String),
   photoUrl: json['photo_url'] as String?,
   user: User.fromJson(json['user'] as Map<String, dynamic>),
 );
@@ -29,6 +38,11 @@ Map<String, dynamic> _$AsistenciaToJson(_Asistencia instance) =>
       'updated_at': instance.updatedAt?.toIso8601String(),
       'attended_at': instance.attendedAt?.toIso8601String(),
       'type': _$AsistenciaTypeEnumMap[instance.type],
+      'falta_no_reportada': instance.faltaNoReportada?.toIso8601String(),
+      'falta_no_reportada_hora_aviso': instance.faltaNoReportadaHoraAviso
+          ?.toIso8601String(),
+      'falta_no_reportada_hora_limite': instance.faltaNoReportadaHoraLimite
+          ?.toIso8601String(),
       'photo_url': instance.photoUrl,
       'user': instance.user,
     };

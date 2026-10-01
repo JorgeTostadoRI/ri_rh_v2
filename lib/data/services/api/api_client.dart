@@ -1113,6 +1113,69 @@ class ApiClient {
     }
   }
 
+  Future<Result<void>> patchAsistenciaCorreccion({
+    required int usuarioId,
+    required DateTime fecha,
+    required String campo,
+    required String valor,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.patch(
+        '/api/rh/reportes/incidencias-nomina/',
+        data: {
+          'usuario': usuarioId,
+          'fecha': fecha.toShortIsoString(),
+          'campo': campo,
+          'valor': valor,
+        },
+      );
+      return Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  /// Genera el PDF semanal de incidencias de nomina. Regresa la URL del PDF
+  /// cuando `force` es true (la generacion es sincrona en ese caso, por lo
+  /// que puede tardar mas que el timeout normal de la app para nominas con
+  /// muchos empleados -- se le da un timeout propio mas largo); en otro
+  /// caso regresa null (se procesa en segundo plano, como el disparo
+  /// automatico de los viernes).
+  Future<Result<String?>> postGenerateIncidenciaNomina({
+    required DateTime date,
+    required bool force,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post(
+        '/api/rh/reportes/incidencias-nomina/',
+        data: {
+          'date': date.toShortIsoString(),
+          'force': force,
+        },
+        options: force
+            ? Options(receiveTimeout: const Duration(seconds: 120))
+            : null,
+      );
+      final data = response.data;
+      final pdf = data is Map ? data['pdf'] : null;
+      return Result.ok(pdf is String ? pdf : null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // FIRMAS
   Future<Result<Signature>> postSignature(User user, Uint8List imageBytes) async {
     final dio = _dioFactory();
