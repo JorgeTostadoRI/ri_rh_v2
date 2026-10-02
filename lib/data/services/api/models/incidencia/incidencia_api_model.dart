@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/checador_discrepancy.dart';
@@ -41,6 +42,12 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
         bool? conGoce,
         @JsonKey(name: 'con_goce_approved_by')
         int? conGoceApprovedByRef,
+
+        @JsonKey(name: 'video')
+        String? videoUrl,
+        // Debe ser populado para subir el video grabado.
+        @JsonKey(includeFromJson: false, includeToJson: false)
+        XFile? videoFile,
 
         required DateTime start,
         required DateTime end,

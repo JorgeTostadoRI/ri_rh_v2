@@ -21,7 +21,10 @@ mixin _$Incidencia implements DiagnosticableTreeMixin {
  User? get rhApprovedBy; String? get rejectionReason; User? get rejectedBy; String? get pdfUrl;/// Solo aplica (no-null) para Horas Extra con horario asignado.
  ChecadorDiscrepancy? get checadorDiscrepancy;/// Solo aplican para Permiso.
  bool? get conGoce;/// Quien dio la aprobacion especial de con goce (ver [conGoce]).
- User? get conGoceApprovedBy; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files; IncidenciaCategory get category;
+ User? get conGoceApprovedBy;/// Video testimonial grabado con webcam -- obligatorio solo para
+/// solicitantes remotos registrando desde navegador (sustituye la
+/// verificacion por huella digital, que no tienen disponible ahi).
+ String? get videoUrl;@JsonKey(includeFromJson: false, includeToJson: false) XFile? get videoFile; DateTime get start; DateTime get end; String get reason; List<IncidenciaFile> get files; IncidenciaCategory get category;
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,21 +38,21 @@ $IncidenciaCopyWith<Incidencia> get copyWith => _$IncidenciaCopyWithImpl<Inciden
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Incidencia'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('approvedBy', approvedBy))..add(DiagnosticsProperty('rhApprovedBy', rhApprovedBy))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('rejectedBy', rejectedBy))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('checadorDiscrepancy', checadorDiscrepancy))..add(DiagnosticsProperty('conGoce', conGoce))..add(DiagnosticsProperty('conGoceApprovedBy', conGoceApprovedBy))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('approvedBy', approvedBy))..add(DiagnosticsProperty('rhApprovedBy', rhApprovedBy))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('rejectedBy', rejectedBy))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('checadorDiscrepancy', checadorDiscrepancy))..add(DiagnosticsProperty('conGoce', conGoce))..add(DiagnosticsProperty('conGoceApprovedBy', conGoceApprovedBy))..add(DiagnosticsProperty('videoUrl', videoUrl))..add(DiagnosticsProperty('videoFile', videoFile))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.approvedBy, approvedBy) || other.approvedBy == approvedBy)&&(identical(other.rhApprovedBy, rhApprovedBy) || other.rhApprovedBy == rhApprovedBy)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.rejectedBy, rejectedBy) || other.rejectedBy == rejectedBy)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.checadorDiscrepancy, checadorDiscrepancy) || other.checadorDiscrepancy == checadorDiscrepancy)&&(identical(other.conGoce, conGoce) || other.conGoce == conGoce)&&(identical(other.conGoceApprovedBy, conGoceApprovedBy) || other.conGoceApprovedBy == conGoceApprovedBy)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.category, category) || other.category == category));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.approvedBy, approvedBy) || other.approvedBy == approvedBy)&&(identical(other.rhApprovedBy, rhApprovedBy) || other.rhApprovedBy == rhApprovedBy)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.rejectedBy, rejectedBy) || other.rejectedBy == rejectedBy)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.checadorDiscrepancy, checadorDiscrepancy) || other.checadorDiscrepancy == checadorDiscrepancy)&&(identical(other.conGoce, conGoce) || other.conGoce == conGoce)&&(identical(other.conGoceApprovedBy, conGoceApprovedBy) || other.conGoceApprovedBy == conGoceApprovedBy)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.videoFile, videoFile) || other.videoFile == videoFile)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other.files, files)&&(identical(other.category, category) || other.category == category));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,solicitor,approvedBy,rhApprovedBy,rejectionReason,rejectedBy,pdfUrl,checadorDiscrepancy,conGoce,conGoceApprovedBy,start,end,reason,const DeepCollectionEquality().hash(files),category);
+int get hashCode => Object.hashAll([runtimeType,id,createdAt,updatedAt,state,solicitor,approvedBy,rhApprovedBy,rejectionReason,rejectedBy,pdfUrl,checadorDiscrepancy,conGoce,conGoceApprovedBy,videoUrl,videoFile,start,end,reason,const DeepCollectionEquality().hash(files),category]);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, solicitor: $solicitor, approvedBy: $approvedBy, rhApprovedBy: $rhApprovedBy, rejectionReason: $rejectionReason, rejectedBy: $rejectedBy, pdfUrl: $pdfUrl, checadorDiscrepancy: $checadorDiscrepancy, conGoce: $conGoce, conGoceApprovedBy: $conGoceApprovedBy, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
+  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, solicitor: $solicitor, approvedBy: $approvedBy, rhApprovedBy: $rhApprovedBy, rejectionReason: $rejectionReason, rejectedBy: $rejectedBy, pdfUrl: $pdfUrl, checadorDiscrepancy: $checadorDiscrepancy, conGoce: $conGoce, conGoceApprovedBy: $conGoceApprovedBy, videoUrl: $videoUrl, videoFile: $videoFile, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
 }
 
 
@@ -60,7 +63,7 @@ abstract mixin class $IncidenciaCopyWith<$Res>  {
   factory $IncidenciaCopyWith(Incidencia value, $Res Function(Incidencia) _then) = _$IncidenciaCopyWithImpl;
 @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, User? solicitor, User? approvedBy, User? rhApprovedBy, String? rejectionReason, User? rejectedBy, String? pdfUrl, ChecadorDiscrepancy? checadorDiscrepancy, bool? conGoce, User? conGoceApprovedBy, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, User? solicitor, User? approvedBy, User? rhApprovedBy, String? rejectionReason, User? rejectedBy, String? pdfUrl, ChecadorDiscrepancy? checadorDiscrepancy, bool? conGoce, User? conGoceApprovedBy, String? videoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? videoFile, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
 });
 
 
@@ -77,7 +80,7 @@ class _$IncidenciaCopyWithImpl<$Res>
 
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? solicitor = freezed,Object? approvedBy = freezed,Object? rhApprovedBy = freezed,Object? rejectionReason = freezed,Object? rejectedBy = freezed,Object? pdfUrl = freezed,Object? checadorDiscrepancy = freezed,Object? conGoce = freezed,Object? conGoceApprovedBy = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? solicitor = freezed,Object? approvedBy = freezed,Object? rhApprovedBy = freezed,Object? rejectionReason = freezed,Object? rejectedBy = freezed,Object? pdfUrl = freezed,Object? checadorDiscrepancy = freezed,Object? conGoce = freezed,Object? conGoceApprovedBy = freezed,Object? videoUrl = freezed,Object? videoFile = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
   return _then(Incidencia(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -92,7 +95,9 @@ as User?,pdfUrl: freezed == pdfUrl ? _self.pdfUrl : pdfUrl // ignore: cast_nulla
 as String?,checadorDiscrepancy: freezed == checadorDiscrepancy ? _self.checadorDiscrepancy : checadorDiscrepancy // ignore: cast_nullable_to_non_nullable
 as ChecadorDiscrepancy?,conGoce: freezed == conGoce ? _self.conGoce : conGoce // ignore: cast_nullable_to_non_nullable
 as bool?,conGoceApprovedBy: freezed == conGoceApprovedBy ? _self.conGoceApprovedBy : conGoceApprovedBy // ignore: cast_nullable_to_non_nullable
-as User?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as User?,videoUrl: freezed == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
+as String?,videoFile: freezed == videoFile ? _self.videoFile : videoFile // ignore: cast_nullable_to_non_nullable
+as XFile?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,files: null == files ? _self.files : files // ignore: cast_nullable_to_non_nullable
@@ -254,10 +259,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? solicitor,  User? approvedBy,  User? rhApprovedBy,  String? rejectionReason,  User? rejectedBy,  String? pdfUrl,  ChecadorDiscrepancy? checadorDiscrepancy,  bool? conGoce,  User? conGoceApprovedBy,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? solicitor,  User? approvedBy,  User? rhApprovedBy,  String? rejectionReason,  User? rejectedBy,  String? pdfUrl,  ChecadorDiscrepancy? checadorDiscrepancy,  bool? conGoce,  User? conGoceApprovedBy,  String? videoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? videoFile,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Incidencia() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitor,_that.approvedBy,_that.rhApprovedBy,_that.rejectionReason,_that.rejectedBy,_that.pdfUrl,_that.checadorDiscrepancy,_that.conGoce,_that.conGoceApprovedBy,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitor,_that.approvedBy,_that.rhApprovedBy,_that.rejectionReason,_that.rejectedBy,_that.pdfUrl,_that.checadorDiscrepancy,_that.conGoce,_that.conGoceApprovedBy,_that.videoUrl,_that.videoFile,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
   return orElse();
 
 }
@@ -275,10 +280,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solic
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? solicitor,  User? approvedBy,  User? rhApprovedBy,  String? rejectionReason,  User? rejectedBy,  String? pdfUrl,  ChecadorDiscrepancy? checadorDiscrepancy,  bool? conGoce,  User? conGoceApprovedBy,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? solicitor,  User? approvedBy,  User? rhApprovedBy,  String? rejectionReason,  User? rejectedBy,  String? pdfUrl,  ChecadorDiscrepancy? checadorDiscrepancy,  bool? conGoce,  User? conGoceApprovedBy,  String? videoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? videoFile,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)  $default,) {final _that = this;
 switch (_that) {
 case _Incidencia():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitor,_that.approvedBy,_that.rhApprovedBy,_that.rejectionReason,_that.rejectedBy,_that.pdfUrl,_that.checadorDiscrepancy,_that.conGoce,_that.conGoceApprovedBy,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitor,_that.approvedBy,_that.rhApprovedBy,_that.rejectionReason,_that.rejectedBy,_that.pdfUrl,_that.checadorDiscrepancy,_that.conGoce,_that.conGoceApprovedBy,_that.videoUrl,_that.videoFile,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -295,10 +300,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solic
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? solicitor,  User? approvedBy,  User? rhApprovedBy,  String? rejectionReason,  User? rejectedBy,  String? pdfUrl,  ChecadorDiscrepancy? checadorDiscrepancy,  bool? conGoce,  User? conGoceApprovedBy,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  DateTime? createdAt,  DateTime? updatedAt,  IncidenciaState? state,  User? solicitor,  User? approvedBy,  User? rhApprovedBy,  String? rejectionReason,  User? rejectedBy,  String? pdfUrl,  ChecadorDiscrepancy? checadorDiscrepancy,  bool? conGoce,  User? conGoceApprovedBy,  String? videoUrl, @JsonKey(includeFromJson: false, includeToJson: false)  XFile? videoFile,  DateTime start,  DateTime end,  String reason,  List<IncidenciaFile> files,  IncidenciaCategory category)?  $default,) {final _that = this;
 switch (_that) {
 case _Incidencia() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitor,_that.approvedBy,_that.rhApprovedBy,_that.rejectionReason,_that.rejectedBy,_that.pdfUrl,_that.checadorDiscrepancy,_that.conGoce,_that.conGoceApprovedBy,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solicitor,_that.approvedBy,_that.rhApprovedBy,_that.rejectionReason,_that.rejectedBy,_that.pdfUrl,_that.checadorDiscrepancy,_that.conGoce,_that.conGoceApprovedBy,_that.videoUrl,_that.videoFile,_that.start,_that.end,_that.reason,_that.files,_that.category);case _:
   return null;
 
 }
@@ -310,7 +315,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.state,_that.solic
 @JsonSerializable()
 
 class _Incidencia with DiagnosticableTreeMixin implements Incidencia {
-  const _Incidencia({this.id, this.createdAt, this.updatedAt, this.state, this.solicitor, this.approvedBy, this.rhApprovedBy, this.rejectionReason, this.rejectedBy, this.pdfUrl, this.checadorDiscrepancy, this.conGoce, this.conGoceApprovedBy, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, required this.category}): _files = files;
+  const _Incidencia({this.id, this.createdAt, this.updatedAt, this.state, this.solicitor, this.approvedBy, this.rhApprovedBy, this.rejectionReason, this.rejectedBy, this.pdfUrl, this.checadorDiscrepancy, this.conGoce, this.conGoceApprovedBy, this.videoUrl, @JsonKey(includeFromJson: false, includeToJson: false) this.videoFile, required this.start, required this.end, required this.reason, required  List<IncidenciaFile> files, required this.category}): _files = files;
   factory _Incidencia.fromJson(Map<String, dynamic> json) => _$IncidenciaFromJson(json);
 
 @override final  int? id;
@@ -331,6 +336,11 @@ class _Incidencia with DiagnosticableTreeMixin implements Incidencia {
 @override final  bool? conGoce;
 /// Quien dio la aprobacion especial de con goce (ver [conGoce]).
 @override final  User? conGoceApprovedBy;
+/// Video testimonial grabado con webcam -- obligatorio solo para
+/// solicitantes remotos registrando desde navegador (sustituye la
+/// verificacion por huella digital, que no tienen disponible ahi).
+@override final  String? videoUrl;
+@override@JsonKey(includeFromJson: false, includeToJson: false) final  XFile? videoFile;
 @override final  DateTime start;
 @override final  DateTime end;
 @override final  String reason;
@@ -357,21 +367,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Incidencia'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('approvedBy', approvedBy))..add(DiagnosticsProperty('rhApprovedBy', rhApprovedBy))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('rejectedBy', rejectedBy))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('checadorDiscrepancy', checadorDiscrepancy))..add(DiagnosticsProperty('conGoce', conGoce))..add(DiagnosticsProperty('conGoceApprovedBy', conGoceApprovedBy))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('createdAt', createdAt))..add(DiagnosticsProperty('updatedAt', updatedAt))..add(DiagnosticsProperty('state', state))..add(DiagnosticsProperty('solicitor', solicitor))..add(DiagnosticsProperty('approvedBy', approvedBy))..add(DiagnosticsProperty('rhApprovedBy', rhApprovedBy))..add(DiagnosticsProperty('rejectionReason', rejectionReason))..add(DiagnosticsProperty('rejectedBy', rejectedBy))..add(DiagnosticsProperty('pdfUrl', pdfUrl))..add(DiagnosticsProperty('checadorDiscrepancy', checadorDiscrepancy))..add(DiagnosticsProperty('conGoce', conGoce))..add(DiagnosticsProperty('conGoceApprovedBy', conGoceApprovedBy))..add(DiagnosticsProperty('videoUrl', videoUrl))..add(DiagnosticsProperty('videoFile', videoFile))..add(DiagnosticsProperty('start', start))..add(DiagnosticsProperty('end', end))..add(DiagnosticsProperty('reason', reason))..add(DiagnosticsProperty('files', files))..add(DiagnosticsProperty('category', category));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.approvedBy, approvedBy) || other.approvedBy == approvedBy)&&(identical(other.rhApprovedBy, rhApprovedBy) || other.rhApprovedBy == rhApprovedBy)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.rejectedBy, rejectedBy) || other.rejectedBy == rejectedBy)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.checadorDiscrepancy, checadorDiscrepancy) || other.checadorDiscrepancy == checadorDiscrepancy)&&(identical(other.conGoce, conGoce) || other.conGoce == conGoce)&&(identical(other.conGoceApprovedBy, conGoceApprovedBy) || other.conGoceApprovedBy == conGoceApprovedBy)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.category, category) || other.category == category));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Incidencia&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.state, state) || other.state == state)&&(identical(other.solicitor, solicitor) || other.solicitor == solicitor)&&(identical(other.approvedBy, approvedBy) || other.approvedBy == approvedBy)&&(identical(other.rhApprovedBy, rhApprovedBy) || other.rhApprovedBy == rhApprovedBy)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.rejectedBy, rejectedBy) || other.rejectedBy == rejectedBy)&&(identical(other.pdfUrl, pdfUrl) || other.pdfUrl == pdfUrl)&&(identical(other.checadorDiscrepancy, checadorDiscrepancy) || other.checadorDiscrepancy == checadorDiscrepancy)&&(identical(other.conGoce, conGoce) || other.conGoce == conGoce)&&(identical(other.conGoceApprovedBy, conGoceApprovedBy) || other.conGoceApprovedBy == conGoceApprovedBy)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.videoFile, videoFile) || other.videoFile == videoFile)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.reason, reason) || other.reason == reason)&&const DeepCollectionEquality().equals(other._files, _files)&&(identical(other.category, category) || other.category == category));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,state,solicitor,approvedBy,rhApprovedBy,rejectionReason,rejectedBy,pdfUrl,checadorDiscrepancy,conGoce,conGoceApprovedBy,start,end,reason,const DeepCollectionEquality().hash(_files),category);
+int get hashCode => Object.hashAll([runtimeType,id,createdAt,updatedAt,state,solicitor,approvedBy,rhApprovedBy,rejectionReason,rejectedBy,pdfUrl,checadorDiscrepancy,conGoce,conGoceApprovedBy,videoUrl,videoFile,start,end,reason,const DeepCollectionEquality().hash(_files),category]);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, solicitor: $solicitor, approvedBy: $approvedBy, rhApprovedBy: $rhApprovedBy, rejectionReason: $rejectionReason, rejectedBy: $rejectedBy, pdfUrl: $pdfUrl, checadorDiscrepancy: $checadorDiscrepancy, conGoce: $conGoce, conGoceApprovedBy: $conGoceApprovedBy, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
+  return 'Incidencia(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, state: $state, solicitor: $solicitor, approvedBy: $approvedBy, rhApprovedBy: $rhApprovedBy, rejectionReason: $rejectionReason, rejectedBy: $rejectedBy, pdfUrl: $pdfUrl, checadorDiscrepancy: $checadorDiscrepancy, conGoce: $conGoce, conGoceApprovedBy: $conGoceApprovedBy, videoUrl: $videoUrl, videoFile: $videoFile, start: $start, end: $end, reason: $reason, files: $files, category: $category)';
 }
 
 
@@ -382,7 +392,7 @@ abstract mixin class _$IncidenciaCopyWith<$Res> implements $IncidenciaCopyWith<$
   factory _$IncidenciaCopyWith(_Incidencia value, $Res Function(_Incidencia) _then) = __$IncidenciaCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, User? solicitor, User? approvedBy, User? rhApprovedBy, String? rejectionReason, User? rejectedBy, String? pdfUrl, ChecadorDiscrepancy? checadorDiscrepancy, bool? conGoce, User? conGoceApprovedBy, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
+ int? id, DateTime? createdAt, DateTime? updatedAt, IncidenciaState? state, User? solicitor, User? approvedBy, User? rhApprovedBy, String? rejectionReason, User? rejectedBy, String? pdfUrl, ChecadorDiscrepancy? checadorDiscrepancy, bool? conGoce, User? conGoceApprovedBy, String? videoUrl,@JsonKey(includeFromJson: false, includeToJson: false) XFile? videoFile, DateTime start, DateTime end, String reason, List<IncidenciaFile> files, IncidenciaCategory category
 });
 
 
@@ -399,7 +409,7 @@ class __$IncidenciaCopyWithImpl<$Res>
 
 /// Create a copy of Incidencia
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? solicitor = freezed,Object? approvedBy = freezed,Object? rhApprovedBy = freezed,Object? rejectionReason = freezed,Object? rejectedBy = freezed,Object? pdfUrl = freezed,Object? checadorDiscrepancy = freezed,Object? conGoce = freezed,Object? conGoceApprovedBy = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? state = freezed,Object? solicitor = freezed,Object? approvedBy = freezed,Object? rhApprovedBy = freezed,Object? rejectionReason = freezed,Object? rejectedBy = freezed,Object? pdfUrl = freezed,Object? checadorDiscrepancy = freezed,Object? conGoce = freezed,Object? conGoceApprovedBy = freezed,Object? videoUrl = freezed,Object? videoFile = freezed,Object? start = null,Object? end = null,Object? reason = null,Object? files = null,Object? category = null,}) {
   return _then(_Incidencia(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -414,7 +424,9 @@ as User?,pdfUrl: freezed == pdfUrl ? _self.pdfUrl : pdfUrl // ignore: cast_nulla
 as String?,checadorDiscrepancy: freezed == checadorDiscrepancy ? _self.checadorDiscrepancy : checadorDiscrepancy // ignore: cast_nullable_to_non_nullable
 as ChecadorDiscrepancy?,conGoce: freezed == conGoce ? _self.conGoce : conGoce // ignore: cast_nullable_to_non_nullable
 as bool?,conGoceApprovedBy: freezed == conGoceApprovedBy ? _self.conGoceApprovedBy : conGoceApprovedBy // ignore: cast_nullable_to_non_nullable
-as User?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as User?,videoUrl: freezed == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
+as String?,videoFile: freezed == videoFile ? _self.videoFile : videoFile // ignore: cast_nullable_to_non_nullable
+as XFile?,start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as DateTime,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String,files: null == files ? _self._files : files // ignore: cast_nullable_to_non_nullable

@@ -38,6 +38,7 @@ _Incidencia _$IncidenciaFromJson(Map<String, dynamic> json) => _Incidencia(
   conGoceApprovedBy: json['con_goce_approved_by'] == null
       ? null
       : User.fromJson(json['con_goce_approved_by'] as Map<String, dynamic>),
+  videoUrl: json['video_url'] as String?,
   start: DateTime.parse(json['start'] as String),
   end: DateTime.parse(json['end'] as String),
   reason: json['reason'] as String,
@@ -62,6 +63,7 @@ Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
       'checador_discrepancy': instance.checadorDiscrepancy,
       'con_goce': instance.conGoce,
       'con_goce_approved_by': instance.conGoceApprovedBy,
+      'video_url': instance.videoUrl,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
       'reason': instance.reason,

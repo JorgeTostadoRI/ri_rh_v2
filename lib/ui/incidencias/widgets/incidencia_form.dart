@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/verify_identity_dialog.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/video_testimonio_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/field_switcher.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
@@ -86,6 +88,12 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     );
   }
 
+  /// El video de verificacion solo aplica a remotos entrando desde
+  /// navegador -- sustituye ahi la verificacion por huella digital, que no
+  /// tienen disponible (sin lector de huella en navegador). El flujo de
+  /// kiosko (escritorio, con huella) no cambia en nada.
+  bool get _isRemoteWeb => kIsWeb && (_viewmodel.currentUser?.isRemote ?? false);
+
   Future<bool> _validateAuth() async {
     final isAuthenticated = await _viewmodel.isAuthenticated;
 
@@ -118,7 +126,8 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      if (kIsWeb) {
+      final isRemoteWeb = _isRemoteWeb;
+      if (kIsWeb && !isRemoteWeb) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Lo sentimos, pero no puedes completar este proceso en el navegador.'),
@@ -127,8 +136,23 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         return;
       }
 
-      final authenticated = await _validateAuth();
-      if (!authenticated) return;
+      if (isRemoteWeb) {
+        // En web ya llego con su sesion normal (por eso puede ver esta
+        // pantalla) -- no hay lector de huella que ofrecerle, asi que se
+        // omite _validateAuth(). El video grabado es lo que sustituye esa
+        // verificacion de identidad.
+        if (_viewmodel.video == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Debes grabar el video de verificación antes de enviar tu solicitud.'),
+            ),
+          );
+          return;
+        }
+      } else {
+        final authenticated = await _validateAuth();
+        if (!authenticated) return;
+      }
 
       final result = await _viewmodel.submitData(widget.category);
       switch (result) {
@@ -158,6 +182,14 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     );
 
     if (result != null) _viewmodel.addFiles(result.files);
+  }
+
+  Future<void> _handleRecordVideo() async {
+    final video = await showDialog<XFile?>(
+      context: context,
+      builder: (context) => VideoTestimonioDialog(category: widget.category),
+    );
+    if (video != null) _viewmodel.onVideoRecorded(video);
   }
 
   void _handleSubmitError(Exception e) {
@@ -376,6 +408,33 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                   fileContainer(index, file),
               ],
             ),
+            if (_isRemoteWeb) ...[
+              const SizedBox(height: _fieldMargin),
+              FieldLabel(labelText: 'Video de verificación', required: true),
+              const SizedBox(height: _labelMargin),
+              Text(
+                'Al ser una solicitud remota, graba un video corto diciendo tu nombre completo, '
+                'el tipo de incidencia que estás solicitando y el motivo.',
+                style: TextTheme.of(context).bodySmall,
+              ),
+              const SizedBox(height: _labelMargin),
+              Row(
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _handleRecordVideo,
+                    icon: Icon(_viewmodel.video == null ? LucideIcons.video : LucideIcons.check),
+                    label: Text(_viewmodel.video == null ? 'Grabar video' : 'Video grabado'),
+                  ),
+                  if (_viewmodel.video != null) ...[
+                    const SizedBox(width: 12),
+                    TextButton(
+                      onPressed: _viewmodel.removeVideo,
+                      child: Text('Volver a grabar'),
+                    ),
+                  ],
+                ],
+              ),
+            ],
             const SizedBox(height: _fieldMargin),
             Row(
               spacing: 16,

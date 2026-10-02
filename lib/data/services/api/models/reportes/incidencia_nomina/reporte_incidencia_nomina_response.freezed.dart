@@ -584,7 +584,7 @@ as double,
 /// @nodoc
 mixin _$ReporteIncidenciaNominaResponseDia {
 
- DateTime get date; String get codigo; String get status;
+ DateTime get date; String get codigo; String get status;@JsonKey(name: 'minutes_late') int get minutesLate;
 /// Create a copy of ReporteIncidenciaNominaResponseDia
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -597,16 +597,16 @@ $ReporteIncidenciaNominaResponseDiaCopyWith<ReporteIncidenciaNominaResponseDia> 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteIncidenciaNominaResponseDia&&(identical(other.date, date) || other.date == date)&&(identical(other.codigo, codigo) || other.codigo == codigo)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteIncidenciaNominaResponseDia&&(identical(other.date, date) || other.date == date)&&(identical(other.codigo, codigo) || other.codigo == codigo)&&(identical(other.status, status) || other.status == status)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,date,codigo,status);
+int get hashCode => Object.hash(runtimeType,date,codigo,status,minutesLate);
 
 @override
 String toString() {
-  return 'ReporteIncidenciaNominaResponseDia(date: $date, codigo: $codigo, status: $status)';
+  return 'ReporteIncidenciaNominaResponseDia(date: $date, codigo: $codigo, status: $status, minutesLate: $minutesLate)';
 }
 
 
@@ -617,7 +617,7 @@ abstract mixin class $ReporteIncidenciaNominaResponseDiaCopyWith<$Res>  {
   factory $ReporteIncidenciaNominaResponseDiaCopyWith(ReporteIncidenciaNominaResponseDia value, $Res Function(ReporteIncidenciaNominaResponseDia) _then) = _$ReporteIncidenciaNominaResponseDiaCopyWithImpl;
 @useResult
 $Res call({
- DateTime date, String codigo, String status
+ DateTime date, String codigo, String status,@JsonKey(name: 'minutes_late') int minutesLate
 });
 
 
@@ -634,12 +634,13 @@ class _$ReporteIncidenciaNominaResponseDiaCopyWithImpl<$Res>
 
 /// Create a copy of ReporteIncidenciaNominaResponseDia
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? codigo = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? codigo = null,Object? status = null,Object? minutesLate = null,}) {
   return _then(ReporteIncidenciaNominaResponseDia(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,codigo: null == codigo ? _self.codigo : codigo // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,
+as String,minutesLate: null == minutesLate ? _self.minutesLate : minutesLate // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -724,10 +725,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  String codigo,  String status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  String codigo,  String status, @JsonKey(name: 'minutes_late')  int minutesLate)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReporteIncidenciaNominaResponseDia() when $default != null:
-return $default(_that.date,_that.codigo,_that.status);case _:
+return $default(_that.date,_that.codigo,_that.status,_that.minutesLate);case _:
   return orElse();
 
 }
@@ -745,10 +746,10 @@ return $default(_that.date,_that.codigo,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  String codigo,  String status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  String codigo,  String status, @JsonKey(name: 'minutes_late')  int minutesLate)  $default,) {final _that = this;
 switch (_that) {
 case _ReporteIncidenciaNominaResponseDia():
-return $default(_that.date,_that.codigo,_that.status);case _:
+return $default(_that.date,_that.codigo,_that.status,_that.minutesLate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -765,10 +766,10 @@ return $default(_that.date,_that.codigo,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  String codigo,  String status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  String codigo,  String status, @JsonKey(name: 'minutes_late')  int minutesLate)?  $default,) {final _that = this;
 switch (_that) {
 case _ReporteIncidenciaNominaResponseDia() when $default != null:
-return $default(_that.date,_that.codigo,_that.status);case _:
+return $default(_that.date,_that.codigo,_that.status,_that.minutesLate);case _:
   return null;
 
 }
@@ -780,12 +781,13 @@ return $default(_that.date,_that.codigo,_that.status);case _:
 @JsonSerializable()
 
 class _ReporteIncidenciaNominaResponseDia implements ReporteIncidenciaNominaResponseDia {
-  const _ReporteIncidenciaNominaResponseDia({required this.date, required this.codigo, required this.status});
+  const _ReporteIncidenciaNominaResponseDia({required this.date, required this.codigo, required this.status, @JsonKey(name: 'minutes_late') required this.minutesLate});
   factory _ReporteIncidenciaNominaResponseDia.fromJson(Map<String, dynamic> json) => _$ReporteIncidenciaNominaResponseDiaFromJson(json);
 
 @override final  DateTime date;
 @override final  String codigo;
 @override final  String status;
+@override@JsonKey(name: 'minutes_late') final  int minutesLate;
 
 /// Create a copy of ReporteIncidenciaNominaResponseDia
 /// with the given fields replaced by the non-null parameter values.
@@ -800,16 +802,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteIncidenciaNominaResponseDia&&(identical(other.date, date) || other.date == date)&&(identical(other.codigo, codigo) || other.codigo == codigo)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteIncidenciaNominaResponseDia&&(identical(other.date, date) || other.date == date)&&(identical(other.codigo, codigo) || other.codigo == codigo)&&(identical(other.status, status) || other.status == status)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,date,codigo,status);
+int get hashCode => Object.hash(runtimeType,date,codigo,status,minutesLate);
 
 @override
 String toString() {
-  return 'ReporteIncidenciaNominaResponseDia(date: $date, codigo: $codigo, status: $status)';
+  return 'ReporteIncidenciaNominaResponseDia(date: $date, codigo: $codigo, status: $status, minutesLate: $minutesLate)';
 }
 
 
@@ -820,7 +822,7 @@ abstract mixin class _$ReporteIncidenciaNominaResponseDiaCopyWith<$Res> implemen
   factory _$ReporteIncidenciaNominaResponseDiaCopyWith(_ReporteIncidenciaNominaResponseDia value, $Res Function(_ReporteIncidenciaNominaResponseDia) _then) = __$ReporteIncidenciaNominaResponseDiaCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime date, String codigo, String status
+ DateTime date, String codigo, String status,@JsonKey(name: 'minutes_late') int minutesLate
 });
 
 
@@ -837,12 +839,13 @@ class __$ReporteIncidenciaNominaResponseDiaCopyWithImpl<$Res>
 
 /// Create a copy of ReporteIncidenciaNominaResponseDia
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? codigo = null,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? codigo = null,Object? status = null,Object? minutesLate = null,}) {
   return _then(_ReporteIncidenciaNominaResponseDia(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,codigo: null == codigo ? _self.codigo : codigo // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,
+as String,minutesLate: null == minutesLate ? _self.minutesLate : minutesLate // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

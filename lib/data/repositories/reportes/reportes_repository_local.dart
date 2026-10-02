@@ -63,6 +63,10 @@ class ReportesRepositoryLocal extends ReportesRepository {
             for (final (dayIdx, day) in dates.indexed)
               day.toShortIsoString(): _mockStatuses[(index + dayIdx) % _mockStatuses.length],
           },
+          minutesLatePorDia: {
+            for (final (dayIdx, day) in dates.indexed)
+              day.toShortIsoString(): _mockCodigos[(index + dayIdx) % _mockCodigos.length] == 'R' ? 12 : 0,
+          },
           minutesLate: _mockCodigos[index % _mockCodigos.length] == 'R' ? 12 : 0,
           extraHours: index % 4 == 0 ? 2.5 : 0,
         ),

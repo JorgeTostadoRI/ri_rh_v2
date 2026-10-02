@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
@@ -70,6 +71,14 @@ abstract class Incidencia with _$Incidencia {
         /// Quien dio la aprobacion especial de con goce (ver [conGoce]).
         User? conGoceApprovedBy,
 
+        /// Video testimonial grabado con webcam -- obligatorio solo para
+        /// solicitantes remotos registrando desde navegador (sustituye la
+        /// verificacion por huella digital, que no tienen disponible ahi).
+        String? videoUrl,
+        // Debe ser populado para subir el video grabado.
+        @JsonKey(includeFromJson: false, includeToJson: false)
+        XFile? videoFile,
+
         required DateTime start,
         required DateTime end,
         required String reason,
@@ -140,6 +149,7 @@ abstract class Incidencia with _$Incidencia {
         checadorDiscrepancy: model.checadorDiscrepancy,
         conGoce: model.conGoce,
         conGoceApprovedBy: conGoceApprovedBy,
+        videoUrl: model.videoUrl,
         start: model.start,
         end: model.end,
         reason: model.reason,

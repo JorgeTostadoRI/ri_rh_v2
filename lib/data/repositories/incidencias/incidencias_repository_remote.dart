@@ -28,7 +28,8 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
         reason: incidencia.reason,
         files: incidencia.files,
         solicitorRef: incidencia.solicitor?.id,
-        category: incidencia.category
+        category: incidencia.category,
+        videoFile: incidencia.videoFile,
       );
       final resultIncidencia = await _apiClient.postIncidencia(incidenciaApiModel);
       switch (resultIncidencia) {

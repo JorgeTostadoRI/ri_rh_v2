@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
@@ -12,6 +13,7 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
+import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -85,7 +87,14 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
   List<PlatformFile> _files = [];
   List<PlatformFile> get files => _files;
 
+  // Video testimonial grabado con webcam -- obligatorio solo para
+  // solicitantes remotos desde navegador (ver IncidenciaForm), sustituye
+  // la verificacion por huella digital que no tienen disponible ahi.
+  XFile? _video;
+  XFile? get video => _video;
+
   Future<bool> get isAuthenticated => _authRepository.isAuthenticated;
+  User? get currentUser => _authRepository.getCurrentUser();
 
   @override
   void dispose() {
@@ -113,6 +122,16 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     final newFiles = [...files];
     newFiles.removeAt(index);
     _files = newFiles;
+    notifyListeners();
+  }
+
+  void onVideoRecorded(XFile video) {
+    _video = video;
+    notifyListeners();
+  }
+
+  void removeVideo() {
+    _video = null;
     notifyListeners();
   }
 
@@ -149,6 +168,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
       solicitor: user!,
       category: category,
       files: incidenciaFiles,
+      videoFile: _video,
     );
     final incidenciaResult = await _incidenciasRepository.createIncidencia(incidencia);
     switch (incidenciaResult) {
@@ -158,7 +178,11 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
         _log.warning('NewIncidenciaViewmodel | Failed to create incidencia', error: incidenciaResult.error);
     }
 
-    _authRepository.logout();
+    // En kiosko la sesion es temporal (verificada por huella solo para este
+    // envio) y debe cerrarse siempre, haya o no error -- en web, un remoto
+    // ya llego con su sesion normal y persistente (ver IncidenciaForm), que
+    // no debe perder solo por enviar una incidencia.
+    if (!kIsWeb) _authRepository.logout();
     return incidenciaResult;
   }
 

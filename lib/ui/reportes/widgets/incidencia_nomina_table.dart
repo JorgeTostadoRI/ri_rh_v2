@@ -7,14 +7,16 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IncidenciaNominaTable extends StatelessWidget {
-  final ReporteIncidenciaNomina reporte;
-  final void Function(int usuarioId, DateTime fecha, AsistenciaStatus statusActual)? onEditCodigo;
+  final List<DateTime> dates;
+  final List<ReporteIncidenciaNominaItem> items;
+  final void Function(int usuarioId, DateTime fecha, AsistenciaStatus statusActual, int minutosActual)? onEditCodigo;
   final void Function(int usuarioId, DateTime fecha, int minutosActual)? onEditMinutosRetardo;
   final void Function(int usuarioId, DateTime fecha, double horasActual)? onEditHorasExtra;
 
   const IncidenciaNominaTable({
     super.key,
-    required this.reporte,
+    required this.dates,
+    required this.items,
     this.onEditCodigo,
     this.onEditMinutosRetardo,
     this.onEditHorasExtra,
@@ -23,7 +25,7 @@ class IncidenciaNominaTable extends StatelessWidget {
   // Minutos de retardo y horas extra son un total agregado del rango
   // seleccionado -- solo tienen sentido para editarse cuando ese rango es
   // exactamente un dia (si no, no queda claro a que dia correguir).
-  bool get _puedeEditarAgregados => reporte.dates.length == 1;
+  bool get _puedeEditarAgregados => dates.length == 1;
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +45,14 @@ class IncidenciaNominaTable extends StatelessWidget {
         DataColumn(label: Text('TIPO')),
         DataColumn(label: Text('DEPARTAMENTO')),
         ...List<DataColumn>.generate(
-          reporte.dates.length,
-          (int index) => DataColumn(label: Text(yMd.format(reporte.dates[index]))),
+          dates.length,
+          (int index) => DataColumn(label: Text(yMd.format(dates[index]))),
         ),
         DataColumn(label: Text('MIN. RETARDO')),
         DataColumn(label: Text('HORAS EXTRA')),
       ],
-      rows: List<DataRow>.generate(reporte.items.length, (int index) {
-        final item = reporte.items[index];
+      rows: List<DataRow>.generate(items.length, (int index) {
+        final item = items[index];
 
         return DataRow.byIndex(
           index: index,
@@ -76,17 +78,18 @@ class IncidenciaNominaTable extends StatelessWidget {
                 style: textTheme.labelLarge,
               ),
             ),
-            ...List<DataCell>.generate(reporte.dates.length, (int dayIdx) {
-              final fecha = reporte.dates[dayIdx];
+            ...List<DataCell>.generate(dates.length, (int dayIdx) {
+              final fecha = dates[dayIdx];
               final dayKey = fecha.toShortIsoString();
               final codigo = item.codigosPorDia[dayKey] ?? '';
               final statusActual = _parseStatus(item.statusPorDia[dayKey]);
+              final minutosActual = item.minutesLatePorDia[dayKey] ?? 0;
 
               return DataCell(
                 InkWell(
                   onTap: onEditCodigo == null || statusActual == null
                       ? null
-                      : () => onEditCodigo!(item.id, fecha, statusActual),
+                      : () => onEditCodigo!(item.id, fecha, statusActual, minutosActual),
                   child: _CodigoChip(codigo: codigo),
                 ),
               );
@@ -102,7 +105,7 @@ class IncidenciaNominaTable extends StatelessWidget {
                   if (_puedeEditarAgregados && onEditMinutosRetardo != null)
                     IconButton(
                       icon: Icon(LucideIcons.pencil, size: 14),
-                      onPressed: () => onEditMinutosRetardo!(item.id, reporte.dates.first, item.minutesLate),
+                      onPressed: () => onEditMinutosRetardo!(item.id, dates.first, item.minutesLate),
                     ),
                 ],
               ),
@@ -115,7 +118,7 @@ class IncidenciaNominaTable extends StatelessWidget {
                   if (_puedeEditarAgregados && onEditHorasExtra != null)
                     IconButton(
                       icon: Icon(LucideIcons.pencil, size: 14),
-                      onPressed: () => onEditHorasExtra!(item.id, reporte.dates.first, item.extraHours),
+                      onPressed: () => onEditHorasExtra!(item.id, dates.first, item.extraHours),
                     ),
                 ],
               ),
