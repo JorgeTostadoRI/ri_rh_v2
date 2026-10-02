@@ -261,12 +261,19 @@ class ApiClient {
           contentType: getMediaTypeFromExtension(file.extension!),
         );
       }).toList();
+      final videoBytes = await incidencia.videoFile?.readAsBytes();
       final formData = FormData.fromMap({
         'start': incidencia.start.toIso8601String(),
         'end': incidencia.end.toIso8601String(),
         'reason': incidencia.reason,
         'solicitor': incidencia.solicitorRef,
         'uploaded_files': uploadList,
+        if (videoBytes != null)
+          'video': MultipartFile.fromBytes(
+            videoBytes,
+            filename: '${DateTime.now().toIso8601String()}.webm',
+            contentType: DioMediaType('video', 'webm'),
+          ),
       });
 
       final category = incidencia.category.url;

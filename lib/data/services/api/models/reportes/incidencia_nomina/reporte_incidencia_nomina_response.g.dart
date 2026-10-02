@@ -68,6 +68,7 @@ _$ReporteIncidenciaNominaResponseDiaFromJson(Map<String, dynamic> json) =>
       date: DateTime.parse(json['date'] as String),
       codigo: json['codigo'] as String,
       status: json['status'] as String,
+      minutesLate: (json['minutes_late'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ReporteIncidenciaNominaResponseDiaToJson(
@@ -76,4 +77,5 @@ Map<String, dynamic> _$ReporteIncidenciaNominaResponseDiaToJson(
   'date': instance.date.toIso8601String(),
   'codigo': instance.codigo,
   'status': instance.status,
+  'minutes_late': instance.minutesLate,
 };

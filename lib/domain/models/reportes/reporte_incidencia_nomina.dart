@@ -32,6 +32,11 @@ abstract class ReporteIncidenciaNominaItem with _$ReporteIncidenciaNominaItem {
     // codigo de nomina no es reversible a un status (LATE y
     // AUTHORIZED_LATE comparten codigo 'R'). Misma llave que codigosPorDia.
     required Map<String, String> statusPorDia,
+    // Minutos de retardo real de CADA dia (no el total agregado de
+    // minutesLate) -- necesario para precargar el valor correcto al
+    // corregir el codigo de un dia especifico a Retardo. Misma llave que
+    // codigosPorDia/statusPorDia.
+    required Map<String, int> minutesLatePorDia,
     required int minutesLate,
     required double extraHours,
   }) = _ReporteIncidenciaNominaItem;
@@ -63,6 +68,9 @@ abstract class ReporteIncidenciaNominaItem with _$ReporteIncidenciaNominaItem {
     final Map<String, String> statusPorDia = {
       for (final dia in model.dias) dia.date.toShortIsoString(): dia.status,
     };
+    final Map<String, int> minutesLatePorDia = {
+      for (final dia in model.dias) dia.date.toShortIsoString(): dia.minutesLate,
+    };
 
     return ReporteIncidenciaNominaItem(
       id: model.id,
@@ -72,6 +80,7 @@ abstract class ReporteIncidenciaNominaItem with _$ReporteIncidenciaNominaItem {
       departamento: departamento,
       codigosPorDia: codigosPorDia,
       statusPorDia: statusPorDia,
+      minutesLatePorDia: minutesLatePorDia,
       minutesLate: model.minutesLate,
       extraHours: model.extraHours,
     );

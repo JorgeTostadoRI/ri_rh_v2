@@ -43,6 +43,7 @@ abstract class ReporteIncidenciaNominaResponseDia
     required DateTime date,
     required String codigo,
     required String status,
+    @JsonKey(name: 'minutes_late') required int minutesLate,
   }) = _ReporteIncidenciaNominaResponseDia;
 
   factory ReporteIncidenciaNominaResponseDia.fromJson(

@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_incidencia_nomina_viewmo
 import 'package:ri_rh_v2/ui/reportes/widgets/asistencia_correccion_dialogs.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/incidencia_nomina_table.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/debouncer.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,6 +29,13 @@ class IncidenciaNominaReportView extends StatefulWidget {
 }
 
 class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView> {
+  // Mismo patron de busqueda por nombre que ya usa la vista de Asistencia
+  // (ver reporte_asistencia_screen.dart) -- filtra antes de separar en
+  // Empleados/Practicantes para que aplique a ambas tablas a la vez.
+  final TextEditingController _searchController = TextEditingController();
+  final Debouncer _searchDebouncer = Debouncer(milliseconds: 300);
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +56,8 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
   void dispose() {
     widget.viewmodel.corregir.removeListener(_onCorregirResult);
     widget.viewmodel.generarPdf.removeListener(_onGenerarPdfResult);
+    _searchController.dispose();
+    _searchDebouncer.dispose();
     super.dispose();
   }
 
@@ -109,20 +119,34 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
     return true;
   }
 
-  Future<void> _editCodigo(int usuarioId, DateTime fecha, AsistenciaStatus statusActual) async {
+  Future<void> _editCodigo(int usuarioId, DateTime fecha, AsistenciaStatus statusActual, int minutosActual) async {
     if (!_puedeCorregir()) return;
-    final nuevo = await showDialog<AsistenciaStatus>(
+    final resultado = await showDialog<EditCodigoResult>(
       context: context,
-      builder: (context) => EditCodigoDialog(status: statusActual),
+      builder: (context) => EditCodigoDialog(status: statusActual, minutosActual: minutosActual),
     );
-    if (nuevo == null || !mounted) return;
+    if (resultado == null || !mounted) return;
 
-    widget.viewmodel.corregir.execute((
+    await widget.viewmodel.corregir.execute((
       usuarioId: usuarioId,
       fecha: fecha,
       campo: _campoStatus,
-      valor: nuevo.jsonValue,
+      valor: resultado.status.jsonValue,
     ));
+
+    // Solo Retardo pide minutos (ver EditCodigoDialog) -- se manda como una
+    // segunda correccion separada porque el PATCH de corregir solo acepta
+    // un campo a la vez, mismo mecanismo que ya usa el lapiz de "Min.
+    // Retardo" de la columna agregada.
+    final minutos = resultado.minutosRetardo;
+    if (minutos != null && mounted) {
+      await widget.viewmodel.corregir.execute((
+        usuarioId: usuarioId,
+        fecha: fecha,
+        campo: _campoMinutosRetardo,
+        valor: minutos.toString(),
+      ));
+    }
   }
 
   Future<void> _editMinutosRetardo(int usuarioId, DateTime fecha, int actual) async {
@@ -263,13 +287,73 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
               );
             }
 
-            return TableWrapper(
-              table: IncidenciaNominaTable(
-                reporte: widget.viewmodel.reporte,
-                onEditCodigo: _editCodigo,
-                onEditMinutosRetardo: _editMinutosRetardo,
-                onEditHorasExtra: _editHorasExtra,
-              ),
+            final reporte = widget.viewmodel.reporte;
+
+            // Mismo algoritmo de busqueda por palabras que ya usa la vista
+            // de Asistencia -> Empleados (reporte_asistencia_screen.dart):
+            // cada palabra escrita debe ser el inicio de alguna palabra del
+            // nombre, sin importar el orden.
+            final query = _searchQuery.trim().toLowerCase();
+            final queryWords = query.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+            final filteredItems = queryWords.isEmpty
+              ? reporte.items
+              : reporte.items.where((item) {
+                  final nameWords = item.fullName.toLowerCase().split(RegExp(r'\s+'));
+                  return queryWords.every((qw) => nameWords.any((nw) => nw.startsWith(qw)));
+                }).toList();
+
+            // Misma separacion que ya usa el PDF semanal (ver
+            // generate_incidencia_nominas_pdf en reports.py: empleados vs
+            // practicantes, mismos titulos "EMPLEADOS"/
+            // "PRACTICANTES/RESIDENTES").
+            final empleados = filteredItems.where((item) => !item.isPracticante).toList();
+            final practicantes = filteredItems.where((item) => item.isPracticante).toList();
+
+            return Column(
+              crossAxisAlignment: .start,
+              spacing: 24,
+              children: [
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Buscar empleado por nombre',
+                    prefixIcon: Icon(LucideIcons.search),
+                    prefixIconColor: const Color(0xFFC4A47A),
+                  ),
+                  onChanged: (value) => _searchDebouncer.run(
+                    () => setState(() => _searchQuery = value),
+                  ),
+                ),
+                if (filteredItems.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Text('No se encontraron empleados que coincidan con "$query"'),
+                    ),
+                  )
+                else ...[
+                  Text('EMPLEADOS', style: TextTheme.of(context).titleMedium),
+                  TableWrapper(
+                    table: IncidenciaNominaTable(
+                      dates: reporte.dates,
+                      items: empleados,
+                      onEditCodigo: _editCodigo,
+                      onEditMinutosRetardo: _editMinutosRetardo,
+                      onEditHorasExtra: _editHorasExtra,
+                    ),
+                  ),
+                  Text('PRACTICANTES/RESIDENTES', style: TextTheme.of(context).titleMedium),
+                  TableWrapper(
+                    table: IncidenciaNominaTable(
+                      dates: reporte.dates,
+                      items: practicantes,
+                      onEditCodigo: _editCodigo,
+                      onEditMinutosRetardo: _editMinutosRetardo,
+                      onEditHorasExtra: _editHorasExtra,
+                    ),
+                  ),
+                ],
+              ],
             );
           },
         ),
