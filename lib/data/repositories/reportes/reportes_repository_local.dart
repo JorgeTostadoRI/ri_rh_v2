@@ -33,7 +33,7 @@ class ReportesRepositoryLocal extends ReportesRepository {
 
     for (final user in users) {
       final checkins = _generateCheckInsForUser(user, dates);
-      items.add(ReporteAsistenciaItem(user: user, asistencia: checkins, totalMinutesLate: 0));
+      items.add(ReporteAsistenciaItem(user: user, asistencia: checkins, totalMinutesLate: 0, isPracticante: false));
     }
     return items;
   }

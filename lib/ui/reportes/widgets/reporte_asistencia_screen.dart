@@ -183,8 +183,25 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
 
                 final reporte = widget.viewmodel.reporte;
                 if (viewSelectIndex == 0) {
-                  return TableWrapper(
-                    table: GeneralAttendanceTable(reporte: reporte),
+                  // Misma separacion que ya usa el reporte de Incidencias de
+                  // Nomina -- empleados vs practicantes, mismos titulos.
+                  final empleados = reporte.items.where((item) => !item.isPracticante).toList();
+                  final practicantes = reporte.items.where((item) => item.isPracticante).toList();
+
+                  // GeneralAttendanceTable ya maneja su propio deslizamiento
+                  // horizontal con la primera columna (EMPLEADO) congelada,
+                  // ver FrozenColumnTableWrapper -- envolverla aqui en
+                  // TableWrapper volveria a deslizar TODA la tabla,
+                  // incluyendo la columna que se supone debe quedarse fija.
+                  return Column(
+                    crossAxisAlignment: .start,
+                    spacing: 24,
+                    children: [
+                      Text('EMPLEADOS', style: TextTheme.of(context).titleMedium),
+                      GeneralAttendanceTable(reporte: reporte.copyWith(items: empleados)),
+                      Text('PRACTICANTES/RESIDENTES', style: TextTheme.of(context).titleMedium),
+                      GeneralAttendanceTable(reporte: reporte.copyWith(items: practicantes)),
+                    ],
                   );
                 }
 

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/frozen_column_table_wrapper.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class GeneralAttendanceTable extends StatelessWidget {
@@ -18,20 +19,40 @@ class GeneralAttendanceTable extends StatelessWidget {
     final textTheme = TextTheme.of(context);
     final yMd = DateFormat.yMd('en_US');
 
-    return DataTable(
+    Color? rowColor(int index) => index.isOdd ? const Color(0xFFFFFAF5) : Colors.white;
+
+    // Columna EMPLEADO congelada -- se queda fija mientras el resto de la
+    // tabla se desliza horizontalmente, ver FrozenColumnTableWrapper.
+    final frozenColumn = DataTable(
       headingRowHeight: 80,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFAF5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.fromBorderSide(BorderSide(
-          color: borderColor,
-          width: 0.8,
-        ))
-      ),
       columns: [
-        DataColumn(
-          label: Text('EMPLEADO'),
-        ),
+        DataColumn(label: Text('EMPLEADO')),
+      ],
+      rows: List<DataRow>.generate(
+        reporte.items.length,
+        (int index) {
+          final item = reporte.items[index];
+          return DataRow.byIndex(
+            index: index,
+            color: WidgetStateProperty.resolveWith<Color?>((states) => rowColor(index)),
+            cells: [
+              DataCell(
+                Text(
+                  item.user.nombre,
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontSize: 14,
+                  )
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final scrollableColumns = DataTable(
+      headingRowHeight: 80,
+      columns: [
         DataColumn(
           label: Text('DEPARTAMENTO'),
         ),
@@ -83,18 +104,8 @@ class GeneralAttendanceTable extends StatelessWidget {
 
           return DataRow.byIndex(
             index: index,
-            color: WidgetStateProperty.resolveWith<Color?>((states) {
-              return index.isOdd ? const Color(0xFFFFFAF5) : Colors.white; 
-            }),
+            color: WidgetStateProperty.resolveWith<Color?>((states) => rowColor(index)),
             cells: [
-              DataCell(
-                Text(
-                  item.user.nombre,
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontSize: 14,
-                  )
-                ),
-              ),
               DataCell(
                 Text(
                   item.user.departamento?.nombre ?? 'SIN DEPARTAMENTO',
@@ -126,6 +137,11 @@ class GeneralAttendanceTable extends StatelessWidget {
           );
         },
       ),
+    );
+
+    return FrozenColumnTableWrapper(
+      frozenColumn: frozenColumn,
+      scrollableColumns: scrollableColumns,
     );
   }
 

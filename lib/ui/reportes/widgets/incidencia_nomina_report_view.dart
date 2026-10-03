@@ -6,7 +6,6 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
-import 'package:ri_rh_v2/ui/core/ui/table_wrapper.dart';
 import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_incidencia_nomina_viewmodel.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/asistencia_correccion_dialogs.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/incidencia_nomina_table.dart';
@@ -333,24 +332,24 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
                   )
                 else ...[
                   Text('EMPLEADOS', style: TextTheme.of(context).titleMedium),
-                  TableWrapper(
-                    table: IncidenciaNominaTable(
-                      dates: reporte.dates,
-                      items: empleados,
-                      onEditCodigo: _editCodigo,
-                      onEditMinutosRetardo: _editMinutosRetardo,
-                      onEditHorasExtra: _editHorasExtra,
-                    ),
+                  // IncidenciaNominaTable ya maneja su propio deslizamiento
+                  // horizontal con la columna EMPLEADO congelada, ver
+                  // FrozenColumnTableWrapper -- envolverla aqui en
+                  // TableWrapper volveria a deslizar TODA la tabla.
+                  IncidenciaNominaTable(
+                    dates: reporte.dates,
+                    items: empleados,
+                    onEditCodigo: _editCodigo,
+                    onEditMinutosRetardo: _editMinutosRetardo,
+                    onEditHorasExtra: _editHorasExtra,
                   ),
                   Text('PRACTICANTES/RESIDENTES', style: TextTheme.of(context).titleMedium),
-                  TableWrapper(
-                    table: IncidenciaNominaTable(
-                      dates: reporte.dates,
-                      items: practicantes,
-                      onEditCodigo: _editCodigo,
-                      onEditMinutosRetardo: _editMinutosRetardo,
-                      onEditHorasExtra: _editHorasExtra,
-                    ),
+                  IncidenciaNominaTable(
+                    dates: reporte.dates,
+                    items: practicantes,
+                    onEditCodigo: _editCodigo,
+                    onEditMinutosRetardo: _editMinutosRetardo,
+                    onEditHorasExtra: _editHorasExtra,
                   ),
                 ],
               ],

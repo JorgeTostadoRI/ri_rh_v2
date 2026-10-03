@@ -303,7 +303,7 @@ as List<ReporteAsistenciaResponseItem>,
 /// @nodoc
 mixin _$ReporteAsistenciaResponseItem implements DiagnosticableTreeMixin {
 
- int get id; String get username; String get nombre; String? get rol;@JsonKey(name: 'departamento') int? get departamentoRef; int get totalMinutesLate; List<AsistenciaDailyApiModel> get asistencia;
+ int get id; String get username; String get nombre; String? get rol;@JsonKey(name: 'departamento') int? get departamentoRef; int get totalMinutesLate; List<AsistenciaDailyApiModel> get asistencia;@JsonKey(name: 'is_practicante') bool get isPracticante;
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -317,21 +317,21 @@ $ReporteAsistenciaResponseItemCopyWith<ReporteAsistenciaResponseItem> get copyWi
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ReporteAsistenciaResponseItem'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamentoRef', departamentoRef))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate))..add(DiagnosticsProperty('asistencia', asistencia));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamentoRef', departamentoRef))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate))..add(DiagnosticsProperty('asistencia', asistencia))..add(DiagnosticsProperty('isPracticante', isPracticante));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteAsistenciaResponseItem&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamentoRef, departamentoRef) || other.departamentoRef == departamentoRef)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate)&&const DeepCollectionEquality().equals(other.asistencia, asistencia));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteAsistenciaResponseItem&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamentoRef, departamentoRef) || other.departamentoRef == departamentoRef)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate)&&const DeepCollectionEquality().equals(other.asistencia, asistencia)&&(identical(other.isPracticante, isPracticante) || other.isPracticante == isPracticante));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,rol,departamentoRef,totalMinutesLate,const DeepCollectionEquality().hash(asistencia));
+int get hashCode => Object.hash(runtimeType,id,username,nombre,rol,departamentoRef,totalMinutesLate,const DeepCollectionEquality().hash(asistencia),isPracticante);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ReporteAsistenciaResponseItem(id: $id, username: $username, nombre: $nombre, rol: $rol, departamentoRef: $departamentoRef, totalMinutesLate: $totalMinutesLate, asistencia: $asistencia)';
+  return 'ReporteAsistenciaResponseItem(id: $id, username: $username, nombre: $nombre, rol: $rol, departamentoRef: $departamentoRef, totalMinutesLate: $totalMinutesLate, asistencia: $asistencia, isPracticante: $isPracticante)';
 }
 
 
@@ -342,7 +342,7 @@ abstract mixin class $ReporteAsistenciaResponseItemCopyWith<$Res>  {
   factory $ReporteAsistenciaResponseItemCopyWith(ReporteAsistenciaResponseItem value, $Res Function(ReporteAsistenciaResponseItem) _then) = _$ReporteAsistenciaResponseItemCopyWithImpl;
 @useResult
 $Res call({
- int id, String username, String nombre, String? rol,@JsonKey(name: 'departamento') int? departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia
+ int id, String username, String nombre, String? rol,@JsonKey(name: 'departamento') int? departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia,@JsonKey(name: 'is_practicante') bool isPracticante
 });
 
 
@@ -359,7 +359,7 @@ class _$ReporteAsistenciaResponseItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = freezed,Object? departamentoRef = freezed,Object? totalMinutesLate = null,Object? asistencia = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = freezed,Object? departamentoRef = freezed,Object? totalMinutesLate = null,Object? asistencia = null,Object? isPracticante = null,}) {
   return _then(ReporteAsistenciaResponseItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -368,7 +368,8 @@ as String,rol: freezed == rol ? _self.rol : rol // ignore: cast_nullable_to_non_
 as String?,departamentoRef: freezed == departamentoRef ? _self.departamentoRef : departamentoRef // ignore: cast_nullable_to_non_nullable
 as int?,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
 as int,asistencia: null == asistencia ? _self.asistencia : asistencia // ignore: cast_nullable_to_non_nullable
-as List<AsistenciaDailyApiModel>,
+as List<AsistenciaDailyApiModel>,isPracticante: null == isPracticante ? _self.isPracticante : isPracticante // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -453,10 +454,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia, @JsonKey(name: 'is_practicante')  bool isPracticante)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaResponseItem() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia,_that.isPracticante);case _:
   return orElse();
 
 }
@@ -474,10 +475,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departament
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia, @JsonKey(name: 'is_practicante')  bool isPracticante)  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaResponseItem():
-return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia,_that.isPracticante);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -494,10 +495,10 @@ return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departament
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String username,  String nombre,  String? rol, @JsonKey(name: 'departamento')  int? departamentoRef,  int totalMinutesLate,  List<AsistenciaDailyApiModel> asistencia, @JsonKey(name: 'is_practicante')  bool isPracticante)?  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaResponseItem() when $default != null:
-return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia);case _:
+return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departamentoRef,_that.totalMinutesLate,_that.asistencia,_that.isPracticante);case _:
   return null;
 
 }
@@ -509,7 +510,7 @@ return $default(_that.id,_that.username,_that.nombre,_that.rol,_that.departament
 @JsonSerializable()
 
 class _ReporteAsistenciaResponseItem with DiagnosticableTreeMixin implements ReporteAsistenciaResponseItem {
-  const _ReporteAsistenciaResponseItem({required this.id, required this.username, required this.nombre, this.rol, @JsonKey(name: 'departamento') this.departamentoRef, required this.totalMinutesLate, required  List<AsistenciaDailyApiModel> asistencia}): _asistencia = asistencia;
+  const _ReporteAsistenciaResponseItem({required this.id, required this.username, required this.nombre, this.rol, @JsonKey(name: 'departamento') this.departamentoRef, required this.totalMinutesLate, required  List<AsistenciaDailyApiModel> asistencia, @JsonKey(name: 'is_practicante') required this.isPracticante}): _asistencia = asistencia;
   factory _ReporteAsistenciaResponseItem.fromJson(Map<String, dynamic> json) => _$ReporteAsistenciaResponseItemFromJson(json);
 
 @override final  int id;
@@ -525,6 +526,7 @@ class _ReporteAsistenciaResponseItem with DiagnosticableTreeMixin implements Rep
   return EqualUnmodifiableListView(_asistencia);
 }
 
+@override@JsonKey(name: 'is_practicante') final  bool isPracticante;
 
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
@@ -540,21 +542,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ReporteAsistenciaResponseItem'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamentoRef', departamentoRef))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate))..add(DiagnosticsProperty('asistencia', asistencia));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('departamentoRef', departamentoRef))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate))..add(DiagnosticsProperty('asistencia', asistencia))..add(DiagnosticsProperty('isPracticante', isPracticante));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteAsistenciaResponseItem&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamentoRef, departamentoRef) || other.departamentoRef == departamentoRef)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate)&&const DeepCollectionEquality().equals(other._asistencia, _asistencia));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteAsistenciaResponseItem&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.departamentoRef, departamentoRef) || other.departamentoRef == departamentoRef)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate)&&const DeepCollectionEquality().equals(other._asistencia, _asistencia)&&(identical(other.isPracticante, isPracticante) || other.isPracticante == isPracticante));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,nombre,rol,departamentoRef,totalMinutesLate,const DeepCollectionEquality().hash(_asistencia));
+int get hashCode => Object.hash(runtimeType,id,username,nombre,rol,departamentoRef,totalMinutesLate,const DeepCollectionEquality().hash(_asistencia),isPracticante);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ReporteAsistenciaResponseItem(id: $id, username: $username, nombre: $nombre, rol: $rol, departamentoRef: $departamentoRef, totalMinutesLate: $totalMinutesLate, asistencia: $asistencia)';
+  return 'ReporteAsistenciaResponseItem(id: $id, username: $username, nombre: $nombre, rol: $rol, departamentoRef: $departamentoRef, totalMinutesLate: $totalMinutesLate, asistencia: $asistencia, isPracticante: $isPracticante)';
 }
 
 
@@ -565,7 +567,7 @@ abstract mixin class _$ReporteAsistenciaResponseItemCopyWith<$Res> implements $R
   factory _$ReporteAsistenciaResponseItemCopyWith(_ReporteAsistenciaResponseItem value, $Res Function(_ReporteAsistenciaResponseItem) _then) = __$ReporteAsistenciaResponseItemCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String username, String nombre, String? rol,@JsonKey(name: 'departamento') int? departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia
+ int id, String username, String nombre, String? rol,@JsonKey(name: 'departamento') int? departamentoRef, int totalMinutesLate, List<AsistenciaDailyApiModel> asistencia,@JsonKey(name: 'is_practicante') bool isPracticante
 });
 
 
@@ -582,7 +584,7 @@ class __$ReporteAsistenciaResponseItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaResponseItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = freezed,Object? departamentoRef = freezed,Object? totalMinutesLate = null,Object? asistencia = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? nombre = null,Object? rol = freezed,Object? departamentoRef = freezed,Object? totalMinutesLate = null,Object? asistencia = null,Object? isPracticante = null,}) {
   return _then(_ReporteAsistenciaResponseItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -591,7 +593,8 @@ as String,rol: freezed == rol ? _self.rol : rol // ignore: cast_nullable_to_non_
 as String?,departamentoRef: freezed == departamentoRef ? _self.departamentoRef : departamentoRef // ignore: cast_nullable_to_non_nullable
 as int?,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
 as int,asistencia: null == asistencia ? _self._asistencia : asistencia // ignore: cast_nullable_to_non_nullable
-as List<AsistenciaDailyApiModel>,
+as List<AsistenciaDailyApiModel>,isPracticante: null == isPracticante ? _self.isPracticante : isPracticante // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

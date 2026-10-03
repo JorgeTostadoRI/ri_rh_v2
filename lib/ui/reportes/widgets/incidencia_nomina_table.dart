@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
 import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/frozen_column_table_wrapper.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IncidenciaNominaTable extends StatelessWidget {
@@ -32,16 +33,33 @@ class IncidenciaNominaTable extends StatelessWidget {
     final textTheme = TextTheme.of(context);
     final yMd = DateFormat.yMd('en_US');
 
-    return DataTable(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFAF5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.fromBorderSide(
-          BorderSide(color: borderColor, width: 0.8),
-        ),
-      ),
+    Color? rowColor(int index) => index.isOdd ? const Color(0xFFFFFAF5) : Colors.white;
+
+    // Columna EMPLEADO congelada -- se queda fija mientras el resto de la
+    // tabla se desliza horizontalmente, ver FrozenColumnTableWrapper.
+    final frozenColumn = DataTable(
       columns: [
         DataColumn(label: Text('EMPLEADO')),
+      ],
+      rows: List<DataRow>.generate(items.length, (int index) {
+        final item = items[index];
+        return DataRow.byIndex(
+          index: index,
+          color: WidgetStateProperty.resolveWith<Color?>((states) => rowColor(index)),
+          cells: [
+            DataCell(
+              Text(
+                item.fullName,
+                style: textTheme.headlineSmall?.copyWith(fontSize: 14),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+
+    final scrollableColumns = DataTable(
+      columns: [
         DataColumn(label: Text('TIPO')),
         DataColumn(label: Text('DEPARTAMENTO')),
         ...List<DataColumn>.generate(
@@ -56,16 +74,8 @@ class IncidenciaNominaTable extends StatelessWidget {
 
         return DataRow.byIndex(
           index: index,
-          color: WidgetStateProperty.resolveWith<Color?>((states) {
-            return index.isOdd ? const Color(0xFFFFFAF5) : Colors.white;
-          }),
+          color: WidgetStateProperty.resolveWith<Color?>((states) => rowColor(index)),
           cells: [
-            DataCell(
-              Text(
-                item.fullName,
-                style: textTheme.headlineSmall?.copyWith(fontSize: 14),
-              ),
-            ),
             DataCell(
               Text(
                 item.isPracticante ? 'Practicante' : 'Empleado',
@@ -126,6 +136,11 @@ class IncidenciaNominaTable extends StatelessWidget {
           ],
         );
       }),
+    );
+
+    return FrozenColumnTableWrapper(
+      frozenColumn: frozenColumn,
+      scrollableColumns: scrollableColumns,
     );
   }
 

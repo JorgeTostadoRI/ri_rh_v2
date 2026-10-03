@@ -57,8 +57,11 @@ class _FaltaNoReportadaDialogState extends State<FaltaNoReportadaDialog> {
     final fecha = DateFormat.yMMMMd().format(widget.fecha);
     final horaAviso = widget.horaAviso;
     final horaLimite = widget.horaLimite;
+    final style = DefaultTextStyle.of(context).style;
+    final boldStyle = style.copyWith(fontWeight: FontWeight.bold);
 
     final String instrucciones;
+    final List<InlineSpan> notaSpans;
     if (horaAviso != null && horaLimite != null) {
       // El backend manda la hora con su offset (ej. "-07:00"); Dart la
       // parsea como un instante UTC internamente (isUtc=true), asi que sin
@@ -68,20 +71,41 @@ class _FaltaNoReportadaDialogState extends State<FaltaNoReportadaDialog> {
         'Repórtala hoy creando una incidencia (Faltas, Incapacidades o '
         'Requerimientos Judiciales) -- espera a un lado, idealmente '
         'repórtala a las ${DateFormat.jm().format(horaAviso.toLocal())} para no hacer '
-        'fila con tus compañeros. Si no la reportas antes de las '
-        '${DateFormat.jm().format(horaLimite.toLocal())}, tu asistencia de hoy será '
-        'eliminada y se marcará como falta.';
+        'fila con tus compañeros.';
+      notaSpans = [
+        TextSpan(text: 'Nota:', style: boldStyle),
+        TextSpan(text: ' Si no la reportas '),
+        TextSpan(text: 'antes', style: boldStyle),
+        TextSpan(text: ' de las '),
+        TextSpan(text: DateFormat.jm().format(horaLimite.toLocal()), style: boldStyle),
+        TextSpan(text: ', tu asistencia de hoy será '),
+        TextSpan(text: 'eliminada', style: boldStyle),
+        TextSpan(text: ' y se marcará como falta.'),
+      ];
     } else {
       instrucciones =
         'Repórtala hoy creando una incidencia (Faltas, Incapacidades o '
         'Requerimientos Judiciales) -- espera a un lado para no hacer fila '
-        'con tus compañeros. Si no la reportas pronto, tu asistencia de hoy '
-        'será eliminada y se marcará como falta.';
+        'con tus compañeros.';
+      notaSpans = [
+        TextSpan(text: 'Nota:', style: boldStyle),
+        TextSpan(text: ' Si no la reportas pronto, tu asistencia de hoy será '),
+        TextSpan(text: 'eliminada', style: boldStyle),
+        TextSpan(text: ' y se marcará como falta.'),
+      ];
     }
 
     return AlertDialog(
       title: Text('Falta sin reportar'),
-      content: Text('Hola ${widget.nombre}, tienes una falta sin reportar del $fecha. $instrucciones'),
+      content: Text.rich(
+        TextSpan(
+          style: style,
+          children: [
+            TextSpan(text: 'Hola ${widget.nombre}, tienes una falta sin reportar del $fecha. $instrucciones\n\n'),
+            ...notaSpans,
+          ],
+        ),
+      ),
       actions: [
         ElevatedButton(
           onPressed: _canClose ? () => context.pop() : null,

@@ -24,6 +24,7 @@ abstract class ReporteAsistenciaItem with _$ReporteAsistenciaItem {
     // Uses date iso string as key
     required Map<String, AsistenciaDaily> asistencia,
     required int totalMinutesLate,
+    required bool isPracticante,
   }) = _ReporteAsistenciaItem;
 
   factory ReporteAsistenciaItem.fromApiModel(ReporteAsistenciaResponseItem model, {
@@ -83,6 +84,7 @@ abstract class ReporteAsistenciaItem with _$ReporteAsistenciaItem {
       user: user,
       asistencia: mappedAsistencia,
       totalMinutesLate: model.totalMinutesLate,
+      isPracticante: model.isPracticante,
     );
   }
 }
