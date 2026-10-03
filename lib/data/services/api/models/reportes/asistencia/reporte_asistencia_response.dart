@@ -28,6 +28,8 @@ abstract class ReporteAsistenciaResponseItem with _$ReporteAsistenciaResponseIte
     int? departamentoRef,
     required int totalMinutesLate,
     required List<AsistenciaDailyApiModel> asistencia,
+    @JsonKey(name: 'is_practicante')
+    required bool isPracticante,
   }) = _ReporteAsistenciaResponseItem;
 
   factory ReporteAsistenciaResponseItem.fromJson(Map<String, Object?> json) => _$ReporteAsistenciaResponseItemFromJson(json);

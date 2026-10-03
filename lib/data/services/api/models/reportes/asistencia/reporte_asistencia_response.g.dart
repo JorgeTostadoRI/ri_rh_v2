@@ -39,6 +39,7 @@ _ReporteAsistenciaResponseItem _$ReporteAsistenciaResponseItemFromJson(
   asistencia: (json['asistencia'] as List<dynamic>)
       .map((e) => AsistenciaDailyApiModel.fromJson(e as Map<String, dynamic>))
       .toList(),
+  isPracticante: json['is_practicante'] as bool,
 );
 
 Map<String, dynamic> _$ReporteAsistenciaResponseItemToJson(
@@ -51,4 +52,5 @@ Map<String, dynamic> _$ReporteAsistenciaResponseItemToJson(
   'departamento': instance.departamentoRef,
   'total_minutes_late': instance.totalMinutesLate,
   'asistencia': instance.asistencia,
+  'is_practicante': instance.isPracticante,
 };

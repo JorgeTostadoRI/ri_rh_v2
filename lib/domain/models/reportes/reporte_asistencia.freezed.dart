@@ -299,7 +299,7 @@ as List<DateTime>,
 /// @nodoc
 mixin _$ReporteAsistenciaItem implements DiagnosticableTreeMixin {
 
- User get user; Map<String, AsistenciaDaily> get asistencia; int get totalMinutesLate;
+ User get user; Map<String, AsistenciaDaily> get asistencia; int get totalMinutesLate; bool get isPracticante;
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -311,21 +311,21 @@ $ReporteAsistenciaItemCopyWith<ReporteAsistenciaItem> get copyWith => _$ReporteA
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ReporteAsistenciaItem'))
-    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('asistencia', asistencia))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate));
+    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('asistencia', asistencia))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate))..add(DiagnosticsProperty('isPracticante', isPracticante));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.asistencia, asistencia)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.asistencia, asistencia)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate)&&(identical(other.isPracticante, isPracticante) || other.isPracticante == isPracticante));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(asistencia),totalMinutesLate);
+int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(asistencia),totalMinutesLate,isPracticante);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ReporteAsistenciaItem(user: $user, asistencia: $asistencia, totalMinutesLate: $totalMinutesLate)';
+  return 'ReporteAsistenciaItem(user: $user, asistencia: $asistencia, totalMinutesLate: $totalMinutesLate, isPracticante: $isPracticante)';
 }
 
 
@@ -336,7 +336,7 @@ abstract mixin class $ReporteAsistenciaItemCopyWith<$Res>  {
   factory $ReporteAsistenciaItemCopyWith(ReporteAsistenciaItem value, $Res Function(ReporteAsistenciaItem) _then) = _$ReporteAsistenciaItemCopyWithImpl;
 @useResult
 $Res call({
- User user, Map<String, AsistenciaDaily> asistencia, int totalMinutesLate
+ User user, Map<String, AsistenciaDaily> asistencia, int totalMinutesLate, bool isPracticante
 });
 
 
@@ -353,12 +353,13 @@ class _$ReporteAsistenciaItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? asistencia = null,Object? totalMinutesLate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? asistencia = null,Object? totalMinutesLate = null,Object? isPracticante = null,}) {
   return _then(ReporteAsistenciaItem(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,asistencia: null == asistencia ? _self.asistencia : asistencia // ignore: cast_nullable_to_non_nullable
 as Map<String, AsistenciaDaily>,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
-as int,
+as int,isPracticante: null == isPracticante ? _self.isPracticante : isPracticante // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of ReporteAsistenciaItem
@@ -452,10 +453,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( User user,  Map<String, AsistenciaDaily> asistencia,  int totalMinutesLate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( User user,  Map<String, AsistenciaDaily> asistencia,  int totalMinutesLate,  bool isPracticante)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaItem() when $default != null:
-return $default(_that.user,_that.asistencia,_that.totalMinutesLate);case _:
+return $default(_that.user,_that.asistencia,_that.totalMinutesLate,_that.isPracticante);case _:
   return orElse();
 
 }
@@ -473,10 +474,10 @@ return $default(_that.user,_that.asistencia,_that.totalMinutesLate);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( User user,  Map<String, AsistenciaDaily> asistencia,  int totalMinutesLate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( User user,  Map<String, AsistenciaDaily> asistencia,  int totalMinutesLate,  bool isPracticante)  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaItem():
-return $default(_that.user,_that.asistencia,_that.totalMinutesLate);case _:
+return $default(_that.user,_that.asistencia,_that.totalMinutesLate,_that.isPracticante);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -493,10 +494,10 @@ return $default(_that.user,_that.asistencia,_that.totalMinutesLate);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( User user,  Map<String, AsistenciaDaily> asistencia,  int totalMinutesLate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( User user,  Map<String, AsistenciaDaily> asistencia,  int totalMinutesLate,  bool isPracticante)?  $default,) {final _that = this;
 switch (_that) {
 case _ReporteAsistenciaItem() when $default != null:
-return $default(_that.user,_that.asistencia,_that.totalMinutesLate);case _:
+return $default(_that.user,_that.asistencia,_that.totalMinutesLate,_that.isPracticante);case _:
   return null;
 
 }
@@ -508,7 +509,7 @@ return $default(_that.user,_that.asistencia,_that.totalMinutesLate);case _:
 
 
 class _ReporteAsistenciaItem with DiagnosticableTreeMixin implements ReporteAsistenciaItem {
-  const _ReporteAsistenciaItem({required this.user, required  Map<String, AsistenciaDaily> asistencia, required this.totalMinutesLate}): _asistencia = asistencia;
+  const _ReporteAsistenciaItem({required this.user, required  Map<String, AsistenciaDaily> asistencia, required this.totalMinutesLate, required this.isPracticante}): _asistencia = asistencia;
   
 
 @override final  User user;
@@ -520,6 +521,7 @@ class _ReporteAsistenciaItem with DiagnosticableTreeMixin implements ReporteAsis
 }
 
 @override final  int totalMinutesLate;
+@override final  bool isPracticante;
 
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
@@ -532,21 +534,21 @@ _$ReporteAsistenciaItemCopyWith<_ReporteAsistenciaItem> get copyWith => __$Repor
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ReporteAsistenciaItem'))
-    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('asistencia', asistencia))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate));
+    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('asistencia', asistencia))..add(DiagnosticsProperty('totalMinutesLate', totalMinutesLate))..add(DiagnosticsProperty('isPracticante', isPracticante));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other._asistencia, _asistencia)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReporteAsistenciaItem&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other._asistencia, _asistencia)&&(identical(other.totalMinutesLate, totalMinutesLate) || other.totalMinutesLate == totalMinutesLate)&&(identical(other.isPracticante, isPracticante) || other.isPracticante == isPracticante));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(_asistencia),totalMinutesLate);
+int get hashCode => Object.hash(runtimeType,user,const DeepCollectionEquality().hash(_asistencia),totalMinutesLate,isPracticante);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ReporteAsistenciaItem(user: $user, asistencia: $asistencia, totalMinutesLate: $totalMinutesLate)';
+  return 'ReporteAsistenciaItem(user: $user, asistencia: $asistencia, totalMinutesLate: $totalMinutesLate, isPracticante: $isPracticante)';
 }
 
 
@@ -557,7 +559,7 @@ abstract mixin class _$ReporteAsistenciaItemCopyWith<$Res> implements $ReporteAs
   factory _$ReporteAsistenciaItemCopyWith(_ReporteAsistenciaItem value, $Res Function(_ReporteAsistenciaItem) _then) = __$ReporteAsistenciaItemCopyWithImpl;
 @override @useResult
 $Res call({
- User user, Map<String, AsistenciaDaily> asistencia, int totalMinutesLate
+ User user, Map<String, AsistenciaDaily> asistencia, int totalMinutesLate, bool isPracticante
 });
 
 
@@ -574,12 +576,13 @@ class __$ReporteAsistenciaItemCopyWithImpl<$Res>
 
 /// Create a copy of ReporteAsistenciaItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? asistencia = null,Object? totalMinutesLate = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? asistencia = null,Object? totalMinutesLate = null,Object? isPracticante = null,}) {
   return _then(_ReporteAsistenciaItem(
 user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User,asistencia: null == asistencia ? _self._asistencia : asistencia // ignore: cast_nullable_to_non_nullable
 as Map<String, AsistenciaDaily>,totalMinutesLate: null == totalMinutesLate ? _self.totalMinutesLate : totalMinutesLate // ignore: cast_nullable_to_non_nullable
-as int,
+as int,isPracticante: null == isPracticante ? _self.isPracticante : isPracticante // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

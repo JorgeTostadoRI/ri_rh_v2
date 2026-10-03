@@ -226,6 +226,10 @@ class _UsersDialog extends StatefulWidget {
 
 class __UsersDialogState extends State<_UsersDialog> {
   late List<int> _currentSelection;
+  // Mismo algoritmo de busqueda por palabras que ya usan los reportes de
+  // Asistencia e Incidencias de Nomina: cada palabra escrita debe ser el
+  // inicio de alguna palabra del nombre, sin importar el orden.
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -235,6 +239,15 @@ class __UsersDialogState extends State<_UsersDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final query = _searchQuery.trim().toLowerCase();
+    final queryWords = query.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    final filteredUsers = queryWords.isEmpty
+      ? widget.users
+      : widget.users.where((user) {
+          final nameWords = user.nombre.toLowerCase().split(RegExp(r'\s+'));
+          return queryWords.every((qw) => nameWords.any((nw) => nw.startsWith(qw)));
+        }).toList();
+
     return AlertDialog(
       scrollable: true,
       title: Text('Solicitores'),
@@ -242,26 +255,43 @@ class __UsersDialogState extends State<_UsersDialog> {
         child: SizedBox(
           width: 400,
           height: 400,
-          child: ListView.builder(
-            itemCount: widget.users.length,
-            itemBuilder: (context, index) {
-              final user = widget.users[index];
-          
-              return CheckboxListTile(
-                title: Text(user.nombre.toUpperCase()),
-                value: _currentSelection.contains(user.id),
-                onChanged: (value) {
-                  if (value == true) {
-                    _currentSelection.add(user.id);
-                  }
-                  else if (value == false) {
-                    _currentSelection.remove(user.id);
-                  }
-                  setState(() {});
-                },
-                tristate: false,
-              );
-            },
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Buscar por nombre',
+                  prefixIcon: Icon(LucideIcons.search),
+                  prefixIconColor: const Color(0xFFC4A47A),
+                ),
+                onChanged: (value) => setState(() => _searchQuery = value),
+              ),
+              Expanded(
+                child: filteredUsers.isEmpty
+                  ? Center(child: Text('No se encontraron solicitores que coincidan con "$query"'))
+                  : ListView.builder(
+                      itemCount: filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        final user = filteredUsers[index];
+
+                        return CheckboxListTile(
+                          title: Text(user.nombre.toUpperCase()),
+                          value: _currentSelection.contains(user.id),
+                          onChanged: (value) {
+                            if (value == true) {
+                              _currentSelection.add(user.id);
+                            }
+                            else if (value == false) {
+                              _currentSelection.remove(user.id);
+                            }
+                            setState(() {});
+                          },
+                          tristate: false,
+                        );
+                      },
+                    ),
+              ),
+            ],
           ),
         ),
       ),
