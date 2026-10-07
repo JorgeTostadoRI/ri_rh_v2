@@ -45,6 +45,8 @@ import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_incidencia_nomina_viewmo
 import 'package:ri_rh_v2/ui/reportes/widgets/reporte_asistencia_screen.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/viewmodels/dias_festivos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/widgets/dias_festivos_screen.dart';
+import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/vacantes/widgets/vacantes_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
   initialLocation: Routes.home,
@@ -336,6 +338,19 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             );
           }
         ),
+        GoRoute(
+          path: Routes.reclutamiento,
+          builder: (context, state) {
+            return VacantesScreen(
+              viewmodel: VacantesViewmodel(
+                log: context.read(),
+                vacantesRepository: context.read(),
+                empleadosRepository: context.read(),
+                authRepository: context.read(),
+              ),
+            );
+          }
+        ),
       ],
     ),
   ],
@@ -376,6 +391,7 @@ bool _requiresLogin(String location) {
   if (path.startsWith(Routes.empleados)) return true;
   if (path.startsWith(Routes.practicantes)) return true;
   if (path.startsWith(Routes.reportes)) return true;
+  if (path.startsWith(Routes.reclutamiento)) return true;
 
   return false;
 }

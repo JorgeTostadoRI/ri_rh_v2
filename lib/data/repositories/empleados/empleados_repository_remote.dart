@@ -175,8 +175,22 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
   }
 
   @override
-  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
-    final result = await _apiClient.createPuesto(nombre, tipos);
+  Future<Result<Puesto>> createPuesto(
+    String nombre,
+    String tipos, {
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  }) async {
+    final result = await _apiClient.createPuesto(
+      nombre,
+      tipos,
+      rol: rol,
+      responsabilidades: responsabilidades,
+      departamentoIds: departamentoIds,
+      preguntas: preguntas,
+    );
     switch (result) {
       case Error():
         _log.warning('Failed to create puesto', error: result.error);
@@ -185,6 +199,61 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
     }
     _cachedPuestos = null;
     return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<Puesto>> uploadTabuladorSalarial(int puestoId, PlatformFile file) async {
+    final result = await _apiClient.uploadTabuladorSalarial(puestoId, file);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to upload tabulador salarial', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedPuestos = null;
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<Puesto>> updatePuesto(
+    int id, {
+    required String nombre,
+    required String tipos,
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  }) async {
+    final result = await _apiClient.updatePuesto(
+      id,
+      nombre: nombre,
+      tipos: tipos,
+      rol: rol,
+      responsabilidades: responsabilidades,
+      departamentoIds: departamentoIds,
+      preguntas: preguntas,
+    );
+    switch (result) {
+      case Error():
+        _log.warning('Failed to update puesto', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedPuestos = null;
+    return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<void>> deletePuesto(int id) async {
+    final result = await _apiClient.deletePuesto(id);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to delete puesto', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _cachedPuestos = null;
+    return const Result.ok(null);
   }
 
   @override
