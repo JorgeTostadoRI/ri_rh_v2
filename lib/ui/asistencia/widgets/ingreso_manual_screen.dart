@@ -366,8 +366,9 @@ class _CameraDialogState extends State<_CameraDialog> {
 
   final ResolutionPreset _resolution = ResolutionPreset.medium;
 
-  Future<void> _initializeCamera() async { 
+  Future<void> _initializeCamera() async {
     final cameras = await _availableCameras;
+    if (!mounted) return;
     _currentCamera ??= cameras[0];
 
     if (_controller == null) {
@@ -376,6 +377,7 @@ class _CameraDialogState extends State<_CameraDialog> {
         _resolution,
       );
       await _controller!.initialize();
+      if (!mounted) return;
     }
     setState(() {});
   }
@@ -423,7 +425,13 @@ class _CameraDialogState extends State<_CameraDialog> {
 
               return DropdownButtonFormField<CameraDescription>(
                 initialValue: _currentCamera,
-                items: snapshot.data!.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.name))).toList(),
+                isExpanded: true,
+                items: snapshot.data!
+                    .map((camera) => DropdownMenuItem(
+                          value: camera,
+                          child: Text(camera.name, overflow: TextOverflow.ellipsis),
+                        ))
+                    .toList(),
                 onChanged: (camera) async {
                   if (camera != null) {
                     await _controller?.dispose();
@@ -519,14 +527,16 @@ class _CameraDialogState extends State<_CameraDialog> {
       try {
 
         final photo = await _controller!.takePicture();
+        if (!mounted) return;
         context.pop(photo);
       } on CameraException catch (e) {
         errored = true;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, e.description ?? 'No se pudo capturar la foto')
         );
       } finally {
-        if (errored) context.pop();
+        if (errored && mounted) context.pop();
       }
     }
   }

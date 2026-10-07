@@ -436,10 +436,15 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<Puesto>(
+                              key: ValueKey(_puesto?.id),
                               initialValue: _puesto,
+                              isExpanded: true,
                               decoration: InputDecoration(labelText: 'PUESTO'),
                               items: widget.viewmodel.puestos
-                                  .map((p) => DropdownMenuItem(value: p, child: Text(p.nombre)))
+                                  .map((p) => DropdownMenuItem(
+                                        value: p,
+                                        child: Text(p.nombre, overflow: TextOverflow.ellipsis),
+                                      ))
                                   .toList(),
                               onChanged: (value) => setState(() {
                                 _puesto = value;
