@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
+import 'package:ri_rh_v2/data/repositories/horario/horario_repository.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
+import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto_params.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-typedef VacanteRowParams = ({int puestoId, String rol, int cantidad});
-typedef SolicitudEditParams = ({int id, int puestoId, String rol, int cantidad});
+typedef VacanteRowParams = ({
+  int puestoId,
+  String rol,
+  int cantidad,
+  String area,
+  int turnoId,
+  String justificacion,
+});
+typedef SolicitudEditParams = ({
+  int id,
+  int puestoId,
+  String rol,
+  int cantidad,
+  String area,
+  int turnoId,
+  String justificacion,
+});
 typedef SolicitudEstatusParams = ({int id, String estatus});
 
 // Fase B (temporal): mismo criterio que usa el backend en
@@ -24,6 +42,7 @@ class VacantesViewmodel extends ChangeNotifier {
     required this._vacantesRepository,
     required this._empleadosRepository,
     required this._authRepository,
+    required this._horarioRepository,
   }) {
     load = Command0(_load)..execute();
     createBatch = Command1(_createBatch);
@@ -39,6 +58,7 @@ class VacantesViewmodel extends ChangeNotifier {
   // Puesto que ya expone EmpleadosRepository (no hace falta duplicarlas).
   final EmpleadosRepository _empleadosRepository;
   final AuthRepository _authRepository;
+  final HorarioRepository _horarioRepository;
 
   late final Command0 load;
   late final Command1<List<SolicitudVacante>, List<VacanteRowParams>> createBatch;
@@ -55,6 +75,21 @@ class VacantesViewmodel extends ChangeNotifier {
 
   List<Departamento> _departamentos = [];
   List<Departamento> get departamentos => _departamentos;
+
+  List<Horario> _horarios = [];
+  // Horario modela jornadas personalizadas por empleado (custom). Para
+  // elegir un "turno" al solicitar una vacante solo tiene sentido ofrecer
+  // los horarios uniformes (no atados a una persona en particular).
+  List<Horario> get horarios =>
+      _horarios.where((h) => h.scheduleType == HorarioScheduleType.uniform).toList();
+
+  /// Nombre a mostrar de un turno ya asignado a una solicitud (busca en el
+  /// catálogo completo, no solo el filtrado de [horarios]).
+  String? horarioDisplayNombre(int? horarioId) {
+    if (horarioId == null) return null;
+    final horario = _horarios.where((h) => h.id == horarioId).firstOrNull;
+    return horario == null ? null : horarioDisplayName(horario);
+  }
 
   bool _hasPermissions = false;
   bool get hasPermissions => _hasPermissions;
@@ -102,10 +137,19 @@ class VacantesViewmodel extends ChangeNotifier {
       case Ok():
     }
 
+    final resultHorarios = await _horarioRepository.getHorarios();
+    switch (resultHorarios) {
+      case Error():
+        _log.warning('Failed to load horarios', error: resultHorarios.error);
+        return Result.error(resultHorarios.error);
+      case Ok():
+    }
+
     _solicitudes = resultSolicitudes.value;
     _sort();
     _puestos = resultPuestos.value;
     _departamentos = resultDepartamentos.value;
+    _horarios = resultHorarios.value;
     notifyListeners();
     return const Result.ok(null);
   }
@@ -121,6 +165,9 @@ class VacantesViewmodel extends ChangeNotifier {
         puestoId: fila.puestoId,
         rol: fila.rol,
         cantidad: fila.cantidad,
+        area: fila.area,
+        turnoId: fila.turnoId,
+        justificacion: fila.justificacion,
       );
       switch (result) {
         case Error():
@@ -145,6 +192,9 @@ class VacantesViewmodel extends ChangeNotifier {
       puestoId: params.puestoId,
       rol: params.rol,
       cantidad: params.cantidad,
+      area: params.area,
+      turnoId: params.turnoId,
+      justificacion: params.justificacion,
     );
     switch (result) {
       case Error():

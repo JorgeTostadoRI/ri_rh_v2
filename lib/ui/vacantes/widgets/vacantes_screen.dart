@@ -89,7 +89,10 @@ class _VacantesScreenState extends State<VacantesScreen> {
   Future<void> _handleAdd() async {
     final filas = await showDialog<List<VacanteRowParams>>(
       context: context,
-      builder: (context) => SolicitudVacanteFormDialog(puestos: widget.viewmodel.puestos),
+      builder: (context) => SolicitudVacanteFormDialog(
+        puestos: widget.viewmodel.puestos,
+        horarios: widget.viewmodel.horarios,
+      ),
     );
     if (filas != null && filas.isNotEmpty) {
       widget.viewmodel.createBatch.execute(filas);
@@ -99,7 +102,11 @@ class _VacantesScreenState extends State<VacantesScreen> {
   Future<void> _handleEditSolicitud(SolicitudVacante solicitud) async {
     final params = await showDialog<SolicitudEditParams>(
       context: context,
-      builder: (context) => SolicitudVacanteEditDialog(solicitud: solicitud, puestos: widget.viewmodel.puestos),
+      builder: (context) => SolicitudVacanteEditDialog(
+        solicitud: solicitud,
+        puestos: widget.viewmodel.puestos,
+        horarios: widget.viewmodel.horarios,
+      ),
     );
     if (params != null) {
       widget.viewmodel.updateSolicitud.execute(params);
@@ -219,10 +226,13 @@ class _VacantesScreenState extends State<VacantesScreen> {
                       final solicitud = solicitudes[index];
                       final esDireccion = widget.viewmodel.esDireccion;
                       final pendiente = solicitud.estatus == EstatusVacante.pendiente;
+                      final turnoDisplay = widget.viewmodel.horarioDisplayNombre(solicitud.turno);
                       final subtitleParts = [
                         if (solicitud.createdAt != null) dateFormat.format(solicitud.createdAt!),
                         if (esDireccion && solicitud.solicitanteNombre != null)
                           'Solicitó: ${solicitud.solicitanteNombre}',
+                        if (solicitud.area.isNotEmpty) 'Área: ${solicitud.area}',
+                        if (turnoDisplay != null) 'Turno: $turnoDisplay',
                       ];
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -248,6 +258,8 @@ class _VacantesScreenState extends State<VacantesScreen> {
                                 labelStyle: TextStyle(color: _estatusColor(solicitud.estatus)),
                               ),
                             ),
+                            if (solicitud.justificacion.isNotEmpty)
+                              Text('Justificación: ${solicitud.justificacion}'),
                             if (esDireccion)
                               Wrap(
                                 spacing: 4,

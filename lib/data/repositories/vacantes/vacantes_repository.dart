@@ -13,6 +13,9 @@ abstract class VacantesRepository {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   });
 
   /// Edita los campos de una solicitud ya creada. Solo Dirección puede
@@ -22,6 +25,9 @@ abstract class VacantesRepository {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   });
 
   /// Acepta o rechaza una solicitud. Solo Dirección puede hacerlo (lo

@@ -17,6 +17,7 @@
             "type": "dart",
             "program": "lib/main_staging.dart",
             "flutterMode": "debug",
+            "deviceId": "windows",
             "args": [
                 "--dart-define-from-file", "config.json"
             ]

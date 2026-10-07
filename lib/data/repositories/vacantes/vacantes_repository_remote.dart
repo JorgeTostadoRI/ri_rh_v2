@@ -18,8 +18,18 @@ class VacantesRepositoryRemote extends VacantesRepository {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   }) async {
-    return _apiClient.createSolicitudVacante(puestoId: puestoId, rol: rol, cantidad: cantidad);
+    return _apiClient.createSolicitudVacante(
+      puestoId: puestoId,
+      rol: rol,
+      cantidad: cantidad,
+      area: area,
+      turnoId: turnoId,
+      justificacion: justificacion,
+    );
   }
 
   @override
@@ -28,8 +38,19 @@ class VacantesRepositoryRemote extends VacantesRepository {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   }) async {
-    return _apiClient.updateSolicitudVacante(id, puestoId: puestoId, rol: rol, cantidad: cantidad);
+    return _apiClient.updateSolicitudVacante(
+      id,
+      puestoId: puestoId,
+      rol: rol,
+      cantidad: cantidad,
+      area: area,
+      turnoId: turnoId,
+      justificacion: justificacion,
+    );
   }
 
   @override
