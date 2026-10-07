@@ -24,6 +24,7 @@ import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
 import 'package:ri_rh_v2/domain/models/signature/signature.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
+import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -51,7 +52,7 @@ class EmpleadoCreateParams {
     required this.puestoId,
     required this.telefono,
     this.correo,
-    this.departamentoId,
+    this.departamentoIds,
     this.rol,
     this.fechaAlta,
     this.identificacionOficial,
@@ -92,9 +93,10 @@ class EmpleadoCreateParams {
   /// contacto de emergencia, no del propio empleado).
   final String telefono;
   final String? correo;
-  /// ID de Departamento para el Usuarios que se crea y vincula al dar de
-  /// alta. No es un campo del Empleado.
-  final int? departamentoId;
+  /// IDs de Departamento (permitidos) para el Usuarios que se crea y vincula
+  /// al dar de alta. No es un campo del Empleado. El primero de la lista se
+  /// usa también como departamento principal del Usuarios.
+  final List<int>? departamentoIds;
   /// Rol (de `Usuarios.PUESTOS`) para ese mismo Usuarios. No es un campo del
   /// Empleado.
   final String? rol;
@@ -555,6 +557,92 @@ class ApiClient {
     }
   }
 
+  // SOLICITUDES DE VACANTE
+  Future<Result<List<SolicitudVacante>>> getSolicitudesVacante() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/solicitudes-vacante/');
+      final result = (response.data as List)
+        .map((json) => SolicitudVacante.fromJson(json))
+        .toList();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> createSolicitudVacante({
+    required int puestoId,
+    required String rol,
+    required int cantidad,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/solicitudes-vacante/', data: {
+        'puesto': puestoId,
+        'rol': rol,
+        'cantidad': cantidad,
+      });
+      final result = SolicitudVacante.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> updateSolicitudVacante(
+    int id, {
+    required int puestoId,
+    required String rol,
+    required int cantidad,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.patch('/api/rh/solicitudes-vacante/$id/', data: {
+        'puesto': puestoId,
+        'rol': rol,
+        'cantidad': cantidad,
+      });
+      final result = SolicitudVacante.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> cambiarEstatusSolicitudVacante(int id, String estatus) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.patch('/api/rh/solicitudes-vacante/$id/cambiar-estatus/', data: {
+        'estatus': estatus,
+      });
+      final result = SolicitudVacante.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // HUELLAS
   Future<Result<List<HuellaApiModel>>> getHuellas({int? userId}) async {
     final dio = _dioFactory();
@@ -710,7 +798,7 @@ class ApiClient {
         'puesto': params.puestoId,
         'telefono': params.telefono,
         if (params.correo != null) 'correo': params.correo,
-        if (params.departamentoId != null) 'departamento': params.departamentoId,
+        if (params.departamentoIds != null) 'departamentos_permitidos': params.departamentoIds,
         if (params.rol != null) 'rol': params.rol,
         if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
         'identificacion_oficial': toMultipart(params.identificacionOficial),
@@ -949,14 +1037,94 @@ class ApiClient {
     }
   }
 
-  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
+  Future<Result<Puesto>> createPuesto(
+    String nombre,
+    String tipos, {
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  }) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
       final response = await dio.post('/api/rh/puesto/', data: {
         'nombre': nombre,
         'tipos': tipos,
+        if (rol != null) 'rol': rol,
+        if (responsabilidades != null) 'responsabilidades': responsabilidades,
+        if (departamentoIds != null) 'departamentos': departamentoIds,
+        if (preguntas != null) 'preguntas': preguntas.map((p) => p.toJson()).toList(),
       });
+      final result = Puesto.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<Puesto>> updatePuesto(
+    int id, {
+    required String nombre,
+    required String tipos,
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.patch('/api/rh/puesto/$id/', data: {
+        'nombre': nombre,
+        'tipos': tipos,
+        if (rol != null) 'rol': rol,
+        if (responsabilidades != null) 'responsabilidades': responsabilidades,
+        if (departamentoIds != null) 'departamentos': departamentoIds,
+        if (preguntas != null) 'preguntas': preguntas.map((p) => p.toJson()).toList(),
+      });
+      final result = Puesto.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> deletePuesto(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.delete('/api/rh/puesto/$id/');
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<Puesto>> uploadTabuladorSalarial(int puestoId, PlatformFile file) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'tabulador_salarial': MultipartFile.fromBytes(
+          file.bytes!,
+          filename: file.name,
+          contentType: getMediaTypeFromExtension(file.extension!),
+        ),
+      });
+      final response = await dio.patch('/api/rh/puesto/$puestoId/', data: formData);
       final result = Puesto.fromJson(response.data);
       return Result.ok(result);
     } on DioException catch (e) {

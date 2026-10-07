@@ -37,7 +37,33 @@ abstract class EmpleadosRepository {
 
   /// Crea un puesto nuevo en el catálogo (para cuando no existe el que se
   /// necesita al dar de alta).
-  Future<Result<Puesto>> createPuesto(String nombre, String tipos);
+  Future<Result<Puesto>> createPuesto(
+    String nombre,
+    String tipos, {
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  });
+
+  /// Adjunta/reemplaza el archivo de tabulador salarial (Excel) de un
+  /// puesto ya creado.
+  Future<Result<Puesto>> uploadTabuladorSalarial(int puestoId, PlatformFile file);
+
+  /// Edita un puesto existente del catálogo.
+  Future<Result<Puesto>> updatePuesto(
+    int id, {
+    required String nombre,
+    required String tipos,
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  });
+
+  /// Elimina un puesto del catálogo. Falla si tiene empleados o
+  /// practicantes/residentes asignados (el backend lo protege).
+  Future<Result<void>> deletePuesto(int id);
 
   /// Catálogo de departamentos, para asignarle uno al Usuarios que se crea
   /// al dar de alta.

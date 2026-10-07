@@ -73,8 +73,45 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   }
 
   @override
-  Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
-    return Result.ok(Puesto(nombre: nombre, tipo: TipoPuesto.values.byName(tipos)));
+  Future<Result<Puesto>> createPuesto(
+    String nombre,
+    String tipos, {
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  }) async {
+    return Result.ok(Puesto(
+      nombre: nombre,
+      tipo: TipoPuesto.values.byName(tipos),
+      rol: rol,
+      responsabilidades: responsabilidades ?? '',
+      departamentos: departamentoIds ?? const [],
+      preguntas: preguntas ?? const [],
+    ));
+  }
+
+  @override
+  Future<Result<Puesto>> uploadTabuladorSalarial(int puestoId, PlatformFile file) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<Puesto>> updatePuesto(
+    int id, {
+    required String nombre,
+    required String tipos,
+    String? rol,
+    String? responsabilidades,
+    List<int>? departamentoIds,
+    List<PreguntaPuesto>? preguntas,
+  }) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<void>> deletePuesto(int id) async {
+    return Result.error(Exception('No soportado en modo local'));
   }
 
   @override

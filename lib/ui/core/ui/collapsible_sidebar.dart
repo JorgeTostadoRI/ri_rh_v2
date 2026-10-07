@@ -27,6 +27,12 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
     final auth = context.watch<AuthRepository>();
     final isAuthenticated = auth.isAuthenticated;
     final isRH = auth.isRH;
+    // Fase B de reclutamiento (temporal): solo líderes de Recursos Humanos o
+    // Dirección ven "Reclutamiento". Se ampliará a cualquier líder más
+    // adelante — ver VacantesViewmodel._departamentosConAcceso.
+    final currentUser = auth.getCurrentUser();
+    final puedeVerReclutamiento = currentUser?.rol == 'LIDER' &&
+        ['Recursos Humanos', 'Direccion'].contains(currentUser?.departamento?.nombre);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -165,6 +171,13 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                         route: Routes.diasFestivos,
                         isCollapsed: isCollapsed,
                       ),
+                      if (puedeVerReclutamiento)
+                        _NavItem(
+                          icon: LucideIcons.userPlus,
+                          label: 'Reclutamiento',
+                          route: Routes.reclutamiento,
+                          isCollapsed: isCollapsed,
+                        ),
                     ],
                   );
                 }
@@ -199,6 +212,13 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                     isCollapsed: false,
                     trailing: _IncidenciaCountBadge(),
                   ),
+                  if (puedeVerReclutamiento)
+                    _NavItem(
+                      icon: LucideIcons.userPlus,
+                      label: 'Reclutamiento',
+                      route: Routes.reclutamiento,
+                      isCollapsed: isCollapsed,
+                    ),
                 ],
               );
             },

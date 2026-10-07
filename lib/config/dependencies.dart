@@ -37,6 +37,9 @@ import 'package:ri_rh_v2/data/repositories/signature/signature_repository_remote
 import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
 import 'package:ri_rh_v2/data/repositories/users/users_repository_local.dart';
 import 'package:ri_rh_v2/data/repositories/users/users_repository_remote.dart';
+import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
+import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository_local.dart';
+import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository_remote.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/auth_api_client.dart';
 import 'package:ri_rh_v2/data/services/device_auth_service.dart';
@@ -135,6 +138,9 @@ Future<List<SingleChildWidget>> get providersLocal async {
       ) as DiasFestivosRepository
     ),
     Provider(create: (context) =>
+      VacantesRepositoryLocal() as VacantesRepository
+    ),
+    Provider(create: (context) =>
       FingerprintRepositoryLocal(
         log: context.read(),
         localDataService: context.read(),
@@ -224,6 +230,11 @@ Future<List<SingleChildWidget>> get providersRemote async {
       DiasFestivosRepositoryRemote(
         apiClient: context.read(),
       ) as DiasFestivosRepository
+    ),
+    Provider(create: (context) =>
+      VacantesRepositoryRemote(
+        apiClient: context.read(),
+      ) as VacantesRepository
     ),
     Provider(create: (context) =>
       FingerprintRepositoryRemote(

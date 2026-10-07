@@ -2,7 +2,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
-import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
@@ -14,7 +13,7 @@ import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/nuevo_empleado_viewmodel.dart';
-import 'package:ri_rh_v2/utils/command.dart';
+import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
 const _documentSections = [
@@ -57,13 +56,6 @@ final _documentFields = [
   for (final (_, fields) in _documentSections) ...fields,
 ];
 
-// Mismas opciones (y mismo criterio de exclusión de MASTER/ADMINISTRADOR/
-// COMPRADOR) que ya usa home_screen.dart para el auto-cambio de rol.
-const _rolOptions = [
-  ('OPERADOR', 'Operador'),
-  ('LIDER', 'Lider'),
-];
-
 class NuevoEmpleadoScreen extends StatefulWidget {
   const NuevoEmpleadoScreen({
     super.key,
@@ -96,7 +88,7 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
   DateTime? _fechaAlta = DateTime.now();
   Puesto? _puesto;
   Escolaridad? _escolaridad;
-  Departamento? _departamento;
+  final Set<int> _departamentosSeleccionados = {};
   String? _rol;
 
   final Map<String, PlatformFile?> _files = {
@@ -107,11 +99,13 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
   void initState() {
     super.initState();
     widget.viewmodel.create.addListener(_onCreateResult);
+    widget.viewmodel.deletePuesto.addListener(_onDeletePuestoResult);
   }
 
   @override
   void dispose() {
     widget.viewmodel.create.removeListener(_onCreateResult);
+    widget.viewmodel.deletePuesto.removeListener(_onDeletePuestoResult);
     _nombreCompleto.dispose();
     _clabeInterbancaria.dispose();
     _telefono.dispose();
@@ -144,6 +138,25 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
     }
   }
 
+  void _onDeletePuestoResult() {
+    if (widget.viewmodel.deletePuesto.completed) {
+      final deletedId = (widget.viewmodel.deletePuesto.result as Ok<int>).value;
+      widget.viewmodel.deletePuesto.clearResult();
+      if (_puesto?.id == deletedId) {
+        setState(() => _puesto = null);
+      }
+      return;
+    }
+
+    if (widget.viewmodel.deletePuesto.error) {
+      final error = (widget.viewmodel.deletePuesto.result as Error).error;
+      widget.viewmodel.deletePuesto.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'No se pudo eliminar el puesto', error: error),
+      );
+    }
+  }
+
   Future<void> _showCredencialesAndNavigate(Empleado empleado) async {
     final credenciales = empleado.credencialesGeneradas;
     if (credenciales != null) {
@@ -168,10 +181,65 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
   Future<void> _openCreatePuestoDialog() async {
     final puesto = await showDialog<Puesto>(
       context: context,
-      builder: (context) => _CreatePuestoDialog(createPuesto: widget.viewmodel.createPuesto),
+      builder: (context) => PuestoFormDialog(
+        createPuesto: widget.viewmodel.createPuesto,
+        editPuesto: widget.viewmodel.editPuesto,
+        departamentos: widget.viewmodel.departamentos,
+      ),
+    );
+    if (puesto != null) {
+      setState(() {
+        _puesto = puesto;
+        _applyPuestoDefaults(puesto);
+      });
+    }
+  }
+
+  Future<void> _openEditPuestoDialog() async {
+    final actual = _puesto;
+    if (actual == null) return;
+    final puesto = await showDialog<Puesto>(
+      context: context,
+      builder: (context) => PuestoFormDialog(
+        createPuesto: widget.viewmodel.createPuesto,
+        editPuesto: widget.viewmodel.editPuesto,
+        departamentos: widget.viewmodel.departamentos,
+        initialPuesto: actual,
+      ),
     );
     if (puesto != null) {
       setState(() => _puesto = puesto);
+    }
+  }
+
+  Future<void> _confirmDeletePuesto() async {
+    final actual = _puesto;
+    if (actual == null) return;
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Eliminar puesto'),
+        content: Text('¿Eliminar "${actual.nombre}"? Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text('Cancelar')),
+          ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: Text('Eliminar')),
+        ],
+      ),
+    );
+    if (confirmado != true) return;
+    if (!mounted) return;
+    widget.viewmodel.deletePuesto.execute(actual.id!);
+  }
+
+  /// Prellena ROL/DEPARTAMENTO (USUARIO) con lo definido en el Puesto, sin
+  /// restringir las opciones disponibles de esos dropdowns: el usuario de RH
+  /// puede seguir cambiándolos libremente después.
+  void _applyPuestoDefaults(Puesto puesto) {
+    if (puesto.rol != null && rolOptions.any((r) => r.$1 == puesto.rol)) {
+      _rol = puesto.rol;
+    }
+    if (puesto.departamentos.isNotEmpty) {
+      _departamentosSeleccionados.addAll(puesto.departamentos);
     }
   }
 
@@ -197,9 +265,9 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
       );
       return;
     }
-    if (_departamento == null || _rol == null) {
+    if (_departamentosSeleccionados.isEmpty || _rol == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selecciona el departamento y rol del usuario')),
+        SnackBar(content: Text('Selecciona al menos un departamento y el rol del usuario')),
       );
       return;
     }
@@ -220,7 +288,7 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
       puestoId: _puesto!.id!,
       telefono: _telefono.text.trim(),
       correo: _correo.text.trim().isEmpty ? null : _correo.text.trim(),
-      departamentoId: _departamento!.id,
+      departamentoIds: _departamentosSeleccionados.toList(),
       rol: _rol,
       fechaAlta: _fechaAlta,
       identificacionOficial: _files['identificacionOficial'],
@@ -373,7 +441,10 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                               items: widget.viewmodel.puestos
                                   .map((p) => DropdownMenuItem(value: p, child: Text(p.nombre)))
                                   .toList(),
-                              onChanged: (value) => setState(() => _puesto = value),
+                              onChanged: (value) => setState(() {
+                                _puesto = value;
+                                if (value != null) _applyPuestoDefaults(value);
+                              }),
                               validator: (value) => value == null ? 'Selecciona un puesto' : null,
                             ),
                           ),
@@ -381,6 +452,24 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                             tooltip: 'Crear puesto nuevo',
                             onPressed: _openCreatePuestoDialog,
                             icon: Icon(Icons.add_circle_outline),
+                          ),
+                          IconButton(
+                            tooltip: 'Editar puesto',
+                            onPressed: _puesto == null ? null : _openEditPuestoDialog,
+                            icon: Icon(Icons.edit_outlined),
+                          ),
+                          ListenableBuilder(
+                            listenable: widget.viewmodel.deletePuesto,
+                            builder: (context, _) {
+                              final running = widget.viewmodel.deletePuesto.running;
+                              return IconButton(
+                                tooltip: 'Eliminar puesto',
+                                onPressed: _puesto == null || running ? null : _confirmDeletePuesto,
+                                icon: running
+                                    ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                    : Icon(Icons.delete_outline),
+                              );
+                            },
                           ),
                         ],
                       );
@@ -391,7 +480,7 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                     required: true,
                     fourDigitYear: true,
                     firstDate: DateTime(2000),
-                    lastDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
                     initialValue: _formatDate(_fechaAlta!),
                     onDateSaved: (value) => _fechaAlta = value,
                   ),
@@ -437,30 +526,38 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                   ListenableBuilder(
                     listenable: widget.viewmodel.loadCatalogos,
                     builder: (context, _) {
-                      return Row(
-                        spacing: 24,
+                      return Column(
+                        crossAxisAlignment: .start,
+                        spacing: 12,
                         children: [
-                          Expanded(
-                            child: DropdownButtonFormField<Departamento>(
-                              initialValue: _departamento,
-                              decoration: InputDecoration(labelText: 'DEPARTAMENTO (USUARIO)'),
-                              items: widget.viewmodel.departamentos
-                                  .map((d) => DropdownMenuItem(value: d, child: Text(d.nombre)))
-                                  .toList(),
-                              onChanged: (value) => setState(() => _departamento = value),
-                              validator: (value) => value == null ? 'Selecciona un departamento' : null,
-                            ),
+                          DropdownButtonFormField<String>(
+                            key: ValueKey(_rol),
+                            initialValue: _rol,
+                            decoration: InputDecoration(labelText: 'ROL (USUARIO)'),
+                            items: rolOptions
+                                .map((r) => DropdownMenuItem(value: r.$1, child: Text(r.$2)))
+                                .toList(),
+                            onChanged: (value) => setState(() => _rol = value),
+                            validator: (value) => value == null ? 'Selecciona un rol' : null,
                           ),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              initialValue: _rol,
-                              decoration: InputDecoration(labelText: 'ROL (USUARIO)'),
-                              items: _rolOptions
-                                  .map((r) => DropdownMenuItem(value: r.$1, child: Text(r.$2)))
-                                  .toList(),
-                              onChanged: (value) => setState(() => _rol = value),
-                              validator: (value) => value == null ? 'Selecciona un rol' : null,
-                            ),
+                          Text('DEPARTAMENTOS (USUARIO)', style: TextTheme.of(context).labelMedium),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: widget.viewmodel.departamentos.map((d) {
+                              final selected = _departamentosSeleccionados.contains(d.id);
+                              return FilterChip(
+                                label: Text(d.nombre),
+                                selected: selected,
+                                onSelected: (sel) => setState(() {
+                                  if (sel) {
+                                    _departamentosSeleccionados.add(d.id);
+                                  } else {
+                                    _departamentosSeleccionados.remove(d.id);
+                                  }
+                                }),
+                              );
+                            }).toList(),
                           ),
                         ],
                       );
@@ -521,94 +618,6 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _CreatePuestoDialog extends StatefulWidget {
-  const _CreatePuestoDialog({required this.createPuesto});
-
-  final Command1<Puesto, PuestoCreateParams> createPuesto;
-
-  @override
-  State<_CreatePuestoDialog> createState() => _CreatePuestoDialogState();
-}
-
-class _CreatePuestoDialogState extends State<_CreatePuestoDialog> {
-  final _nombre = TextEditingController();
-  TipoPuesto _tipo = TipoPuesto.administrativo;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.createPuesto.addListener(_onResult);
-  }
-
-  @override
-  void dispose() {
-    widget.createPuesto.removeListener(_onResult);
-    _nombre.dispose();
-    super.dispose();
-  }
-
-  void _onResult() {
-    if (widget.createPuesto.completed) {
-      final puesto = (widget.createPuesto.result as Ok<Puesto>).value;
-      widget.createPuesto.clearResult();
-      if (mounted) Navigator.of(context).pop(puesto);
-      return;
-    }
-    if (widget.createPuesto.error) {
-      final error = (widget.createPuesto.result as Error).error;
-      widget.createPuesto.clearResult();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          errorSnackBar(context, 'No se pudo crear el puesto', error: error),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: widget.createPuesto,
-      builder: (context, _) {
-        final running = widget.createPuesto.running;
-        return AlertDialog(
-          title: Text('Crear puesto'),
-          content: Column(
-            mainAxisSize: .min,
-            spacing: 16,
-            children: [
-              TextField(
-                controller: _nombre,
-                decoration: InputDecoration(labelText: 'NOMBRE'),
-              ),
-              DropdownButtonFormField<TipoPuesto>(
-                initialValue: _tipo,
-                decoration: InputDecoration(labelText: 'TIPO'),
-                items: TipoPuesto.values.map((t) => DropdownMenuItem(value: t, child: Text(t.name))).toList(),
-                onChanged: (value) => setState(() => _tipo = value ?? _tipo),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: running ? null : () => Navigator.of(context).pop(),
-              child: Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: running || _nombre.text.trim().isEmpty
-                  ? null
-                  : () => widget.createPuesto.execute((nombre: _nombre.text.trim(), tipos: _tipo.name)),
-              child: running
-                  ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text('Crear'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
