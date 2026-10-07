@@ -16,12 +16,18 @@ class VacantesRepositoryLocal extends VacantesRepository {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   }) async {
     final result = SolicitudVacante(
       id: ++_sequentialId,
       puesto: puestoId,
       rol: rol,
       cantidad: cantidad,
+      area: area,
+      turno: turnoId,
+      justificacion: justificacion,
       createdAt: DateTime.now(),
     );
     _solicitudes.add(result);
@@ -34,10 +40,20 @@ class VacantesRepositoryLocal extends VacantesRepository {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   }) async {
     final index = _solicitudes.indexWhere((s) => s.id == id);
     if (index == -1) return Result.error(Exception('Not found'));
-    final updated = _solicitudes[index].copyWith(puesto: puestoId, rol: rol, cantidad: cantidad);
+    final updated = _solicitudes[index].copyWith(
+      puesto: puestoId,
+      rol: rol,
+      cantidad: cantidad,
+      area: area,
+      turno: turnoId,
+      justificacion: justificacion,
+    );
     _solicitudes[index] = updated;
     return Result.ok(updated);
   }

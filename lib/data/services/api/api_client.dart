@@ -580,6 +580,9 @@ class ApiClient {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   }) async {
     final dio = _dioFactory();
     try {
@@ -588,6 +591,9 @@ class ApiClient {
         'puesto': puestoId,
         'rol': rol,
         'cantidad': cantidad,
+        'area': area,
+        'turno': turnoId,
+        'justificacion': justificacion,
       });
       final result = SolicitudVacante.fromJson(response.data);
       return Result.ok(result);
@@ -605,6 +611,9 @@ class ApiClient {
     required int puestoId,
     required String rol,
     required int cantidad,
+    required String area,
+    required int turnoId,
+    required String justificacion,
   }) async {
     final dio = _dioFactory();
     try {
@@ -613,6 +622,9 @@ class ApiClient {
         'puesto': puestoId,
         'rol': rol,
         'cantidad': cantidad,
+        'area': area,
+        'turno': turnoId,
+        'justificacion': justificacion,
       });
       final result = SolicitudVacante.fromJson(response.data);
       return Result.ok(result);

@@ -231,16 +231,15 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
     widget.viewmodel.deletePuesto.execute(actual.id!);
   }
 
-  /// Prellena ROL/DEPARTAMENTO (USUARIO) con lo definido en el Puesto, sin
+  /// Prellena ROL/DEPARTAMENTO (USUARIO) con lo definido en el Puesto,
+  /// reemplazando la selección anterior (no se acumula entre puestos). Sin
   /// restringir las opciones disponibles de esos dropdowns: el usuario de RH
   /// puede seguir cambiándolos libremente después.
   void _applyPuestoDefaults(Puesto puesto) {
-    if (puesto.rol != null && rolOptions.any((r) => r.$1 == puesto.rol)) {
-      _rol = puesto.rol;
-    }
-    if (puesto.departamentos.isNotEmpty) {
-      _departamentosSeleccionados.addAll(puesto.departamentos);
-    }
+    _rol = (puesto.rol != null && rolOptions.any((r) => r.$1 == puesto.rol)) ? puesto.rol : null;
+    _departamentosSeleccionados
+      ..clear()
+      ..addAll(puesto.departamentos);
   }
 
   double? _parseDecimal(String value) => double.tryParse(value.trim());
