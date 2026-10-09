@@ -42,6 +42,14 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   final ResolutionPreset _resolution = ResolutionPreset.medium;
 
   bool _recording = false;
+  // Evita que _detenerGrabacion se ejecute dos veces en paralelo -- ej. el
+  // usuario toca "Detener" justo cuando el timer de maxima duracion tambien
+  // dispara, o hace doble-tap -- _recording no pasa a false hasta que el
+  // stopVideoRecording() en curso termina, asi que sin este candado una
+  // segunda llamada lo volveria a invocar sobre una grabacion que la
+  // primera ya detuvo (el plugin de camara lo rechaza con
+  // "stopVideoRecording was called when no video is recording").
+  bool _stopping = false;
   Timer? _maxDurationTimer;
   Duration _elapsed = Duration.zero;
   Timer? _elapsedTicker;
@@ -168,7 +176,7 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         child: Text('Cancelar'),
       ),
       ElevatedButton(
-        onPressed: _controller == null ? null : (_recording ? _detenerGrabacion : _iniciarGrabacion),
+        onPressed: _controller == null || _stopping ? null : (_recording ? _detenerGrabacion : _iniciarGrabacion),
         child: Text(_recording ? 'Detener' : 'Iniciar grabación'),
       ),
     ];
@@ -290,10 +298,14 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   }
 
   void _detenerGrabacion() async {
+    // Debe quedar antes de cualquier `await` -- Dart corre este prefijo
+    // sincrono de un tiron, asi que ninguna otra invocacion concurrente
+    // (doble-tap, o el timer de maxima duracion disparando casi al mismo
+    // tiempo) puede colarse entre el check y el cancel/set de abajo.
+    if (!_recording || _stopping) return;
     _maxDurationTimer?.cancel();
     _elapsedTicker?.cancel();
-
-    if (!_recording) return;
+    setState(() => _stopping = true);
 
     try {
       final video = await _controller!.stopVideoRecording();
@@ -303,13 +315,17 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
       if (mounted) {
         setState(() {
           _recording = false;
+          _stopping = false;
           _recordedVideo = video;
           _playbackController = playback;
         });
       }
     } on CameraException catch (e) {
       if (mounted) {
-        setState(() => _recording = false);
+        setState(() {
+          _recording = false;
+          _stopping = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, e.description ?? 'No se pudo detener la grabación'),
         );
