@@ -92,12 +92,20 @@ class IncidenciaNominaTable extends StatelessWidget {
               final fecha = dates[dayIdx];
               final dayKey = fecha.toShortIsoString();
               final codigo = item.codigosPorDia[dayKey] ?? '';
-              final statusActual = _parseStatus(item.statusPorDia[dayKey]);
               final minutosActual = item.minutesLatePorDia[dayKey] ?? 0;
+              // Un dia sin AsistenciaDaily todavia (ej. un dia futuro de la
+              // semana en curso que RH quiere ir adelantando, ver
+              // _IncidenciaNominaReportViewState) no tiene status real que
+              // mostrar -- se sigue dejando editar con Falta como default
+              // (mismo default que usa el backend al crear la fila por
+              // primera vez via correccion, ver
+              // views/reportes.py::patch CAMPO_MINUTOS_RETARDO) en vez de
+              // deshabilitar la celda.
+              final statusActual = _parseStatus(item.statusPorDia[dayKey]) ?? AsistenciaStatus.absent;
 
               return DataCell(
                 InkWell(
-                  onTap: onEditCodigo == null || statusActual == null
+                  onTap: onEditCodigo == null
                       ? null
                       : () => onEditCodigo!(item.id, fecha, statusActual, minutosActual),
                   child: _CodigoChip(codigo: codigo),

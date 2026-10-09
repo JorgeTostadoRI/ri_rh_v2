@@ -213,15 +213,16 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
                   ),
                   onPressed: () async {
                     final today = DateTime.now();
-                    // Los viernes, el reporte semanal ya se genera (y se
-                    // envia automaticamente) con la semana completa,
-                    // incluyendo sabado y domingo aunque todavia no hayan
-                    // pasado -- se dejan seleccionar/editar esos dos dias
-                    // desde ese mismo viernes en vez de esperar a que
-                    // realmente lleguen.
-                    final lastDate = today.weekday == DateTime.friday
-                      ? today.add(const Duration(days: 2))
-                      : today;
+                    // Se deja elegir/editar cualquier dia de la semana en
+                    // curso (hasta el domingo) sin importar que dia sea hoy
+                    // -- RH quiere poder ir adelantando correcciones de dias
+                    // que todavia no pasan (ej. marcar un permiso del
+                    // viernes desde el jueves). El backend ya soporta crear
+                    // la correccion aunque ese dia no tenga AsistenciaDaily
+                    // todavia (ver AsistenciaCorreccionRequestSerializer /
+                    // get_or_create en views/reportes.py::patch), asi que
+                    // el unico bloqueo era este selector.
+                    final lastDate = today.add(Duration(days: DateTime.sunday - today.weekday));
                     final selection = await showDateRangePicker(
                       context: context,
                       firstDate: DateTime(2026, 01, 01),
