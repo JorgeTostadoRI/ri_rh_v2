@@ -109,6 +109,13 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
           ),
           if (_recordedVideo != null)
             _buildPlaybackPreview()
+          else if (_stopping)
+            // Mientras se detiene la grabacion y se prepara la vista previa
+            // (stopVideoRecording + playback.initialize, ver
+            // _detenerGrabacion) la camara ya no esta en vivo -- sin este
+            // indicador la pantalla se queda viendo el ultimo frame
+            // congelado sin ninguna señal de que sigue trabajando.
+            _buildSavingIndicator()
           else
             _buildCameraPreview(),
           if (_recording)
@@ -180,6 +187,34 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         child: Text(_recording ? 'Detener' : 'Iniciar grabación'),
       ),
     ];
+  }
+
+  Widget _buildSavingIndicator() {
+    const double width = 500;
+    const double height = 300;
+
+    return Container(
+      width: width,
+      height: height,
+      decoration: const BoxDecoration(
+        border: Border.fromBorderSide(BorderSide(
+          color: borderColor,
+          width: 0.8,
+        )),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        color: Colors.white,
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: .min,
+          spacing: 16,
+          children: [
+            CircularProgressIndicator(color: primaryColor),
+            Text('Guardando video...'),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildCameraPreview() {
@@ -307,10 +342,16 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     _elapsedTicker?.cancel();
     setState(() => _stopping = true);
 
+    // Con stop+preview envueltos en un timeout, un fallo silencioso del
+    // navegador preparando la vista previa (ej. el blob del video grabado
+    // nunca dispara "loadedmetadata") ya no deja el dialogo congelado para
+    // siempre sin ningun aviso -- a los 15s se cae a un error con opcion de
+    // volver a intentar.
+    VideoPlayerController? playback;
     try {
-      final video = await _controller!.stopVideoRecording();
-      final playback = VideoPlayerController.networkUrl(Uri.parse(video.path));
-      await playback.initialize();
+      final video = await _controller!.stopVideoRecording().timeout(const Duration(seconds: 15));
+      playback = VideoPlayerController.networkUrl(Uri.parse(video.path));
+      await playback.initialize().timeout(const Duration(seconds: 15));
 
       if (mounted) {
         setState(() {
@@ -328,6 +369,17 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, e.description ?? 'No se pudo detener la grabación'),
+        );
+      }
+    } on TimeoutException catch (_) {
+      await playback?.dispose();
+      if (mounted) {
+        setState(() {
+          _recording = false;
+          _stopping = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudo preparar la vista previa del video -- intenta grabar de nuevo'),
         );
       }
     }
