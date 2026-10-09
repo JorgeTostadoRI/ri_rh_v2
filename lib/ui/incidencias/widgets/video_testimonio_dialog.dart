@@ -289,28 +289,49 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   }
 
   Widget _buildErrorDescription(Object? e) {
+    final String title;
+    final String subtitle;
     if (e is CameraException) {
       if (e.code == 'CameraAccessDenied') {
-        return ListTile(
+        title = 'Acceso a cámara denegado';
+        subtitle = 'Asegurate de permitir el uso de la cámara en el sitio y recargar.';
+      } else {
+        // Ej. cameraNotReadable -- la camara esta ocupada por otra pestaña/
+        // app, o por un residuo de una sesion anterior de este mismo
+        // dialogo que todavia no la libera. Es transitorio casi siempre, asi
+        // que se deja reintentar en vez de forzar a cerrar todo el
+        // formulario y volver a entrar.
+        title = e.code;
+        subtitle = e.description ?? 'Sin información adicional';
+      }
+    } else {
+      title = 'Error desconocido';
+      subtitle = e.toString();
+    }
+
+    return Column(
+      mainAxisSize: .min,
+      children: [
+        ListTile(
           iconColor: Colors.red,
           leading: Icon(LucideIcons.circleX),
-          title: Text('Acceso a cámara denegado'),
-          subtitle: Text('Asegurate de permitir el uso de la cámara en el sitio y recargar.'),
-        );
-      }
-      return ListTile(
-        iconColor: Colors.red,
-        leading: Icon(LucideIcons.circleX),
-        title: Text(e.code),
-        subtitle: Text(e.description ?? "Sin información adicional"),
-      );
-    }
-    return ListTile(
-      iconColor: Colors.red,
-      leading: Icon(LucideIcons.circleX),
-      title: Text('Error desconocido'),
-      subtitle: Text(e.toString(), overflow: .ellipsis, maxLines: 2),
+          title: Text(title),
+          subtitle: Text(subtitle, overflow: .ellipsis, maxLines: 2),
+        ),
+        OutlinedButton.icon(
+          onPressed: _reintentarCamara,
+          icon: Icon(LucideIcons.rotateCcw),
+          label: Text('Reintentar'),
+        ),
+      ],
     );
+  }
+
+  void _reintentarCamara() {
+    setState(() {
+      _availableCameras = availableCameras();
+    });
+    _initializeCamera();
   }
 
   void _iniciarGrabacion() async {
