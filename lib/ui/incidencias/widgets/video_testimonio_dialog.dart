@@ -145,11 +145,18 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
                   ),
                   items: cameras.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.label))).toList(),
                   onChanged: (camera) async {
-                    if (camera != null) {
+                    if (camera == null) return;
+                    try {
                       await _recorder.switchCamera(camera.deviceId);
                       _currentDeviceId = camera.deviceId;
                       if (mounted) {
                         setState(() {});
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          errorSnackBar(context, 'No se pudo cambiar de cámara'),
+                        );
                       }
                     }
                   },
@@ -347,6 +354,12 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
           errorSnackBar(context, e.message),
         );
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudo iniciar la grabación'),
+        );
+      }
     }
   }
 
@@ -400,6 +413,22 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, 'No se pudo preparar la vista previa del video -- intenta grabar de nuevo'),
+        );
+      }
+    } catch (e) {
+      // Red de seguridad final -- cualquier otro tipo de error no
+      // contemplado arriba (ej. video_player al inicializar el preview con
+      // VideoPlayerController.initialize(), que puede tronar con otros
+      // tipos de excepcion) tambien debe quedar manejado aqui, en vez de
+      // escaparse como un error sin atrapar hacia la consola del navegador.
+      await playback?.dispose();
+      if (mounted) {
+        setState(() {
+          _recording = false;
+          _stopping = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudo terminar de grabar el video -- intenta de nuevo'),
         );
       }
     }
