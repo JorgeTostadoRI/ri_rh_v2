@@ -154,49 +154,74 @@ class WebVideoRecorderImpl implements WebVideoRecorder {
     var finished = false;
     Timer? fallbackTimer;
 
+    // finish() corre tanto desde los callbacks del navegador (onstop/
+    // onerror, invocados directo por el navegador, fuera de cualquier
+    // try/catch de Dart) como desde el timer de respaldo -- si algo adentro
+    // truena sin este try/catch, se vuelve un error genuinamente sin
+    // atrapar a nivel navegador (exactamente el bug reportado: salia
+    // "Uncaught Error" en consola en vez de un mensaje manejado).
     void finish() {
       if (finished) return;
       finished = true;
-      fallbackTimer?.cancel();
-      recorder.ondataavailable = null;
-      recorder.onstop = null;
-      recorder.onerror = null;
+      try {
+        fallbackTimer?.cancel();
+        recorder.ondataavailable = null;
+        recorder.onstop = null;
+        recorder.onerror = null;
 
-      if (chunks.isEmpty) {
-        completer.completeError(
-          const WebVideoRecorderException('empty-recording', 'La grabación no produjo datos'),
-        );
-        return;
+        if (chunks.isEmpty) {
+          completer.completeError(
+            const WebVideoRecorderException('empty-recording', 'La grabación no produjo datos'),
+          );
+          return;
+        }
+        final blob = web.Blob(chunks.toJS, web.BlobPropertyBag(type: _mimeType ?? 'video/webm'));
+        blob.arrayBuffer().toDart.then((buffer) {
+          final bytes = buffer.toDart.asUint8List();
+          completer.complete(XFile.fromData(bytes, mimeType: _mimeType, name: 'testimonio.webm'));
+        }).catchError((Object e) {
+          completer.completeError(WebVideoRecorderException('unknown', '$e'));
+        });
+      } catch (e) {
+        completer.completeError(_mapError(e));
       }
-      final blob = web.Blob(chunks.toJS, web.BlobPropertyBag(type: _mimeType ?? 'video/webm'));
-      blob.arrayBuffer().toDart.then((buffer) {
-        final bytes = buffer.toDart.asUint8List();
-        completer.complete(XFile.fromData(bytes, mimeType: _mimeType, name: 'testimonio.webm'));
-      }).catchError((Object e) {
-        completer.completeError(WebVideoRecorderException('unknown', '$e'));
-      });
     }
 
-    recorder.ondataavailable = ((web.Event e) {
-      final blobEvent = e as web.BlobEvent;
-      if (blobEvent.data.size > 0) chunks.add(blobEvent.data);
-    }).toJS;
-    recorder.onstop = ((web.Event _) => finish()).toJS;
-    recorder.onerror = ((web.Event _) => finish()).toJS;
+    try {
+      recorder.ondataavailable = ((web.Event e) {
+        // Tambien blindado -- este callback lo invoca el navegador
+        // directamente, un cast fallido aqui no debe tronar crudo.
+        try {
+          final blobEvent = e as web.BlobEvent;
+          if (blobEvent.data.size > 0) chunks.add(blobEvent.data);
+        } catch (_) {
+          // Se ignora: simplemente no se agrega este chunk.
+        }
+      }).toJS;
+      recorder.onstop = ((web.Event _) => finish()).toJS;
+      recorder.onerror = ((web.Event _) => finish()).toJS;
 
-    // Mitigacion conocida para la inconsistencia de WebKit/Safari con el
-    // evento 'stop' de MediaRecorder: forzar un volcado de los datos justo
-    // antes de detener, para que aunque 'stop' nunca dispare ya queden
-    // chunks utilizables en `chunks`.
-    recorder.requestData();
-    recorder.stop();
+      // Mitigacion conocida para la inconsistencia de WebKit/Safari con el
+      // evento 'stop' de MediaRecorder: forzar un volcado de los datos
+      // justo antes de detener, para que aunque 'stop' nunca dispare ya
+      // queden chunks utilizables en `chunks`.
+      recorder.requestData();
+      recorder.stop();
 
-    // Respaldo final: si ni 'stop' ni 'error' disparan nunca, arma el video
-    // de todas formas con lo que haya llegado hasta este punto -- este es
-    // el bug exacto que se esta corrigiendo (antes dependia unicamente del
-    // timeout externo de 15s del dialogo, sin ningun intento de recuperar
-    // los datos ya grabados).
-    fallbackTimer = Timer(_stopFallbackGrace, finish);
+      // Respaldo final: si ni 'stop' ni 'error' disparan nunca, arma el
+      // video de todas formas con lo que haya llegado hasta este punto --
+      // este es el bug exacto que se esta corrigiendo (antes dependia
+      // unicamente del timeout externo de 15s del dialogo, sin ningun
+      // intento de recuperar los datos ya grabados).
+      fallbackTimer = Timer(_stopFallbackGrace, finish);
+    } catch (e) {
+      // requestData()/stop() pueden tronar sincronamente (ej.
+      // InvalidStateError si el navegador considera que el grabador ya no
+      // esta en estado "recording") -- sin este catch, esa excepcion se
+      // escapaba cruda de stopRecording() en vez de completar el Future
+      // con un WebVideoRecorderException manejable.
+      completer.completeError(_mapError(e));
+    }
 
     return completer.future;
   }
