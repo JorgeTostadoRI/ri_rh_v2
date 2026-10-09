@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
@@ -7,6 +8,7 @@ import 'package:ri_rh_v2/ui/core/ui/document_picker_row.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Mismas opciones (y mismo criterio de exclusión de MASTER/ADMINISTRADOR/
 // COMPRADOR) que usa home_screen.dart para el auto-cambio de rol.
@@ -98,6 +100,34 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
     );
     if (result != null && result.files.isNotEmpty) {
       setState(() => _tabuladorSalarial = result.files.first);
+    }
+  }
+
+  /// Ver el tabulador salarial: si se acaba de elegir uno (todavía sin
+  /// subir), abre el archivo local con la app predeterminada del sistema;
+  /// si no, abre el que ya estaba adjuntado al puesto (si lo hay).
+  Future<void> _viewTabuladorSalarial() async {
+    final picked = _tabuladorSalarial;
+    final path = picked?.path;
+    if (picked != null && path != null) {
+      // En Flutter Web, file_picker entrega en `path` una URL blob ya
+      // utilizable (no una ruta de archivo real) -- envolverla con
+      // Uri.file() la rompe. En desktop/mobile sí es una ruta de sistema.
+      final uri = kIsWeb ? Uri.parse(path) : Uri.file(path);
+      await launchUrl(uri);
+      return;
+    }
+
+    final existingUrl = widget.initialPuesto?.tabuladorSalarialUrl;
+    if (existingUrl != null) {
+      await launchUrl(Uri.parse(existingUrl));
+      return;
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se puede previsualizar este archivo en este navegador.')),
+      );
     }
   }
 
@@ -261,6 +291,9 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
                         : 'Tabulador salarial (Excel)',
                     file: _tabuladorSalarial,
                     onPick: _pickTabuladorSalarial,
+                    onView: _tabuladorSalarial != null || widget.initialPuesto?.tabuladorSalarialUrl != null
+                        ? _viewTabuladorSalarial
+                        : null,
                   ),
                   _preguntasSection('CUESTIONARIO DE ENTREVISTA', _preguntasEntrevista),
                   _preguntasSection('CUESTIONARIO DEL PUESTO', _preguntasPuesto),

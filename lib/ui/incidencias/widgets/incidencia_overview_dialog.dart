@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_authorized_by_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -89,6 +90,8 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
                 Text('Motivo de rechazo', style: textTheme.headlineSmall),
                 Text(incidencia.rejectionReason!, style: textTheme.bodyMedium),
             ],
+          if (incidencia.videoUrl != null)
+            IncidenciaVideoSection(videoUrl: incidencia.videoUrl!),
           if (incidencia.files.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
