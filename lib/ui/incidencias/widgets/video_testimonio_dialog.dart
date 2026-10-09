@@ -1,12 +1,14 @@
 import 'dart:async';
 
-import 'package:camera/camera.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/video_testimonio/web_video_recorder.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/video_testimonio/web_video_recorder_factory.dart';
 import 'package:video_player/video_player.dart';
 
 /// Duracion maxima de grabacion -- se detiene sola al llegar a este limite
@@ -18,10 +20,17 @@ const _maxRecordingDuration = Duration(seconds: 60);
 /// Dialogo para grabar (NUNCA subir un archivo ya existente) el video
 /// testimonial que se requiere al crear una incidencia siendo un
 /// solicitante remoto desde navegador -- sustituye ahi la verificacion por
-/// huella digital. Mismo esqueleto que el `_CameraDialog` de
-/// `ingreso_manual_screen.dart` (seleccion de camara, preview en vivo,
-/// manejo de errores), pero grabando video en vez de tomar una foto, con un
-/// paso de revision antes de confirmar.
+/// huella digital.
+///
+/// Habla directo con el navegador vía [WebVideoRecorder] (`dart:js_interop`
+/// + `package:web`) en vez de usar los paquetes `camera`/`camera_web` --
+/// esos paquetes fallaban de forma reproducible en ciertos webcams:
+/// `availableCameras()` hace varias llamadas `getUserMedia` seguidas que
+/// algunos drivers no toleran (sale `cameraNotReadable` aunque la camara
+/// funcione perfecto en cualquier otro programa), y su
+/// `stopVideoRecording()` depende por completo de que el navegador dispare
+/// un evento que a veces nunca llega, dejando la grabacion "guardando"
+/// para siempre sin ningun recurso.
 class VideoTestimonioDialog extends StatefulWidget {
   const VideoTestimonioDialog({
     super.key,
@@ -35,20 +44,15 @@ class VideoTestimonioDialog extends StatefulWidget {
 }
 
 class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
-  late Future<List<CameraDescription>> _availableCameras;
-  CameraDescription? _currentCamera;
-  CameraController? _controller;
-
-  final ResolutionPreset _resolution = ResolutionPreset.medium;
+  late final WebVideoRecorder _recorder;
+  late Future<List<CameraOption>> _availableCameras;
+  String? _currentDeviceId;
+  bool _cameraReady = false;
 
   bool _recording = false;
   // Evita que _detenerGrabacion se ejecute dos veces en paralelo -- ej. el
   // usuario toca "Detener" justo cuando el timer de maxima duracion tambien
-  // dispara, o hace doble-tap -- _recording no pasa a false hasta que el
-  // stopVideoRecording() en curso termina, asi que sin este candado una
-  // segunda llamada lo volveria a invocar sobre una grabacion que la
-  // primera ya detuvo (el plugin de camara lo rechaza con
-  // "stopVideoRecording was called when no video is recording").
+  // dispara, o hace doble-tap.
   bool _stopping = false;
   Timer? _maxDurationTimer;
   Duration _elapsed = Duration.zero;
@@ -60,34 +64,24 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   XFile? _recordedVideo;
   VideoPlayerController? _playbackController;
 
-  Future<void> _initializeCamera() async {
-    final cameras = await _availableCameras;
-    _currentCamera ??= cameras[0];
-
-    if (_controller == null) {
-      _controller = CameraController(
-        _currentCamera!,
-        _resolution,
-      );
-      await _controller!.initialize();
-    }
-    if (mounted) setState(() {});
+  Future<List<CameraOption>> _openCamera() async {
+    final cameras = await _recorder.open();
+    if (mounted) setState(() => _cameraReady = true);
+    return cameras;
   }
 
   @override
   void initState() {
     super.initState();
-    _availableCameras = availableCameras();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeCamera();
-    });
+    _recorder = createWebVideoRecorder();
+    _availableCameras = _openCamera();
   }
 
   @override
   void dispose() {
     _maxDurationTimer?.cancel();
     _elapsedTicker?.cancel();
-    _controller?.dispose();
+    _recorder.dispose();
     _playbackController?.dispose();
     super.dispose();
   }
@@ -111,10 +105,10 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
             _buildPlaybackPreview()
           else if (_stopping)
             // Mientras se detiene la grabacion y se prepara la vista previa
-            // (stopVideoRecording + playback.initialize, ver
-            // _detenerGrabacion) la camara ya no esta en vivo -- sin este
-            // indicador la pantalla se queda viendo el ultimo frame
-            // congelado sin ninguna señal de que sigue trabajando.
+            // (stopRecording + playback.initialize, ver _detenerGrabacion)
+            // la camara ya no esta en vivo -- sin este indicador la
+            // pantalla se queda viendo el ultimo frame congelado sin
+            // ninguna señal de que sigue trabajando.
             _buildSavingIndicator()
           else
             _buildCameraPreview(),
@@ -136,19 +130,24 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
                   return _buildErrorDescription(snapshot.error);
                 }
 
-                return DropdownButtonFormField<CameraDescription>(
-                  initialValue: _currentCamera,
-                  items: snapshot.data!.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.name))).toList(),
+                final cameras = snapshot.data!;
+                if (cameras.length <= 1) {
+                  // Solo una camara (o ninguna reportada todavia por el
+                  // navegador) -- no tiene caso mostrar un selector con un
+                  // solo elemento.
+                  return SizedBox.shrink();
+                }
+
+                return DropdownButtonFormField<CameraOption>(
+                  initialValue: cameras.firstWhere(
+                    (c) => c.deviceId == _currentDeviceId,
+                    orElse: () => cameras.first,
+                  ),
+                  items: cameras.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.label))).toList(),
                   onChanged: (camera) async {
                     if (camera != null) {
-                      await _controller?.dispose();
-                      _currentCamera = camera;
-                      _controller = CameraController(
-                        _currentCamera!,
-                        _resolution,
-                      );
-                      await _controller?.initialize();
-
+                      await _recorder.switchCamera(camera.deviceId);
+                      _currentDeviceId = camera.deviceId;
                       if (mounted) {
                         setState(() {});
                       }
@@ -183,7 +182,7 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         child: Text('Cancelar'),
       ),
       ElevatedButton(
-        onPressed: _controller == null || _stopping ? null : (_recording ? _detenerGrabacion : _iniciarGrabacion),
+        onPressed: !_cameraReady || _stopping ? null : (_recording ? _detenerGrabacion : _iniciarGrabacion),
         child: Text(_recording ? 'Detener' : 'Iniciar grabación'),
       ),
     ];
@@ -221,7 +220,7 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     const double width = 500;
     const double height = 300;
 
-    if (_controller == null) {
+    if (!_cameraReady) {
       return Container(
         width: width,
         height: height,
@@ -242,7 +241,7 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
       height: height,
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        child: CameraPreview(_controller!),
+        child: HtmlElementView(viewType: _recorder.previewViewType),
       ),
     );
   }
@@ -291,18 +290,16 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   Widget _buildErrorDescription(Object? e) {
     final String title;
     final String subtitle;
-    if (e is CameraException) {
-      if (e.code == 'CameraAccessDenied') {
+    if (e is WebVideoRecorderException) {
+      if (e.code == 'permission-denied') {
         title = 'Acceso a cámara denegado';
         subtitle = 'Asegurate de permitir el uso de la cámara en el sitio y recargar.';
       } else {
-        // Ej. cameraNotReadable -- la camara esta ocupada por otra pestaña/
-        // app, o por un residuo de una sesion anterior de este mismo
-        // dialogo que todavia no la libera. Es transitorio casi siempre, asi
-        // que se deja reintentar en vez de forzar a cerrar todo el
-        // formulario y volver a entrar.
+        // Ej. not-readable -- la camara esta ocupada por otra pestaña/app.
+        // Es transitorio casi siempre, asi que se deja reintentar en vez de
+        // forzar a cerrar todo el formulario y volver a entrar.
         title = e.code;
-        subtitle = e.description ?? 'Sin información adicional';
+        subtitle = e.message;
       }
     } else {
       title = 'Error desconocido';
@@ -329,14 +326,14 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
 
   void _reintentarCamara() {
     setState(() {
-      _availableCameras = availableCameras();
+      _cameraReady = false;
+      _availableCameras = _openCamera();
     });
-    _initializeCamera();
   }
 
-  void _iniciarGrabacion() async {
+  void _iniciarGrabacion() {
     try {
-      await _controller!.startVideoRecording();
+      _recorder.startRecording();
       _elapsed = Duration.zero;
       setState(() => _recording = true);
 
@@ -344,10 +341,10 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         setState(() => _elapsed += const Duration(seconds: 1));
       });
       _maxDurationTimer = Timer(_maxRecordingDuration, _detenerGrabacion);
-    } on CameraException catch (e) {
+    } on WebVideoRecorderException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          errorSnackBar(context, e.description ?? 'No se pudo iniciar la grabación'),
+          errorSnackBar(context, e.message),
         );
       }
     }
@@ -363,14 +360,16 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     _elapsedTicker?.cancel();
     setState(() => _stopping = true);
 
-    // Con stop+preview envueltos en un timeout, un fallo silencioso del
-    // navegador preparando la vista previa (ej. el blob del video grabado
-    // nunca dispara "loadedmetadata") ya no deja el dialogo congelado para
+    // Con stop+preview envueltos en un timeout, un fallo silencioso
+    // preparando la vista previa (ej. el blob del video grabado nunca
+    // dispara "loadedmetadata") ya no deja el dialogo congelado para
     // siempre sin ningun aviso -- a los 15s se cae a un error con opcion de
-    // volver a intentar.
+    // volver a intentar. stopRecording() en si ya tiene su propia red de
+    // seguridad interna de 5s (ver web_video_recorder_web.dart), asi que
+    // este timeout de aqui rara vez deberia llegar a activarse.
     VideoPlayerController? playback;
     try {
-      final video = await _controller!.stopVideoRecording().timeout(const Duration(seconds: 15));
+      final video = await _recorder.stopRecording().timeout(const Duration(seconds: 15));
       playback = VideoPlayerController.networkUrl(Uri.parse(video.path));
       await playback.initialize().timeout(const Duration(seconds: 15));
 
@@ -382,14 +381,14 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
           _playbackController = playback;
         });
       }
-    } on CameraException catch (e) {
+    } on WebVideoRecorderException catch (e) {
       if (mounted) {
         setState(() {
           _recording = false;
           _stopping = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          errorSnackBar(context, e.description ?? 'No se pudo detener la grabación'),
+          errorSnackBar(context, e.message),
         );
       }
     } on TimeoutException catch (_) {

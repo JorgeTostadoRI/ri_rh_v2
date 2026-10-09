@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/rejection_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_authorized_by_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -146,6 +147,8 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(widget.incidencia.reason, style: textTheme.bodyMedium),
+          if (incidencia.videoUrl != null)
+            IncidenciaVideoSection(videoUrl: incidencia.videoUrl!),
           if (incidencia.files.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
