@@ -382,9 +382,17 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     // este timeout de aqui rara vez deberia llegar a activarse.
     VideoPlayerController? playback;
     try {
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: antes de await stopRecording()');
       final video = await _recorder.stopRecording().timeout(const Duration(seconds: 15));
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: stopRecording() completo, video.path=${video.path}');
       playback = VideoPlayerController.networkUrl(Uri.parse(video.path));
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: antes de await playback.initialize()');
       await playback.initialize().timeout(const Duration(seconds: 15));
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: playback.initialize() completo');
 
       if (mounted) {
         setState(() {
@@ -395,6 +403,8 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         });
       }
     } on WebVideoRecorderException catch (e) {
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: catch WebVideoRecorderException -> ${e.code} ${e.message}');
       if (mounted) {
         setState(() {
           _recording = false;
@@ -405,6 +415,8 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         );
       }
     } on TimeoutException catch (_) {
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: catch TimeoutException');
       await playback?.dispose();
       if (mounted) {
         setState(() {
@@ -421,6 +433,8 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
       // VideoPlayerController.initialize(), que puede tronar con otros
       // tipos de excepcion) tambien debe quedar manejado aqui, en vez de
       // escaparse como un error sin atrapar hacia la consola del navegador.
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: catch general -> $e (${e.runtimeType})');
       await playback?.dispose();
       if (mounted) {
         setState(() {
