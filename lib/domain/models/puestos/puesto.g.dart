@@ -44,6 +44,8 @@ _Puesto _$PuestoFromJson(Map<String, dynamic> json) => _Puesto(
           ?.map((e) => PreguntaPuesto.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <PreguntaPuesto>[],
+  requiereInformacionCompleta:
+      json['requiere_informacion_completa'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$PuestoToJson(_Puesto instance) => <String, dynamic>{
@@ -55,6 +57,7 @@ Map<String, dynamic> _$PuestoToJson(_Puesto instance) => <String, dynamic>{
   'tabulador_salarial': instance.tabuladorSalarialUrl,
   'departamentos': instance.departamentos,
   'preguntas': instance.preguntas,
+  'requiere_informacion_completa': instance.requiereInformacionCompleta,
 };
 
 const _$TipoPuestoEnumMap = {

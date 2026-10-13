@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -6,8 +7,10 @@ import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
+import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/vacantes/widgets/iniciar_candidato_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/solicitud_vacante_edit_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/solicitud_vacante_form_dialog.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -28,6 +31,7 @@ class _VacantesScreenState extends State<VacantesScreen> {
     widget.viewmodel.createBatch.addListener(_onCreateBatch);
     widget.viewmodel.updateSolicitud.addListener(_onUpdateSolicitud);
     widget.viewmodel.cambiarEstatus.addListener(_onCambiarEstatus);
+    widget.viewmodel.iniciarCandidato.addListener(_onIniciarCandidato);
   }
 
   @override
@@ -35,6 +39,7 @@ class _VacantesScreenState extends State<VacantesScreen> {
     widget.viewmodel.createBatch.removeListener(_onCreateBatch);
     widget.viewmodel.updateSolicitud.removeListener(_onUpdateSolicitud);
     widget.viewmodel.cambiarEstatus.removeListener(_onCambiarEstatus);
+    widget.viewmodel.iniciarCandidato.removeListener(_onIniciarCandidato);
     super.dispose();
   }
 
@@ -86,12 +91,47 @@ class _VacantesScreenState extends State<VacantesScreen> {
     }
   }
 
+  void _onIniciarCandidato() {
+    if (widget.viewmodel.iniciarCandidato.completed) {
+      widget.viewmodel.iniciarCandidato.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Candidato iniciado, se le envió el correo con sus siguientes pasos')),
+      );
+      return;
+    }
+    if (widget.viewmodel.iniciarCandidato.error) {
+      final error = (widget.viewmodel.iniciarCandidato.result as Error).error;
+      widget.viewmodel.iniciarCandidato.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'No se pudo iniciar al candidato', error: error),
+      );
+    }
+  }
+
+  Future<void> _handleIniciarCandidato(SolicitudVacante solicitud) async {
+    final params = await showDialog<({String nombre, String correo, PlatformFile cartaOferta})>(
+      context: context,
+      builder: (context) => const IniciarCandidatoDialog(),
+    );
+    if (params != null) {
+      widget.viewmodel.iniciarCandidato.execute((
+        id: solicitud.id!,
+        nombre: params.nombre,
+        correo: params.correo,
+        cartaOferta: params.cartaOferta,
+      ));
+    }
+  }
+
   Future<void> _handleAdd() async {
     final filas = await showDialog<List<VacanteRowParams>>(
       context: context,
       builder: (context) => SolicitudVacanteFormDialog(
         puestos: widget.viewmodel.puestos,
         horarios: widget.viewmodel.horarios,
+        departamentos: widget.viewmodel.departamentos,
+        createPuesto: widget.viewmodel.createPuesto,
+        editPuesto: widget.viewmodel.editPuesto,
       ),
     );
     if (filas != null && filas.isNotEmpty) {
@@ -225,7 +265,10 @@ class _VacantesScreenState extends State<VacantesScreen> {
                     itemBuilder: (context, index) {
                       final solicitud = solicitudes[index];
                       final esDireccion = widget.viewmodel.esDireccion;
+                      final esRH = widget.viewmodel.esRH;
                       final pendiente = solicitud.estatus == EstatusVacante.pendiente;
+                      final rechazada = solicitud.estatus == EstatusVacante.rechazada;
+                      final aceptada = solicitud.estatus == EstatusVacante.aceptada;
                       final turnoDisplay = widget.viewmodel.horarioDisplayNombre(solicitud.turno);
                       final subtitleParts = [
                         if (solicitud.createdAt != null) dateFormat.format(solicitud.createdAt!),
@@ -260,6 +303,11 @@ class _VacantesScreenState extends State<VacantesScreen> {
                             ),
                             if (solicitud.justificacion.isNotEmpty)
                               Text('Justificación: ${solicitud.justificacion}'),
+                            if (!rechazada)
+                              StepTimeline(
+                                length: SolicitudVacanteStage.values.length,
+                                currentStep: solicitud.stage.index,
+                              ),
                             if (esDireccion)
                               Wrap(
                                 spacing: 4,
@@ -291,6 +339,17 @@ class _VacantesScreenState extends State<VacantesScreen> {
                                     onPressed: () => _handleEditPuesto(solicitud),
                                     icon: Icon(Icons.work_outline),
                                     label: Text('Editar puesto'),
+                                  ),
+                                ],
+                              ),
+                            if (esRH && aceptada)
+                              Wrap(
+                                spacing: 4,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () => _handleIniciarCandidato(solicitud),
+                                    icon: Icon(Icons.person_add_alt),
+                                    label: Text('Iniciar candidato'),
                                   ),
                                 ],
                               ),

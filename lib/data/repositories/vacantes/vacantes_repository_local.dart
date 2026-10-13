@@ -1,4 +1,6 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
+import 'package:ri_rh_v2/domain/models/vacantes/candidato.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -63,6 +65,25 @@ class VacantesRepositoryLocal extends VacantesRepository {
     final index = _solicitudes.indexWhere((s) => s.id == id);
     if (index == -1) return Result.error(Exception('Not found'));
     final updated = _solicitudes[index].copyWith(estatus: EstatusVacante.values.byName(estatus));
+    _solicitudes[index] = updated;
+    return Result.ok(updated);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> iniciarCandidato({
+    required int id,
+    required String nombre,
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    final index = _solicitudes.indexWhere((s) => s.id == id);
+    if (index == -1) return Result.error(Exception('Not found'));
+    final updated = _solicitudes[index].copyWith(
+      candidatos: [
+        ..._solicitudes[index].candidatos,
+        Candidato(nombre: nombre, correo: correo, createdAt: DateTime.now()),
+      ],
+    );
     _solicitudes[index] = updated;
     return Result.ok(updated);
   }

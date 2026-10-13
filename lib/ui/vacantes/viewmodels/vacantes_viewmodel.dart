@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
@@ -31,6 +32,7 @@ typedef SolicitudEditParams = ({
   String justificacion,
 });
 typedef SolicitudEstatusParams = ({int id, String estatus});
+typedef IniciarCandidatoParams = ({int id, String nombre, String correo, PlatformFile cartaOferta});
 
 // Fase B (temporal): mismo criterio que usa el backend en
 // IsLiderRHoDireccion. Se ampliará a cualquier líder más adelante.
@@ -48,6 +50,7 @@ class VacantesViewmodel extends ChangeNotifier {
     createBatch = Command1(_createBatch);
     updateSolicitud = Command1(_updateSolicitud);
     cambiarEstatus = Command1(_cambiarEstatus);
+    iniciarCandidato = Command1(_iniciarCandidato);
     createPuesto = Command1(_createPuesto);
     editPuesto = Command1(_editPuesto);
   }
@@ -64,6 +67,7 @@ class VacantesViewmodel extends ChangeNotifier {
   late final Command1<List<SolicitudVacante>, List<VacanteRowParams>> createBatch;
   late final Command1<SolicitudVacante, SolicitudEditParams> updateSolicitud;
   late final Command1<SolicitudVacante, SolicitudEstatusParams> cambiarEstatus;
+  late final Command1<SolicitudVacante, IniciarCandidatoParams> iniciarCandidato;
   late final Command1<Puesto, PuestoCreateParams> createPuesto;
   late final Command1<Puesto, PuestoEditParams> editPuesto;
 
@@ -97,6 +101,11 @@ class VacantesViewmodel extends ChangeNotifier {
   bool _esDireccion = false;
   bool get esDireccion => _esDireccion;
 
+  // Fase E: iniciar candidato es exclusivo del líder de RH (ver IsLiderRH
+  // en el backend) -- Dirección no participa en este paso.
+  bool _esRH = false;
+  bool get esRH => _esRH;
+
   void _sort() {
     _solicitudes.sort((a, b) => (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)));
   }
@@ -112,6 +121,7 @@ class VacantesViewmodel extends ChangeNotifier {
     final currentUser = _authRepository.getCurrentUser();
     _hasPermissions = currentUser?.rol == 'LIDER' && _departamentosConAcceso.contains(currentUser?.departamento?.nombre);
     _esDireccion = currentUser?.departamento?.nombre == 'Direccion';
+    _esRH = currentUser?.departamento?.nombre == 'Recursos Humanos';
 
     final resultSolicitudes = await _vacantesRepository.getSolicitudes();
     switch (resultSolicitudes) {
@@ -226,6 +236,27 @@ class VacantesViewmodel extends ChangeNotifier {
     return Result.ok(result.value);
   }
 
+  Future<Result<SolicitudVacante>> _iniciarCandidato(IniciarCandidatoParams params) async {
+    final result = await _vacantesRepository.iniciarCandidato(
+      id: params.id,
+      nombre: params.nombre,
+      correo: params.correo,
+      cartaOferta: params.cartaOferta,
+    );
+    switch (result) {
+      case Error():
+        _log.warning('Failed to iniciar candidato', error: result.error);
+        return Result.error(result.error);
+      case Ok():
+    }
+    _solicitudes = [
+      for (final s in _solicitudes)
+        if (s.id == result.value.id) result.value else s,
+    ];
+    notifyListeners();
+    return Result.ok(result.value);
+  }
+
   Future<Result<Puesto>> _createPuesto(PuestoCreateParams params) async {
     final result = await _empleadosRepository.createPuesto(
       params.nombre,
@@ -243,19 +274,27 @@ class VacantesViewmodel extends ChangeNotifier {
     }
 
     var puesto = result.value;
+    _puestos = [..._puestos, puesto];
+    notifyListeners();
+
     final tabulador = params.tabuladorSalarial;
     if (tabulador != null) {
       final uploadResult = await _empleadosRepository.uploadTabuladorSalarial(puesto.id!, tabulador);
       switch (uploadResult) {
         case Error():
+          // El puesto ya quedó creado (sin tabulador) -- se reporta el
+          // error en vez de tragárselo en silencio, que es justo la clase
+          // de hueco que reportó RH (puesto incompleto sin que nadie se
+          // diera cuenta). Se puede terminar luego con "Editar puesto".
           _log.warning('Puesto creado pero falló la subida del tabulador salarial', error: uploadResult.error);
+          return Result.error(uploadResult.error);
         case Ok():
           puesto = uploadResult.value;
+          _replacePuesto(puesto);
+          notifyListeners();
       }
     }
 
-    _puestos = [..._puestos, puesto];
-    notifyListeners();
     return Result.ok(puesto);
   }
 
@@ -277,19 +316,23 @@ class VacantesViewmodel extends ChangeNotifier {
     }
 
     var puesto = result.value;
+    _replacePuesto(puesto);
+    notifyListeners();
+
     final tabulador = params.tabuladorSalarial;
     if (tabulador != null) {
       final uploadResult = await _empleadosRepository.uploadTabuladorSalarial(puesto.id!, tabulador);
       switch (uploadResult) {
         case Error():
           _log.warning('Puesto editado pero falló la subida del tabulador salarial', error: uploadResult.error);
+          return Result.error(uploadResult.error);
         case Ok():
           puesto = uploadResult.value;
+          _replacePuesto(puesto);
+          notifyListeners();
       }
     }
 
-    _replacePuesto(puesto);
-    notifyListeners();
     return Result.ok(puesto);
   }
 }

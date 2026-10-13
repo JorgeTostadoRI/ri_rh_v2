@@ -131,6 +131,36 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
     }
   }
 
+  /// Puestos nuevos (o puestos ya marcados como tales) exigen rol,
+  /// responsabilidades, tabulador y ambas listas de preguntas no vacías
+  /// (ver PuestoSerializer.validate() en el backend). Los puestos que ya
+  /// existían de antes quedan exentos para siempre.
+  bool get _requiereCompleta => !widget._isEditing || widget.initialPuesto!.requiereInformacionCompleta;
+
+  bool get _tieneTabulador => _tabuladorSalarial != null || widget.initialPuesto?.tabuladorSalarialUrl != null;
+
+  bool get _tienePreguntaEntrevista => _preguntasEntrevista.any((c) => c.text.trim().isNotEmpty);
+
+  bool get _tienePreguntaPuesto => _preguntasPuesto.any((c) => c.text.trim().isNotEmpty);
+
+  bool get _puedeGuardar {
+    if (_nombre.text.trim().isEmpty) return false;
+    if (!_requiereCompleta) return true;
+    return _rol != null &&
+        _responsabilidades.text.trim().isNotEmpty &&
+        _tieneTabulador &&
+        _tienePreguntaEntrevista &&
+        _tienePreguntaPuesto;
+  }
+
+  String _tabuladorLabel() {
+    final sufijo = _requiereCompleta ? ' *' : '';
+    if (_tabuladorSalarial == null && widget.initialPuesto?.tabuladorSalarialUrl != null) {
+      return 'Tabulador salarial (Excel)$sufijo — ya hay uno adjuntado, elige otro para reemplazarlo';
+    }
+    return 'Tabulador salarial (Excel)$sufijo';
+  }
+
   List<PreguntaPuesto> get _preguntas => [
         for (var i = 0; i < _preguntasEntrevista.length; i++)
           if (_preguntasEntrevista[i].text.trim().isNotEmpty)
@@ -201,7 +231,7 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
       crossAxisAlignment: .start,
       spacing: 8,
       children: [
-        Text(title, style: TextTheme.of(context).labelMedium),
+        Text(_requiereCompleta ? '$title *' : title, style: TextTheme.of(context).labelMedium),
         for (var i = 0; i < controllers.length; i++)
           Row(
             children: [
@@ -209,6 +239,7 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
                 child: TextField(
                   controller: controllers[i],
                   decoration: InputDecoration(labelText: 'Pregunta ${i + 1}'),
+                  onChanged: (_) => setState(() {}),
                 ),
               ),
               IconButton(
@@ -245,9 +276,15 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
                 crossAxisAlignment: .start,
                 spacing: 16,
                 children: [
+                  if (_requiereCompleta)
+                    Text(
+                      'Los campos marcados con * son obligatorios para puestos nuevos.',
+                      style: TextTheme.of(context).bodySmall,
+                    ),
                   TextField(
                     controller: _nombre,
                     decoration: InputDecoration(labelText: 'NOMBRE'),
+                    onChanged: (_) => setState(() {}),
                   ),
                   DropdownButtonFormField<TipoPuesto>(
                     initialValue: _tipo,
@@ -257,7 +294,7 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
                   ),
                   DropdownButtonFormField<String>(
                     initialValue: _rol,
-                    decoration: InputDecoration(labelText: 'ROL'),
+                    decoration: InputDecoration(labelText: _requiereCompleta ? 'ROL *' : 'ROL'),
                     items: rolOptions.map((r) => DropdownMenuItem(value: r.$1, child: Text(r.$2))).toList(),
                     onChanged: (value) => setState(() => _rol = value),
                   ),
@@ -283,12 +320,11 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
                   TextField(
                     controller: _responsabilidades,
                     maxLines: 4,
-                    decoration: InputDecoration(labelText: 'RESPONSABILIDADES'),
+                    decoration: InputDecoration(labelText: _requiereCompleta ? 'RESPONSABILIDADES *' : 'RESPONSABILIDADES'),
+                    onChanged: (_) => setState(() {}),
                   ),
                   DocumentPickerRow(
-                    label: _tabuladorSalarial == null && widget.initialPuesto?.tabuladorSalarialUrl != null
-                        ? 'Tabulador salarial (Excel) — ya hay uno adjuntado, elige otro para reemplazarlo'
-                        : 'Tabulador salarial (Excel)',
+                    label: _tabuladorLabel(),
                     file: _tabuladorSalarial,
                     onPick: _pickTabuladorSalarial,
                     onView: _tabuladorSalarial != null || widget.initialPuesto?.tabuladorSalarialUrl != null
@@ -307,7 +343,7 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
               child: Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: running || _nombre.text.trim().isEmpty ? null : _submitPuesto,
+              onPressed: running || !_puedeGuardar ? null : _submitPuesto,
               child: running
                   ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : Text(widget._isEditing ? 'Guardar cambios' : 'Crear'),

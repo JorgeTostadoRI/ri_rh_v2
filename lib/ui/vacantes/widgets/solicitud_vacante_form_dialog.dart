@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/horario/horario.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
+import 'package:ri_rh_v2/domain/models/puestos/puesto_params.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
 import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
+import 'package:ri_rh_v2/utils/command.dart';
 
 class _VacanteFormRow {
   Puesto? puesto;
@@ -22,10 +25,20 @@ class _VacanteFormRow {
 }
 
 class SolicitudVacanteFormDialog extends StatefulWidget {
-  const SolicitudVacanteFormDialog({super.key, required this.puestos, required this.horarios});
+  const SolicitudVacanteFormDialog({
+    super.key,
+    required this.puestos,
+    required this.horarios,
+    required this.departamentos,
+    required this.createPuesto,
+    required this.editPuesto,
+  });
 
   final List<Puesto> puestos;
   final List<Horario> horarios;
+  final List<Departamento> departamentos;
+  final Command1<Puesto, PuestoCreateParams> createPuesto;
+  final Command1<Puesto, PuestoEditParams> editPuesto;
 
   @override
   State<SolicitudVacanteFormDialog> createState() => _SolicitudVacanteFormDialogState();
@@ -34,6 +47,36 @@ class SolicitudVacanteFormDialog extends StatefulWidget {
 class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog> {
   final _formKey = GlobalKey<FormState>();
   final _filas = [_VacanteFormRow()];
+  late List<Puesto> _puestos;
+
+  @override
+  void initState() {
+    super.initState();
+    _puestos = List.of(widget.puestos);
+  }
+
+  Future<void> _openEditPuestoDialog(_VacanteFormRow fila) async {
+    final actual = fila.puesto;
+    if (actual == null) return;
+    final puesto = await showDialog<Puesto>(
+      context: context,
+      builder: (context) => PuestoFormDialog(
+        createPuesto: widget.createPuesto,
+        editPuesto: widget.editPuesto,
+        departamentos: widget.departamentos,
+        initialPuesto: actual,
+      ),
+    );
+    if (puesto != null) {
+      setState(() {
+        fila.puesto = puesto;
+        _puestos = [
+          for (final p in _puestos)
+            if (p.id == puesto.id) puesto else p,
+        ];
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -80,10 +123,11 @@ class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog>
               Expanded(
                 flex: 3,
                 child: DropdownButtonFormField<Puesto>(
+                  key: ValueKey(fila.puesto?.id),
                   initialValue: fila.puesto,
                   isExpanded: true,
                   decoration: InputDecoration(labelText: 'PUESTO'),
-                  items: widget.puestos
+                  items: _puestos
                       .map((p) => DropdownMenuItem(value: p, child: Text(p.nombre, overflow: TextOverflow.ellipsis)))
                       .toList(),
                   onChanged: (value) => setState(() {
@@ -94,6 +138,11 @@ class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog>
                   }),
                   validator: (value) => value == null ? 'Requerido' : null,
                 ),
+              ),
+              IconButton(
+                tooltip: 'Editar puesto',
+                onPressed: fila.puesto == null ? null : () => _openEditPuestoDialog(fila),
+                icon: Icon(Icons.edit_outlined),
               ),
               Expanded(
                 flex: 2,

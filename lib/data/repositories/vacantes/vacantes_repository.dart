@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -33,4 +34,15 @@ abstract class VacantesRepository {
   /// Acepta o rechaza una solicitud. Solo Dirección puede hacerlo (lo
   /// valida el backend).
   Future<Result<SolicitudVacante>> cambiarEstatus(int id, String estatus);
+
+  /// Inicia un candidato (Fase E) para una solicitud ya aceptada: adjunta su
+  /// carta oferta y encola el correo con el link para que llene sus datos.
+  /// Se puede llamar varias veces sobre la misma solicitud si `cantidad > 1`.
+  /// Solo líder de RH puede hacerlo (lo valida el backend).
+  Future<Result<SolicitudVacante>> iniciarCandidato({
+    required int id,
+    required String nombre,
+    required String correo,
+    required PlatformFile cartaOferta,
+  });
 }

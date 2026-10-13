@@ -25,6 +25,11 @@ _SolicitudVacante _$SolicitudVacanteFromJson(Map<String, dynamic> json) =>
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
+      candidatos:
+          (json['candidatos'] as List<dynamic>?)
+              ?.map((e) => Candidato.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <Candidato>[],
     );
 
 Map<String, dynamic> _$SolicitudVacanteToJson(_SolicitudVacante instance) =>
@@ -42,6 +47,7 @@ Map<String, dynamic> _$SolicitudVacanteToJson(_SolicitudVacante instance) =>
       'solicitante_nombre': instance.solicitanteNombre,
       'estatus': _$EstatusVacanteEnumMap[instance.estatus]!,
       'created_at': instance.createdAt?.toIso8601String(),
+      'candidatos': instance.candidatos,
     };
 
 const _$EstatusVacanteEnumMap = {

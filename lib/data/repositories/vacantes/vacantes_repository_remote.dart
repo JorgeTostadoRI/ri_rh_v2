@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
@@ -56,5 +57,15 @@ class VacantesRepositoryRemote extends VacantesRepository {
   @override
   Future<Result<SolicitudVacante>> cambiarEstatus(int id, String estatus) async {
     return _apiClient.cambiarEstatusSolicitudVacante(id, estatus);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> iniciarCandidato({
+    required int id,
+    required String nombre,
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    return _apiClient.iniciarCandidato(id, nombre: nombre, correo: correo, cartaOferta: cartaOferta);
   }
 }

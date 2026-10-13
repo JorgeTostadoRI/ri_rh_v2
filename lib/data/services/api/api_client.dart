@@ -655,6 +655,36 @@ class ApiClient {
     }
   }
 
+  Future<Result<SolicitudVacante>> iniciarCandidato(
+    int solicitudId, {
+    required String nombre,
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'nombre': nombre,
+        'correo': correo,
+        'carta_oferta': MultipartFile.fromBytes(
+          cartaOferta.bytes!,
+          filename: cartaOferta.name,
+          contentType: getMediaTypeFromExtension(cartaOferta.extension!),
+        ),
+      });
+      final response = await dio.post('/api/rh/solicitudes-vacante/$solicitudId/iniciar-candidato/', data: formData);
+      final result = SolicitudVacante.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // HUELLAS
   Future<Result<List<HuellaApiModel>>> getHuellas({int? userId}) async {
     final dio = _dioFactory();
@@ -1056,6 +1086,7 @@ class ApiClient {
     String? responsabilidades,
     List<int>? departamentoIds,
     List<PreguntaPuesto>? preguntas,
+    bool? requiereInformacionCompleta,
   }) async {
     final dio = _dioFactory();
     try {
@@ -1067,6 +1098,7 @@ class ApiClient {
         if (responsabilidades != null) 'responsabilidades': responsabilidades,
         if (departamentoIds != null) 'departamentos': departamentoIds,
         if (preguntas != null) 'preguntas': preguntas.map((p) => p.toJson()).toList(),
+        if (requiereInformacionCompleta != null) 'requiere_informacion_completa': requiereInformacionCompleta,
       });
       final result = Puesto.fromJson(response.data);
       return Result.ok(result);

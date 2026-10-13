@@ -42,6 +42,13 @@ abstract class Puesto with _$Puesto {
     String? tabuladorSalarialUrl,
     @Default(<int>[]) List<int> departamentos,
     @Default(<PreguntaPuesto>[]) List<PreguntaPuesto> preguntas,
+    /// Si es true, rol/responsabilidades/tabulador/cuestionarios son
+    /// obligatorios para este puesto (ver PuestoFormDialog). Los puestos
+    /// que ya existían antes de este requisito quedan en false para
+    /// siempre, sin importar quién los edite después.
+    @JsonKey(name: 'requiere_informacion_completa')
+    @Default(true)
+    bool requiereInformacionCompleta,
   }) = _Puesto;
 
   factory Puesto.fromJson(Map<String, Object?> json) => _$PuestoFromJson(json);
