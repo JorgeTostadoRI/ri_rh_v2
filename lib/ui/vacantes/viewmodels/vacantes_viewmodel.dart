@@ -32,7 +32,10 @@ typedef SolicitudEditParams = ({
   String justificacion,
 });
 typedef SolicitudEstatusParams = ({int id, String estatus});
-typedef IniciarCandidatoParams = ({int id, String nombre, String correo, PlatformFile cartaOferta});
+typedef IniciarCandidatosBatchParams = ({
+  int id,
+  List<({String nombre, String correo, PlatformFile cartaOferta})> filas,
+});
 
 // Fase B (temporal): mismo criterio que usa el backend en
 // IsLiderRHoDireccion. Se ampliará a cualquier líder más adelante.
@@ -50,7 +53,7 @@ class VacantesViewmodel extends ChangeNotifier {
     createBatch = Command1(_createBatch);
     updateSolicitud = Command1(_updateSolicitud);
     cambiarEstatus = Command1(_cambiarEstatus);
-    iniciarCandidato = Command1(_iniciarCandidato);
+    iniciarCandidatoBatch = Command1(_iniciarCandidatoBatch);
     createPuesto = Command1(_createPuesto);
     editPuesto = Command1(_editPuesto);
   }
@@ -67,7 +70,7 @@ class VacantesViewmodel extends ChangeNotifier {
   late final Command1<List<SolicitudVacante>, List<VacanteRowParams>> createBatch;
   late final Command1<SolicitudVacante, SolicitudEditParams> updateSolicitud;
   late final Command1<SolicitudVacante, SolicitudEstatusParams> cambiarEstatus;
-  late final Command1<SolicitudVacante, IniciarCandidatoParams> iniciarCandidato;
+  late final Command1<SolicitudVacante, IniciarCandidatosBatchParams> iniciarCandidatoBatch;
   late final Command1<Puesto, PuestoCreateParams> createPuesto;
   late final Command1<Puesto, PuestoEditParams> editPuesto;
 
@@ -236,25 +239,35 @@ class VacantesViewmodel extends ChangeNotifier {
     return Result.ok(result.value);
   }
 
-  Future<Result<SolicitudVacante>> _iniciarCandidato(IniciarCandidatoParams params) async {
-    final result = await _vacantesRepository.iniciarCandidato(
-      id: params.id,
-      nombre: params.nombre,
-      correo: params.correo,
-      cartaOferta: params.cartaOferta,
-    );
-    switch (result) {
-      case Error():
-        _log.warning('Failed to iniciar candidato', error: result.error);
-        return Result.error(result.error);
-      case Ok():
+  /// Inicia un candidato por cada fila que RH llenó en el diálogo (puede
+  /// ser más de uno si la solicitud pide varias vacantes). Se detiene en el
+  /// primer error -- lo ya iniciado hasta ese punto queda iniciado (no hay
+  /// rollback) y se refleja en [solicitudes], mismo criterio que
+  /// [_createBatch].
+  Future<Result<SolicitudVacante>> _iniciarCandidatoBatch(IniciarCandidatosBatchParams params) async {
+    SolicitudVacante? ultima;
+    for (final fila in params.filas) {
+      final result = await _vacantesRepository.iniciarCandidato(
+        id: params.id,
+        nombre: fila.nombre,
+        correo: fila.correo,
+        cartaOferta: fila.cartaOferta,
+      );
+      switch (result) {
+        case Error():
+          _log.warning('Failed to iniciar candidato', error: result.error);
+          if (ultima != null) {
+            _solicitudes = [for (final s in _solicitudes) if (s.id == ultima.id) ultima else s];
+            notifyListeners();
+          }
+          return Result.error(result.error);
+        case Ok():
+          ultima = result.value;
+      }
     }
-    _solicitudes = [
-      for (final s in _solicitudes)
-        if (s.id == result.value.id) result.value else s,
-    ];
+    _solicitudes = [for (final s in _solicitudes) if (s.id == ultima!.id) ultima else s];
     notifyListeners();
-    return Result.ok(result.value);
+    return Result.ok(ultima!);
   }
 
   Future<Result<Puesto>> _createPuesto(PuestoCreateParams params) async {

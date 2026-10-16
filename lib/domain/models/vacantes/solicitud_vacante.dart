@@ -10,16 +10,17 @@ enum EstatusVacante {
   rechazada;
 }
 
-/// Etapas del flujo de reclutamiento, calculadas en el frontend a partir de
+/// Etapas a nivel SOLICITUD (no por candidato -- para eso está
+/// CandidatoStage en candidato.dart), calculadas en el frontend a partir de
 /// los datos crudos que regresa el backend -- mismo patrón que
 /// IncidenciaApprovalStage en lib/domain/models/incidencias/incidencia.dart
-/// (no existe un campo "stage" en el backend, se deriva aquí). Se amplía a
-/// futuro conforme se construyan las fases F/G/H.
+/// (no existe un campo "stage" en el backend, se deriva aquí). Esta barra
+/// solo se muestra mientras no hay ningún candidato todavía (ver
+/// vacantes_screen.dart) -- por eso se queda en 3 pasos nada más.
 enum SolicitudVacanteStage {
   pendiente,
   aceptada,
   candidatoIniciado,
-  candidatoCompletado,
 }
 
 @freezed
@@ -46,9 +47,6 @@ abstract class SolicitudVacante with _$SolicitudVacante {
 
 extension SolicitudVacanteStageGetters on SolicitudVacante {
   SolicitudVacanteStage get stage {
-    if (candidatos.any((c) => c.estado == CandidatoEstado.completado)) {
-      return SolicitudVacanteStage.candidatoCompletado;
-    }
     if (candidatos.isNotEmpty) return SolicitudVacanteStage.candidatoIniciado;
     if (estatus == EstatusVacante.aceptada) return SolicitudVacanteStage.aceptada;
     return SolicitudVacanteStage.pendiente;

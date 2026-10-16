@@ -45,7 +45,9 @@ import 'package:ri_rh_v2/ui/reportes/viewmodels/reporte_incidencia_nomina_viewmo
 import 'package:ri_rh_v2/ui/reportes/widgets/reporte_asistencia_screen.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/viewmodels/dias_festivos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/widgets/dias_festivos_screen.dart';
+import 'package:ri_rh_v2/ui/vacantes/viewmodels/candidato_revision_viewmodel.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/vacantes/widgets/candidato_revision_screen.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/vacantes_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
@@ -350,7 +352,26 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 horarioRepository: context.read(),
               ),
             );
-          }
+          },
+          routes: [
+            GoRoute(
+              path: Routes.revisionCandidato,
+              builder: (context, state) {
+                final candidatoId = int.tryParse(state.pathParameters['candidatoId']!);
+                if (candidatoId == null) {
+                  return const NotFoundScreen(message: 'Candidato no encontrado');
+                }
+
+                return CandidatoRevisionScreen(
+                  viewmodel: CandidatoRevisionViewmodel(
+                    candidatoId: candidatoId,
+                    log: context.read(),
+                    vacantesRepository: context.read(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ],
     ),

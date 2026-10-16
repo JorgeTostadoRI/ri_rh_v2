@@ -22,9 +22,11 @@ abstract final class Routes {
   static const reportes = '/reportes';
   static const diasFestivos = '/dias-festivos';
   static const reclutamiento = '/reclutamiento';
+  static const revisionCandidato = 'candidatos/:candidatoId';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.url}/new';
   static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}';
   static String huellasOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}/$huellas';
   static String expedienteOfPracticante(Practicante practicante) => '$practicantes/${practicante.base.id}';
   static String huellasOfPracticante(Practicante practicante) => '$practicantes/${practicante.base.id}/$huellas';
+  static String revisionOfCandidato(int candidatoId) => '$reclutamiento/candidatos/$candidatoId';
 }

@@ -5,10 +5,16 @@ class StepTimeline extends StatelessWidget {
     super.key,
     required this.length,
     required this.currentStep,
+    this.stepLabels,
   });
 
   final int length;
   final int currentStep;
+
+  /// Nombre de cada paso (mismo orden/longitud que `length`) -- si se da,
+  /// cada punto se envuelve en un [Tooltip] para que, al pasar el mouse
+  /// encima (o mantener presionado en touch), se vea de qué paso se trata.
+  final List<String>? stepLabels;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,7 @@ class StepTimeline extends StatelessWidget {
               final isCompleted = stageIndex <= currentStep;
               final isCurrent = stageIndex == currentStep;
 
-              return Container(
+              final dot = Container(
                 width: 14,
                 height: 14,
                 decoration: BoxDecoration(
@@ -44,6 +50,10 @@ class StepTimeline extends StatelessWidget {
                   ),
                 ),
               );
+              final label = stepLabels != null && stageIndex < stepLabels!.length
+                  ? stepLabels![stageIndex]
+                  : null;
+              return label == null ? dot : Tooltip(message: label, child: dot);
             } else {
               final connectorIndex = index ~/ 2;
               final isCompleted = connectorIndex < currentStep;
