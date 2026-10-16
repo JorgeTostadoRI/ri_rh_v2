@@ -59,6 +59,12 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
     if (_ownsSession) {
       _viewmodel.endSession();
     }
+    // Sin esto, el listener al escaner de huellas de _viewmodel (ver
+    // MisIncidenciasViewmodel._capturesSub) se queda vivo para siempre cada
+    // vez que se sale normalmente de esta pantalla -- didUpdateWidget de
+    // arriba solo cubre el caso de una instancia huerfana por
+    // reconstruccion del router, no el de salir de la pantalla.
+    _viewmodel.dispose();
     super.dispose();
   }
 
