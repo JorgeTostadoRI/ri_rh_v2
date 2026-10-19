@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
@@ -121,6 +122,7 @@ class VacantesRepositoryLocal extends VacantesRepository {
       comisionesDetalle: params.comisionesDetalle,
       herramientas: params.herramientas,
       entregaEquipo: params.entregaEquipo,
+      montoRetencionInfonavit: params.montoRetencionInfonavit,
       equiposEntregados: params.equiposEntregados,
     );
     _candidatosDetalle[params.id] = actualizado;
@@ -146,5 +148,17 @@ class VacantesRepositoryLocal extends VacantesRepository {
   @override
   Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id) async {
     return Result.ok((url: 'https://example.com/fake.docx', nombreArchivo: 'fake.docx'));
+  }
+
+  @override
+  Future<Result<AltaCompletada>> completarAltaCandidato(int id, CompletarAltaParams params) async {
+    final actual = _candidatosDetalle[id] ?? CandidatoDetalle(id: id, nombre: '', correo: '');
+    final actualizado = actual.copyWith(estado: CandidatoEstado.contratado, empleado: 1);
+    _candidatosDetalle[id] = actualizado;
+    return Result.ok((
+      empleadoId: 1,
+      nombreCompleto: actual.nombre,
+      credenciales: const CredencialesGeneradas(username: 'FAKE.USUARIO', password: 'fake-password'),
+    ));
   }
 }

@@ -94,4 +94,9 @@ class VacantesRepositoryRemote extends VacantesRepository {
   Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id) async {
     return _apiClient.obtenerVistaPreviaDocumentos(id);
   }
+
+  @override
+  Future<Result<AltaCompletada>> completarAltaCandidato(int id, CompletarAltaParams params) async {
+    return _apiClient.completarAltaCandidato(id, params);
+  }
 }

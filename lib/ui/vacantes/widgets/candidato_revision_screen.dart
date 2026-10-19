@@ -4,11 +4,13 @@ import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/credenciales_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/candidato_revision_viewmodel.dart';
+import 'package:ri_rh_v2/ui/vacantes/widgets/completar_alta_card.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/detalles_contratacion_card.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -68,6 +70,7 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
     widget.viewmodel.solicitarContrato.addListener(_onSolicitarContrato);
     widget.viewmodel.rechazarDocumentacion.addListener(_onRechazarDocumentacion);
     widget.viewmodel.vistaPreviaDocumentos.addListener(_onVistaPreviaDocumentos);
+    widget.viewmodel.completarAlta.addListener(_onCompletarAlta);
   }
 
   @override
@@ -76,6 +79,7 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
     widget.viewmodel.solicitarContrato.removeListener(_onSolicitarContrato);
     widget.viewmodel.rechazarDocumentacion.removeListener(_onRechazarDocumentacion);
     widget.viewmodel.vistaPreviaDocumentos.removeListener(_onVistaPreviaDocumentos);
+    widget.viewmodel.completarAlta.removeListener(_onCompletarAlta);
     super.dispose();
   }
 
@@ -142,6 +146,24 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
       widget.viewmodel.vistaPreviaDocumentos.clearResult();
       ScaffoldMessenger.of(context).showSnackBar(
         errorSnackBar(context, 'No se pudieron generar los documentos', error: error),
+      );
+    }
+  }
+
+  void _onCompletarAlta() {
+    if (widget.viewmodel.completarAlta.completed) {
+      final alta = (widget.viewmodel.completarAlta.result as Ok<AltaCompletada>).value;
+      widget.viewmodel.completarAlta.clearResult();
+      if (alta.credenciales != null) {
+        CredencialesDialog.show(context, nombre: alta.nombreCompleto, credenciales: alta.credenciales!);
+      }
+      return;
+    }
+    if (widget.viewmodel.completarAlta.error) {
+      final error = widget.viewmodel.completarAlta.result;
+      widget.viewmodel.completarAlta.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'No se pudo completar el alta', error: error),
       );
     }
   }
@@ -214,6 +236,15 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
                       vistaPreviaDocumentos: widget.viewmodel.vistaPreviaDocumentos,
                     ),
                   ),
+                  if (candidato.contratoSolicitadoEn != null)
+                    SizedBox(
+                      width: double.infinity,
+                      child: CompletarAltaCard(
+                        key: ValueKey(candidato.empleado),
+                        candidato: candidato,
+                        completarAlta: widget.viewmodel.completarAlta,
+                      ),
+                    ),
                 ],
               );
             },

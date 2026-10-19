@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -6,6 +7,7 @@ import 'package:ri_rh_v2/utils/result.dart';
 typedef DetalleContratacionParams = ({
   int id,
   double? salarioDiario,
+  double? montoRetencionInfonavit,
   DateTime? fechaIngreso,
   String tipoContrato,
   String periodoTipo,
@@ -96,6 +98,16 @@ abstract class VacantesRepository {
   /// revise antes de decidir solicitar el contrato de verdad. No manda
   /// correo ni marca nada, se puede llamar las veces que haga falta.
   Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id);
+
+  /// Fase G: RH sube el contrato ya firmado -- crea el Empleado (y su
+  /// Usuarios vinculado) real a partir de todo lo que el candidato ya trae.
+  /// Rol y departamento(s) no se piden aquí, el backend los resuelve solo
+  /// desde la solicitud/puesto. Solo se puede hacer una vez por candidato.
+  Future<Result<AltaCompletada>> completarAltaCandidato(int id, CompletarAltaParams params);
 }
 
 typedef VistaPreviaDocumentos = ({String url, String nombreArchivo});
+
+typedef CompletarAltaParams = ({PlatformFile contratoFirmado, DateTime? fechaAlta});
+
+typedef AltaCompletada = ({int empleadoId, String nombreCompleto, CredencialesGeneradas? credenciales});

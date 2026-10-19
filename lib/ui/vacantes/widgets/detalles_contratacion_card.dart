@@ -71,6 +71,7 @@ class _EquipoControllers {
 
 class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
   final _salario = TextEditingController();
+  final _montoRetencionInfonavit = TextEditingController(text: '0.00');
   final _rotacionDetalle = TextEditingController();
   final _diasLaborados = TextEditingController();
   final _diaDescanso = TextEditingController();
@@ -107,6 +108,8 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     final turno = c.turnoSugerido;
 
     _salario.text = c.salarioDiario?.toStringAsFixed(2) ?? '';
+    _montoRetencionInfonavit.text =
+        c.montoRetencionInfonavit?.toStringAsFixed(2) ?? '0.00';
     _rotacionDetalle.text = c.rotacionDetalle;
     _diasLaborados.text = c.diasLaborados.isNotEmpty
         ? c.diasLaborados
@@ -169,6 +172,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
   @override
   void dispose() {
     _salario.dispose();
+    _montoRetencionInfonavit.dispose();
     _rotacionDetalle.dispose();
     _diasLaborados.dispose();
     _diaDescanso.dispose();
@@ -207,6 +211,9 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     widget.guardarDetalles.execute((
       id: widget.candidato.id,
       salarioDiario: double.tryParse(_salario.text.replaceAll(',', '')),
+      montoRetencionInfonavit: double.tryParse(
+        _montoRetencionInfonavit.text.replaceAll(',', ''),
+      ),
       fechaIngreso: _fechaIngreso,
       tipoContrato: _tipoContrato ?? '',
       periodoTipo: _periodoTipo ?? '',
@@ -327,6 +334,19 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                           _periodoTipo,
                           CandidatoChoices.periodoTipo,
                           (v) => setState(() => _periodoTipo = v),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: TextFormField(
+                          controller: _montoRetencionInfonavit,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: const InputDecoration(
+                            labelText: 'Monto retención Infonavit',
+                            prefixText: r'$',
+                          ),
                         ),
                       ),
                     ],

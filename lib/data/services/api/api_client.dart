@@ -709,6 +709,7 @@ class ApiClient {
       _authHeader(dio);
       final response = await dio.patch('/api/rh/candidatos/${params.id}/', data: {
         'salario_diario': params.salarioDiario,
+        'monto_retencion_infonavit': params.montoRetencionInfonavit,
         'fecha_ingreso': params.fechaIngreso?.toShortIsoString(),
         'tipo_contrato': params.tipoContrato,
         'periodo_tipo': params.periodoTipo,
@@ -793,6 +794,37 @@ class ApiClient {
       final response = await dio.get('/api/rh/candidatos/$id/vista-previa-documentos/');
       final data = response.data as Map;
       return Result.ok((url: data['url'] as String, nombreArchivo: data['nombre_archivo'] as String));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<AltaCompletada>> completarAltaCandidato(int id, CompletarAltaParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'contrato_firmado': MultipartFile.fromBytes(
+          params.contratoFirmado.bytes!,
+          filename: params.contratoFirmado.name,
+          contentType: getMediaTypeFromExtension(params.contratoFirmado.extension!),
+        ),
+        if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+      });
+      final response = await dio.post('/api/rh/candidatos/$id/completar-alta/', data: formData);
+      final data = response.data as Map;
+      final credencialesData = data['credenciales_generadas'] as Map?;
+      return Result.ok((
+        empleadoId: data['id'] as int,
+        nombreCompleto: data['nombre_completo'] as String,
+        credenciales: credencialesData == null
+            ? null
+            : CredencialesGeneradas.fromJson(credencialesData.cast<String, Object?>()),
+      ));
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {

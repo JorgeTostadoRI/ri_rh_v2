@@ -367,6 +367,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     candidatoId: candidatoId,
                     log: context.read(),
                     vacantesRepository: context.read(),
+                    empleadosRepository: context.read(),
                   ),
                 );
               },

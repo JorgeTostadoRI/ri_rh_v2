@@ -120,8 +120,12 @@ abstract class CandidatoDetalle with _$CandidatoDetalle {
     @JsonKey(name: 'comisiones_detalle') @Default('') String comisionesDetalle,
     @Default('N/A') String herramientas,
     @JsonKey(name: 'entrega_equipo') @Default(false) bool entregaEquipo,
+    @JsonKey(name: 'monto_retencion_infonavit', fromJson: _doubleOrNullFromJson) double? montoRetencionInfonavit,
     @JsonKey(name: 'equipos_entregados') @Default(<CandidatoEquipo>[]) List<CandidatoEquipo> equiposEntregados,
     @JsonKey(name: 'contrato_solicitado_en') DateTime? contratoSolicitadoEn,
+
+    // --- Fase G ---
+    int? empleado,
   }) = _CandidatoDetalle;
 
   factory CandidatoDetalle.fromJson(Map<String, Object?> json) => _$CandidatoDetalleFromJson(json);

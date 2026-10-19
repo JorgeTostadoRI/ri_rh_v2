@@ -7,7 +7,8 @@ enum CandidatoEstado {
   iniciado,
   completado,
   expirado,
-  cancelado;
+  cancelado,
+  contratado;
 }
 
 /// Candidato concreto que RH decide avanzar para una SolicitudVacante (Fase
@@ -37,10 +38,12 @@ enum CandidatoStage {
   iniciado,
   completado,
   contratoSolicitado,
+  contratado,
 }
 
 extension CandidatoStageGetters on Candidato {
   CandidatoStage get stage {
+    if (estado == CandidatoEstado.contratado) return CandidatoStage.contratado;
     if (contratoSolicitadoEn != null) return CandidatoStage.contratoSolicitado;
     if (estado == CandidatoEstado.completado) return CandidatoStage.completado;
     return CandidatoStage.iniciado;

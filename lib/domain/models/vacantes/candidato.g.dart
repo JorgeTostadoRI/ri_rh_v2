@@ -41,4 +41,5 @@ const _$CandidatoEstadoEnumMap = {
   CandidatoEstado.completado: 'completado',
   CandidatoEstado.expirado: 'expirado',
   CandidatoEstado.cancelado: 'cancelado',
+  CandidatoEstado.contratado: 'contratado',
 };

@@ -412,6 +412,7 @@ class _CandidatoRow extends StatelessWidget {
       CandidatoEstado.completado => Colors.green,
       CandidatoEstado.expirado => Colors.grey,
       CandidatoEstado.cancelado => errorColor,
+      CandidatoEstado.contratado => Colors.blue,
     };
   }
 
@@ -423,19 +424,21 @@ class _CandidatoRow extends StatelessWidget {
         CandidatoStage.iniciado => 'Invitación enviada',
         CandidatoStage.completado => 'Formulario completado',
         CandidatoStage.contratoSolicitado => 'Contrato solicitado',
+        CandidatoStage.contratado => 'Contratado',
       };
     }
     return switch (candidato.estado) {
       CandidatoEstado.expirado => 'Expirado',
       CandidatoEstado.cancelado => 'Cancelado',
-      CandidatoEstado.iniciado || CandidatoEstado.completado => '',
+      CandidatoEstado.iniciado || CandidatoEstado.completado || CandidatoEstado.contratado => '',
     };
   }
 
   @override
   Widget build(BuildContext context) {
     final color = _color();
-    final puedeRevisar = candidato.estado == CandidatoEstado.completado;
+    final puedeRevisar =
+        candidato.estado == CandidatoEstado.completado || candidato.estado == CandidatoEstado.contratado;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(
@@ -491,6 +494,7 @@ class _CandidatoRow extends StatelessWidget {
                       'Invitación enviada',
                       'Formulario completado',
                       'Contrato solicitado',
+                      'Contratado',
                     ],
                   ),
                   Text(_label(), style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),

@@ -150,6 +150,9 @@ _CandidatoDetalle _$CandidatoDetalleFromJson(
   comisionesDetalle: json['comisiones_detalle'] as String? ?? '',
   herramientas: json['herramientas'] as String? ?? 'N/A',
   entregaEquipo: json['entrega_equipo'] as bool? ?? false,
+  montoRetencionInfonavit: _doubleOrNullFromJson(
+    json['monto_retencion_infonavit'],
+  ),
   equiposEntregados:
       (json['equipos_entregados'] as List<dynamic>?)
           ?.map((e) => CandidatoEquipo.fromJson(e as Map<String, dynamic>))
@@ -158,6 +161,7 @@ _CandidatoDetalle _$CandidatoDetalleFromJson(
   contratoSolicitadoEn: json['contrato_solicitado_en'] == null
       ? null
       : DateTime.parse(json['contrato_solicitado_en'] as String),
+  empleado: (json['empleado'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$CandidatoDetalleToJson(
@@ -219,8 +223,10 @@ Map<String, dynamic> _$CandidatoDetalleToJson(
   'comisiones_detalle': instance.comisionesDetalle,
   'herramientas': instance.herramientas,
   'entrega_equipo': instance.entregaEquipo,
+  'monto_retencion_infonavit': instance.montoRetencionInfonavit,
   'equipos_entregados': instance.equiposEntregados,
   'contrato_solicitado_en': instance.contratoSolicitadoEn?.toIso8601String(),
+  'empleado': instance.empleado,
 };
 
 const _$CandidatoEstadoEnumMap = {
@@ -228,4 +234,5 @@ const _$CandidatoEstadoEnumMap = {
   CandidatoEstado.completado: 'completado',
   CandidatoEstado.expirado: 'expirado',
   CandidatoEstado.cancelado: 'cancelado',
+  CandidatoEstado.contratado: 'contratado',
 };
