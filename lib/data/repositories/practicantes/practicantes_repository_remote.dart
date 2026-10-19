@@ -197,7 +197,11 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
 
   @override
   Future<Result<Puesto>> createPuesto(String nombre, String tipos) async {
-    final result = await _apiClient.createPuesto(nombre, tipos);
+    // Los puestos de practicantes/residentes no se reclutan por el flujo de
+    // Reclutamiento -- nunca llevan rol/responsabilidades/tabulador ni
+    // cuestionarios, así que quedan exentos del requisito explícitamente
+    // (ver PuestoSerializer.validate() en el backend).
+    final result = await _apiClient.createPuesto(nombre, tipos, requiereInformacionCompleta: false);
     switch (result) {
       case Error():
         _log.warning('Failed to create puesto', error: result.error);

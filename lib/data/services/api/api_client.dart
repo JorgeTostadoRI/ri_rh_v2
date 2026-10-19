@@ -24,6 +24,8 @@ import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
 import 'package:ri_rh_v2/domain/models/signature/signature.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
+import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
+import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/mediatype.dart';
@@ -655,6 +657,183 @@ class ApiClient {
     }
   }
 
+  Future<Result<SolicitudVacante>> iniciarCandidato(
+    int solicitudId, {
+    required String nombre,
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'nombre': nombre,
+        'correo': correo,
+        'carta_oferta': MultipartFile.fromBytes(
+          cartaOferta.bytes!,
+          filename: cartaOferta.name,
+          contentType: getMediaTypeFromExtension(cartaOferta.extension!),
+        ),
+      });
+      final response = await dio.post('/api/rh/solicitudes-vacante/$solicitudId/iniciar-candidato/', data: formData);
+      final result = SolicitudVacante.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<CandidatoDetalle>> getCandidatoDetalle(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/candidatos/$id/');
+      final result = CandidatoDetalle.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<CandidatoDetalle>> actualizarDetalleContratacion(DetalleContratacionParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.patch('/api/rh/candidatos/${params.id}/', data: {
+        'salario_diario': params.salarioDiario,
+        'monto_retencion_infonavit': params.montoRetencionInfonavit,
+        'fecha_ingreso': params.fechaIngreso?.toShortIsoString(),
+        'tipo_contrato': params.tipoContrato,
+        'periodo_tipo': params.periodoTipo,
+        'tipo_jornada': params.tipoJornada,
+        'rotacion_detalle': params.rotacionDetalle,
+        'dias_laborados': params.diasLaborados,
+        'dia_descanso': params.diaDescanso,
+        'hora_entrada': params.horaEntrada,
+        'hora_comida_inicio': params.horaComidaInicio,
+        'hora_comida_fin': params.horaComidaFin,
+        'hora_salida': params.horaSalida,
+        'forma_pago': params.formaPago,
+        'modalidad_pago': params.modalidadPago,
+        'bono_asistencia': params.bonoAsistencia,
+        'bono_puntualidad': params.bonoPuntualidad,
+        'vales_despensa_monedero': params.valesDespensaMonedero,
+        'percibe_comisiones': params.percibeComisiones,
+        'comisiones_detalle': params.comisionesDetalle,
+        'herramientas': params.herramientas,
+        'entrega_equipo': params.entregaEquipo,
+        'equipos_entregados': params.equiposEntregados
+            .map((e) => {
+                  'descripcion': e.descripcion,
+                  'marca': e.marca,
+                  'modelo': e.modelo,
+                  'numero_serie': e.numeroSerie,
+                  'accesorios': e.accesorios,
+                  'condiciones_entrega': e.condicionesEntrega,
+                })
+            .toList(),
+      });
+      final result = CandidatoDetalle.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<CandidatoDetalle>> solicitarContrato(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/candidatos/$id/solicitar-contrato/');
+      final result = CandidatoDetalle.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<CandidatoDetalle>> rechazarDocumentacion(int id, String motivo) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post(
+        '/api/rh/candidatos/$id/rechazar-documentacion/',
+        data: {'motivo': motivo},
+      );
+      final result = CandidatoDetalle.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/candidatos/$id/vista-previa-documentos/');
+      final data = response.data as Map;
+      return Result.ok((url: data['url'] as String, nombreArchivo: data['nombre_archivo'] as String));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<AltaCompletada>> completarAltaCandidato(int id, CompletarAltaParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'contrato_firmado': MultipartFile.fromBytes(
+          params.contratoFirmado.bytes!,
+          filename: params.contratoFirmado.name,
+          contentType: getMediaTypeFromExtension(params.contratoFirmado.extension!),
+        ),
+        if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+      });
+      final response = await dio.post('/api/rh/candidatos/$id/completar-alta/', data: formData);
+      final data = response.data as Map;
+      final credencialesData = data['credenciales_generadas'] as Map?;
+      return Result.ok((
+        empleadoId: data['id'] as int,
+        nombreCompleto: data['nombre_completo'] as String,
+        credenciales: credencialesData == null
+            ? null
+            : CredencialesGeneradas.fromJson(credencialesData.cast<String, Object?>()),
+      ));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   // HUELLAS
   Future<Result<List<HuellaApiModel>>> getHuellas({int? userId}) async {
     final dio = _dioFactory();
@@ -1056,6 +1235,7 @@ class ApiClient {
     String? responsabilidades,
     List<int>? departamentoIds,
     List<PreguntaPuesto>? preguntas,
+    bool? requiereInformacionCompleta,
   }) async {
     final dio = _dioFactory();
     try {
@@ -1067,6 +1247,7 @@ class ApiClient {
         if (responsabilidades != null) 'responsabilidades': responsabilidades,
         if (departamentoIds != null) 'departamentos': departamentoIds,
         if (preguntas != null) 'preguntas': preguntas.map((p) => p.toJson()).toList(),
+        if (requiereInformacionCompleta != null) 'requiere_informacion_completa': requiereInformacionCompleta,
       });
       final result = Puesto.fromJson(response.data);
       return Result.ok(result);

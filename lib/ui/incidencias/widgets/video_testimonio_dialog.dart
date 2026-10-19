@@ -145,11 +145,18 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
                   ),
                   items: cameras.map((camera) => DropdownMenuItem(value: camera, child: Text(camera.label))).toList(),
                   onChanged: (camera) async {
-                    if (camera != null) {
+                    if (camera == null) return;
+                    try {
                       await _recorder.switchCamera(camera.deviceId);
                       _currentDeviceId = camera.deviceId;
                       if (mounted) {
                         setState(() {});
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          errorSnackBar(context, 'No se pudo cambiar de cámara'),
+                        );
                       }
                     }
                   },
@@ -347,6 +354,12 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
           errorSnackBar(context, e.message),
         );
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudo iniciar la grabación'),
+        );
+      }
     }
   }
 
@@ -369,9 +382,17 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     // este timeout de aqui rara vez deberia llegar a activarse.
     VideoPlayerController? playback;
     try {
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: antes de await stopRecording()');
       final video = await _recorder.stopRecording().timeout(const Duration(seconds: 15));
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: stopRecording() completo, video.path=${video.path}');
       playback = VideoPlayerController.networkUrl(Uri.parse(video.path));
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: antes de await playback.initialize()');
       await playback.initialize().timeout(const Duration(seconds: 15));
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: playback.initialize() completo');
 
       if (mounted) {
         setState(() {
@@ -382,6 +403,8 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         });
       }
     } on WebVideoRecorderException catch (e) {
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: catch WebVideoRecorderException -> ${e.code} ${e.message}');
       if (mounted) {
         setState(() {
           _recording = false;
@@ -392,6 +415,8 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         );
       }
     } on TimeoutException catch (_) {
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: catch TimeoutException');
       await playback?.dispose();
       if (mounted) {
         setState(() {
@@ -400,6 +425,24 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, 'No se pudo preparar la vista previa del video -- intenta grabar de nuevo'),
+        );
+      }
+    } catch (e) {
+      // Red de seguridad final -- cualquier otro tipo de error no
+      // contemplado arriba (ej. video_player al inicializar el preview con
+      // VideoPlayerController.initialize(), que puede tronar con otros
+      // tipos de excepcion) tambien debe quedar manejado aqui, en vez de
+      // escaparse como un error sin atrapar hacia la consola del navegador.
+      // ignore: avoid_print
+      print('[VideoDiag] _detenerGrabacion: catch general -> $e (${e.runtimeType})');
+      await playback?.dispose();
+      if (mounted) {
+        setState(() {
+          _recording = false;
+          _stopping = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudo terminar de grabar el video -- intenta de nuevo'),
         );
       }
     }

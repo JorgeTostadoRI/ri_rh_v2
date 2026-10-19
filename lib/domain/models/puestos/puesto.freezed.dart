@@ -302,7 +302,11 @@ mixin _$Puesto implements DiagnosticableTreeMixin {
 
  int? get id; String get nombre;@JsonKey(name: 'tipos') TipoPuesto get tipo; String? get rol; String get responsabilidades;/// URL del archivo de tabulador salarial ya subido (null si aún no se
 /// ha adjuntado ninguno). Para subirlo, ver [EmpleadosRepository.uploadTabuladorSalarial].
-@JsonKey(name: 'tabulador_salarial') String? get tabuladorSalarialUrl; List<int> get departamentos; List<PreguntaPuesto> get preguntas;
+@JsonKey(name: 'tabulador_salarial') String? get tabuladorSalarialUrl; List<int> get departamentos; List<PreguntaPuesto> get preguntas;/// Si es true, rol/responsabilidades/tabulador/cuestionarios son
+/// obligatorios para este puesto (ver PuestoFormDialog). Los puestos
+/// que ya existían antes de este requisito quedan en false para
+/// siempre, sin importar quién los edite después.
+@JsonKey(name: 'requiere_informacion_completa') bool get requiereInformacionCompleta;
 /// Create a copy of Puesto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -316,21 +320,21 @@ $PuestoCopyWith<Puesto> get copyWith => _$PuestoCopyWithImpl<Puesto>(this as Pue
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Puesto'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('tipo', tipo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('responsabilidades', responsabilidades))..add(DiagnosticsProperty('tabuladorSalarialUrl', tabuladorSalarialUrl))..add(DiagnosticsProperty('departamentos', departamentos))..add(DiagnosticsProperty('preguntas', preguntas));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('tipo', tipo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('responsabilidades', responsabilidades))..add(DiagnosticsProperty('tabuladorSalarialUrl', tabuladorSalarialUrl))..add(DiagnosticsProperty('departamentos', departamentos))..add(DiagnosticsProperty('preguntas', preguntas))..add(DiagnosticsProperty('requiereInformacionCompleta', requiereInformacionCompleta));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Puesto&&(identical(other.id, id) || other.id == id)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.tipo, tipo) || other.tipo == tipo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.responsabilidades, responsabilidades) || other.responsabilidades == responsabilidades)&&(identical(other.tabuladorSalarialUrl, tabuladorSalarialUrl) || other.tabuladorSalarialUrl == tabuladorSalarialUrl)&&const DeepCollectionEquality().equals(other.departamentos, departamentos)&&const DeepCollectionEquality().equals(other.preguntas, preguntas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Puesto&&(identical(other.id, id) || other.id == id)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.tipo, tipo) || other.tipo == tipo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.responsabilidades, responsabilidades) || other.responsabilidades == responsabilidades)&&(identical(other.tabuladorSalarialUrl, tabuladorSalarialUrl) || other.tabuladorSalarialUrl == tabuladorSalarialUrl)&&const DeepCollectionEquality().equals(other.departamentos, departamentos)&&const DeepCollectionEquality().equals(other.preguntas, preguntas)&&(identical(other.requiereInformacionCompleta, requiereInformacionCompleta) || other.requiereInformacionCompleta == requiereInformacionCompleta));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nombre,tipo,rol,responsabilidades,tabuladorSalarialUrl,const DeepCollectionEquality().hash(departamentos),const DeepCollectionEquality().hash(preguntas));
+int get hashCode => Object.hash(runtimeType,id,nombre,tipo,rol,responsabilidades,tabuladorSalarialUrl,const DeepCollectionEquality().hash(departamentos),const DeepCollectionEquality().hash(preguntas),requiereInformacionCompleta);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Puesto(id: $id, nombre: $nombre, tipo: $tipo, rol: $rol, responsabilidades: $responsabilidades, tabuladorSalarialUrl: $tabuladorSalarialUrl, departamentos: $departamentos, preguntas: $preguntas)';
+  return 'Puesto(id: $id, nombre: $nombre, tipo: $tipo, rol: $rol, responsabilidades: $responsabilidades, tabuladorSalarialUrl: $tabuladorSalarialUrl, departamentos: $departamentos, preguntas: $preguntas, requiereInformacionCompleta: $requiereInformacionCompleta)';
 }
 
 
@@ -341,7 +345,7 @@ abstract mixin class $PuestoCopyWith<$Res>  {
   factory $PuestoCopyWith(Puesto value, $Res Function(Puesto) _then) = _$PuestoCopyWithImpl;
 @useResult
 $Res call({
- int? id, String nombre,@JsonKey(name: 'tipos') TipoPuesto tipo, String? rol, String responsabilidades,@JsonKey(name: 'tabulador_salarial') String? tabuladorSalarialUrl, List<int> departamentos, List<PreguntaPuesto> preguntas
+ int? id, String nombre,@JsonKey(name: 'tipos') TipoPuesto tipo, String? rol, String responsabilidades,@JsonKey(name: 'tabulador_salarial') String? tabuladorSalarialUrl, List<int> departamentos, List<PreguntaPuesto> preguntas,@JsonKey(name: 'requiere_informacion_completa') bool requiereInformacionCompleta
 });
 
 
@@ -358,7 +362,7 @@ class _$PuestoCopyWithImpl<$Res>
 
 /// Create a copy of Puesto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? nombre = null,Object? tipo = null,Object? rol = freezed,Object? responsabilidades = null,Object? tabuladorSalarialUrl = freezed,Object? departamentos = null,Object? preguntas = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? nombre = null,Object? tipo = null,Object? rol = freezed,Object? responsabilidades = null,Object? tabuladorSalarialUrl = freezed,Object? departamentos = null,Object? preguntas = null,Object? requiereInformacionCompleta = null,}) {
   return _then(Puesto(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,nombre: null == nombre ? _self.nombre : nombre // ignore: cast_nullable_to_non_nullable
@@ -368,7 +372,8 @@ as String?,responsabilidades: null == responsabilidades ? _self.responsabilidade
 as String,tabuladorSalarialUrl: freezed == tabuladorSalarialUrl ? _self.tabuladorSalarialUrl : tabuladorSalarialUrl // ignore: cast_nullable_to_non_nullable
 as String?,departamentos: null == departamentos ? _self.departamentos : departamentos // ignore: cast_nullable_to_non_nullable
 as List<int>,preguntas: null == preguntas ? _self.preguntas : preguntas // ignore: cast_nullable_to_non_nullable
-as List<PreguntaPuesto>,
+as List<PreguntaPuesto>,requiereInformacionCompleta: null == requiereInformacionCompleta ? _self.requiereInformacionCompleta : requiereInformacionCompleta // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -453,10 +458,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String nombre, @JsonKey(name: 'tipos')  TipoPuesto tipo,  String? rol,  String responsabilidades, @JsonKey(name: 'tabulador_salarial')  String? tabuladorSalarialUrl,  List<int> departamentos,  List<PreguntaPuesto> preguntas)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String nombre, @JsonKey(name: 'tipos')  TipoPuesto tipo,  String? rol,  String responsabilidades, @JsonKey(name: 'tabulador_salarial')  String? tabuladorSalarialUrl,  List<int> departamentos,  List<PreguntaPuesto> preguntas, @JsonKey(name: 'requiere_informacion_completa')  bool requiereInformacionCompleta)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Puesto() when $default != null:
-return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidades,_that.tabuladorSalarialUrl,_that.departamentos,_that.preguntas);case _:
+return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidades,_that.tabuladorSalarialUrl,_that.departamentos,_that.preguntas,_that.requiereInformacionCompleta);case _:
   return orElse();
 
 }
@@ -474,10 +479,10 @@ return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidad
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String nombre, @JsonKey(name: 'tipos')  TipoPuesto tipo,  String? rol,  String responsabilidades, @JsonKey(name: 'tabulador_salarial')  String? tabuladorSalarialUrl,  List<int> departamentos,  List<PreguntaPuesto> preguntas)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String nombre, @JsonKey(name: 'tipos')  TipoPuesto tipo,  String? rol,  String responsabilidades, @JsonKey(name: 'tabulador_salarial')  String? tabuladorSalarialUrl,  List<int> departamentos,  List<PreguntaPuesto> preguntas, @JsonKey(name: 'requiere_informacion_completa')  bool requiereInformacionCompleta)  $default,) {final _that = this;
 switch (_that) {
 case _Puesto():
-return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidades,_that.tabuladorSalarialUrl,_that.departamentos,_that.preguntas);case _:
+return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidades,_that.tabuladorSalarialUrl,_that.departamentos,_that.preguntas,_that.requiereInformacionCompleta);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -494,10 +499,10 @@ return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidad
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String nombre, @JsonKey(name: 'tipos')  TipoPuesto tipo,  String? rol,  String responsabilidades, @JsonKey(name: 'tabulador_salarial')  String? tabuladorSalarialUrl,  List<int> departamentos,  List<PreguntaPuesto> preguntas)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String nombre, @JsonKey(name: 'tipos')  TipoPuesto tipo,  String? rol,  String responsabilidades, @JsonKey(name: 'tabulador_salarial')  String? tabuladorSalarialUrl,  List<int> departamentos,  List<PreguntaPuesto> preguntas, @JsonKey(name: 'requiere_informacion_completa')  bool requiereInformacionCompleta)?  $default,) {final _that = this;
 switch (_that) {
 case _Puesto() when $default != null:
-return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidades,_that.tabuladorSalarialUrl,_that.departamentos,_that.preguntas);case _:
+return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidades,_that.tabuladorSalarialUrl,_that.departamentos,_that.preguntas,_that.requiereInformacionCompleta);case _:
   return null;
 
 }
@@ -509,7 +514,7 @@ return $default(_that.id,_that.nombre,_that.tipo,_that.rol,_that.responsabilidad
 @JsonSerializable()
 
 class _Puesto with DiagnosticableTreeMixin implements Puesto {
-  const _Puesto({this.id, required this.nombre, @JsonKey(name: 'tipos') required this.tipo, this.rol, this.responsabilidades = '', @JsonKey(name: 'tabulador_salarial') this.tabuladorSalarialUrl,  List<int> departamentos = const <int>[],  List<PreguntaPuesto> preguntas = const <PreguntaPuesto>[]}): _departamentos = departamentos,_preguntas = preguntas;
+  const _Puesto({this.id, required this.nombre, @JsonKey(name: 'tipos') required this.tipo, this.rol, this.responsabilidades = '', @JsonKey(name: 'tabulador_salarial') this.tabuladorSalarialUrl,  List<int> departamentos = const <int>[],  List<PreguntaPuesto> preguntas = const <PreguntaPuesto>[], @JsonKey(name: 'requiere_informacion_completa') this.requiereInformacionCompleta = true}): _departamentos = departamentos,_preguntas = preguntas;
   factory _Puesto.fromJson(Map<String, dynamic> json) => _$PuestoFromJson(json);
 
 @override final  int? id;
@@ -534,6 +539,11 @@ class _Puesto with DiagnosticableTreeMixin implements Puesto {
   return EqualUnmodifiableListView(_preguntas);
 }
 
+/// Si es true, rol/responsabilidades/tabulador/cuestionarios son
+/// obligatorios para este puesto (ver PuestoFormDialog). Los puestos
+/// que ya existían antes de este requisito quedan en false para
+/// siempre, sin importar quién los edite después.
+@override@JsonKey(name: 'requiere_informacion_completa') final  bool requiereInformacionCompleta;
 
 /// Create a copy of Puesto
 /// with the given fields replaced by the non-null parameter values.
@@ -549,21 +559,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Puesto'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('tipo', tipo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('responsabilidades', responsabilidades))..add(DiagnosticsProperty('tabuladorSalarialUrl', tabuladorSalarialUrl))..add(DiagnosticsProperty('departamentos', departamentos))..add(DiagnosticsProperty('preguntas', preguntas));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('nombre', nombre))..add(DiagnosticsProperty('tipo', tipo))..add(DiagnosticsProperty('rol', rol))..add(DiagnosticsProperty('responsabilidades', responsabilidades))..add(DiagnosticsProperty('tabuladorSalarialUrl', tabuladorSalarialUrl))..add(DiagnosticsProperty('departamentos', departamentos))..add(DiagnosticsProperty('preguntas', preguntas))..add(DiagnosticsProperty('requiereInformacionCompleta', requiereInformacionCompleta));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Puesto&&(identical(other.id, id) || other.id == id)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.tipo, tipo) || other.tipo == tipo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.responsabilidades, responsabilidades) || other.responsabilidades == responsabilidades)&&(identical(other.tabuladorSalarialUrl, tabuladorSalarialUrl) || other.tabuladorSalarialUrl == tabuladorSalarialUrl)&&const DeepCollectionEquality().equals(other._departamentos, _departamentos)&&const DeepCollectionEquality().equals(other._preguntas, _preguntas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Puesto&&(identical(other.id, id) || other.id == id)&&(identical(other.nombre, nombre) || other.nombre == nombre)&&(identical(other.tipo, tipo) || other.tipo == tipo)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.responsabilidades, responsabilidades) || other.responsabilidades == responsabilidades)&&(identical(other.tabuladorSalarialUrl, tabuladorSalarialUrl) || other.tabuladorSalarialUrl == tabuladorSalarialUrl)&&const DeepCollectionEquality().equals(other._departamentos, _departamentos)&&const DeepCollectionEquality().equals(other._preguntas, _preguntas)&&(identical(other.requiereInformacionCompleta, requiereInformacionCompleta) || other.requiereInformacionCompleta == requiereInformacionCompleta));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nombre,tipo,rol,responsabilidades,tabuladorSalarialUrl,const DeepCollectionEquality().hash(_departamentos),const DeepCollectionEquality().hash(_preguntas));
+int get hashCode => Object.hash(runtimeType,id,nombre,tipo,rol,responsabilidades,tabuladorSalarialUrl,const DeepCollectionEquality().hash(_departamentos),const DeepCollectionEquality().hash(_preguntas),requiereInformacionCompleta);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Puesto(id: $id, nombre: $nombre, tipo: $tipo, rol: $rol, responsabilidades: $responsabilidades, tabuladorSalarialUrl: $tabuladorSalarialUrl, departamentos: $departamentos, preguntas: $preguntas)';
+  return 'Puesto(id: $id, nombre: $nombre, tipo: $tipo, rol: $rol, responsabilidades: $responsabilidades, tabuladorSalarialUrl: $tabuladorSalarialUrl, departamentos: $departamentos, preguntas: $preguntas, requiereInformacionCompleta: $requiereInformacionCompleta)';
 }
 
 
@@ -574,7 +584,7 @@ abstract mixin class _$PuestoCopyWith<$Res> implements $PuestoCopyWith<$Res> {
   factory _$PuestoCopyWith(_Puesto value, $Res Function(_Puesto) _then) = __$PuestoCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String nombre,@JsonKey(name: 'tipos') TipoPuesto tipo, String? rol, String responsabilidades,@JsonKey(name: 'tabulador_salarial') String? tabuladorSalarialUrl, List<int> departamentos, List<PreguntaPuesto> preguntas
+ int? id, String nombre,@JsonKey(name: 'tipos') TipoPuesto tipo, String? rol, String responsabilidades,@JsonKey(name: 'tabulador_salarial') String? tabuladorSalarialUrl, List<int> departamentos, List<PreguntaPuesto> preguntas,@JsonKey(name: 'requiere_informacion_completa') bool requiereInformacionCompleta
 });
 
 
@@ -591,7 +601,7 @@ class __$PuestoCopyWithImpl<$Res>
 
 /// Create a copy of Puesto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? nombre = null,Object? tipo = null,Object? rol = freezed,Object? responsabilidades = null,Object? tabuladorSalarialUrl = freezed,Object? departamentos = null,Object? preguntas = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? nombre = null,Object? tipo = null,Object? rol = freezed,Object? responsabilidades = null,Object? tabuladorSalarialUrl = freezed,Object? departamentos = null,Object? preguntas = null,Object? requiereInformacionCompleta = null,}) {
   return _then(_Puesto(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,nombre: null == nombre ? _self.nombre : nombre // ignore: cast_nullable_to_non_nullable
@@ -601,7 +611,8 @@ as String?,responsabilidades: null == responsabilidades ? _self.responsabilidade
 as String,tabuladorSalarialUrl: freezed == tabuladorSalarialUrl ? _self.tabuladorSalarialUrl : tabuladorSalarialUrl // ignore: cast_nullable_to_non_nullable
 as String?,departamentos: null == departamentos ? _self._departamentos : departamentos // ignore: cast_nullable_to_non_nullable
 as List<int>,preguntas: null == preguntas ? _self._preguntas : preguntas // ignore: cast_nullable_to_non_nullable
-as List<PreguntaPuesto>,
+as List<PreguntaPuesto>,requiereInformacionCompleta: null == requiereInformacionCompleta ? _self.requiereInformacionCompleta : requiereInformacionCompleta // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

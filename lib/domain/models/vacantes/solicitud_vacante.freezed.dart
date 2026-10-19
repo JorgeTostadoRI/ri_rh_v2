@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SolicitudVacante {
 
- int? get id; int get puesto;@JsonKey(name: 'puesto_nombre') String? get puestoNombre; String get rol; int get cantidad; String get area; int? get turno;@JsonKey(name: 'turno_nombre') String? get turnoNombre; String get justificacion; int? get solicitante;@JsonKey(name: 'solicitante_nombre') String? get solicitanteNombre; EstatusVacante get estatus;@JsonKey(name: 'created_at') DateTime? get createdAt;
+ int? get id; int get puesto;@JsonKey(name: 'puesto_nombre') String? get puestoNombre; String get rol; int get cantidad; String get area; int? get turno;@JsonKey(name: 'turno_nombre') String? get turnoNombre; String get justificacion; int? get solicitante;@JsonKey(name: 'solicitante_nombre') String? get solicitanteNombre; EstatusVacante get estatus;@JsonKey(name: 'created_at') DateTime? get createdAt; List<Candidato> get candidatos;
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $SolicitudVacanteCopyWith<SolicitudVacante> get copyWith => _$SolicitudVacanteCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.candidatos, candidatos));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt);
+int get hashCode => Object.hash(runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt,const DeepCollectionEquality().hash(candidatos));
 
 @override
 String toString() {
-  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt)';
+  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt, candidatos: $candidatos)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $SolicitudVacanteCopyWith<$Res>  {
   factory $SolicitudVacanteCopyWith(SolicitudVacante value, $Res Function(SolicitudVacante) _then) = _$SolicitudVacanteCopyWithImpl;
 @useResult
 $Res call({
- int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt
+ int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt, List<Candidato> candidatos
 });
 
 
@@ -66,7 +66,7 @@ class _$SolicitudVacanteCopyWithImpl<$Res>
 
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,Object? candidatos = null,}) {
   return _then(SolicitudVacante(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,puesto: null == puesto ? _self.puesto : puesto // ignore: cast_nullable_to_non_nullable
@@ -81,7 +81,8 @@ as String,solicitante: freezed == solicitante ? _self.solicitante : solicitante 
 as int?,solicitanteNombre: freezed == solicitanteNombre ? _self.solicitanteNombre : solicitanteNombre // ignore: cast_nullable_to_non_nullable
 as String?,estatus: null == estatus ? _self.estatus : estatus // ignore: cast_nullable_to_non_nullable
 as EstatusVacante,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,candidatos: null == candidatos ? _self.candidatos : candidatos // ignore: cast_nullable_to_non_nullable
+as List<Candidato>,
   ));
 }
 
@@ -166,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SolicitudVacante() when $default != null:
-return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt);case _:
+return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos);case _:
   return orElse();
 
 }
@@ -187,10 +188,10 @@ return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantida
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos)  $default,) {final _that = this;
 switch (_that) {
 case _SolicitudVacante():
-return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt);case _:
+return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +208,10 @@ return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantida
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos)?  $default,) {final _that = this;
 switch (_that) {
 case _SolicitudVacante() when $default != null:
-return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt);case _:
+return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos);case _:
   return null;
 
 }
@@ -222,7 +223,7 @@ return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantida
 @JsonSerializable()
 
 class _SolicitudVacante implements SolicitudVacante {
-  const _SolicitudVacante({this.id, required this.puesto, @JsonKey(name: 'puesto_nombre') this.puestoNombre, required this.rol, required this.cantidad, this.area = '', this.turno, @JsonKey(name: 'turno_nombre') this.turnoNombre, this.justificacion = '', this.solicitante, @JsonKey(name: 'solicitante_nombre') this.solicitanteNombre, this.estatus = EstatusVacante.pendiente, @JsonKey(name: 'created_at') this.createdAt});
+  const _SolicitudVacante({this.id, required this.puesto, @JsonKey(name: 'puesto_nombre') this.puestoNombre, required this.rol, required this.cantidad, this.area = '', this.turno, @JsonKey(name: 'turno_nombre') this.turnoNombre, this.justificacion = '', this.solicitante, @JsonKey(name: 'solicitante_nombre') this.solicitanteNombre, this.estatus = EstatusVacante.pendiente, @JsonKey(name: 'created_at') this.createdAt,  List<Candidato> candidatos = const <Candidato>[]}): _candidatos = candidatos;
   factory _SolicitudVacante.fromJson(Map<String, dynamic> json) => _$SolicitudVacanteFromJson(json);
 
 @override final  int? id;
@@ -238,6 +239,13 @@ class _SolicitudVacante implements SolicitudVacante {
 @override@JsonKey(name: 'solicitante_nombre') final  String? solicitanteNombre;
 @override@JsonKey() final  EstatusVacante estatus;
 @override@JsonKey(name: 'created_at') final  DateTime? createdAt;
+ final  List<Candidato> _candidatos;
+@override@JsonKey() List<Candidato> get candidatos {
+  if (_candidatos is EqualUnmodifiableListView) return _candidatos;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_candidatos);
+}
+
 
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
@@ -252,16 +260,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._candidatos, _candidatos));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt);
+int get hashCode => Object.hash(runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt,const DeepCollectionEquality().hash(_candidatos));
 
 @override
 String toString() {
-  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt)';
+  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt, candidatos: $candidatos)';
 }
 
 
@@ -272,7 +280,7 @@ abstract mixin class _$SolicitudVacanteCopyWith<$Res> implements $SolicitudVacan
   factory _$SolicitudVacanteCopyWith(_SolicitudVacante value, $Res Function(_SolicitudVacante) _then) = __$SolicitudVacanteCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt
+ int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt, List<Candidato> candidatos
 });
 
 
@@ -289,7 +297,7 @@ class __$SolicitudVacanteCopyWithImpl<$Res>
 
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,Object? candidatos = null,}) {
   return _then(_SolicitudVacante(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,puesto: null == puesto ? _self.puesto : puesto // ignore: cast_nullable_to_non_nullable
@@ -304,7 +312,8 @@ as String,solicitante: freezed == solicitante ? _self.solicitante : solicitante 
 as int?,solicitanteNombre: freezed == solicitanteNombre ? _self.solicitanteNombre : solicitanteNombre // ignore: cast_nullable_to_non_nullable
 as String?,estatus: null == estatus ? _self.estatus : estatus // ignore: cast_nullable_to_non_nullable
 as EstatusVacante,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,candidatos: null == candidatos ? _self._candidatos : candidatos // ignore: cast_nullable_to_non_nullable
+as List<Candidato>,
   ));
 }
 

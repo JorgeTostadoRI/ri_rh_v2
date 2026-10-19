@@ -76,24 +76,32 @@ class NuevoEmpleadoViewmodel extends ChangeNotifier {
     }
 
     var puesto = result.value;
+    _puestos = [..._puestos, puesto];
+    notifyListeners();
 
     // El tabulador se sube en un segundo paso (multipart) una vez que el
-    // Puesto ya existe. Si falla, el Puesto igual quedó creado: solo se
-    // registra la advertencia en vez de fallar toda la operación (reintentar
-    // "Crear" chocaría con el nombre único del puesto).
+    // Puesto ya existe. El Puesto ya quedó creado aunque esto falle, pero
+    // ahora se reporta el error en vez de tragárselo en silencio: esa es
+    // justo la clase de hueco que reportó RH (puesto incompleto sin que
+    // nadie se diera cuenta). Se puede terminar luego con "Editar puesto"
+    // (reintentar "Crear" chocaría con el nombre único del puesto).
     final tabulador = params.tabuladorSalarial;
     if (tabulador != null) {
       final uploadResult = await _empleadosRepository.uploadTabuladorSalarial(puesto.id!, tabulador);
       switch (uploadResult) {
         case Error():
           _log.warning('Puesto creado pero falló la subida del tabulador salarial', error: uploadResult.error);
+          return Result.error(uploadResult.error);
         case Ok():
           puesto = uploadResult.value;
+          _puestos = [
+            for (final p in _puestos)
+              if (p.id == puesto.id) puesto else p,
+          ];
+          notifyListeners();
       }
     }
 
-    _puestos = [..._puestos, puesto];
-    notifyListeners();
     return Result.ok(puesto);
   }
 
@@ -115,6 +123,11 @@ class NuevoEmpleadoViewmodel extends ChangeNotifier {
     }
 
     var puesto = result.value;
+    _puestos = [
+      for (final p in _puestos)
+        if (p.id == puesto.id) puesto else p,
+    ];
+    notifyListeners();
 
     final tabulador = params.tabuladorSalarial;
     if (tabulador != null) {
@@ -122,16 +135,17 @@ class NuevoEmpleadoViewmodel extends ChangeNotifier {
       switch (uploadResult) {
         case Error():
           _log.warning('Puesto editado pero falló la subida del tabulador salarial', error: uploadResult.error);
+          return Result.error(uploadResult.error);
         case Ok():
           puesto = uploadResult.value;
+          _puestos = [
+            for (final p in _puestos)
+              if (p.id == puesto.id) puesto else p,
+          ];
+          notifyListeners();
       }
     }
 
-    _puestos = [
-      for (final p in _puestos)
-        if (p.id == puesto.id) puesto else p,
-    ];
-    notifyListeners();
     return Result.ok(puesto);
   }
 
