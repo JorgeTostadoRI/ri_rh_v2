@@ -9,6 +9,9 @@ abstract class FingerprintRepository {
   /// Captured fingerprint templates will be added through the stream.
   Stream<Scan> capture();
 
+  /// Whether a fingerprint scanner is connected to this device right now.
+  bool get isScannerConnected;
+
   /// Searches the given fingerprint [template] and returns a User if there's a match
   UserInfo? matchFingerprintToUser(Uint8List template);
 

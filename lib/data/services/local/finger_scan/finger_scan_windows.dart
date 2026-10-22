@@ -54,6 +54,17 @@ class FingerScanServiceImpl extends FingerScanService {
   }
 
   @override
+  bool get isDeviceConnected {
+    if (!_initialized) return false;
+    try {
+      return _sdk.getDeviceCount() > 0;
+    } catch (e, stackTrace) {
+      _log.error('Failed to query fingerprint scanner device count', error: e, stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  @override
   int identify(Uint8List template) {
     _checkIsInit();
     final idRes = _sdk.cache.identify(template);

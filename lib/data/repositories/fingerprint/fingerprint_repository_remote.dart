@@ -51,6 +51,9 @@ class FingerprintRepositoryRemote extends FingerprintRepository {
   }
 
   @override
+  bool get isScannerConnected => _fingerScanService.isDeviceConnected;
+
+  @override
   UserInfo? matchFingerprintToUser(Uint8List template) {
     final fid = _fingerScanService.identify(template);
     final match = _fidMap[fid];

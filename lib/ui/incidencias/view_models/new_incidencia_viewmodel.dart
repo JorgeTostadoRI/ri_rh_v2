@@ -34,6 +34,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     _capturesSub = _fingerprintRepository.capture()
     .listen(
       (scan) {
+        if (!_acceptingScans) return;
         // The scanner keeps emitting capture events for as long as the
         // finger stays on the sensor; without this debounce every single
         // one of those events re-triggers a full login attempt.
@@ -66,8 +67,15 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
 
   late final StreamSubscription<Scan> _capturesSub;
   bool _scannerAvailable = true;
+  // _scannerAvailable solo se entera de un lector desconectado si esta
+  // instancia fue la primera en suscribirse al stream (es broadcast), asi que
+  // tambien se pregunta directo al lector.
   @override
-  bool get scannerAvailable => _scannerAvailable;
+  bool get scannerAvailable => _scannerAvailable && _fingerprintRepository.isScannerConnected;
+
+  bool _acceptingScans = false;
+  @override
+  set acceptingScans(bool value) => _acceptingScans = value;
 
   IncidenciaDateOption _dateOption = IncidenciaDateOption.DATE_RANGE;
   IncidenciaDateOption get dateOption => _dateOption;
@@ -178,11 +186,13 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
         _log.warning('NewIncidenciaViewmodel | Failed to create incidencia', error: incidenciaResult.error);
     }
 
-    // En kiosko la sesion es temporal (verificada por huella solo para este
-    // envio) y debe cerrarse siempre, haya o no error -- en web, un remoto
-    // ya llego con su sesion normal y persistente (ver IncidenciaForm), que
-    // no debe perder solo por enviar una incidencia.
-    if (!kIsWeb) _authRepository.logout();
+    // En escritorio la sesion es la de la huella verificada solo para este
+    // envio (ver IncidenciaForm, que la pide siempre aunque ya hubiera otra
+    // sesion abierta) y debe cerrarse siempre, haya o no error -- en web, un
+    // remoto ya llego con su sesion normal y persistente, que no debe perder
+    // solo por enviar una incidencia. Se espera a que termine para que la
+    // siguiente pantalla nunca alcance a ver la sesion de esta persona.
+    if (!kIsWeb) await _authRepository.logout();
     return incidenciaResult;
   }
 

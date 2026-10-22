@@ -96,9 +96,10 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
-    if (const [IncidenciaState.approved, IncidenciaState.rejected].contains(resultApproval.value.state)) {
-      _historial?.add(resultApproval.value);
-    } else {
+    // El historial tambien muestra las que siguen pendientes (ej. ya aprobo
+    // el jefe directo y falta RH), asi que se actualiza en cualquier estado.
+    _upsertHistorial(resultApproval.value);
+    if (resultApproval.value.state == IncidenciaState.pending) {
       final isRH = await _authRepository.isRH;
       if (isRH) {
         _pendingToReview!.add(resultApproval.value);
@@ -106,6 +107,16 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
     notifyListeners();
     return Result.ok(null);
+  }
+
+  /// Reemplaza la version anterior de [incidencia] en el historial (si ya
+  /// estaba, ej. como pendiente) o la agrega al inicio, para no mostrarla dos
+  /// veces con estados distintos.
+  void _upsertHistorial(Incidencia incidencia) {
+    final historial = _historial;
+    if (historial == null) return;
+    historial.removeWhere((i) => i.id == incidencia.id && i.category == incidencia.category);
+    historial.insert(0, incidencia);
   }
 
   Future<Result<void>> _reject(RejectParams params) async {
@@ -124,9 +135,7 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
     }
 
     _pendingToReview!.remove(incidencia);
-    if (const [IncidenciaState.approved, IncidenciaState.rejected].contains(resultReject.value.state)) {
-      _historial?.add(resultReject.value);
-    }
+    _upsertHistorial(resultReject.value);
     notifyListeners();
     return Result.ok(null);
   }
@@ -145,16 +154,22 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
       }
       _pendingToReview = resultIncidencias.value;
       return const Result.ok(null);
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Cualquier error, no solo Exception -- ver MisIncidenciasViewmodel._load.
       _log.error('Failed to load incidencias to review', error: e, stackTrace: stackTrace);
-      return Result.error(e);
+      return Result.error(e is Exception ? e : Exception(e.toString()));
     }
   }
 
   Future<Result<void>> _loadHistoric() async {
     try {
+      // Incluye las pendientes: una incidencia propia o de un subordinado que
+      // ya no espera la accion de este usuario (ej. el jefe ya aprobo y falta
+      // RH) no sale en "Pendientes", y sin esto no aparecia en ningun lado
+      // hasta su aprobacion/rechazo final. El backend ya limita el resultado
+      // a las propias y las de sus subordinados (RH lider: todas).
       final query = _query.copyWith(
-        state: const [IncidenciaState.approved, IncidenciaState.rejected],
+        state: const [IncidenciaState.pending, IncidenciaState.approved, IncidenciaState.rejected],
       );
       _log.debug(query.toString());
       final resultIncidencias = await _incidenciasRepository.getIncidencias(query: query);
@@ -165,11 +180,13 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
           return Result.error(resultIncidencias.error);
         case Ok():
       }
-      _historial = resultIncidencias.value;
+      _historial = [...resultIncidencias.value]
+        ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
       return const Result.ok(null);
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Cualquier error, no solo Exception -- ver MisIncidenciasViewmodel._load.
       _log.error('Failed to load historic incidencias', error: e, stackTrace: stackTrace);
-      return Result.error(e);
+      return Result.error(e is Exception ? e : Exception(e.toString()));
     }
   }
 

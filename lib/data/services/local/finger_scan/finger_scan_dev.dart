@@ -16,6 +16,9 @@ class FingerScanDev extends FingerScanService {
   }
 
   @override
+  bool get isDeviceConnected => false;
+
+  @override
   int identify(Uint8List template) {
     throw UnimplementedError();
   }

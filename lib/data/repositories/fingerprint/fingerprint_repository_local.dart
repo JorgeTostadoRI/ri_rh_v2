@@ -49,6 +49,9 @@ class FingerprintRepositoryLocal extends FingerprintRepository {
   }
 
   @override
+  bool get isScannerConnected => false;
+
+  @override
   UserInfo? matchFingerprintToUser(Uint8List template) {
     final credentials = utf8.decode(template).split(',');
     if (credentials.length < 2) return null;
