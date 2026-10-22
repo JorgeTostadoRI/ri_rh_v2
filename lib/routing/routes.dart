@@ -23,6 +23,8 @@ abstract final class Routes {
   static const diasFestivos = '/dias-festivos';
   static const reclutamiento = '/reclutamiento';
   static const revisionCandidato = 'candidatos/:candidatoId';
+  static const evaluacion = '/evaluacion';
+  static const evaluacionToken = ':token';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.url}/new';
   static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}';
   static String expedienteOfEmpleadoId(int empleadoId) => '$empleados/$empleadoId';
@@ -30,4 +32,5 @@ abstract final class Routes {
   static String expedienteOfPracticante(Practicante practicante) => '$practicantes/${practicante.base.id}';
   static String huellasOfPracticante(Practicante practicante) => '$practicantes/${practicante.base.id}/$huellas';
   static String revisionOfCandidato(int candidatoId) => '$reclutamiento/candidatos/$candidatoId';
+  static String evaluacionOfToken(String token) => '$evaluacion/$token';
 }

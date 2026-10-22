@@ -24,6 +24,7 @@ import 'package:ri_rh_v2/domain/models/query/user/user_query.dart';
 import 'package:ri_rh_v2/domain/models/signature/signature.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
+import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
@@ -1030,6 +1031,180 @@ class ApiClient {
       final response = await dio.post('/api/rh/empleados/$id/regenerar-password/');
       final result = CredencialesGeneradas.fromJson(response.data);
       return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<List<AltaImssItem>>> getAltasImssLista() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/empleados/altas-imss-lista/');
+      const stageByValue = {
+        'pendiente_envio': Fase2Stage.pendienteEnvio,
+        'enviado': Fase2Stage.enviado,
+        'archivado': Fase2Stage.archivado,
+        'evaluacion_pendiente': Fase2Stage.evaluacionPendiente,
+        'evaluacion_respondida': Fase2Stage.evaluacionRespondida,
+        'contrato_firmado': Fase2Stage.contratoFirmado,
+        'baja_iniciada': Fase2Stage.bajaIniciada,
+      };
+      AltaImssItem parseItem(Map<String, dynamic> json) => (
+        id: json['id'] as int,
+        nombreCompleto: json['nombre_completo'] as String,
+        puesto: json['puesto'] as String,
+        fechaAlta: DateTime.parse(json['fecha_alta'] as String),
+        fase2Stage: stageByValue[json['fase2_stage']]!,
+        fase2TotalSteps: json['fase2_total_steps'] as int,
+        fechaVencimientoPeriodo: json['fecha_vencimiento_periodo'] == null
+            ? null
+            : DateTime.parse(json['fecha_vencimiento_periodo'] as String),
+        evaluacionPendiente: json['evaluacion_pendiente'] as bool,
+        evaluacionRespuesta: switch (json['evaluacion_respuesta']) {
+          'renovar' => EvaluacionRespuesta.renovar,
+          'no_renovar' => EvaluacionRespuesta.noRenovar,
+          _ => null,
+        },
+        evaluacionMotivoNoRenovacion: json['evaluacion_motivo_no_renovacion'] as String? ?? '',
+        evaluacionRespondidaEn: json['evaluacion_respondida_en'] == null
+            ? null
+            : DateTime.parse(json['evaluacion_respondida_en'] as String),
+        evaluacionToken: json['evaluacion_token'] as String,
+      );
+      return Result.ok((response.data['empleados'] as List).map((e) => parseItem(e)).toList());
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<int>> getEvaluacionesPendientesCount() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/empleados/evaluaciones-pending-count/');
+      final result = (response.data['total'] as num).toInt();
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<VistaPreviaAltaImss>> obtenerVistaPreviaAltaImss(int empleadoId) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/empleados/$empleadoId/vista-previa-alta-imss/');
+      final data = response.data as Map;
+      return Result.ok((url: data['url'] as String, nombreArchivo: data['nombre_archivo'] as String));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> subirAltaImss(int empleadoId, PlatformFile archivo) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'alta_imss': MultipartFile.fromBytes(
+          archivo.bytes!,
+          filename: archivo.name,
+          contentType: getMediaTypeFromExtension(archivo.extension!),
+        ),
+      });
+      await dio.post('/api/rh/empleados/$empleadoId/subir-alta-imss/', data: formData);
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> subirContratoDefinitivo(int empleadoId, PlatformFile archivo) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'contrato_definitivo': MultipartFile.fromBytes(
+          archivo.bytes!,
+          filename: archivo.name,
+          contentType: getMediaTypeFromExtension(archivo.extension!),
+        ),
+      });
+      await dio.post('/api/rh/empleados/$empleadoId/subir-contrato-definitivo/', data: formData);
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/empleados/evaluacion/$token/');
+      final data = response.data as Map;
+      return Result.ok((
+        nombreCompleto: data['nombre_completo'] as String,
+        puesto: data['puesto'] as String,
+        fechaVencimientoPeriodo: data['fecha_vencimiento_periodo'] == null
+            ? null
+            : DateTime.parse(data['fecha_vencimiento_periodo'] as String),
+        evaluacionRespuesta: switch (data['evaluacion_respuesta']) {
+          'renovar' => EvaluacionRespuesta.renovar,
+          'no_renovar' => EvaluacionRespuesta.noRenovar,
+          _ => null,
+        },
+        evaluacionMotivoNoRenovacion: data['evaluacion_motivo_no_renovacion'] as String? ?? '',
+        evaluacionRespondidaEn: data['evaluacion_respondida_en'] == null
+            ? null
+            : DateTime.parse(data['evaluacion_respondida_en'] as String),
+      ));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo}) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.post(
+        '/api/rh/empleados/evaluacion/$token/responder/',
+        data: {
+          'respuesta': respuesta == EvaluacionRespuesta.renovar ? 'renovar' : 'no_renovar',
+          if (motivo != null) 'motivo': motivo,
+        },
+      );
+      return const Result.ok(null);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {

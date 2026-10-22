@@ -23,6 +23,7 @@ abstract class Candidato with _$Candidato {
     @JsonKey(name: 'fecha_expiracion') DateTime? fechaExpiracion,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'contrato_solicitado_en') DateTime? contratoSolicitadoEn,
+    int? empleado,
   }) = _Candidato;
 
   factory Candidato.fromJson(Map<String, Object?> json) => _$CandidatoFromJson(json);

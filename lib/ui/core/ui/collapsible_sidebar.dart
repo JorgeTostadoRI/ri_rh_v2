@@ -177,6 +177,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                           label: 'Reclutamiento',
                           route: Routes.reclutamiento,
                           isCollapsed: isCollapsed,
+                          trailing: _EvaluacionesCountBadge(),
                         ),
                     ],
                   );
@@ -218,6 +219,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                       label: 'Reclutamiento',
                       route: Routes.reclutamiento,
                       isCollapsed: isCollapsed,
+                      trailing: _EvaluacionesCountBadge(),
                     ),
                 ],
               );
@@ -329,6 +331,40 @@ class _IncidenciaCountBadge extends StatelessWidget {
           count: viewmodel.pendingIncidenciasToReview,
           maxCount: 99,
           backgroundColor: primaryColor,
+        );
+      }
+    );
+  }
+}
+
+/// Actividad 15: cuántos empleados con contrato "determinado" están a 7
+/// días o menos de que venza su periodo de prueba/capacitación -- mismo
+/// patrón que _IncidenciaCountBadge, pero solo RH llega a ver este conteo
+/// (NotificationViewmodel no lo pide para líderes normales).
+class _EvaluacionesCountBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final viewmodel = context.watch<NotificationViewmodel>();
+
+    return ListenableBuilder(
+      listenable: viewmodel.load,
+      builder: (context, _) {
+        if (viewmodel.load.running) {
+          return SizedBox.shrink();
+        }
+
+        if (viewmodel.load.error) {
+          return Tooltip(message: 'No se pudieron cargar las evaluaciones pendientes');
+        }
+
+        if (viewmodel.pendingEvaluaciones == 0) {
+          return SizedBox.shrink();
+        }
+
+        return Badge.count(
+          count: viewmodel.pendingEvaluaciones,
+          maxCount: 99,
+          backgroundColor: Colors.orange,
         );
       }
     );

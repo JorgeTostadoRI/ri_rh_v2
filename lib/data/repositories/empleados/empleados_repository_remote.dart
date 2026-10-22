@@ -311,4 +311,67 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
     }
     return Result.ok(result.value);
   }
+
+  @override
+  Future<Result<List<AltaImssItem>>> getAltasImssLista() async {
+    final result = await _apiClient.getAltasImssLista();
+    if (result case Error()) {
+      _log.warning('Failed to get altas IMSS lista', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<VistaPreviaAltaImss>> obtenerVistaPreviaAltaImss(int empleadoId) async {
+    final result = await _apiClient.obtenerVistaPreviaAltaImss(empleadoId);
+    if (result case Error()) {
+      _log.warning('Failed to obtener vista previa de alta IMSS', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<void>> subirAltaImss(int empleadoId, PlatformFile archivo) async {
+    final result = await _apiClient.subirAltaImss(empleadoId, archivo);
+    if (result case Error()) {
+      _log.warning('Failed to subir alta IMSS', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<void>> subirContratoDefinitivo(int empleadoId, PlatformFile archivo) async {
+    final result = await _apiClient.subirContratoDefinitivo(empleadoId, archivo);
+    if (result case Error()) {
+      _log.warning('Failed to subir contrato definitivo', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<int>> getEvaluacionesPendientesCount() async {
+    final result = await _apiClient.getEvaluacionesPendientesCount();
+    if (result case Error()) {
+      _log.warning('Failed to get evaluaciones pendientes count', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token) async {
+    final result = await _apiClient.getEvaluacionDetalle(token);
+    if (result case Error()) {
+      _log.warning('Failed to get evaluacion detalle', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo}) async {
+    final result = await _apiClient.responderEvaluacion(token, respuesta, motivo: motivo);
+    if (result case Error()) {
+      _log.warning('Failed to responder evaluacion', error: result.error);
+    }
+    return result;
+  }
 }

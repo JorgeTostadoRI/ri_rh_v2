@@ -6,6 +6,7 @@ class StepTimeline extends StatelessWidget {
     required this.length,
     required this.currentStep,
     this.stepLabels,
+    this.color = Colors.green,
   });
 
   final int length;
@@ -15,6 +16,9 @@ class StepTimeline extends StatelessWidget {
   /// cada punto se envuelve en un [Tooltip] para que, al pasar el mouse
   /// encima (o mantener presionado en touch), se vea de qué paso se trata.
   final List<String>? stepLabels;
+
+  /// Color de los puntos/conectores ya completados -- verde por default.
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +38,9 @@ class StepTimeline extends StatelessWidget {
                 height: 14,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isCompleted ? Colors.green : Colors.grey[300],
+                  color: isCompleted ? color : Colors.grey[300],
                   border: isCurrent
-                      ? Border.all(color: Colors.green, width: 1.5)
+                      ? Border.all(color: color, width: 1.5)
                       : null,
                 ),
                 child: Center(
@@ -62,7 +66,7 @@ class StepTimeline extends StatelessWidget {
                 width: 12,
                 child: Container(
                   height: 1.5,
-                  color: isCompleted ? Colors.green : Colors.grey[300],
+                  color: isCompleted ? color : Colors.grey[300],
                 ),
               );
             }

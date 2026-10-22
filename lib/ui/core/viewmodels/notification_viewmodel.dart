@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -11,11 +12,13 @@ class NotificationViewmodel extends ChangeNotifier {
   final AppLogger _log;
   final AuthRepository _authRepository;
   final IncidenciasRepository _incidenciasRepository;
+  final EmpleadosRepository _empleadosRepository;
 
   NotificationViewmodel({
     required this._log,
     required this._authRepository,
     required this._incidenciasRepository,
+    required this._empleadosRepository,
   }) {
     load = Command0(_load)..execute();
     clear = Command0(_clear);
@@ -29,6 +32,12 @@ class NotificationViewmodel extends ChangeNotifier {
 
   int _pendingIncidenciasToReview = 0;
   int get pendingIncidenciasToReview => _pendingIncidenciasToReview;
+
+  /// Actividad 15: empleados con contrato "determinado" a 7 días o menos de
+  /// que venza su periodo de prueba/capacitación -- badge junto a
+  /// "Reclutamiento" en el sidebar.
+  int _pendingEvaluaciones = 0;
+  int get pendingEvaluaciones => _pendingEvaluaciones;
 
   Timer? _pollTimer;
 
@@ -55,6 +64,24 @@ class NotificationViewmodel extends ChangeNotifier {
       }
 
       _pendingIncidenciasToReview = resultIncidenciasCount.value;
+
+      // El aviso de evaluaciones pendientes (actividad 15) es solo para RH --
+      // Reclutamiento todavía no es visible para líderes normales (ver
+      // collapsible_sidebar.dart), así que ni se les pide el conteo (evita
+      // un 403 innecesario en cada poll para todos los demás usuarios).
+      final esRH = currentUser.rol == 'LIDER' &&
+          ['Recursos Humanos', 'Direccion'].contains(currentUser.departamento?.nombre);
+      if (esRH) {
+        final resultEvaluacionesCount = await _empleadosRepository.getEvaluacionesPendientesCount();
+        switch (resultEvaluacionesCount) {
+          case Error():
+            _log.error('Failed to fetch pending evaluaciones count', error: resultEvaluacionesCount.error);
+            return Result.error(Exception(resultEvaluacionesCount.error));
+          case Ok():
+            _pendingEvaluaciones = resultEvaluacionesCount.value;
+        }
+      }
+
       notifyListeners();
       return Result.ok(null);
     } on Exception catch (e) {
@@ -65,6 +92,7 @@ class NotificationViewmodel extends ChangeNotifier {
 
   Future<Result<void>> _clear() async {
     _pendingIncidenciasToReview = 0;
+    _pendingEvaluaciones = 0;
     notifyListeners();
     return const Result.ok(null);
   }

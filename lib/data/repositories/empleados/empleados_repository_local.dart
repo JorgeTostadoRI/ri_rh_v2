@@ -123,4 +123,46 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   Future<Result<CredencialesGeneradas>> regenerarPassword(int empleadoId) async {
     return Result.error(Exception('No soportado en modo local'));
   }
+
+  @override
+  Future<Result<List<AltaImssItem>>> getAltasImssLista() async {
+    return const Result.ok([]);
+  }
+
+  @override
+  Future<Result<VistaPreviaAltaImss>> obtenerVistaPreviaAltaImss(int empleadoId) async {
+    return const Result.ok((url: 'https://example.com/fake.pdf', nombreArchivo: 'fake.pdf'));
+  }
+
+  @override
+  Future<Result<void>> subirAltaImss(int empleadoId, PlatformFile archivo) async {
+    return const Result.ok(null);
+  }
+
+  @override
+  Future<Result<int>> getEvaluacionesPendientesCount() async {
+    return const Result.ok(0);
+  }
+
+  @override
+  Future<Result<void>> subirContratoDefinitivo(int empleadoId, PlatformFile archivo) async {
+    return const Result.ok(null);
+  }
+
+  @override
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token) async {
+    return const Result.ok((
+      nombreCompleto: 'Empleado de prueba',
+      puesto: 'Puesto de prueba',
+      fechaVencimientoPeriodo: null,
+      evaluacionRespuesta: null,
+      evaluacionMotivoNoRenovacion: '',
+      evaluacionRespondidaEn: null,
+    ));
+  }
+
+  @override
+  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo}) async {
+    return const Result.ok(null);
+  }
 }
