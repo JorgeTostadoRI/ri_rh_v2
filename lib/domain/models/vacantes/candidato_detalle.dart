@@ -154,6 +154,16 @@ abstract final class CandidatoChoices {
   static const periodoTipo = [
     ('prueba', 'Periodo a prueba (hasta 30 días)'),
     ('capacitacion', 'Capacitación (hasta 90 días)'),
+    // Se autoselecciona (y el campo se bloquea) cuando Tipo de contrato es
+    // "Indeterminado" -- ver _DetallesContratacionCardState._onTipoContratoChanged.
+    ('indeterminado', 'Indeterminado'),
+  ];
+
+  /// Mismas opciones de Periodo pero sin "Indeterminado" -- para cuando
+  /// Tipo de contrato es "Determinado", donde esa opción no aplica.
+  static const periodoTipoDeterminado = [
+    ('prueba', 'Periodo a prueba (hasta 30 días)'),
+    ('capacitacion', 'Capacitación (hasta 90 días)'),
   ];
   static const tipoJornada = [('rotativo', 'Rotativo'), ('fijo', 'Fijo')];
   static const formaPago = [('semanal', 'Semanal'), ('quincenal', 'Quincenal'), ('mensual', 'Mensual')];

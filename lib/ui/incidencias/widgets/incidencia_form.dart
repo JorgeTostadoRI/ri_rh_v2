@@ -94,31 +94,34 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
   /// kiosko (escritorio, con huella) no cambia en nada.
   bool get _isRemoteWeb => kIsWeb && (_viewmodel.currentUser?.isRemote ?? false);
 
+  /// Siempre pide la huella, aunque ya haya una sesion abierta en el equipo:
+  /// la incidencia debe quedar a nombre de quien puso el dedo, nunca del
+  /// dueño de una sesion que alguien dejo iniciada. Si la huella es de otra
+  /// persona, su sesion reemplaza a la anterior (y se cierra al terminar el
+  /// envio, ver NewIncidenciaViewmodel.submitData).
   Future<bool> _validateAuth() async {
-    final isAuthenticated = await _viewmodel.isAuthenticated;
+    final authenticated = await showDialog<Result<bool>>(
+      context: context,
+      builder: (context) => VerifyIdentityDialog(
+        viewmodel: _viewmodel,
+      ),
+      barrierDismissible: false,
+    );
+    if (authenticated == null) return false;
 
-    if (!isAuthenticated) {
-      final authenticated = await showDialog<Result<bool>>(
-        context: context,
-        builder: (context) => VerifyIdentityDialog(
-          viewmodel: _viewmodel,
-        ),
-        barrierDismissible: false,
-      );
-      if (authenticated == null) return false;
-
-      switch (authenticated) {
-        case Ok():
-          // If the authentication was canceled
-          if (!authenticated.value) return false;
-        case Error():
+    switch (authenticated) {
+      case Ok():
+        // If the authentication was canceled
+        if (!authenticated.value) return false;
+      case Error():
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Ha ocurrido un error con la autenticación'),
             ),
           );
-          return false;
-      }
+        }
+        return false;
     }
 
     return true;

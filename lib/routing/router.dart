@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/ui/auth/login/widgets/login_screen.dart';
 import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_screen.dart';
 import 'package:ri_rh_v2/ui/core/ui/main_scaffold.dart';
+import 'package:ri_rh_v2/ui/empleados/viewmodels/altas_imss_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_huellas_viewmodel.dart';
@@ -46,8 +47,10 @@ import 'package:ri_rh_v2/ui/reportes/widgets/reporte_asistencia_screen.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/viewmodels/dias_festivos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/widgets/dias_festivos_screen.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/candidato_revision_viewmodel.dart';
+import 'package:ri_rh_v2/ui/vacantes/viewmodels/evaluacion_jefe_viewmodel.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/candidato_revision_screen.dart';
+import 'package:ri_rh_v2/ui/vacantes/widgets/evaluacion_jefe_screen.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/vacantes_screen.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
@@ -351,6 +354,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 authRepository: context.read(),
                 horarioRepository: context.read(),
               ),
+              altasImssViewmodel: AltasImssViewmodel(
+                log: context.read(),
+                empleadosRepository: context.read(),
+              ),
             );
           },
           routes: [
@@ -373,6 +380,23 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               },
             ),
           ],
+        ),
+        // Actividad 16: no se anida bajo Routes.reclutamiento a propósito --
+        // cualquier usuario logueado puede entrar aquí (el jefe directo no
+        // necesariamente tiene acceso a Reclutamiento), el backend es quien
+        // de verdad controla el acceso (403 si no es su jefe).
+        GoRoute(
+          path: '${Routes.evaluacion}/${Routes.evaluacionToken}',
+          builder: (context, state) {
+            final token = state.pathParameters['token']!;
+            return EvaluacionJefeScreen(
+              viewmodel: EvaluacionJefeViewmodel(
+                token: token,
+                log: context.read(),
+                empleadosRepository: context.read(),
+              ),
+            );
+          },
         ),
       ],
     ),
@@ -415,6 +439,7 @@ bool _requiresLogin(String location) {
   if (path.startsWith(Routes.practicantes)) return true;
   if (path.startsWith(Routes.reportes)) return true;
   if (path.startsWith(Routes.reclutamiento)) return true;
+  if (path.startsWith(Routes.evaluacion)) return true;
 
   return false;
 }

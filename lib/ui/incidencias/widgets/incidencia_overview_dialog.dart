@@ -129,26 +129,28 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
                 ],
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Tooltip(
-              message: 'Se forzará a generar nuevamente el archivo',
-              child: Row(
-                mainAxisSize: .min,
-                children: [
-                  Checkbox(
-                    value: _forceGeneratePDF,
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => _forceGeneratePDF = value);
-                      }
-                    },
-                  ),
-                  Text('¿Generar nuevamente PDF?'),
-                ],
+          // Solo una incidencia aprobada tiene PDF (ver acciones abajo).
+          if (incidencia.state == IncidenciaState.approved)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Tooltip(
+                message: 'Se forzará a generar nuevamente el archivo',
+                child: Row(
+                  mainAxisSize: .min,
+                  children: [
+                    Checkbox(
+                      value: _forceGeneratePDF,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _forceGeneratePDF = value);
+                        }
+                      },
+                    ),
+                    Text('¿Generar nuevamente PDF?'),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
       actions: [

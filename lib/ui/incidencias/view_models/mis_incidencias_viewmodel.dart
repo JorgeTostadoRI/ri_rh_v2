@@ -34,6 +34,7 @@ class MisIncidenciasViewmodel extends ChangeNotifier implements FingerprintLogin
     _capturesSub = _fingerprintRepository.capture()
     .listen(
       (scan) {
+        if (!_acceptingScans) return;
         // The scanner keeps emitting capture events for as long as the
         // finger stays on the sensor; without this debounce every single
         // one of those events re-triggers a full login attempt.
@@ -68,8 +69,15 @@ class MisIncidenciasViewmodel extends ChangeNotifier implements FingerprintLogin
 
   late final StreamSubscription<Scan> _capturesSub;
   bool _scannerAvailable = true;
+  // _scannerAvailable solo se entera de un lector desconectado si esta
+  // instancia fue la primera en suscribirse al stream (es broadcast), asi que
+  // tambien se pregunta directo al lector.
   @override
-  bool get scannerAvailable => _scannerAvailable;
+  bool get scannerAvailable => _scannerAvailable && _fingerprintRepository.isScannerConnected;
+
+  bool _acceptingScans = false;
+  @override
+  set acceptingScans(bool value) => _acceptingScans = value;
 
   Future<bool> get isAuthenticated => _authRepository.isAuthenticated;
 
@@ -95,12 +103,12 @@ class MisIncidenciasViewmodel extends ChangeNotifier implements FingerprintLogin
   }
 
   Future<Result<void>> _load() async {
-    final user = _authRepository.getCurrentUser();
-    if (user == null) {
-      return Result.error(Exception('Not authenticated'));
-    }
-
     try {
+      final user = _authRepository.getCurrentUser();
+      if (user == null) {
+        return Result.error(Exception('Not authenticated'));
+      }
+
       final query = IncidenciaQuery(solicitores: [user.id]);
       final resultIncidencias = await _incidenciasRepository.getIncidencias(query: query);
 
@@ -115,9 +123,13 @@ class MisIncidenciasViewmodel extends ChangeNotifier implements FingerprintLogin
         ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
       notifyListeners();
       return const Result.ok(null);
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Cualquier error, no solo Exception: un Error de Dart (ej. TypeError
+      // al leer el JSON) que se escapara de aqui dejaria al Command sin
+      // resultado -- ni exito ni error -- y la pantalla mostraria "No has
+      // registrado incidencias" en vez del error con su boton de reintentar.
       _log.error('MisIncidenciasViewmodel | Failed to load incidencias', error: e, stackTrace: stackTrace);
-      return Result.error(e);
+      return Result.error(e is Exception ? e : Exception(e.toString()));
     }
   }
 

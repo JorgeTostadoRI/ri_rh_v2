@@ -17,17 +17,24 @@ class PageHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       spacing: 16,
-      mainAxisSize: .min,
+      crossAxisAlignment: .start,
       children: [
         if (showBackButton)
           const AppBackButton(),
-        Column(
-          crossAxisAlignment: .start,
-          children: [
-            Text(title, style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
-            if (subtitle != null)
-              Text(subtitle!, style: TextTheme.of(context).titleSmall),
-          ],
+        // Sin Expanded, el Text de abajo recibe ancho sin límite dentro del
+        // Row y nunca hace salto de línea -- con un título largo (ej. el
+        // nombre completo de un empleado) y la ventana angosta, se
+        // desborda. Expanded lo limita al espacio disponible para que
+        // pueda hacer wrap en vez de desbordarse.
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text(title, style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
+              if (subtitle != null)
+                Text(subtitle!, style: TextTheme.of(context).titleSmall),
+            ],
+          ),
         ),
       ],
     );

@@ -22,6 +22,7 @@ _Candidato _$CandidatoFromJson(Map<String, dynamic> json) => _Candidato(
   contratoSolicitadoEn: json['contrato_solicitado_en'] == null
       ? null
       : DateTime.parse(json['contrato_solicitado_en'] as String),
+  empleado: (json['empleado'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$CandidatoToJson(
@@ -34,6 +35,7 @@ Map<String, dynamic> _$CandidatoToJson(
   'fecha_expiracion': instance.fechaExpiracion?.toIso8601String(),
   'created_at': instance.createdAt?.toIso8601String(),
   'contrato_solicitado_en': instance.contratoSolicitadoEn?.toIso8601String(),
+  'empleado': instance.empleado,
 };
 
 const _$CandidatoEstadoEnumMap = {

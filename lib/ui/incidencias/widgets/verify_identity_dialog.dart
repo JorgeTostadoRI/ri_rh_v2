@@ -32,18 +32,22 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
   void initState() {
     super.initState();
     widget.viewmodel.login.addListener(_onResult);
+    widget.viewmodel.acceptingScans = true;
   }
 
   @override
   void didUpdateWidget(covariant VerifyIdentityDialog oldWidget) {
     super.didUpdateWidget(oldWidget);
-    widget.viewmodel.login.removeListener(_onResult);
+    oldWidget.viewmodel.login.removeListener(_onResult);
+    oldWidget.viewmodel.acceptingScans = false;
     widget.viewmodel.login.addListener(_onResult);
+    widget.viewmodel.acceptingScans = true;
   }
 
   @override
   void dispose() {
     widget.viewmodel.login.removeListener(_onResult);
+    widget.viewmodel.acceptingScans = false;
     super.dispose();
   }
 

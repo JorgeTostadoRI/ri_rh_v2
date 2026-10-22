@@ -12,6 +12,13 @@ abstract class FingerScanService {
   /// A stream which captures fingerprint templates.
   Stream<Scan> captureStream();
 
+  /// Whether a fingerprint scanner is physically connected right now.
+  ///
+  /// Unlike listening for errors on [captureStream] (a broadcast stream that
+  /// only reports a missing device to whoever subscribed first), this can be
+  /// asked at any moment by any screen.
+  bool get isDeviceConnected;
+
   /// Identify a fingerprint [template].
   /// 
   /// Returns the fingerprint ID that was identified with the template.

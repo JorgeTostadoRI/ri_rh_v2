@@ -69,10 +69,17 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
   }
 
   Future<void> _authenticate() async {
+    // Si el equipo tiene lector se pide siempre la huella, aunque ya haya una
+    // sesion abierta: se deben mostrar las incidencias de quien puso el
+    // dedo, nunca las del dueño de una sesion que alguien dejo iniciada. Sin
+    // lector (PC de oficina, web) basta con la sesion iniciada -- solo aplica
+    // para consultar; registrar una incidencia siempre exige huella (o video
+    // si es remoto), ver IncidenciaForm.
     final isAuthenticated = await _viewmodel.isAuthenticated;
+    final requiresFingerprint = !isAuthenticated || _viewmodel.scannerAvailable;
     if (!mounted) return;
 
-    if (!isAuthenticated) {
+    if (requiresFingerprint) {
       final authenticated = await showDialog<Result<bool>>(
         context: context,
         barrierDismissible: false,
@@ -126,7 +133,9 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
             ListenableBuilder(
               listenable: Listenable.merge([_viewmodel.load, _viewmodel.download]),
               builder: (context, _) {
-                if (_viewmodel.load.running) {
+                // Sin lista todavia (aun no arranca la carga) se muestra
+                // cargando, nunca "No has registrado incidencias".
+                if (_viewmodel.load.running || (_viewmodel.incidencias == null && !_viewmodel.load.error)) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
@@ -147,7 +156,7 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
                   );
                 }
 
-                if (_viewmodel.incidencias?.isEmpty ?? true) {
+                if (_viewmodel.incidencias!.isEmpty) {
                   return Center(
                     child: Column(
                       spacing: 24,
@@ -223,8 +232,8 @@ class _MiIncidenciaTile extends StatelessWidget {
         ),
       },
       trailing: StepTimeline(
-        length: IncidenciaApprovalStage.values.length,
-        currentStep: incidencia.approvalStage.index,
+        length: incidencia.totalApprovalSteps,
+        currentStep: incidencia.approvalStepIndex,
       ),
       title: Text(
         '${incidencia.categoryName} en ${_formatStartEndDates(incidencia)}',

@@ -25,6 +25,9 @@ class FingerScanServiceImpl extends FingerScanService {
   Stream<Scan> captureStream() async* {}
 
   @override
+  bool get isDeviceConnected => false;
+
+  @override
   int identify(Uint8List template) {
     return 0;
   }

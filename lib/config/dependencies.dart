@@ -86,6 +86,7 @@ List<SingleChildWidget> get _sharedViewmodels {
         log: context.read(),
         authRepository: context.read(),
         incidenciasRepository: context.read(),
+        empleadosRepository: context.read(),
       )
     ),
     ChangeNotifierProvider(create: (context) =>
