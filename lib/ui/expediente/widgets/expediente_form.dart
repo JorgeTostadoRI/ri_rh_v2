@@ -186,7 +186,7 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                 Flexible(
                   child: JefeField(
                     candidates: widget.jefeCandidates,
-                    currentUserId: widget.baseEmpleado.user!.id,
+                    currentUserId: widget.baseEmpleado.user?.id,
                     selectedJefeId: widget.baseEmpleado.user?.jefeId,
                     assignJefe: widget.assignJefe,
                   ),

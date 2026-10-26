@@ -94,6 +94,7 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                             assignHorario: widget.viewmodel.assignHorario,
                             createCustomHorario: widget.viewmodel.createCustomHorario,
                             loadingHorarios: widget.viewmodel.loadHorarios.running,
+                            hasUser: practicante.base.user != null,
                           ),
                           Badge(
                             backgroundColor: statusWarningColor,
