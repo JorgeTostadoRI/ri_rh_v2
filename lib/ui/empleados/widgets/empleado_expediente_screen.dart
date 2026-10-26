@@ -95,6 +95,7 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
                             assignHorario: widget.viewmodel.assignHorario,
                             createCustomHorario: widget.viewmodel.createCustomHorario,
                             loadingHorarios: widget.viewmodel.loadHorarios.running,
+                            hasUser: empleado.base.user != null,
                           ),
                           Badge(
                             backgroundColor: statusWarningColor,

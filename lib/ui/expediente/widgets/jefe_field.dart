@@ -20,7 +20,10 @@ class JefeField extends StatelessWidget {
   });
 
   final List<User> candidates;
-  final int currentUserId;
+  /// Null cuando el empleado/practicante no tiene usuario del sistema ligado
+  /// (ej. finiquitados antiguos): no hay a quien asignarle jefe, asi que el
+  /// campo queda solo informativo.
+  final int? currentUserId;
   final int? selectedJefeId;
   final Command1<void, int> assignJefe;
 
@@ -34,6 +37,14 @@ class JefeField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (currentUserId == null) {
+      return TextFormField(
+        readOnly: true,
+        initialValue: 'Sin usuario en el sistema',
+        decoration: InputDecoration(labelText: 'JEFE DIRECTO'),
+      );
+    }
+
     final current = _findSelected();
     final available = candidates.where((u) => u.id != currentUserId).toList();
 

@@ -88,6 +88,7 @@ class HorarioCard extends StatelessWidget {
     required this.assignHorario,
     required this.createCustomHorario,
     this.loadingHorarios = false,
+    this.hasUser = true,
   });
 
   final List<Horario> horarios;
@@ -95,6 +96,11 @@ class HorarioCard extends StatelessWidget {
   final String userNombre;
   final Command1<void, int> assignHorario;
   final Command1<Horario, Horario> createCustomHorario;
+
+  /// False cuando el empleado/practicante no tiene usuario del sistema ligado
+  /// (ej. finiquitados antiguos): el horario se guarda en el usuario, asi que
+  /// no hay a quien asignarselo.
+  final bool hasUser;
 
   /// True while the horarios catalog is still being fetched. `load` (which
   /// resolves [selectedHorarioId]) and this fetch run in parallel, so without
@@ -112,6 +118,16 @@ class HorarioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!hasUser) {
+      return IconCard(
+        icon: LucideIcons.clock,
+        title: 'Horario',
+        children: [
+          Text('Sin usuario en el sistema, no se le puede asignar horario'),
+        ],
+      );
+    }
+
     if (loadingHorarios) {
       return IconCard(
         icon: LucideIcons.clock,
