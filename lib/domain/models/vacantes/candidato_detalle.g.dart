@@ -132,7 +132,7 @@ _CandidatoDetalle _$CandidatoDetalleFromJson(
       ? null
       : DateTime.parse(json['fecha_ingreso'] as String),
   tipoContrato: json['tipo_contrato'] as String? ?? '',
-  periodoTipo: json['periodo_tipo'] as String? ?? '',
+  duracionDias: (json['duracion_dias'] as num?)?.toInt(),
   tipoJornada: json['tipo_jornada'] as String? ?? '',
   rotacionDetalle: json['rotacion_detalle'] as String? ?? '',
   diasLaborados: json['dias_laborados'] as String? ?? '',
@@ -205,7 +205,7 @@ Map<String, dynamic> _$CandidatoDetalleToJson(
   'salario_diario': instance.salarioDiario,
   'fecha_ingreso': instance.fechaIngreso?.toIso8601String(),
   'tipo_contrato': instance.tipoContrato,
-  'periodo_tipo': instance.periodoTipo,
+  'duracion_dias': instance.duracionDias,
   'tipo_jornada': instance.tipoJornada,
   'rotacion_detalle': instance.rotacionDetalle,
   'dias_laborados': instance.diasLaborados,

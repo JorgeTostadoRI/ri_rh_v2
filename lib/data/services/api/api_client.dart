@@ -713,7 +713,7 @@ class ApiClient {
         'monto_retencion_infonavit': params.montoRetencionInfonavit,
         'fecha_ingreso': params.fechaIngreso?.toShortIsoString(),
         'tipo_contrato': params.tipoContrato,
-        'periodo_tipo': params.periodoTipo,
+        'duracion_dias': params.duracionDias,
         'tipo_jornada': params.tipoJornada,
         'rotacion_detalle': params.rotacionDetalle,
         'dias_laborados': params.diasLaborados,

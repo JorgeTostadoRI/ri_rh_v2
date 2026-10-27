@@ -10,7 +10,8 @@ typedef DetalleContratacionParams = ({
   double? montoRetencionInfonavit,
   DateTime? fechaIngreso,
   String tipoContrato,
-  String periodoTipo,
+  /// Solo para tipoContrato "determinado".
+  int? duracionDias,
   String tipoJornada,
   String rotacionDetalle,
   String diasLaborados,
