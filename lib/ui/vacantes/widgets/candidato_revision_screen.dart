@@ -28,8 +28,14 @@ String _etiquetaChoice(List<(String, String)> choices, String valor) {
 
 /// Mismo agrupamiento y etiquetas que DOCUMENTO_SECCIONES en
 /// ri_rh/views/portal_candidato.py -- para mostrar los documentos que el
-/// candidato ya subió, en el mismo orden que él los vio.
+/// candidato ya subió, en el mismo orden que él los vio. La carta oferta
+/// enviada (sin firma) no la sube él, pero se muestra junto a la firmada
+/// para poder compararlas.
 const _documentoSecciones = <(String, List<(String, String)>)>[
+  ('Carta oferta', [
+    ('carta_oferta', 'Carta oferta enviada (sin firma)'),
+    ('carta_oferta_firmada', 'Carta oferta firmada'),
+  ]),
   ('Identificación y datos personales', [
     ('identificacion_oficial', 'Identificación oficial'),
     ('acta_nacimiento', 'Acta de nacimiento'),
