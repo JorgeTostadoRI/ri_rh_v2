@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -79,10 +80,11 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
   final _bonoPuntualidad = TextEditingController();
   final _comisionesDetalle = TextEditingController();
   final _herramientas = TextEditingController();
+  // Solo se usa (y se muestra) cuando el tipo de contrato es "determinado".
+  final _duracionDias = TextEditingController();
 
   DateTime? _fechaIngreso;
   String? _tipoContrato;
-  String? _periodoTipo;
   String? _tipoJornada;
   TimeOfDay? _horaEntrada;
   TimeOfDay? _horaComidaInicio;
@@ -127,13 +129,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     _herramientas.text = c.herramientas;
     _fechaIngreso = c.fechaIngreso;
     _tipoContrato = c.tipoContrato.isEmpty ? null : c.tipoContrato;
-    _periodoTipo = switch (_tipoContrato) {
-      'indeterminado' => 'indeterminado',
-      // "Determinado" nunca se deja en blanco -- hace falta un periodo real
-      // para calcular la fecha de vencimiento de Fase 2.
-      'determinado' when c.periodoTipo.isEmpty || c.periodoTipo == 'indeterminado' => 'prueba',
-      _ => c.periodoTipo.isEmpty ? null : c.periodoTipo,
-    };
+    _duracionDias.text = c.duracionDias?.toString() ?? '';
     // Un turno uniforme es, por definición, horario fijo -- se sugiere
     // "fijo" solo cuando hay turno y RH no eligió nada todavía.
     _tipoJornada = c.tipoJornada.isNotEmpty
@@ -186,6 +182,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     _bonoPuntualidad.dispose();
     _comisionesDetalle.dispose();
     _herramientas.dispose();
+    _duracionDias.dispose();
     for (final equipo in _equipos) {
       equipo.dispose();
     }
@@ -222,7 +219,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
       ),
       fechaIngreso: _fechaIngreso,
       tipoContrato: _tipoContrato ?? '',
-      periodoTipo: _periodoTipo ?? '',
+      duracionDias: _tipoContrato == 'determinado' ? int.tryParse(_duracionDias.text.trim()) : null,
       tipoJornada: _tipoJornada ?? '',
       rotacionDetalle: _rotacionDetalle.text.trim(),
       diasLaborados: _diasLaborados.text.trim(),
@@ -325,26 +322,26 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 220,
+                        width: 280,
                         child: _dropdown(
                           'Tipo de contrato',
                           _tipoContrato,
                           CandidatoChoices.tipoContrato,
-                          _onTipoContratoChanged,
+                          (v) => setState(() => _tipoContrato = v),
                         ),
                       ),
-                      SizedBox(
-                        width: 260,
-                        child: _dropdown(
-                          'Periodo',
-                          _periodoTipo,
-                          _tipoContrato == 'indeterminado'
-                              ? CandidatoChoices.periodoTipo
-                              : CandidatoChoices.periodoTipoDeterminado,
-                          (v) => setState(() => _periodoTipo = v),
-                          enabled: _tipoContrato != 'indeterminado',
+                      if (_tipoContrato == 'determinado')
+                        SizedBox(
+                          width: 160,
+                          child: TextFormField(
+                            controller: _duracionDias,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              labelText: 'Duración (días)',
+                            ),
+                          ),
                         ),
-                      ),
                       SizedBox(
                         width: 200,
                         child: TextFormField(
@@ -611,23 +608,6 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
       ],
       onChanged: enabled ? onChanged : null,
     );
-  }
-
-  /// Un contrato "Indeterminado" no tiene fecha de vencimiento que vigilar
-  /// -- el campo Periodo (prueba/capacitación) no aplica, así que se
-  /// autoselecciona "Indeterminado" ahí también y se bloquea. "Determinado"
-  /// sí necesita un periodo real (prueba/capacitación) para poder calcular
-  /// su fecha de vencimiento en Fase 2, así que nunca se deja en blanco --
-  /// si no había uno ya elegido, se sugiere "prueba" por default.
-  void _onTipoContratoChanged(String? value) {
-    setState(() {
-      _tipoContrato = value;
-      if (value == 'indeterminado') {
-        _periodoTipo = 'indeterminado';
-      } else if (_periodoTipo == null || _periodoTipo == 'indeterminado') {
-        _periodoTipo = 'prueba';
-      }
-    });
   }
 
   Widget _triStateDropdown(

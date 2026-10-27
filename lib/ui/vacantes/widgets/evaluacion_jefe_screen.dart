@@ -156,7 +156,7 @@ class _EvaluacionJefeScreenState extends State<EvaluacionJefeScreen> {
                       subtitle: detalle.puesto,
                     ),
                     Text(
-                      '${detalle.nombreCompleto} está por completar su periodo de prueba/capacitación en el '
+                      '${detalle.nombreCompleto} está por terminar su contrato (periodo a prueba, capacitación o determinado) en el '
                       'puesto de ${detalle.puesto}'
                       '${detalle.fechaVencimientoPeriodo != null ? ', que vence el ${detalle.fechaVencimientoPeriodo!.toShortIsoString()}' : ''}. '
                       'Como su jefe directo, nos ayudarías evaluando su desempeño durante este periodo y '

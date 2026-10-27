@@ -104,7 +104,7 @@ class VacantesRepositoryLocal extends VacantesRepository {
       salarioDiario: params.salarioDiario,
       fechaIngreso: params.fechaIngreso,
       tipoContrato: params.tipoContrato,
-      periodoTipo: params.periodoTipo,
+      duracionDias: params.duracionDias,
       tipoJornada: params.tipoJornada,
       rotacionDetalle: params.rotacionDetalle,
       diasLaborados: params.diasLaborados,

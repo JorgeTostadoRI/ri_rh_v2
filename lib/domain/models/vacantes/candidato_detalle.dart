@@ -102,7 +102,8 @@ abstract class CandidatoDetalle with _$CandidatoDetalle {
     @JsonKey(name: 'salario_diario', fromJson: _doubleOrNullFromJson) double? salarioDiario,
     @JsonKey(name: 'fecha_ingreso') DateTime? fechaIngreso,
     @JsonKey(name: 'tipo_contrato') @Default('') String tipoContrato,
-    @JsonKey(name: 'periodo_tipo') @Default('') String periodoTipo,
+    /// Solo para tipoContrato "determinado": cuántos días dura el contrato.
+    @JsonKey(name: 'duracion_dias') int? duracionDias,
     @JsonKey(name: 'tipo_jornada') @Default('') String tipoJornada,
     @JsonKey(name: 'rotacion_detalle') @Default('') String rotacionDetalle,
     @JsonKey(name: 'dias_laborados') @Default('') String diasLaborados,
@@ -150,20 +151,14 @@ abstract final class CandidatoChoices {
     ('viudo', 'Viudo(a)'),
     ('separado', 'Separado(a)'),
   ];
-  static const tipoContrato = [('indeterminado', 'Indeterminado'), ('determinado', 'Determinado')];
-  static const periodoTipo = [
-    ('prueba', 'Periodo a prueba (hasta 30 días)'),
-    ('capacitacion', 'Capacitación (hasta 90 días)'),
-    // Se autoselecciona (y el campo se bloquea) cuando Tipo de contrato es
-    // "Indeterminado" -- ver _DetallesContratacionCardState._onTipoContratoChanged.
+  /// Las 4 opciones del formato de "Solicitud para elaboración de contrato"
+  /// -- excluyentes entre sí (prueba y capacitación NO son subtipos de
+  /// "determinado"). "Determinado" pide además su duración en días.
+  static const tipoContrato = [
     ('indeterminado', 'Indeterminado'),
-  ];
-
-  /// Mismas opciones de Periodo pero sin "Indeterminado" -- para cuando
-  /// Tipo de contrato es "Determinado", donde esa opción no aplica.
-  static const periodoTipoDeterminado = [
     ('prueba', 'Periodo a prueba (hasta 30 días)'),
     ('capacitacion', 'Capacitación (hasta 90 días)'),
+    ('determinado', 'Determinado'),
   ];
   static const tipoJornada = [('rotativo', 'Rotativo'), ('fijo', 'Fijo')];
   static const formaPago = [('semanal', 'Semanal'), ('quincenal', 'Quincenal'), ('mensual', 'Mensual')];
