@@ -32,6 +32,7 @@ _AsistenciaDaily _$AsistenciaDailyFromJson(Map<String, dynamic> json) =>
       entryFromLunchPhoto: json['entry_from_lunch_photo'] as String?,
       exitPhoto: json['exit_photo'] as String?,
       notes: json['notes'] as String?,
+      entraALas: json['entra_a_las'] as String?,
     );
 
 Map<String, dynamic> _$AsistenciaDailyToJson(_AsistenciaDaily instance) =>
@@ -52,6 +53,7 @@ Map<String, dynamic> _$AsistenciaDailyToJson(_AsistenciaDaily instance) =>
       'entry_from_lunch_photo': instance.entryFromLunchPhoto,
       'exit_photo': instance.exitPhoto,
       'notes': instance.notes,
+      'entra_a_las': instance.entraALas,
     };
 
 const _$AsistenciaStatusEnumMap = {

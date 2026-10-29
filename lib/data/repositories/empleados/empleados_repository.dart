@@ -99,14 +99,15 @@ abstract class EmpleadosRepository {
   /// Actividad 16: el jefe directo consulta, desde su propia pantalla,
   /// los datos de la evaluación pendiente de un empleado (por el token que
   /// le llegó por correo o por el botón "Evaluación pendiente" del panel
-  /// de RH).
-  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token);
+  /// de RH). `publica`: sin sesión, solo para la jefa que contesta desde el
+  /// link del correo (ver ri_rh/evaluacion_sin_sesion.py en el backend).
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token, {bool publica = false});
 
   /// Actividad 16: el jefe contesta -- la respuesta ejecuta directo la
   /// solicitud del contrato nuevo a los abogados, o el aviso de no
   /// renovación (que también arranca el proceso de baja). `motivo` es
   /// obligatorio cuando `respuesta` es `noRenovar`.
-  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo});
+  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo, bool publica = false});
 }
 
 /// Paso de "Fase 2" (seguimiento posterior a la contratación) en el que va

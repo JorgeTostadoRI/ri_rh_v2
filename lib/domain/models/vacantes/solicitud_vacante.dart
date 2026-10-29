@@ -7,7 +7,10 @@ part 'solicitud_vacante.g.dart';
 enum EstatusVacante {
   pendiente,
   aceptada,
-  rechazada;
+  rechazada,
+  /// Solo en la contratación de un practicante: Dirección le regresó la
+  /// evaluación al jefe para que la corrija.
+  retroalimentacion;
 }
 
 /// Etapas a nivel SOLICITUD (no por candidato -- para eso está
@@ -40,6 +43,17 @@ abstract class SolicitudVacante with _$SolicitudVacante {
     @Default(EstatusVacante.pendiente) EstatusVacante estatus,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @Default(<Candidato>[]) List<Candidato> candidatos,
+    /// Ya no le queda nada en proceso -- va en la pestaña "Historial" de
+    /// Reclutamiento. Lo calcula el backend (SolicitudVacanteSerializer.
+    /// get_en_historial) porque depende de la Fase 2 de cada contratado.
+    @JsonKey(name: 'en_historial') @Default(false) bool enHistorial,
+    /// Contratación de un practicante: la solicitud se creó sola cuando su
+    /// jefe contestó "contratar" en la evaluación (no la llenó nadie aquí).
+    int? practicante,
+    @JsonKey(name: 'practicante_nombre') String? practicanteNombre,
+    /// Su correo, para prellenar "Iniciar contratación" (vacío si no tiene).
+    @JsonKey(name: 'practicante_correo') String? practicanteCorreo,
+    @JsonKey(name: 'comentario_direccion') @Default('') String comentarioDireccion,
   }) = _SolicitudVacante;
 
   factory SolicitudVacante.fromJson(Map<String, Object?> json) => _$SolicitudVacanteFromJson(json);

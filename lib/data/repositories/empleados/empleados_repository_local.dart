@@ -150,7 +150,7 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   }
 
   @override
-  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token) async {
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token, {bool publica = false}) async {
     return const Result.ok((
       nombreCompleto: 'Empleado de prueba',
       puesto: 'Puesto de prueba',
@@ -162,7 +162,7 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   }
 
   @override
-  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo}) async {
+  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo, bool publica = false}) async {
     return const Result.ok(null);
   }
 }

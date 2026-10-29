@@ -25,6 +25,7 @@ import 'package:ri_rh_v2/domain/models/signature/signature.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
+import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
@@ -146,6 +147,7 @@ class PracticanteCreateParams {
     required this.numeroSeguroSocial,
     required this.direccionCompleta,
     required this.telefono,
+    required this.fechaTerminacion,
     this.correo,
     this.departamentoId,
     this.rol,
@@ -187,6 +189,9 @@ class PracticanteCreateParams {
   final String? rol;
   /// Por default el backend usa la fecha de hoy si se omite.
   final DateTime? fechaAlta;
+  /// Fin de sus prácticas -- obligatoria al dar de alta y posterior a
+  /// [fechaAlta]. Después solo se corrige desde el admin de Django.
+  final DateTime fechaTerminacion;
 
   final PlatformFile? identificacionOficial;
   final PlatformFile? actaNacimiento;
@@ -561,6 +566,21 @@ class ApiClient {
   }
 
   // SOLICITUDES DE VACANTE
+  Future<Result<int>> getSolicitudesVacantePendientesCount() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/solicitudes-vacante/pendientes-count/');
+      return Result.ok((response.data['total'] as num).toInt());
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<Result<List<SolicitudVacante>>> getSolicitudesVacante() async {
     final dio = _dioFactory();
     try {
@@ -649,6 +669,23 @@ class ApiClient {
       });
       final result = SolicitudVacante.fromJson(response.data);
       return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> retroalimentarSolicitudVacante(int id, String comentario) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/solicitudes-vacante/$id/retroalimentacion/', data: {
+        'comentario': comentario,
+      });
+      return Result.ok(SolicitudVacante.fromJson(response.data));
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
@@ -1162,11 +1199,12 @@ class ApiClient {
     }
   }
 
-  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token) async {
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token, {bool publica = false}) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
-      final response = await dio.get('/api/rh/empleados/evaluacion/$token/');
+      final ruta = publica ? 'evaluacion-publica' : 'evaluacion';
+      final response = await dio.get('/api/rh/empleados/$ruta/$token/');
       final data = response.data as Map;
       return Result.ok((
         nombreCompleto: data['nombre_completo'] as String,
@@ -1193,12 +1231,17 @@ class ApiClient {
     }
   }
 
-  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo}) async {
+  Future<Result<void>> responderEvaluacion(
+    String token,
+    EvaluacionRespuesta respuesta, {
+    String? motivo,
+    bool publica = false,
+  }) async {
     final dio = _dioFactory();
     try {
       _authHeader(dio);
       await dio.post(
-        '/api/rh/empleados/evaluacion/$token/responder/',
+        '/api/rh/empleados/${publica ? 'evaluacion-publica' : 'evaluacion'}/$token/responder/',
         data: {
           'respuesta': respuesta == EvaluacionRespuesta.renovar ? 'renovar' : 'no_renovar',
           if (motivo != null) 'motivo': motivo,
@@ -1307,6 +1350,7 @@ class ApiClient {
         if (params.departamentoId != null) 'departamento': params.departamentoId,
         if (params.rol != null) 'rol': params.rol,
         if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'fecha_terminacion': params.fechaTerminacion.toShortIsoString(),
         'identificacion_oficial': toMultipart(params.identificacionOficial),
         'acta_nacimiento': toMultipart(params.actaNacimiento),
         'estado_cuenta': toMultipart(params.estadoCuenta),
@@ -1328,6 +1372,197 @@ class ApiClient {
       dio.close();
     }
   }
+
+  /// Asigna la fecha de terminación a un practicante que no la tiene. El
+  /// backend la rechaza si ya tenía una (solo se corrige desde el admin) o
+  /// si quien la manda no es de RH.
+  Future<Result<void>> asignarFechaTerminacionPracticante(int id, DateTime fecha) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.patch('/api/rh/PracticantesResidentes/$id/', data: {
+        'fecha_terminacion': fecha.toShortIsoString(),
+      });
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<EvaluacionPracticanteDetalle>> getEvaluacionPracticante(String token, {bool publica = false}) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final ruta = publica ? 'evaluacion-publica' : 'evaluacion';
+      final response = await dio.get('/api/rh/PracticantesResidentes/$ruta/$token/');
+      final json = response.data as Map<String, dynamic>;
+      return Result.ok((
+        nombreCompleto: json['nombre_completo'] as String,
+        tipo: json['tipo'] as String,
+        puesto: json['puesto'] as String,
+        fechaTerminacion: json['fecha_terminacion'] == null
+            ? null
+            : DateTime.parse(json['fecha_terminacion'] as String),
+        evaluacionRespuesta: _parseEvaluacionPracticanteRespuesta(json['evaluacion_respuesta']),
+        evaluacionMotivo: json['evaluacion_motivo'] as String? ?? '',
+        evaluacionRespondidaEn: json['evaluacion_respondida_en'] == null
+            ? null
+            : DateTime.parse(json['evaluacion_respondida_en'] as String).toLocal(),
+        puestos: [
+          for (final p in json['puestos'] as List? ?? const [])
+            (id: (p as Map)['id'] as int, nombre: p['nombre'] as String, rol: p['rol'] as String?),
+        ],
+        puestoId: json['puesto_id'] as int?,
+        rol: json['rol'] as String?,
+        justificacion: json['justificacion'] as String? ?? '',
+        solicitudEstatus: json['solicitud_estatus'] as String?,
+        comentarioDireccion: json['comentario_direccion'] as String? ?? '',
+        requiereAprobacionDireccion: json['requiere_aprobacion_direccion'] as bool? ?? true,
+      ));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> responderEvaluacionPracticante(
+    String token,
+    EvaluacionPracticanteRespuesta respuesta, {
+    String? motivo,
+    PropuestaContratacion? contratacion,
+    bool publica = false,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      await dio.post(
+        '/api/rh/PracticantesResidentes/${publica ? 'evaluacion-publica' : 'evaluacion'}/$token/responder/',
+        data: {
+          'respuesta': respuesta == EvaluacionPracticanteRespuesta.contratar ? 'contratar' : 'terminar',
+          if (motivo != null) 'motivo': motivo,
+          if (contratacion != null) ...{
+            'puesto': contratacion.puestoId,
+            'rol': contratacion.rol,
+            'justificacion': contratacion.justificacion,
+          },
+        },
+      );
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<List<PracticantePorEvaluarItem>>> getMisEvaluacionesPendientesPracticantes() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/PracticantesResidentes/mis-evaluaciones-pendientes/');
+      PracticantePorEvaluarItem parseItem(Map<String, dynamic> json) => (
+        id: json['id'] as int,
+        nombreCompleto: json['nombre_completo'] as String,
+        tipo: json['tipo'] as String,
+        puesto: json['puesto'] as String,
+        fechaTerminacion: DateTime.parse(json['fecha_terminacion'] as String),
+        evaluacionToken: json['evaluacion_token'] as String,
+      );
+      return Result.ok((response.data['practicantes'] as List).map((e) => parseItem(e)).toList());
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<List<SeguimientoPracticanteItem>>> getSeguimientoEvaluacionesPracticantes() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('/api/rh/PracticantesResidentes/seguimiento-evaluaciones/');
+      const etapaByValue = {
+        'en_curso': EtapaSeguimientoPracticante.enCurso,
+        'evaluacion_pendiente': EtapaSeguimientoPracticante.evaluacionPendiente,
+        'contratar': EtapaSeguimientoPracticante.contratar,
+        'terminar': EtapaSeguimientoPracticante.terminar,
+      };
+      SeguimientoPracticanteItem parseItem(Map<String, dynamic> json) => (
+        id: json['id'] as int,
+        nombreCompleto: json['nombre_completo'] as String,
+        tipo: json['tipo'] as String,
+        puesto: json['puesto'] as String,
+        jefe: json['jefe'] as String,
+        fechaTerminacion: DateTime.parse(json['fecha_terminacion'] as String),
+        etapa: etapaByValue[json['etapa']]!,
+        evaluacionNotificadaEn: json['evaluacion_notificada_en'] == null
+            ? null
+            : DateTime.parse(json['evaluacion_notificada_en'] as String).toLocal(),
+        evaluacionMotivo: json['evaluacion_motivo'] as String? ?? '',
+        evaluacionRespondidaEn: json['evaluacion_respondida_en'] == null
+            ? null
+            : DateTime.parse(json['evaluacion_respondida_en'] as String).toLocal(),
+        solicitudEstatus: (json['solicitud'] as Map?)?['estatus'] as String?,
+        comentarioDireccion: (json['solicitud'] as Map?)?['comentario_direccion'] as String? ?? '',
+        candidatoEstado: (json['candidato'] as Map?)?['estado'] as String?,
+        contratoSolicitado: (json['candidato'] as Map?)?['contrato_solicitado'] as bool? ?? false,
+      );
+      return Result.ok((response.data['practicantes'] as List).map((e) => parseItem(e)).toList());
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> iniciarContratacionPracticante(
+    int solicitudId, {
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'correo': correo,
+        'carta_oferta': MultipartFile.fromBytes(
+          cartaOferta.bytes!,
+          filename: cartaOferta.name,
+          contentType: getMediaTypeFromExtension(cartaOferta.extension!),
+        ),
+      });
+      final response = await dio.post(
+        '/api/rh/solicitudes-vacante/$solicitudId/iniciar-contratacion-practicante/',
+        data: formData,
+      );
+      return Result.ok(SolicitudVacante.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  EvaluacionPracticanteRespuesta? _parseEvaluacionPracticanteRespuesta(Object? value) => switch (value) {
+    'contratar' => EvaluacionPracticanteRespuesta.contratar,
+    'terminar' => EvaluacionPracticanteRespuesta.terminar,
+    _ => null,
+  };
 
   Future<Result<CredencialesGeneradas>> regenerarPasswordPracticante(int id) async {
     final dio = _dioFactory();

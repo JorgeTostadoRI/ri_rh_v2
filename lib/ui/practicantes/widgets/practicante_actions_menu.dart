@@ -43,6 +43,18 @@ class PracticanteActionsMenu extends StatelessWidget {
       items.add(PopupMenuItem(
         value: () => showDialog(
           context: context,
+          builder: (context) => _ConfirmProcesoBajaDialog(practicante: practicante, cambiarEstado: cambiarEstado),
+        ),
+        child: Text('Pasar a proceso de baja'),
+      ));
+    }
+
+    // Desde "en proceso de baja" solo se puede cerrar la baja definitiva,
+    // nunca regresar a alta (el backend tambien lo bloquea).
+    if (practicante.status == StatusPracticante.alta || practicante.status == StatusPracticante.procesoBaja) {
+      items.add(PopupMenuItem(
+        value: () => showDialog(
+          context: context,
           builder: (context) => _BajaDialog(practicante: practicante, cambiarEstado: cambiarEstado),
         ),
         child: Text('Pasar a inactivo'),
@@ -139,6 +151,91 @@ class _ConfirmRegenerarPasswordDialogState extends State<_ConfirmRegenerarPasswo
             ),
             ElevatedButton(
               onPressed: running ? null : () => widget.regenerarPassword.execute(widget.practicante.base.id),
+              child: running
+                  ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ConfirmProcesoBajaDialog extends StatefulWidget {
+  const _ConfirmProcesoBajaDialog({
+    required this.practicante,
+    required this.cambiarEstado,
+  });
+
+  final Practicante practicante;
+  final Command1<String, CambiarEstadoPracticanteParams> cambiarEstado;
+
+  @override
+  State<_ConfirmProcesoBajaDialog> createState() => _ConfirmProcesoBajaDialogState();
+}
+
+class _ConfirmProcesoBajaDialogState extends State<_ConfirmProcesoBajaDialog> {
+  @override
+  void initState() {
+    super.initState();
+    widget.cambiarEstado.addListener(_onResult);
+  }
+
+  @override
+  void dispose() {
+    widget.cambiarEstado.removeListener(_onResult);
+    super.dispose();
+  }
+
+  void _onResult() {
+    if (widget.cambiarEstado.completed) {
+      final message = (widget.cambiarEstado.result as Ok<String>).value;
+      widget.cambiarEstado.clearResult();
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      }
+      return;
+    }
+
+    if (widget.cambiarEstado.error) {
+      final error = (widget.cambiarEstado.result as Error).error;
+      widget.cambiarEstado.clearResult();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudo actualizar el estado', error: error),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: widget.cambiarEstado,
+      builder: (context, _) {
+        final running = widget.cambiarEstado.running;
+        return AlertDialog(
+          title: Text('Pasar a proceso de baja'),
+          content: SizedBox(
+            width: 380,
+            child: Text(
+              '¿Confirmas que ${widget.practicante.base.nombre} pasa a proceso de baja? '
+              'Dejará de calcularse su asistencia y de generarse su nómina, y ya no podrá regresar a alta. '
+              'La fecha de baja y la carta de liberación se piden al pasarlo a inactivo.'
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: running ? null : () => Navigator.of(context).pop(),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: running ? null : () => widget.cambiarEstado.execute(CambiarEstadoPracticanteParams(
+                practicanteId: widget.practicante.base.id,
+                nuevoEstado: StatusPracticante.procesoBaja,
+              )),
               child: running
                   ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : Text('Confirmar'),

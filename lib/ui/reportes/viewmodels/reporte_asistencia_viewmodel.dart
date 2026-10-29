@@ -74,7 +74,9 @@ class ReporteAsistenciaViewmodel extends ChangeNotifier {
     int daysMissed  = 0;
     for (final day in _reporte!.dates) {
       final dayKey = day.toShortIsoString();
-      if (item.asistencia[dayKey]?.status == AsistenciaStatus.absent) {
+      final asistencia = item.asistencia[dayKey];
+      // Quien todavía no le toca llegar no cuenta como falta (solo visual).
+      if (asistencia?.status == AsistenciaStatus.absent && asistencia?.entraALas == null) {
         daysMissed += 1;
       }
     }

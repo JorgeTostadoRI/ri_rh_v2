@@ -358,8 +358,8 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
   }
 
   @override
-  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token) async {
-    final result = await _apiClient.getEvaluacionDetalle(token);
+  Future<Result<EvaluacionDetalle>> getEvaluacionDetalle(String token, {bool publica = false}) async {
+    final result = await _apiClient.getEvaluacionDetalle(token, publica: publica);
     if (result case Error()) {
       _log.warning('Failed to get evaluacion detalle', error: result.error);
     }
@@ -367,8 +367,8 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
   }
 
   @override
-  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo}) async {
-    final result = await _apiClient.responderEvaluacion(token, respuesta, motivo: motivo);
+  Future<Result<void>> responderEvaluacion(String token, EvaluacionRespuesta respuesta, {String? motivo, bool publica = false}) async {
+    final result = await _apiClient.responderEvaluacion(token, respuesta, motivo: motivo, publica: publica);
     if (result case Error()) {
       _log.warning('Failed to responder evaluacion', error: result.error);
     }

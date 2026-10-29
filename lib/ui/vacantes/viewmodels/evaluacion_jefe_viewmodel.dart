@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/utils/result.dart';
 class EvaluacionJefeViewmodel extends ChangeNotifier {
   EvaluacionJefeViewmodel({
     required this.token,
+    this.publica = false,
     required AppLogger log,
     required EmpleadosRepository empleadosRepository,
   }) : _log = log,
@@ -20,6 +21,9 @@ class EvaluacionJefeViewmodel extends ChangeNotifier {
   }
 
   final String token;
+
+  /// Sin sesión -- solo la jefa que contesta desde el link del correo.
+  final bool publica;
   final AppLogger _log;
   final EmpleadosRepository _empleadosRepository;
 
@@ -30,7 +34,7 @@ class EvaluacionJefeViewmodel extends ChangeNotifier {
   late final Command1<void, ({EvaluacionRespuesta respuesta, String? motivo})> responder;
 
   Future<Result<EvaluacionDetalle>> _load(String token) async {
-    final result = await _empleadosRepository.getEvaluacionDetalle(token);
+    final result = await _empleadosRepository.getEvaluacionDetalle(token, publica: publica);
     switch (result) {
       case Error():
         _log.warning('Failed to load evaluacion detalle', error: result.error);
@@ -42,7 +46,12 @@ class EvaluacionJefeViewmodel extends ChangeNotifier {
   }
 
   Future<Result<void>> _responder(({EvaluacionRespuesta respuesta, String? motivo}) params) async {
-    final result = await _empleadosRepository.responderEvaluacion(token, params.respuesta, motivo: params.motivo);
+    final result = await _empleadosRepository.responderEvaluacion(
+      token,
+      params.respuesta,
+      motivo: params.motivo,
+      publica: publica,
+    );
     switch (result) {
       case Error():
         _log.warning('Failed to responder evaluacion', error: result.error);

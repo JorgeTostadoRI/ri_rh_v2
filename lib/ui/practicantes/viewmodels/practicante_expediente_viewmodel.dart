@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/horario/horario_repository.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
@@ -17,6 +18,7 @@ class PracticanteExpedienteViewmodel extends ChangeNotifier {
     required this._practicantesRepository,
     required this._usersRepository,
     required this._horarioRepository,
+    required this._authRepository,
   }) {
     load = Command0(_load)..execute();
     loadHorarios = Command0(_loadHorarios)..execute();
@@ -24,6 +26,7 @@ class PracticanteExpedienteViewmodel extends ChangeNotifier {
     createCustomHorario = Command1(_createCustomHorario);
     loadJefes = Command0(_loadJefes)..execute();
     assignJefe = Command1(_assignJefe);
+    asignarFechaTerminacion = Command1(_asignarFechaTerminacion);
   }
 
   final int _practicanteId;
@@ -31,7 +34,14 @@ class PracticanteExpedienteViewmodel extends ChangeNotifier {
   final PracticantesRepository _practicantesRepository;
   final UsersRepository _usersRepository;
   final HorarioRepository _horarioRepository;
+  final AuthRepository _authRepository;
   late final Command0 load;
+
+  /// Solo RH puede asignar la fecha de terminación (el backend también lo
+  /// valida) -- mismo criterio que VacantesViewmodel.esRH.
+  bool get esRH => _authRepository.getCurrentUser()?.departamento?.nombre == 'Recursos Humanos';
+
+  late final Command1<void, DateTime> asignarFechaTerminacion;
 
   late Practicante _practicante;
   Practicante get practicante => _practicante;
@@ -128,6 +138,20 @@ class PracticanteExpedienteViewmodel extends ChangeNotifier {
     switch (result) {
       case Error():
         _log.warning('Failed to assign jefe', error: result.error);
+        return result;
+      case Ok():
+    }
+
+    _practicantesRepository.invalidateCache();
+    await load.execute();
+    return const Result.ok(null);
+  }
+
+  Future<Result<void>> _asignarFechaTerminacion(DateTime fecha) async {
+    final result = await _practicantesRepository.asignarFechaTerminacion(_practicanteId, fecha);
+    switch (result) {
+      case Error():
+        _log.warning('Failed to asignar fecha de terminacion', error: result.error);
         return result;
       case Ok():
     }

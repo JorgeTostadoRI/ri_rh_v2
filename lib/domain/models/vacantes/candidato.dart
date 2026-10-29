@@ -24,6 +24,10 @@ abstract class Candidato with _$Candidato {
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'contrato_solicitado_en') DateTime? contratoSolicitadoEn,
     int? empleado,
+    /// Link de la evaluación pendiente de este empleado -- el backend solo lo
+    /// manda si quien ve la solicitud es su jefe directo (el que la
+    /// contesta); para cualquier otro usuario viene null.
+    @JsonKey(name: 'evaluacion_token_jefe') String? evaluacionTokenJefe,
   }) = _Candidato;
 
   factory Candidato.fromJson(Map<String, Object?> json) => _$CandidatoFromJson(json);

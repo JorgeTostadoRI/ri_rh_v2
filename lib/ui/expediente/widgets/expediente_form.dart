@@ -16,12 +16,17 @@ class ExpedienteForm extends StatefulWidget {
     required this.readOnly,
     required this.jefeCandidates,
     required this.assignJefe,
+    this.fechaTerminacion,
   });
 
   final BaseEmpleado baseEmpleado;
   final bool readOnly;
   final List<User> jefeCandidates;
   final Command1<void, int> assignJefe;
+
+  /// Campo que va debajo de "FECHA ALTA" en Datos Laborales -- solo lo pasa
+  /// el expediente de practicantes; en empleados no se muestra nada.
+  final Widget? fechaTerminacion;
 
   @override
   State<ExpedienteForm> createState() => _ExpedienteFormState();
@@ -193,6 +198,15 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                 ),
               ],
             ),
+            if (widget.fechaTerminacion != null)
+              Row(
+                spacing: crossSpacing,
+                children: [
+                  Flexible(child: widget.fechaTerminacion!),
+                  // Mitad derecha vacía: el campo queda alineado bajo FECHA ALTA.
+                  const Flexible(child: SizedBox.shrink()),
+                ],
+              ),
           ],
         ),
         IconCard(

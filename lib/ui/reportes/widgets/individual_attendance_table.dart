@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/reportes/reporte_asistencia.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/core/ui/user_section.dart';
+import 'package:ri_rh_v2/ui/reportes/widgets/entra_a_las_label.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 class IndividualAttendanceTable extends StatelessWidget {
@@ -156,6 +157,13 @@ class IndividualAttendanceTable extends StatelessWidget {
         DataCell(Text('FALTA JUSTIFICADA')),
         DataCell(Text('FALTA JUSTIFICADA')),
         DataCell(Text('FALTA JUSTIFICADA')),
+      ],
+      // Todavía no le toca llegar: solo visual, el status sigue siendo falta.
+      AsistenciaStatus.absent when attendance.entraALas != null => [
+        DataCell(Text(entraALasLabel(attendance.entraALas!, jm))),
+        const DataCell(Text('-')),
+        const DataCell(Text('-')),
+        const DataCell(Text('-')),
       ],
       AsistenciaStatus.absent => const [
         DataCell(Text('FALTA')),

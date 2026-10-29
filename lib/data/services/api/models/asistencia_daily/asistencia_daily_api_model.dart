@@ -24,6 +24,9 @@ abstract class AsistenciaDailyApiModel with _$AsistenciaDailyApiModel {
         String? entryFromLunchPhoto,
         String? exitPhoto,
         String? notes,
+        /// "HH:MM" solo cuando es falta pero todavía no le toca llegar.
+        @JsonKey(name: 'entra_a_las')
+        String? entraALas,
     }) = _AsistenciaDailyApiModel;
 
     factory AsistenciaDailyApiModel.fromJson(Map<String, Object?> json) => _$AsistenciaDailyApiModelFromJson(json);
