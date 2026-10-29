@@ -1,8 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
-import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/altas_imss_viewmodel.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
@@ -165,7 +163,7 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
     Fase2Stage.evaluacionPendiente => 'Alta archivada, esperando que el jefe directo conteste la evaluación',
     Fase2Stage.evaluacionRespondida => 'Evaluación contestada, pendiente el contrato definitivo',
     Fase2Stage.contratoFirmado => 'Contrato definitivo firmado y archivado',
-    Fase2Stage.bajaIniciada => 'No se renueva -- proceso de baja iniciado',
+    Fase2Stage.bajaIniciada => 'No se renueva -- pasa a proceso de finiquito el día que vence su periodo',
   };
 
   static const Widget _procesoCompletadoChip = Chip(
@@ -192,14 +190,9 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
         ];
 
       case Fase2Stage.evaluacionPendiente:
-        return [
-          ActionChip(
-            avatar: const Icon(Icons.warning_amber_rounded, size: 16, color: Colors.orange),
-            label: const Text('Evaluación pendiente'),
-            backgroundColor: const Color(0xFFFFF7ED),
-            onPressed: () => context.go(Routes.evaluacionOfToken(item.evaluacionToken)),
-          ),
-        ];
+        // El chip para contestarla solo le sale al jefe directo (ver
+        // _CandidatoRow en vacantes_screen.dart) -- aquí basta el texto.
+        return const [];
 
       case Fase2Stage.evaluacionRespondida:
         return [
@@ -229,7 +222,7 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
         return const [
           Chip(
             avatar: Icon(Icons.person_off_outlined, size: 16, color: Color(0xFF9A3412)),
-            label: Text('Proceso de baja iniciado'),
+            label: Text('No se renueva'),
             backgroundColor: Color(0xFFFFF7ED),
           ),
         ];
@@ -263,9 +256,10 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
           color: Colors.blue,
         ),
         Text(_estadoTexto(item), style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+        // En "no se renueva" sí se muestra: es el día en que pasa a proceso
+        // de finiquito.
         if (item.fechaVencimientoPeriodo != null &&
-            item.fase2Stage != Fase2Stage.contratoFirmado &&
-            item.fase2Stage != Fase2Stage.bajaIniciada)
+            item.fase2Stage != Fase2Stage.contratoFirmado)
           Text(
             'Vence el ${item.fechaVencimientoPeriodo!.toShortIsoString()}',
             style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A)),

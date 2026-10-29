@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Practicante implements DiagnosticableTreeMixin {
 
- BaseEmpleado get base; TypePracticante get type; Universidad get university; AltaPracticante get alta; StatusPracticante? get status; User? get user; CredencialesGeneradas? get credencialesGeneradas;
+ BaseEmpleado get base; TypePracticante get type; Universidad get university; AltaPracticante get alta; StatusPracticante? get status; User? get user; CredencialesGeneradas? get credencialesGeneradas;/// Fin de sus prácticas. Null solo en los dados de alta antes de que
+/// existiera el campo -- se le puede asignar una sola vez (solo RH).
+ DateTime? get fechaTerminacion;
 /// Create a copy of Practicante
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,21 +29,21 @@ $PracticanteCopyWith<Practicante> get copyWith => _$PracticanteCopyWithImpl<Prac
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Practicante'))
-    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('university', university))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('credencialesGeneradas', credencialesGeneradas));
+    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('university', university))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('credencialesGeneradas', credencialesGeneradas))..add(DiagnosticsProperty('fechaTerminacion', fechaTerminacion));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Practicante&&(identical(other.base, base) || other.base == base)&&(identical(other.type, type) || other.type == type)&&(identical(other.university, university) || other.university == university)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user)&&(identical(other.credencialesGeneradas, credencialesGeneradas) || other.credencialesGeneradas == credencialesGeneradas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Practicante&&(identical(other.base, base) || other.base == base)&&(identical(other.type, type) || other.type == type)&&(identical(other.university, university) || other.university == university)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user)&&(identical(other.credencialesGeneradas, credencialesGeneradas) || other.credencialesGeneradas == credencialesGeneradas)&&(identical(other.fechaTerminacion, fechaTerminacion) || other.fechaTerminacion == fechaTerminacion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,base,type,university,alta,status,user,credencialesGeneradas);
+int get hashCode => Object.hash(runtimeType,base,type,university,alta,status,user,credencialesGeneradas,fechaTerminacion);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Practicante(base: $base, type: $type, university: $university, alta: $alta, status: $status, user: $user, credencialesGeneradas: $credencialesGeneradas)';
+  return 'Practicante(base: $base, type: $type, university: $university, alta: $alta, status: $status, user: $user, credencialesGeneradas: $credencialesGeneradas, fechaTerminacion: $fechaTerminacion)';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $PracticanteCopyWith<$Res>  {
   factory $PracticanteCopyWith(Practicante value, $Res Function(Practicante) _then) = _$PracticanteCopyWithImpl;
 @useResult
 $Res call({
- BaseEmpleado base, TypePracticante type, Universidad university, AltaPracticante alta, StatusPracticante? status, User? user, CredencialesGeneradas? credencialesGeneradas
+ BaseEmpleado base, TypePracticante type, Universidad university, AltaPracticante alta, StatusPracticante? status, User? user, CredencialesGeneradas? credencialesGeneradas, DateTime? fechaTerminacion
 });
 
 
@@ -69,7 +71,7 @@ class _$PracticanteCopyWithImpl<$Res>
 
 /// Create a copy of Practicante
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? base = null,Object? type = null,Object? university = null,Object? alta = null,Object? status = freezed,Object? user = freezed,Object? credencialesGeneradas = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? base = null,Object? type = null,Object? university = null,Object? alta = null,Object? status = freezed,Object? user = freezed,Object? credencialesGeneradas = freezed,Object? fechaTerminacion = freezed,}) {
   return _then(Practicante(
 base: null == base ? _self.base : base // ignore: cast_nullable_to_non_nullable
 as BaseEmpleado,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -78,7 +80,8 @@ as Universidad,alta: null == alta ? _self.alta : alta // ignore: cast_nullable_t
 as AltaPracticante,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as StatusPracticante?,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User?,credencialesGeneradas: freezed == credencialesGeneradas ? _self.credencialesGeneradas : credencialesGeneradas // ignore: cast_nullable_to_non_nullable
-as CredencialesGeneradas?,
+as CredencialesGeneradas?,fechaTerminacion: freezed == fechaTerminacion ? _self.fechaTerminacion : fechaTerminacion // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 /// Create a copy of Practicante
@@ -214,10 +217,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BaseEmpleado base,  TypePracticante type,  Universidad university,  AltaPracticante alta,  StatusPracticante? status,  User? user,  CredencialesGeneradas? credencialesGeneradas)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BaseEmpleado base,  TypePracticante type,  Universidad university,  AltaPracticante alta,  StatusPracticante? status,  User? user,  CredencialesGeneradas? credencialesGeneradas,  DateTime? fechaTerminacion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Practicante() when $default != null:
-return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_that.user,_that.credencialesGeneradas);case _:
+return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_that.user,_that.credencialesGeneradas,_that.fechaTerminacion);case _:
   return orElse();
 
 }
@@ -235,10 +238,10 @@ return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BaseEmpleado base,  TypePracticante type,  Universidad university,  AltaPracticante alta,  StatusPracticante? status,  User? user,  CredencialesGeneradas? credencialesGeneradas)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BaseEmpleado base,  TypePracticante type,  Universidad university,  AltaPracticante alta,  StatusPracticante? status,  User? user,  CredencialesGeneradas? credencialesGeneradas,  DateTime? fechaTerminacion)  $default,) {final _that = this;
 switch (_that) {
 case _Practicante():
-return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_that.user,_that.credencialesGeneradas);case _:
+return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_that.user,_that.credencialesGeneradas,_that.fechaTerminacion);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -255,10 +258,10 @@ return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BaseEmpleado base,  TypePracticante type,  Universidad university,  AltaPracticante alta,  StatusPracticante? status,  User? user,  CredencialesGeneradas? credencialesGeneradas)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BaseEmpleado base,  TypePracticante type,  Universidad university,  AltaPracticante alta,  StatusPracticante? status,  User? user,  CredencialesGeneradas? credencialesGeneradas,  DateTime? fechaTerminacion)?  $default,) {final _that = this;
 switch (_that) {
 case _Practicante() when $default != null:
-return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_that.user,_that.credencialesGeneradas);case _:
+return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_that.user,_that.credencialesGeneradas,_that.fechaTerminacion);case _:
   return null;
 
 }
@@ -270,7 +273,7 @@ return $default(_that.base,_that.type,_that.university,_that.alta,_that.status,_
 
 
 class _Practicante with DiagnosticableTreeMixin implements Practicante {
-  const _Practicante({required this.base, required this.type, required this.university, required this.alta, this.status, this.user, this.credencialesGeneradas});
+  const _Practicante({required this.base, required this.type, required this.university, required this.alta, this.status, this.user, this.credencialesGeneradas, this.fechaTerminacion});
   
 
 @override final  BaseEmpleado base;
@@ -280,6 +283,9 @@ class _Practicante with DiagnosticableTreeMixin implements Practicante {
 @override final  StatusPracticante? status;
 @override final  User? user;
 @override final  CredencialesGeneradas? credencialesGeneradas;
+/// Fin de sus prácticas. Null solo en los dados de alta antes de que
+/// existiera el campo -- se le puede asignar una sola vez (solo RH).
+@override final  DateTime? fechaTerminacion;
 
 /// Create a copy of Practicante
 /// with the given fields replaced by the non-null parameter values.
@@ -292,21 +298,21 @@ _$PracticanteCopyWith<_Practicante> get copyWith => __$PracticanteCopyWithImpl<_
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Practicante'))
-    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('university', university))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('credencialesGeneradas', credencialesGeneradas));
+    ..add(DiagnosticsProperty('base', base))..add(DiagnosticsProperty('type', type))..add(DiagnosticsProperty('university', university))..add(DiagnosticsProperty('alta', alta))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('credencialesGeneradas', credencialesGeneradas))..add(DiagnosticsProperty('fechaTerminacion', fechaTerminacion));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Practicante&&(identical(other.base, base) || other.base == base)&&(identical(other.type, type) || other.type == type)&&(identical(other.university, university) || other.university == university)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user)&&(identical(other.credencialesGeneradas, credencialesGeneradas) || other.credencialesGeneradas == credencialesGeneradas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Practicante&&(identical(other.base, base) || other.base == base)&&(identical(other.type, type) || other.type == type)&&(identical(other.university, university) || other.university == university)&&(identical(other.alta, alta) || other.alta == alta)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user)&&(identical(other.credencialesGeneradas, credencialesGeneradas) || other.credencialesGeneradas == credencialesGeneradas)&&(identical(other.fechaTerminacion, fechaTerminacion) || other.fechaTerminacion == fechaTerminacion));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,base,type,university,alta,status,user,credencialesGeneradas);
+int get hashCode => Object.hash(runtimeType,base,type,university,alta,status,user,credencialesGeneradas,fechaTerminacion);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Practicante(base: $base, type: $type, university: $university, alta: $alta, status: $status, user: $user, credencialesGeneradas: $credencialesGeneradas)';
+  return 'Practicante(base: $base, type: $type, university: $university, alta: $alta, status: $status, user: $user, credencialesGeneradas: $credencialesGeneradas, fechaTerminacion: $fechaTerminacion)';
 }
 
 
@@ -317,7 +323,7 @@ abstract mixin class _$PracticanteCopyWith<$Res> implements $PracticanteCopyWith
   factory _$PracticanteCopyWith(_Practicante value, $Res Function(_Practicante) _then) = __$PracticanteCopyWithImpl;
 @override @useResult
 $Res call({
- BaseEmpleado base, TypePracticante type, Universidad university, AltaPracticante alta, StatusPracticante? status, User? user, CredencialesGeneradas? credencialesGeneradas
+ BaseEmpleado base, TypePracticante type, Universidad university, AltaPracticante alta, StatusPracticante? status, User? user, CredencialesGeneradas? credencialesGeneradas, DateTime? fechaTerminacion
 });
 
 
@@ -334,7 +340,7 @@ class __$PracticanteCopyWithImpl<$Res>
 
 /// Create a copy of Practicante
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? base = null,Object? type = null,Object? university = null,Object? alta = null,Object? status = freezed,Object? user = freezed,Object? credencialesGeneradas = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? base = null,Object? type = null,Object? university = null,Object? alta = null,Object? status = freezed,Object? user = freezed,Object? credencialesGeneradas = freezed,Object? fechaTerminacion = freezed,}) {
   return _then(_Practicante(
 base: null == base ? _self.base : base // ignore: cast_nullable_to_non_nullable
 as BaseEmpleado,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -343,7 +349,8 @@ as Universidad,alta: null == alta ? _self.alta : alta // ignore: cast_nullable_t
 as AltaPracticante,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as StatusPracticante?,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User?,credencialesGeneradas: freezed == credencialesGeneradas ? _self.credencialesGeneradas : credencialesGeneradas // ignore: cast_nullable_to_non_nullable
-as CredencialesGeneradas?,
+as CredencialesGeneradas?,fechaTerminacion: freezed == fechaTerminacion ? _self.fechaTerminacion : fechaTerminacion // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

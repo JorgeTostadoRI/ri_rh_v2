@@ -105,7 +105,7 @@ class _EvaluacionJefeScreenState extends State<EvaluacionJefeScreen> {
             // porque a esta pantalla también se llega directo desde un link
             // de correo, sin ninguna ruta previa en el historial que
             // "regresar" pudiera reutilizar.
-            TextButton.icon(
+            if (!widget.viewmodel.publica) TextButton.icon(
               onPressed: () => context.go(Routes.reclutamiento),
               icon: const Icon(Icons.arrow_back, size: 16),
               label: const Text('Volver a Reclutamiento'),

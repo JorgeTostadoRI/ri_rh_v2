@@ -38,6 +38,10 @@ abstract class VacantesRepository {
   /// backend).
   Future<Result<List<SolicitudVacante>>> getSolicitudes();
 
+  /// Cuántas solicitudes esperan que Dirección las apruebe o rechace -- la
+  /// notificación de "Reclutamiento" de Dirección (solo Dirección).
+  Future<Result<int>> getSolicitudesPendientesCount();
+
   /// Solicita una vacante para un puesto. El backend asigna el solicitante
   /// (usuario en sesión) y el estatus inicial ('pendiente').
   Future<Result<SolicitudVacante>> createSolicitud({
@@ -72,6 +76,18 @@ abstract class VacantesRepository {
   Future<Result<SolicitudVacante>> iniciarCandidato({
     required int id,
     required String nombre,
+    required String correo,
+    required PlatformFile cartaOferta,
+  });
+
+  /// Solo en la contratación de un practicante: en vez de aprobar o
+  /// rechazar, Dirección le regresa la evaluación al jefe con un comentario.
+  Future<Result<SolicitudVacante>> retroalimentar(int id, String comentario);
+
+  /// Dirección ya aprobó contratar a un practicante: RH le manda el link al
+  /// portal, prellenado con su expediente (en vez de "Iniciar candidato").
+  Future<Result<SolicitudVacante>> iniciarContratacionPracticante({
+    required int id,
     required String correo,
     required PlatformFile cartaOferta,
   });

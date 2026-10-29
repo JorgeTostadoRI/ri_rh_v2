@@ -16,6 +16,11 @@ class VacantesRepositoryRemote extends VacantesRepository {
   }
 
   @override
+  Future<Result<int>> getSolicitudesPendientesCount() async {
+    return _apiClient.getSolicitudesVacantePendientesCount();
+  }
+
+  @override
   Future<Result<SolicitudVacante>> createSolicitud({
     required int puestoId,
     required String rol,
@@ -68,6 +73,20 @@ class VacantesRepositoryRemote extends VacantesRepository {
     required PlatformFile cartaOferta,
   }) async {
     return _apiClient.iniciarCandidato(id, nombre: nombre, correo: correo, cartaOferta: cartaOferta);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> retroalimentar(int id, String comentario) async {
+    return _apiClient.retroalimentarSolicitudVacante(id, comentario);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> iniciarContratacionPracticante({
+    required int id,
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    return _apiClient.iniciarContratacionPracticante(id, correo: correo, cartaOferta: cartaOferta);
   }
 
   @override

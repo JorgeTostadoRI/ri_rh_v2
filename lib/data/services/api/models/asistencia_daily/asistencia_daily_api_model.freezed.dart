@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AsistenciaDailyApiModel {
 
- int get id; DateTime get createdAt; DateTime get updatedAt;@JsonKey(name: 'usuario') int get userRef; DateTime get attendedAt; AsistenciaStatus get status; int get minutesLate; DateTime? get entryAt; DateTime? get exitToLunchAt; DateTime? get entryFromLunchAt; DateTime? get exitAt; String? get entryPhoto; String? get exitToLunchPhoto; String? get entryFromLunchPhoto; String? get exitPhoto; String? get notes;
+ int get id; DateTime get createdAt; DateTime get updatedAt;@JsonKey(name: 'usuario') int get userRef; DateTime get attendedAt; AsistenciaStatus get status; int get minutesLate; DateTime? get entryAt; DateTime? get exitToLunchAt; DateTime? get entryFromLunchAt; DateTime? get exitAt; String? get entryPhoto; String? get exitToLunchPhoto; String? get entryFromLunchPhoto; String? get exitPhoto; String? get notes;/// "HH:MM" solo cuando es falta pero todavía no le toca llegar.
+@JsonKey(name: 'entra_a_las') String? get entraALas;
 /// Create a copy of AsistenciaDailyApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +30,16 @@ $AsistenciaDailyApiModelCopyWith<AsistenciaDailyApiModel> get copyWith => _$Asis
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AsistenciaDailyApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userRef, userRef) || other.userRef == userRef)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate)&&(identical(other.entryAt, entryAt) || other.entryAt == entryAt)&&(identical(other.exitToLunchAt, exitToLunchAt) || other.exitToLunchAt == exitToLunchAt)&&(identical(other.entryFromLunchAt, entryFromLunchAt) || other.entryFromLunchAt == entryFromLunchAt)&&(identical(other.exitAt, exitAt) || other.exitAt == exitAt)&&(identical(other.entryPhoto, entryPhoto) || other.entryPhoto == entryPhoto)&&(identical(other.exitToLunchPhoto, exitToLunchPhoto) || other.exitToLunchPhoto == exitToLunchPhoto)&&(identical(other.entryFromLunchPhoto, entryFromLunchPhoto) || other.entryFromLunchPhoto == entryFromLunchPhoto)&&(identical(other.exitPhoto, exitPhoto) || other.exitPhoto == exitPhoto)&&(identical(other.notes, notes) || other.notes == notes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AsistenciaDailyApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userRef, userRef) || other.userRef == userRef)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate)&&(identical(other.entryAt, entryAt) || other.entryAt == entryAt)&&(identical(other.exitToLunchAt, exitToLunchAt) || other.exitToLunchAt == exitToLunchAt)&&(identical(other.entryFromLunchAt, entryFromLunchAt) || other.entryFromLunchAt == entryFromLunchAt)&&(identical(other.exitAt, exitAt) || other.exitAt == exitAt)&&(identical(other.entryPhoto, entryPhoto) || other.entryPhoto == entryPhoto)&&(identical(other.exitToLunchPhoto, exitToLunchPhoto) || other.exitToLunchPhoto == exitToLunchPhoto)&&(identical(other.entryFromLunchPhoto, entryFromLunchPhoto) || other.entryFromLunchPhoto == entryFromLunchPhoto)&&(identical(other.exitPhoto, exitPhoto) || other.exitPhoto == exitPhoto)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.entraALas, entraALas) || other.entraALas == entraALas));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,userRef,attendedAt,status,minutesLate,entryAt,exitToLunchAt,entryFromLunchAt,exitAt,entryPhoto,exitToLunchPhoto,entryFromLunchPhoto,exitPhoto,notes);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,userRef,attendedAt,status,minutesLate,entryAt,exitToLunchAt,entryFromLunchAt,exitAt,entryPhoto,exitToLunchPhoto,entryFromLunchPhoto,exitPhoto,notes,entraALas);
 
 @override
 String toString() {
-  return 'AsistenciaDailyApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, userRef: $userRef, attendedAt: $attendedAt, status: $status, minutesLate: $minutesLate, entryAt: $entryAt, exitToLunchAt: $exitToLunchAt, entryFromLunchAt: $entryFromLunchAt, exitAt: $exitAt, entryPhoto: $entryPhoto, exitToLunchPhoto: $exitToLunchPhoto, entryFromLunchPhoto: $entryFromLunchPhoto, exitPhoto: $exitPhoto, notes: $notes)';
+  return 'AsistenciaDailyApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, userRef: $userRef, attendedAt: $attendedAt, status: $status, minutesLate: $minutesLate, entryAt: $entryAt, exitToLunchAt: $exitToLunchAt, entryFromLunchAt: $entryFromLunchAt, exitAt: $exitAt, entryPhoto: $entryPhoto, exitToLunchPhoto: $exitToLunchPhoto, entryFromLunchPhoto: $entryFromLunchPhoto, exitPhoto: $exitPhoto, notes: $notes, entraALas: $entraALas)';
 }
 
 
@@ -49,7 +50,7 @@ abstract mixin class $AsistenciaDailyApiModelCopyWith<$Res>  {
   factory $AsistenciaDailyApiModelCopyWith(AsistenciaDailyApiModel value, $Res Function(AsistenciaDailyApiModel) _then) = _$AsistenciaDailyApiModelCopyWithImpl;
 @useResult
 $Res call({
- int id, DateTime createdAt, DateTime updatedAt,@JsonKey(name: 'usuario') int userRef, DateTime attendedAt, AsistenciaStatus status, int minutesLate, DateTime? entryAt, DateTime? exitToLunchAt, DateTime? entryFromLunchAt, DateTime? exitAt, String? entryPhoto, String? exitToLunchPhoto, String? entryFromLunchPhoto, String? exitPhoto, String? notes
+ int id, DateTime createdAt, DateTime updatedAt,@JsonKey(name: 'usuario') int userRef, DateTime attendedAt, AsistenciaStatus status, int minutesLate, DateTime? entryAt, DateTime? exitToLunchAt, DateTime? entryFromLunchAt, DateTime? exitAt, String? entryPhoto, String? exitToLunchPhoto, String? entryFromLunchPhoto, String? exitPhoto, String? notes,@JsonKey(name: 'entra_a_las') String? entraALas
 });
 
 
@@ -66,7 +67,7 @@ class _$AsistenciaDailyApiModelCopyWithImpl<$Res>
 
 /// Create a copy of AsistenciaDailyApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = null,Object? updatedAt = null,Object? userRef = null,Object? attendedAt = null,Object? status = null,Object? minutesLate = null,Object? entryAt = freezed,Object? exitToLunchAt = freezed,Object? entryFromLunchAt = freezed,Object? exitAt = freezed,Object? entryPhoto = freezed,Object? exitToLunchPhoto = freezed,Object? entryFromLunchPhoto = freezed,Object? exitPhoto = freezed,Object? notes = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = null,Object? updatedAt = null,Object? userRef = null,Object? attendedAt = null,Object? status = null,Object? minutesLate = null,Object? entryAt = freezed,Object? exitToLunchAt = freezed,Object? entryFromLunchAt = freezed,Object? exitAt = freezed,Object? entryPhoto = freezed,Object? exitToLunchPhoto = freezed,Object? entryFromLunchPhoto = freezed,Object? exitPhoto = freezed,Object? notes = freezed,Object? entraALas = freezed,}) {
   return _then(AsistenciaDailyApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -84,6 +85,7 @@ as String?,exitToLunchPhoto: freezed == exitToLunchPhoto ? _self.exitToLunchPhot
 as String?,entryFromLunchPhoto: freezed == entryFromLunchPhoto ? _self.entryFromLunchPhoto : entryFromLunchPhoto // ignore: cast_nullable_to_non_nullable
 as String?,exitPhoto: freezed == exitPhoto ? _self.exitPhoto : exitPhoto // ignore: cast_nullable_to_non_nullable
 as String?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,entraALas: freezed == entraALas ? _self.entraALas : entraALas // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -169,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  DateTime createdAt,  DateTime updatedAt, @JsonKey(name: 'usuario')  int userRef,  DateTime attendedAt,  AsistenciaStatus status,  int minutesLate,  DateTime? entryAt,  DateTime? exitToLunchAt,  DateTime? entryFromLunchAt,  DateTime? exitAt,  String? entryPhoto,  String? exitToLunchPhoto,  String? entryFromLunchPhoto,  String? exitPhoto,  String? notes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  DateTime createdAt,  DateTime updatedAt, @JsonKey(name: 'usuario')  int userRef,  DateTime attendedAt,  AsistenciaStatus status,  int minutesLate,  DateTime? entryAt,  DateTime? exitToLunchAt,  DateTime? entryFromLunchAt,  DateTime? exitAt,  String? entryPhoto,  String? exitToLunchPhoto,  String? entryFromLunchPhoto,  String? exitPhoto,  String? notes, @JsonKey(name: 'entra_a_las')  String? entraALas)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AsistenciaDailyApiModel() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.attendedAt,_that.status,_that.minutesLate,_that.entryAt,_that.exitToLunchAt,_that.entryFromLunchAt,_that.exitAt,_that.entryPhoto,_that.exitToLunchPhoto,_that.entryFromLunchPhoto,_that.exitPhoto,_that.notes);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.attendedAt,_that.status,_that.minutesLate,_that.entryAt,_that.exitToLunchAt,_that.entryFromLunchAt,_that.exitAt,_that.entryPhoto,_that.exitToLunchPhoto,_that.entryFromLunchPhoto,_that.exitPhoto,_that.notes,_that.entraALas);case _:
   return orElse();
 
 }
@@ -190,10 +192,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.att
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  DateTime createdAt,  DateTime updatedAt, @JsonKey(name: 'usuario')  int userRef,  DateTime attendedAt,  AsistenciaStatus status,  int minutesLate,  DateTime? entryAt,  DateTime? exitToLunchAt,  DateTime? entryFromLunchAt,  DateTime? exitAt,  String? entryPhoto,  String? exitToLunchPhoto,  String? entryFromLunchPhoto,  String? exitPhoto,  String? notes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  DateTime createdAt,  DateTime updatedAt, @JsonKey(name: 'usuario')  int userRef,  DateTime attendedAt,  AsistenciaStatus status,  int minutesLate,  DateTime? entryAt,  DateTime? exitToLunchAt,  DateTime? entryFromLunchAt,  DateTime? exitAt,  String? entryPhoto,  String? exitToLunchPhoto,  String? entryFromLunchPhoto,  String? exitPhoto,  String? notes, @JsonKey(name: 'entra_a_las')  String? entraALas)  $default,) {final _that = this;
 switch (_that) {
 case _AsistenciaDailyApiModel():
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.attendedAt,_that.status,_that.minutesLate,_that.entryAt,_that.exitToLunchAt,_that.entryFromLunchAt,_that.exitAt,_that.entryPhoto,_that.exitToLunchPhoto,_that.entryFromLunchPhoto,_that.exitPhoto,_that.notes);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.attendedAt,_that.status,_that.minutesLate,_that.entryAt,_that.exitToLunchAt,_that.entryFromLunchAt,_that.exitAt,_that.entryPhoto,_that.exitToLunchPhoto,_that.entryFromLunchPhoto,_that.exitPhoto,_that.notes,_that.entraALas);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +212,10 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.att
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  DateTime createdAt,  DateTime updatedAt, @JsonKey(name: 'usuario')  int userRef,  DateTime attendedAt,  AsistenciaStatus status,  int minutesLate,  DateTime? entryAt,  DateTime? exitToLunchAt,  DateTime? entryFromLunchAt,  DateTime? exitAt,  String? entryPhoto,  String? exitToLunchPhoto,  String? entryFromLunchPhoto,  String? exitPhoto,  String? notes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  DateTime createdAt,  DateTime updatedAt, @JsonKey(name: 'usuario')  int userRef,  DateTime attendedAt,  AsistenciaStatus status,  int minutesLate,  DateTime? entryAt,  DateTime? exitToLunchAt,  DateTime? entryFromLunchAt,  DateTime? exitAt,  String? entryPhoto,  String? exitToLunchPhoto,  String? entryFromLunchPhoto,  String? exitPhoto,  String? notes, @JsonKey(name: 'entra_a_las')  String? entraALas)?  $default,) {final _that = this;
 switch (_that) {
 case _AsistenciaDailyApiModel() when $default != null:
-return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.attendedAt,_that.status,_that.minutesLate,_that.entryAt,_that.exitToLunchAt,_that.entryFromLunchAt,_that.exitAt,_that.entryPhoto,_that.exitToLunchPhoto,_that.entryFromLunchPhoto,_that.exitPhoto,_that.notes);case _:
+return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.attendedAt,_that.status,_that.minutesLate,_that.entryAt,_that.exitToLunchAt,_that.entryFromLunchAt,_that.exitAt,_that.entryPhoto,_that.exitToLunchPhoto,_that.entryFromLunchPhoto,_that.exitPhoto,_that.notes,_that.entraALas);case _:
   return null;
 
 }
@@ -225,7 +227,7 @@ return $default(_that.id,_that.createdAt,_that.updatedAt,_that.userRef,_that.att
 @JsonSerializable()
 
 class _AsistenciaDailyApiModel implements AsistenciaDailyApiModel {
-  const _AsistenciaDailyApiModel({required this.id, required this.createdAt, required this.updatedAt, @JsonKey(name: 'usuario') required this.userRef, required this.attendedAt, required this.status, required this.minutesLate, this.entryAt, this.exitToLunchAt, this.entryFromLunchAt, this.exitAt, this.entryPhoto, this.exitToLunchPhoto, this.entryFromLunchPhoto, this.exitPhoto, this.notes});
+  const _AsistenciaDailyApiModel({required this.id, required this.createdAt, required this.updatedAt, @JsonKey(name: 'usuario') required this.userRef, required this.attendedAt, required this.status, required this.minutesLate, this.entryAt, this.exitToLunchAt, this.entryFromLunchAt, this.exitAt, this.entryPhoto, this.exitToLunchPhoto, this.entryFromLunchPhoto, this.exitPhoto, this.notes, @JsonKey(name: 'entra_a_las') this.entraALas});
   factory _AsistenciaDailyApiModel.fromJson(Map<String, dynamic> json) => _$AsistenciaDailyApiModelFromJson(json);
 
 @override final  int id;
@@ -244,6 +246,8 @@ class _AsistenciaDailyApiModel implements AsistenciaDailyApiModel {
 @override final  String? entryFromLunchPhoto;
 @override final  String? exitPhoto;
 @override final  String? notes;
+/// "HH:MM" solo cuando es falta pero todavía no le toca llegar.
+@override@JsonKey(name: 'entra_a_las') final  String? entraALas;
 
 /// Create a copy of AsistenciaDailyApiModel
 /// with the given fields replaced by the non-null parameter values.
@@ -258,16 +262,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AsistenciaDailyApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userRef, userRef) || other.userRef == userRef)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate)&&(identical(other.entryAt, entryAt) || other.entryAt == entryAt)&&(identical(other.exitToLunchAt, exitToLunchAt) || other.exitToLunchAt == exitToLunchAt)&&(identical(other.entryFromLunchAt, entryFromLunchAt) || other.entryFromLunchAt == entryFromLunchAt)&&(identical(other.exitAt, exitAt) || other.exitAt == exitAt)&&(identical(other.entryPhoto, entryPhoto) || other.entryPhoto == entryPhoto)&&(identical(other.exitToLunchPhoto, exitToLunchPhoto) || other.exitToLunchPhoto == exitToLunchPhoto)&&(identical(other.entryFromLunchPhoto, entryFromLunchPhoto) || other.entryFromLunchPhoto == entryFromLunchPhoto)&&(identical(other.exitPhoto, exitPhoto) || other.exitPhoto == exitPhoto)&&(identical(other.notes, notes) || other.notes == notes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AsistenciaDailyApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userRef, userRef) || other.userRef == userRef)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.minutesLate, minutesLate) || other.minutesLate == minutesLate)&&(identical(other.entryAt, entryAt) || other.entryAt == entryAt)&&(identical(other.exitToLunchAt, exitToLunchAt) || other.exitToLunchAt == exitToLunchAt)&&(identical(other.entryFromLunchAt, entryFromLunchAt) || other.entryFromLunchAt == entryFromLunchAt)&&(identical(other.exitAt, exitAt) || other.exitAt == exitAt)&&(identical(other.entryPhoto, entryPhoto) || other.entryPhoto == entryPhoto)&&(identical(other.exitToLunchPhoto, exitToLunchPhoto) || other.exitToLunchPhoto == exitToLunchPhoto)&&(identical(other.entryFromLunchPhoto, entryFromLunchPhoto) || other.entryFromLunchPhoto == entryFromLunchPhoto)&&(identical(other.exitPhoto, exitPhoto) || other.exitPhoto == exitPhoto)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.entraALas, entraALas) || other.entraALas == entraALas));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,userRef,attendedAt,status,minutesLate,entryAt,exitToLunchAt,entryFromLunchAt,exitAt,entryPhoto,exitToLunchPhoto,entryFromLunchPhoto,exitPhoto,notes);
+int get hashCode => Object.hash(runtimeType,id,createdAt,updatedAt,userRef,attendedAt,status,minutesLate,entryAt,exitToLunchAt,entryFromLunchAt,exitAt,entryPhoto,exitToLunchPhoto,entryFromLunchPhoto,exitPhoto,notes,entraALas);
 
 @override
 String toString() {
-  return 'AsistenciaDailyApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, userRef: $userRef, attendedAt: $attendedAt, status: $status, minutesLate: $minutesLate, entryAt: $entryAt, exitToLunchAt: $exitToLunchAt, entryFromLunchAt: $entryFromLunchAt, exitAt: $exitAt, entryPhoto: $entryPhoto, exitToLunchPhoto: $exitToLunchPhoto, entryFromLunchPhoto: $entryFromLunchPhoto, exitPhoto: $exitPhoto, notes: $notes)';
+  return 'AsistenciaDailyApiModel(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, userRef: $userRef, attendedAt: $attendedAt, status: $status, minutesLate: $minutesLate, entryAt: $entryAt, exitToLunchAt: $exitToLunchAt, entryFromLunchAt: $entryFromLunchAt, exitAt: $exitAt, entryPhoto: $entryPhoto, exitToLunchPhoto: $exitToLunchPhoto, entryFromLunchPhoto: $entryFromLunchPhoto, exitPhoto: $exitPhoto, notes: $notes, entraALas: $entraALas)';
 }
 
 
@@ -278,7 +282,7 @@ abstract mixin class _$AsistenciaDailyApiModelCopyWith<$Res> implements $Asisten
   factory _$AsistenciaDailyApiModelCopyWith(_AsistenciaDailyApiModel value, $Res Function(_AsistenciaDailyApiModel) _then) = __$AsistenciaDailyApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, DateTime createdAt, DateTime updatedAt,@JsonKey(name: 'usuario') int userRef, DateTime attendedAt, AsistenciaStatus status, int minutesLate, DateTime? entryAt, DateTime? exitToLunchAt, DateTime? entryFromLunchAt, DateTime? exitAt, String? entryPhoto, String? exitToLunchPhoto, String? entryFromLunchPhoto, String? exitPhoto, String? notes
+ int id, DateTime createdAt, DateTime updatedAt,@JsonKey(name: 'usuario') int userRef, DateTime attendedAt, AsistenciaStatus status, int minutesLate, DateTime? entryAt, DateTime? exitToLunchAt, DateTime? entryFromLunchAt, DateTime? exitAt, String? entryPhoto, String? exitToLunchPhoto, String? entryFromLunchPhoto, String? exitPhoto, String? notes,@JsonKey(name: 'entra_a_las') String? entraALas
 });
 
 
@@ -295,7 +299,7 @@ class __$AsistenciaDailyApiModelCopyWithImpl<$Res>
 
 /// Create a copy of AsistenciaDailyApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = null,Object? updatedAt = null,Object? userRef = null,Object? attendedAt = null,Object? status = null,Object? minutesLate = null,Object? entryAt = freezed,Object? exitToLunchAt = freezed,Object? entryFromLunchAt = freezed,Object? exitAt = freezed,Object? entryPhoto = freezed,Object? exitToLunchPhoto = freezed,Object? entryFromLunchPhoto = freezed,Object? exitPhoto = freezed,Object? notes = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = null,Object? updatedAt = null,Object? userRef = null,Object? attendedAt = null,Object? status = null,Object? minutesLate = null,Object? entryAt = freezed,Object? exitToLunchAt = freezed,Object? entryFromLunchAt = freezed,Object? exitAt = freezed,Object? entryPhoto = freezed,Object? exitToLunchPhoto = freezed,Object? entryFromLunchPhoto = freezed,Object? exitPhoto = freezed,Object? notes = freezed,Object? entraALas = freezed,}) {
   return _then(_AsistenciaDailyApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -313,6 +317,7 @@ as String?,exitToLunchPhoto: freezed == exitToLunchPhoto ? _self.exitToLunchPhot
 as String?,entryFromLunchPhoto: freezed == entryFromLunchPhoto ? _self.entryFromLunchPhoto : entryFromLunchPhoto // ignore: cast_nullable_to_non_nullable
 as String?,exitPhoto: freezed == exitPhoto ? _self.exitPhoto : exitPhoto // ignore: cast_nullable_to_non_nullable
 as String?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,entraALas: freezed == entraALas ? _self.entraALas : entraALas // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

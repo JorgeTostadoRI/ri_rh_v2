@@ -54,6 +54,8 @@ class VacantesViewmodel extends ChangeNotifier {
     updateSolicitud = Command1(_updateSolicitud);
     cambiarEstatus = Command1(_cambiarEstatus);
     iniciarCandidatoBatch = Command1(_iniciarCandidatoBatch);
+    retroalimentar = Command1(_retroalimentar);
+    iniciarContratacionPracticante = Command1(_iniciarContratacionPracticante);
     createPuesto = Command1(_createPuesto);
     editPuesto = Command1(_editPuesto);
   }
@@ -71,6 +73,13 @@ class VacantesViewmodel extends ChangeNotifier {
   late final Command1<SolicitudVacante, SolicitudEditParams> updateSolicitud;
   late final Command1<SolicitudVacante, SolicitudEstatusParams> cambiarEstatus;
   late final Command1<SolicitudVacante, IniciarCandidatosBatchParams> iniciarCandidatoBatch;
+
+  /// Dirección le regresa al jefe la contratación de un practicante.
+  late final Command1<SolicitudVacante, ({int id, String comentario})> retroalimentar;
+
+  /// RH inicia la contratación de un practicante ya aprobada por Dirección.
+  late final Command1<SolicitudVacante, ({int id, String correo, PlatformFile cartaOferta})>
+  iniciarContratacionPracticante;
   late final Command1<Puesto, PuestoCreateParams> createPuesto;
   late final Command1<Puesto, PuestoEditParams> editPuesto;
 
@@ -237,6 +246,40 @@ class VacantesViewmodel extends ChangeNotifier {
     ];
     notifyListeners();
     return Result.ok(result.value);
+  }
+
+  Future<Result<SolicitudVacante>> _retroalimentar(({int id, String comentario}) params) async {
+    final result = await _vacantesRepository.retroalimentar(params.id, params.comentario);
+    if (result case Error()) {
+      _log.warning('Failed to retroalimentar solicitud de vacante', error: result.error);
+      return result;
+    }
+    _reemplazar((result as Ok<SolicitudVacante>).value);
+    return result;
+  }
+
+  Future<Result<SolicitudVacante>> _iniciarContratacionPracticante(
+    ({int id, String correo, PlatformFile cartaOferta}) params,
+  ) async {
+    final result = await _vacantesRepository.iniciarContratacionPracticante(
+      id: params.id,
+      correo: params.correo,
+      cartaOferta: params.cartaOferta,
+    );
+    if (result case Error()) {
+      _log.warning('Failed to iniciar contratacion de practicante', error: result.error);
+      return result;
+    }
+    _reemplazar((result as Ok<SolicitudVacante>).value);
+    return result;
+  }
+
+  void _reemplazar(SolicitudVacante actualizada) {
+    _solicitudes = [
+      for (final s in _solicitudes)
+        if (s.id == actualizada.id) actualizada else s,
+    ];
+    notifyListeners();
   }
 
   /// Inicia un candidato por cada fila que RH llenó en el diálogo (puede

@@ -23,6 +23,11 @@ abstract class AsistenciaDaily with _$AsistenciaDaily {
     String? entryFromLunchPhoto,
     String? exitPhoto,
     String? notes,
+    /// "HH:MM" de su hora de entrada, solo cuando [status] es falta pero
+    /// todavía no le toca llegar: se muestra "ENTRA A LAS [hora]" en lugar
+    /// de FALTA. Es solo visual, el status sigue siendo [AsistenciaStatus.absent].
+    @JsonKey(name: 'entra_a_las')
+    String? entraALas,
   }) = _AsistenciaDaily;
 
   factory AsistenciaDaily.fromJson(Map<String, Object?> json) => _$AsistenciaDailyFromJson(json);

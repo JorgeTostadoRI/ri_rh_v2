@@ -16,7 +16,13 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SolicitudVacante {
 
- int? get id; int get puesto;@JsonKey(name: 'puesto_nombre') String? get puestoNombre; String get rol; int get cantidad; String get area; int? get turno;@JsonKey(name: 'turno_nombre') String? get turnoNombre; String get justificacion; int? get solicitante;@JsonKey(name: 'solicitante_nombre') String? get solicitanteNombre; EstatusVacante get estatus;@JsonKey(name: 'created_at') DateTime? get createdAt; List<Candidato> get candidatos;
+ int? get id; int get puesto;@JsonKey(name: 'puesto_nombre') String? get puestoNombre; String get rol; int get cantidad; String get area; int? get turno;@JsonKey(name: 'turno_nombre') String? get turnoNombre; String get justificacion; int? get solicitante;@JsonKey(name: 'solicitante_nombre') String? get solicitanteNombre; EstatusVacante get estatus;@JsonKey(name: 'created_at') DateTime? get createdAt; List<Candidato> get candidatos;/// Ya no le queda nada en proceso -- va en la pestaña "Historial" de
+/// Reclutamiento. Lo calcula el backend (SolicitudVacanteSerializer.
+/// get_en_historial) porque depende de la Fase 2 de cada contratado.
+@JsonKey(name: 'en_historial') bool get enHistorial;/// Contratación de un practicante: la solicitud se creó sola cuando su
+/// jefe contestó "contratar" en la evaluación (no la llenó nadie aquí).
+ int? get practicante;@JsonKey(name: 'practicante_nombre') String? get practicanteNombre;/// Su correo, para prellenar "Iniciar contratación" (vacío si no tiene).
+@JsonKey(name: 'practicante_correo') String? get practicanteCorreo;@JsonKey(name: 'comentario_direccion') String get comentarioDireccion;
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +35,16 @@ $SolicitudVacanteCopyWith<SolicitudVacante> get copyWith => _$SolicitudVacanteCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.candidatos, candidatos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.candidatos, candidatos)&&(identical(other.enHistorial, enHistorial) || other.enHistorial == enHistorial)&&(identical(other.practicante, practicante) || other.practicante == practicante)&&(identical(other.practicanteNombre, practicanteNombre) || other.practicanteNombre == practicanteNombre)&&(identical(other.practicanteCorreo, practicanteCorreo) || other.practicanteCorreo == practicanteCorreo)&&(identical(other.comentarioDireccion, comentarioDireccion) || other.comentarioDireccion == comentarioDireccion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt,const DeepCollectionEquality().hash(candidatos));
+int get hashCode => Object.hashAll([runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt,const DeepCollectionEquality().hash(candidatos),enHistorial,practicante,practicanteNombre,practicanteCorreo,comentarioDireccion]);
 
 @override
 String toString() {
-  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt, candidatos: $candidatos)';
+  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt, candidatos: $candidatos, enHistorial: $enHistorial, practicante: $practicante, practicanteNombre: $practicanteNombre, practicanteCorreo: $practicanteCorreo, comentarioDireccion: $comentarioDireccion)';
 }
 
 
@@ -49,7 +55,7 @@ abstract mixin class $SolicitudVacanteCopyWith<$Res>  {
   factory $SolicitudVacanteCopyWith(SolicitudVacante value, $Res Function(SolicitudVacante) _then) = _$SolicitudVacanteCopyWithImpl;
 @useResult
 $Res call({
- int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt, List<Candidato> candidatos
+ int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt, List<Candidato> candidatos,@JsonKey(name: 'en_historial') bool enHistorial, int? practicante,@JsonKey(name: 'practicante_nombre') String? practicanteNombre,@JsonKey(name: 'practicante_correo') String? practicanteCorreo,@JsonKey(name: 'comentario_direccion') String comentarioDireccion
 });
 
 
@@ -66,7 +72,7 @@ class _$SolicitudVacanteCopyWithImpl<$Res>
 
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,Object? candidatos = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,Object? candidatos = null,Object? enHistorial = null,Object? practicante = freezed,Object? practicanteNombre = freezed,Object? practicanteCorreo = freezed,Object? comentarioDireccion = null,}) {
   return _then(SolicitudVacante(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,puesto: null == puesto ? _self.puesto : puesto // ignore: cast_nullable_to_non_nullable
@@ -82,7 +88,12 @@ as int?,solicitanteNombre: freezed == solicitanteNombre ? _self.solicitanteNombr
 as String?,estatus: null == estatus ? _self.estatus : estatus // ignore: cast_nullable_to_non_nullable
 as EstatusVacante,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,candidatos: null == candidatos ? _self.candidatos : candidatos // ignore: cast_nullable_to_non_nullable
-as List<Candidato>,
+as List<Candidato>,enHistorial: null == enHistorial ? _self.enHistorial : enHistorial // ignore: cast_nullable_to_non_nullable
+as bool,practicante: freezed == practicante ? _self.practicante : practicante // ignore: cast_nullable_to_non_nullable
+as int?,practicanteNombre: freezed == practicanteNombre ? _self.practicanteNombre : practicanteNombre // ignore: cast_nullable_to_non_nullable
+as String?,practicanteCorreo: freezed == practicanteCorreo ? _self.practicanteCorreo : practicanteCorreo // ignore: cast_nullable_to_non_nullable
+as String?,comentarioDireccion: null == comentarioDireccion ? _self.comentarioDireccion : comentarioDireccion // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -167,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos, @JsonKey(name: 'en_historial')  bool enHistorial,  int? practicante, @JsonKey(name: 'practicante_nombre')  String? practicanteNombre, @JsonKey(name: 'practicante_correo')  String? practicanteCorreo, @JsonKey(name: 'comentario_direccion')  String comentarioDireccion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SolicitudVacante() when $default != null:
-return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos);case _:
+return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos,_that.enHistorial,_that.practicante,_that.practicanteNombre,_that.practicanteCorreo,_that.comentarioDireccion);case _:
   return orElse();
 
 }
@@ -188,10 +199,10 @@ return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantida
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos, @JsonKey(name: 'en_historial')  bool enHistorial,  int? practicante, @JsonKey(name: 'practicante_nombre')  String? practicanteNombre, @JsonKey(name: 'practicante_correo')  String? practicanteCorreo, @JsonKey(name: 'comentario_direccion')  String comentarioDireccion)  $default,) {final _that = this;
 switch (_that) {
 case _SolicitudVacante():
-return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos);case _:
+return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos,_that.enHistorial,_that.practicante,_that.practicanteNombre,_that.practicanteCorreo,_that.comentarioDireccion);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +219,10 @@ return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantida
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  int puesto, @JsonKey(name: 'puesto_nombre')  String? puestoNombre,  String rol,  int cantidad,  String area,  int? turno, @JsonKey(name: 'turno_nombre')  String? turnoNombre,  String justificacion,  int? solicitante, @JsonKey(name: 'solicitante_nombre')  String? solicitanteNombre,  EstatusVacante estatus, @JsonKey(name: 'created_at')  DateTime? createdAt,  List<Candidato> candidatos, @JsonKey(name: 'en_historial')  bool enHistorial,  int? practicante, @JsonKey(name: 'practicante_nombre')  String? practicanteNombre, @JsonKey(name: 'practicante_correo')  String? practicanteCorreo, @JsonKey(name: 'comentario_direccion')  String comentarioDireccion)?  $default,) {final _that = this;
 switch (_that) {
 case _SolicitudVacante() when $default != null:
-return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos);case _:
+return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantidad,_that.area,_that.turno,_that.turnoNombre,_that.justificacion,_that.solicitante,_that.solicitanteNombre,_that.estatus,_that.createdAt,_that.candidatos,_that.enHistorial,_that.practicante,_that.practicanteNombre,_that.practicanteCorreo,_that.comentarioDireccion);case _:
   return null;
 
 }
@@ -223,7 +234,7 @@ return $default(_that.id,_that.puesto,_that.puestoNombre,_that.rol,_that.cantida
 @JsonSerializable()
 
 class _SolicitudVacante implements SolicitudVacante {
-  const _SolicitudVacante({this.id, required this.puesto, @JsonKey(name: 'puesto_nombre') this.puestoNombre, required this.rol, required this.cantidad, this.area = '', this.turno, @JsonKey(name: 'turno_nombre') this.turnoNombre, this.justificacion = '', this.solicitante, @JsonKey(name: 'solicitante_nombre') this.solicitanteNombre, this.estatus = EstatusVacante.pendiente, @JsonKey(name: 'created_at') this.createdAt,  List<Candidato> candidatos = const <Candidato>[]}): _candidatos = candidatos;
+  const _SolicitudVacante({this.id, required this.puesto, @JsonKey(name: 'puesto_nombre') this.puestoNombre, required this.rol, required this.cantidad, this.area = '', this.turno, @JsonKey(name: 'turno_nombre') this.turnoNombre, this.justificacion = '', this.solicitante, @JsonKey(name: 'solicitante_nombre') this.solicitanteNombre, this.estatus = EstatusVacante.pendiente, @JsonKey(name: 'created_at') this.createdAt,  List<Candidato> candidatos = const <Candidato>[], @JsonKey(name: 'en_historial') this.enHistorial = false, this.practicante, @JsonKey(name: 'practicante_nombre') this.practicanteNombre, @JsonKey(name: 'practicante_correo') this.practicanteCorreo, @JsonKey(name: 'comentario_direccion') this.comentarioDireccion = ''}): _candidatos = candidatos;
   factory _SolicitudVacante.fromJson(Map<String, dynamic> json) => _$SolicitudVacanteFromJson(json);
 
 @override final  int? id;
@@ -246,6 +257,17 @@ class _SolicitudVacante implements SolicitudVacante {
   return EqualUnmodifiableListView(_candidatos);
 }
 
+/// Ya no le queda nada en proceso -- va en la pestaña "Historial" de
+/// Reclutamiento. Lo calcula el backend (SolicitudVacanteSerializer.
+/// get_en_historial) porque depende de la Fase 2 de cada contratado.
+@override@JsonKey(name: 'en_historial') final  bool enHistorial;
+/// Contratación de un practicante: la solicitud se creó sola cuando su
+/// jefe contestó "contratar" en la evaluación (no la llenó nadie aquí).
+@override final  int? practicante;
+@override@JsonKey(name: 'practicante_nombre') final  String? practicanteNombre;
+/// Su correo, para prellenar "Iniciar contratación" (vacío si no tiene).
+@override@JsonKey(name: 'practicante_correo') final  String? practicanteCorreo;
+@override@JsonKey(name: 'comentario_direccion') final  String comentarioDireccion;
 
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
@@ -260,16 +282,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._candidatos, _candidatos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SolicitudVacante&&(identical(other.id, id) || other.id == id)&&(identical(other.puesto, puesto) || other.puesto == puesto)&&(identical(other.puestoNombre, puestoNombre) || other.puestoNombre == puestoNombre)&&(identical(other.rol, rol) || other.rol == rol)&&(identical(other.cantidad, cantidad) || other.cantidad == cantidad)&&(identical(other.area, area) || other.area == area)&&(identical(other.turno, turno) || other.turno == turno)&&(identical(other.turnoNombre, turnoNombre) || other.turnoNombre == turnoNombre)&&(identical(other.justificacion, justificacion) || other.justificacion == justificacion)&&(identical(other.solicitante, solicitante) || other.solicitante == solicitante)&&(identical(other.solicitanteNombre, solicitanteNombre) || other.solicitanteNombre == solicitanteNombre)&&(identical(other.estatus, estatus) || other.estatus == estatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._candidatos, _candidatos)&&(identical(other.enHistorial, enHistorial) || other.enHistorial == enHistorial)&&(identical(other.practicante, practicante) || other.practicante == practicante)&&(identical(other.practicanteNombre, practicanteNombre) || other.practicanteNombre == practicanteNombre)&&(identical(other.practicanteCorreo, practicanteCorreo) || other.practicanteCorreo == practicanteCorreo)&&(identical(other.comentarioDireccion, comentarioDireccion) || other.comentarioDireccion == comentarioDireccion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt,const DeepCollectionEquality().hash(_candidatos));
+int get hashCode => Object.hashAll([runtimeType,id,puesto,puestoNombre,rol,cantidad,area,turno,turnoNombre,justificacion,solicitante,solicitanteNombre,estatus,createdAt,const DeepCollectionEquality().hash(_candidatos),enHistorial,practicante,practicanteNombre,practicanteCorreo,comentarioDireccion]);
 
 @override
 String toString() {
-  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt, candidatos: $candidatos)';
+  return 'SolicitudVacante(id: $id, puesto: $puesto, puestoNombre: $puestoNombre, rol: $rol, cantidad: $cantidad, area: $area, turno: $turno, turnoNombre: $turnoNombre, justificacion: $justificacion, solicitante: $solicitante, solicitanteNombre: $solicitanteNombre, estatus: $estatus, createdAt: $createdAt, candidatos: $candidatos, enHistorial: $enHistorial, practicante: $practicante, practicanteNombre: $practicanteNombre, practicanteCorreo: $practicanteCorreo, comentarioDireccion: $comentarioDireccion)';
 }
 
 
@@ -280,7 +302,7 @@ abstract mixin class _$SolicitudVacanteCopyWith<$Res> implements $SolicitudVacan
   factory _$SolicitudVacanteCopyWith(_SolicitudVacante value, $Res Function(_SolicitudVacante) _then) = __$SolicitudVacanteCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt, List<Candidato> candidatos
+ int? id, int puesto,@JsonKey(name: 'puesto_nombre') String? puestoNombre, String rol, int cantidad, String area, int? turno,@JsonKey(name: 'turno_nombre') String? turnoNombre, String justificacion, int? solicitante,@JsonKey(name: 'solicitante_nombre') String? solicitanteNombre, EstatusVacante estatus,@JsonKey(name: 'created_at') DateTime? createdAt, List<Candidato> candidatos,@JsonKey(name: 'en_historial') bool enHistorial, int? practicante,@JsonKey(name: 'practicante_nombre') String? practicanteNombre,@JsonKey(name: 'practicante_correo') String? practicanteCorreo,@JsonKey(name: 'comentario_direccion') String comentarioDireccion
 });
 
 
@@ -297,7 +319,7 @@ class __$SolicitudVacanteCopyWithImpl<$Res>
 
 /// Create a copy of SolicitudVacante
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,Object? candidatos = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? puesto = null,Object? puestoNombre = freezed,Object? rol = null,Object? cantidad = null,Object? area = null,Object? turno = freezed,Object? turnoNombre = freezed,Object? justificacion = null,Object? solicitante = freezed,Object? solicitanteNombre = freezed,Object? estatus = null,Object? createdAt = freezed,Object? candidatos = null,Object? enHistorial = null,Object? practicante = freezed,Object? practicanteNombre = freezed,Object? practicanteCorreo = freezed,Object? comentarioDireccion = null,}) {
   return _then(_SolicitudVacante(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,puesto: null == puesto ? _self.puesto : puesto // ignore: cast_nullable_to_non_nullable
@@ -313,7 +335,12 @@ as int?,solicitanteNombre: freezed == solicitanteNombre ? _self.solicitanteNombr
 as String?,estatus: null == estatus ? _self.estatus : estatus // ignore: cast_nullable_to_non_nullable
 as EstatusVacante,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,candidatos: null == candidatos ? _self._candidatos : candidatos // ignore: cast_nullable_to_non_nullable
-as List<Candidato>,
+as List<Candidato>,enHistorial: null == enHistorial ? _self.enHistorial : enHistorial // ignore: cast_nullable_to_non_nullable
+as bool,practicante: freezed == practicante ? _self.practicante : practicante // ignore: cast_nullable_to_non_nullable
+as int?,practicanteNombre: freezed == practicanteNombre ? _self.practicanteNombre : practicanteNombre // ignore: cast_nullable_to_non_nullable
+as String?,practicanteCorreo: freezed == practicanteCorreo ? _self.practicanteCorreo : practicanteCorreo // ignore: cast_nullable_to_non_nullable
+as String?,comentarioDireccion: null == comentarioDireccion ? _self.comentarioDireccion : comentarioDireccion // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

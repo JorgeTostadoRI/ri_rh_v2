@@ -30,6 +30,11 @@ _SolicitudVacante _$SolicitudVacanteFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Candidato.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <Candidato>[],
+      enHistorial: json['en_historial'] as bool? ?? false,
+      practicante: (json['practicante'] as num?)?.toInt(),
+      practicanteNombre: json['practicante_nombre'] as String?,
+      practicanteCorreo: json['practicante_correo'] as String?,
+      comentarioDireccion: json['comentario_direccion'] as String? ?? '',
     );
 
 Map<String, dynamic> _$SolicitudVacanteToJson(_SolicitudVacante instance) =>
@@ -48,10 +53,16 @@ Map<String, dynamic> _$SolicitudVacanteToJson(_SolicitudVacante instance) =>
       'estatus': _$EstatusVacanteEnumMap[instance.estatus]!,
       'created_at': instance.createdAt?.toIso8601String(),
       'candidatos': instance.candidatos,
+      'en_historial': instance.enHistorial,
+      'practicante': instance.practicante,
+      'practicante_nombre': instance.practicanteNombre,
+      'practicante_correo': instance.practicanteCorreo,
+      'comentario_direccion': instance.comentarioDireccion,
     };
 
 const _$EstatusVacanteEnumMap = {
   EstatusVacante.pendiente: 'pendiente',
   EstatusVacante.aceptada: 'aceptada',
   EstatusVacante.rechazada: 'rechazada',
+  EstatusVacante.retroalimentacion: 'retroalimentacion',
 };

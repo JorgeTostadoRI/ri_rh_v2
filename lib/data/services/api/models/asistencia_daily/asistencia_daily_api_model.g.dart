@@ -33,6 +33,7 @@ _AsistenciaDailyApiModel _$AsistenciaDailyApiModelFromJson(
   entryFromLunchPhoto: json['entry_from_lunch_photo'] as String?,
   exitPhoto: json['exit_photo'] as String?,
   notes: json['notes'] as String?,
+  entraALas: json['entra_a_las'] as String?,
 );
 
 Map<String, dynamic> _$AsistenciaDailyApiModelToJson(
@@ -54,6 +55,7 @@ Map<String, dynamic> _$AsistenciaDailyApiModelToJson(
   'entry_from_lunch_photo': instance.entryFromLunchPhoto,
   'exit_photo': instance.exitPhoto,
   'notes': instance.notes,
+  'entra_a_las': instance.entraALas,
 };
 
 const _$AsistenciaStatusEnumMap = {

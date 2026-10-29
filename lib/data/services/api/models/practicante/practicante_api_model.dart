@@ -65,6 +65,10 @@ abstract class PracticanteApiModel with _$PracticanteApiModel {
     DateTime? registeredAt,
     @JsonKey(name: 'fecha_baja')
     DateTime? terminatedAt,
+    /// Fin de sus prácticas. Null solo en los dados de alta antes de que
+    /// existiera el campo; se asigna una sola vez.
+    @JsonKey(name: 'fecha_terminacion')
+    DateTime? fechaTerminacion,
     @JsonKey(name: 'credenciales_generadas')
     CredencialesGeneradas? credencialesGeneradas,
   }) = _PracticanteApiModel;

@@ -77,6 +77,7 @@ abstract class ReporteAsistenciaItem with _$ReporteAsistenciaItem {
         entryFromLunchPhoto: asist.entryFromLunchPhoto,
         exitPhoto: asist.exitPhoto,
         notes: asist.notes,
+        entraALas: asist.entraALas,
       );
     }
 

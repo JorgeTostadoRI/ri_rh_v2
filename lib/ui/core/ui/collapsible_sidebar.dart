@@ -337,10 +337,9 @@ class _IncidenciaCountBadge extends StatelessWidget {
   }
 }
 
-/// Actividad 15: cuántos empleados con contrato "determinado" están a 7
-/// días o menos de que venza su periodo de prueba/capacitación -- mismo
-/// patrón que _IncidenciaCountBadge, pero solo RH llega a ver este conteo
-/// (NotificationViewmodel no lo pide para líderes normales).
+/// Notificación de "Reclutamiento": lo que le toca hacer a cada quien (ver
+/// NotificationViewmodel.pendingReclutamiento) -- mismo patrón que
+/// _IncidenciaCountBadge.
 class _EvaluacionesCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -354,15 +353,15 @@ class _EvaluacionesCountBadge extends StatelessWidget {
         }
 
         if (viewmodel.load.error) {
-          return Tooltip(message: 'No se pudieron cargar las evaluaciones pendientes');
+          return Tooltip(message: 'No se pudieron cargar los pendientes de Reclutamiento');
         }
 
-        if (viewmodel.pendingEvaluaciones == 0) {
+        if (viewmodel.pendingReclutamiento == 0) {
           return SizedBox.shrink();
         }
 
         return Badge.count(
-          count: viewmodel.pendingEvaluaciones,
+          count: viewmodel.pendingReclutamiento,
           maxCount: 99,
           backgroundColor: Colors.orange,
         );

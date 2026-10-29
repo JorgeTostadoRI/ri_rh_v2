@@ -48,6 +48,9 @@ import 'package:ri_rh_v2/ui/dias_festivos/viewmodels/dias_festivos_viewmodel.dar
 import 'package:ri_rh_v2/ui/dias_festivos/widgets/dias_festivos_screen.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/candidato_revision_viewmodel.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/evaluacion_jefe_viewmodel.dart';
+import 'package:ri_rh_v2/ui/vacantes/viewmodels/seguimiento_practicantes_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/viewmodels/evaluacion_practicante_viewmodel.dart';
+import 'package:ri_rh_v2/ui/practicantes/widgets/evaluacion_practicante_screen.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/candidato_revision_screen.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/evaluacion_jefe_screen.dart';
@@ -289,6 +292,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                     practicantesRepository: context.read(),
                     usersRepository: context.read(),
                     horarioRepository: context.read(),
+                    authRepository: context.read(),
                   ),
                 );
               },
@@ -358,6 +362,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 log: context.read(),
                 empleadosRepository: context.read(),
               ),
+              seguimientoPracticantesViewmodel: SeguimientoPracticantesViewmodel(
+                log: context.read(),
+                practicantesRepository: context.read(),
+              ),
             );
           },
           routes: [
@@ -385,6 +393,52 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         // cualquier usuario logueado puede entrar aquí (el jefe directo no
         // necesariamente tiene acceso a Reclutamiento), el backend es quien
         // de verdad controla el acceso (403 si no es su jefe).
+        // Evaluación de un practicante por terminar sus prácticas -- mismo
+        // criterio que la de empleados: cualquier usuario logueado entra, el
+        // backend responde 403 si no es su jefe directo.
+        GoRoute(
+          path: '${Routes.evaluacionPracticante}/${Routes.evaluacionToken}',
+          builder: (context, state) {
+            final token = state.pathParameters['token']!;
+            return EvaluacionPracticanteScreen(
+              viewmodel: EvaluacionPracticanteViewmodel(
+                token: token,
+                log: context.read(),
+                practicantesRepository: context.read(),
+                empleadosRepository: context.read(),
+              ),
+            );
+          },
+        ),
+        // Las mismas evaluaciones, sin sesión -- solo para la jefa que las
+        // contesta desde el link del correo (el backend rechaza a cualquier
+        // otro jefe). No piden login (ver _requiresLogin).
+        GoRoute(
+          path: '${Routes.evaluacionPublica}/${Routes.evaluacionToken}',
+          builder: (context, state) {
+            return EvaluacionJefeScreen(
+              viewmodel: EvaluacionJefeViewmodel(
+                token: state.pathParameters['token']!,
+                publica: true,
+                log: context.read(),
+                empleadosRepository: context.read(),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '${Routes.evaluacionPracticantePublica}/${Routes.evaluacionToken}',
+          builder: (context, state) {
+            return EvaluacionPracticanteScreen(
+              viewmodel: EvaluacionPracticanteViewmodel(
+                token: state.pathParameters['token']!,
+                publica: true,
+                log: context.read(),
+                practicantesRepository: context.read(),
+              ),
+            );
+          },
+        ),
         GoRoute(
           path: '${Routes.evaluacion}/${Routes.evaluacionToken}',
           builder: (context, state) {
@@ -434,12 +488,18 @@ bool _requiresLogin(String location) {
   final uri = Uri.parse(location);
   final path = uri.path;
 
+  // Antes que la regla de Routes.evaluacion: también empiezan con
+  // '/evaluacion', pero son las que se contestan sin sesión.
+  if (path.startsWith(Routes.evaluacionPublica)) return false;
+  if (path.startsWith(Routes.evaluacionPracticantePublica)) return false;
+
   if (path == Routes.home) return true;
   if (path.startsWith(Routes.empleados)) return true;
   if (path.startsWith(Routes.practicantes)) return true;
   if (path.startsWith(Routes.reportes)) return true;
   if (path.startsWith(Routes.reclutamiento)) return true;
   if (path.startsWith(Routes.evaluacion)) return true;
+  if (path.startsWith(Routes.evaluacionPracticante)) return true;
 
   return false;
 }

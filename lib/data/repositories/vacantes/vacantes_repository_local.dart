@@ -17,6 +17,11 @@ class VacantesRepositoryLocal extends VacantesRepository {
   }
 
   @override
+  Future<Result<int>> getSolicitudesPendientesCount() async {
+    return Result.ok(_solicitudes.where((s) => s.estatus == EstatusVacante.pendiente).length);
+  }
+
+  @override
   Future<Result<SolicitudVacante>> createSolicitud({
     required int puestoId,
     required String rol,
@@ -70,6 +75,29 @@ class VacantesRepositoryLocal extends VacantesRepository {
     final updated = _solicitudes[index].copyWith(estatus: EstatusVacante.values.byName(estatus));
     _solicitudes[index] = updated;
     return Result.ok(updated);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> retroalimentar(int id, String comentario) async {
+    final index = _solicitudes.indexWhere((s) => s.id == id);
+    if (index == -1) return Result.error(Exception('Not found'));
+    final updated = _solicitudes[index].copyWith(
+      estatus: EstatusVacante.retroalimentacion,
+      comentarioDireccion: comentario,
+    );
+    _solicitudes[index] = updated;
+    return Result.ok(updated);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> iniciarContratacionPracticante({
+    required int id,
+    required String correo,
+    required PlatformFile cartaOferta,
+  }) async {
+    final index = _solicitudes.indexWhere((s) => s.id == id);
+    if (index == -1) return Result.error(Exception('Not found'));
+    return Result.ok(_solicitudes[index]);
   }
 
   @override

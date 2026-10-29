@@ -20,6 +20,9 @@ abstract class Practicante with _$Practicante {
     StatusPracticante? status,
     User? user,
     CredencialesGeneradas? credencialesGeneradas,
+    /// Fin de sus prácticas. Null solo en los dados de alta antes de que
+    /// existiera el campo -- se le puede asignar una sola vez (solo RH).
+    DateTime? fechaTerminacion,
   }) = _Practicante;
 
   factory Practicante.fromApiModel({
@@ -99,6 +102,7 @@ abstract class Practicante with _$Practicante {
       type: model.type,
       university: university,
       credencialesGeneradas: model.credencialesGeneradas,
+      fechaTerminacion: model.fechaTerminacion,
     );
   }
 }
@@ -113,6 +117,10 @@ abstract class AltaPracticante with _$AltaPracticante {
 
 enum StatusPracticante {
   alta,
+  /// Ya no viene a trabajar ni genera nómina; solo falta cerrar la baja
+  /// definitiva (fecha y carta de liberación). No puede regresar a alta.
+  @JsonValue('proceso_baja')
+  procesoBaja,
   baja
 }
 

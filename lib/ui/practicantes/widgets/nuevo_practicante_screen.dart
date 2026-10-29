@@ -85,6 +85,7 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
 
   DateTime? _fechaNacimiento;
   DateTime? _fechaAlta = DateTime.now();
+  DateTime? _fechaTerminacion;
   Puesto? _puesto;
   Universidad? _universidad;
   Departamento? _departamento;
@@ -210,6 +211,13 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
       );
       return;
     }
+    final fechaAlta = _fechaAlta ?? DateTime.now();
+    if (_fechaTerminacion == null || !_fechaTerminacion!.isAfter(fechaAlta)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('La fecha de terminación debe ser posterior a la fecha de alta')),
+      );
+      return;
+    }
 
     final params = PracticanteCreateParams(
       nombreCompleto: _nombreCompleto.text.trim(),
@@ -230,6 +238,7 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
       departamentoId: _departamento!.id,
       rol: _rol,
       fechaAlta: _fechaAlta,
+      fechaTerminacion: _fechaTerminacion!,
       identificacionOficial: _files['identificacionOficial'],
       actaNacimiento: _files['actaNacimiento'],
       estadoCuenta: _files['estadoCuenta'],
@@ -447,14 +456,37 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                       );
                     },
                   ),
-                  DateFormField(
-                    decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
-                    required: true,
-                    fourDigitYear: true,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime.now(),
-                    initialValue: _formatDate(_fechaAlta!),
-                    onDateSaved: (value) => _fechaAlta = value,
+                  Row(
+                    spacing: 24,
+                    crossAxisAlignment: .start,
+                    children: [
+                      Expanded(
+                        child: DateFormField(
+                          decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
+                          required: true,
+                          fourDigitYear: true,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                          initialValue: _formatDate(_fechaAlta!),
+                          onDateSaved: (value) => _fechaAlta = value,
+                        ),
+                      ),
+                      Expanded(
+                        // Obligatoria; después ya no se puede cambiar desde
+                        // la app (solo desde el admin de Django).
+                        child: DateFormField(
+                          decoration: InputDecoration(
+                            labelText: 'FECHA DE TERMINACIÓN',
+                            helperText: 'No se podrá cambiar después',
+                          ),
+                          required: true,
+                          fourDigitYear: true,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+                          onDateSaved: (value) => _fechaTerminacion = value,
+                        ),
+                      ),
+                    ],
                   ),
                   Row(
                     spacing: 24,

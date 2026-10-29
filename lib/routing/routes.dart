@@ -25,6 +25,10 @@ abstract final class Routes {
   static const revisionCandidato = 'candidatos/:candidatoId';
   static const evaluacion = '/evaluacion';
   static const evaluacionToken = ':token';
+  static const evaluacionPracticante = '/evaluacion-practicante';
+  // Sin sesión: solo la jefa que contesta desde el link del correo.
+  static const evaluacionPublica = '/evaluacion-publica';
+  static const evaluacionPracticantePublica = '/evaluacion-practicante-publica';
   static String newIncidenciaOfCategory(IncidenciaCategory category) => '$incidencias/${category.url}/new';
   static String expedienteOfEmpleado(Empleado empleado) => '$empleados/${empleado.base.id}';
   static String expedienteOfEmpleadoId(int empleadoId) => '$empleados/$empleadoId';
@@ -33,4 +37,5 @@ abstract final class Routes {
   static String huellasOfPracticante(Practicante practicante) => '$practicantes/${practicante.base.id}/$huellas';
   static String revisionOfCandidato(int candidatoId) => '$reclutamiento/candidatos/$candidatoId';
   static String evaluacionOfToken(String token) => '$evaluacion/$token';
+  static String evaluacionPracticanteOfToken(String token) => '$evaluacionPracticante/$token';
 }

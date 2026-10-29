@@ -88,7 +88,38 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
   }
 
   @override
+  Future<Result<void>> asignarFechaTerminacion(int practicanteId, DateTime fecha) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
   Future<Result<CredencialesGeneradas>> regenerarPassword(int practicanteId) async {
     return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<EvaluacionPracticanteDetalle>> getEvaluacion(String token, {bool publica = false}) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<void>> responderEvaluacion(
+    String token,
+    EvaluacionPracticanteRespuesta respuesta, {
+    String? motivo,
+    PropuestaContratacion? contratacion,
+    bool publica = false,
+  }) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<List<PracticantePorEvaluarItem>>> getMisEvaluacionesPendientes() async {
+    return const Result.ok([]);
+  }
+
+  @override
+  Future<Result<List<SeguimientoPracticanteItem>>> getSeguimientoEvaluaciones() async {
+    return const Result.ok([]);
   }
 }

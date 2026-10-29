@@ -12,6 +12,7 @@ class PracticanteStatusChip extends StatelessWidget {
   Color get backgroundColor {
     return switch (status) {
       StatusPracticante.alta => const Color(0xFFDCFCE7),
+      StatusPracticante.procesoBaja => const Color(0xFFFFEDD4),
       StatusPracticante.baja => const Color(0xFFFFE2E2),
     };
   }
@@ -19,6 +20,7 @@ class PracticanteStatusChip extends StatelessWidget {
   Color get textColor {
     return switch (status) {
       StatusPracticante.alta => const Color(0xFF00A63E),
+      StatusPracticante.procesoBaja => const Color(0xFFF54900),
       StatusPracticante.baja => const Color(0xFFE7000B),
     };
   }
@@ -26,6 +28,7 @@ class PracticanteStatusChip extends StatelessWidget {
   String get statusString {
     return switch (status) {
       StatusPracticante.alta => 'ALTA',
+      StatusPracticante.procesoBaja => 'EN PROCESO DE BAJA',
       StatusPracticante.baja => 'BAJA',
     };
   }

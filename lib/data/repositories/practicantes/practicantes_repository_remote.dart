@@ -10,6 +10,12 @@ import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
+String _estadoToApiValue(StatusPracticante estado) => switch (estado) {
+  StatusPracticante.alta => 'alta',
+  StatusPracticante.procesoBaja => 'proceso_baja',
+  StatusPracticante.baja => 'baja',
+};
+
 class PracticantesRepositoryRemote extends PracticantesRepository {
   PracticantesRepositoryRemote({
     required this._log,
@@ -129,13 +135,22 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
   }
 
   @override
+  Future<Result<void>> asignarFechaTerminacion(int practicanteId, DateTime fecha) async {
+    final result = await _apiClient.asignarFechaTerminacionPracticante(practicanteId, fecha);
+    if (result case Error()) {
+      _log.warning('Failed to asignar fecha de terminacion de practicante', error: result.error);
+    }
+    return result;
+  }
+
+  @override
   Future<Result<String>> cambiarEstado(int practicanteId, StatusPracticante nuevoEstado, {
     DateTime? fechaBaja,
     PlatformFile? cartaLiberacion,
   }) async {
     final result = await _apiClient.cambiarEstadoPracticante(
       practicanteId,
-      estado: nuevoEstado.name,
+      estado: _estadoToApiValue(nuevoEstado),
       fechaBaja: fechaBaja,
       cartaLiberacion: cartaLiberacion,
     );
@@ -251,5 +266,53 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
       case Ok():
     }
     return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<EvaluacionPracticanteDetalle>> getEvaluacion(String token, {bool publica = false}) async {
+    final result = await _apiClient.getEvaluacionPracticante(token, publica: publica);
+    if (result case Error()) {
+      _log.warning('Failed to get evaluacion de practicante', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<void>> responderEvaluacion(
+    String token,
+    EvaluacionPracticanteRespuesta respuesta, {
+    String? motivo,
+    PropuestaContratacion? contratacion,
+    bool publica = false,
+  }) async {
+    final result = await _apiClient.responderEvaluacionPracticante(
+      token,
+      respuesta,
+      motivo: motivo,
+      contratacion: contratacion,
+      publica: publica,
+    );
+    if (result case Error()) {
+      _log.warning('Failed to responder evaluacion de practicante', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<List<PracticantePorEvaluarItem>>> getMisEvaluacionesPendientes() async {
+    final result = await _apiClient.getMisEvaluacionesPendientesPracticantes();
+    if (result case Error()) {
+      _log.warning('Failed to get practicantes por evaluar', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<List<SeguimientoPracticanteItem>>> getSeguimientoEvaluaciones() async {
+    final result = await _apiClient.getSeguimientoEvaluacionesPracticantes();
+    if (result case Error()) {
+      _log.warning('Failed to get seguimiento de evaluaciones de practicantes', error: result.error);
+    }
+    return result;
   }
 }
