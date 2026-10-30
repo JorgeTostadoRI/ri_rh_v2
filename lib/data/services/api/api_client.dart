@@ -1985,12 +1985,16 @@ class ApiException implements Exception {
   final String message;
   final int statusCode;
   final String? errorCode;
+  /// Cuerpo JSON de la respuesta de error, para leer campos extra que manda
+  /// el backend junto con [errorCode] (ej. `hora_permitida` en `early_entry`).
+  final Map<String, dynamic>? data;
 
   const ApiException(
     this.message,
     this.statusCode,
     {
       this.errorCode,
+      this.data,
     }
   );
 
@@ -2001,10 +2005,12 @@ class ApiException implements Exception {
 
   factory ApiException.fromDioException(DioException e) {
     String? errorCode;
+    Map<String, dynamic>? data;
 
     try {
       if (e.response != null && e.response!.data is Map<String, dynamic>) {
         final json = e.response!.data;
+        data = json;
         if (json.containsKey('code')) {
           errorCode = json['code'] as String;
         }
@@ -2018,6 +2024,7 @@ class ApiException implements Exception {
       e.response?.data?.toString() ?? e.message ?? 'No message provided',
       e.response?.statusCode ?? 0,
       errorCode: errorCode,
+      data: data,
     );
   }
 }
