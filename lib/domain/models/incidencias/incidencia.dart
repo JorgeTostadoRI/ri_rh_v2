@@ -70,6 +70,9 @@ abstract class Incidencia with _$Incidencia {
         bool? conGoce,
         /// Quien dio la aprobacion especial de con goce (ver [conGoce]).
         User? conGoceApprovedBy,
+        /// Por que el jefe directo decidio que fuera con goce. Solo la reciben
+        /// quienes revisan (aprobador de con goce, RH), nunca el solicitante.
+        String? conGoceJustificacion,
 
         /// Video testimonial grabado con webcam -- obligatorio solo para
         /// solicitantes remotos registrando desde navegador (sustituye la
@@ -149,6 +152,7 @@ abstract class Incidencia with _$Incidencia {
         checadorDiscrepancy: model.checadorDiscrepancy,
         conGoce: model.conGoce,
         conGoceApprovedBy: conGoceApprovedBy,
+        conGoceJustificacion: model.conGoceJustificacion,
         videoUrl: model.videoUrl,
         start: model.start,
         end: model.end,

@@ -42,6 +42,9 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
         bool? conGoce,
         @JsonKey(name: 'con_goce_approved_by')
         int? conGoceApprovedByRef,
+        // El backend no la manda al propio solicitante.
+        @JsonKey(name: 'con_goce_justificacion')
+        String? conGoceJustificacion,
 
         @JsonKey(name: 'video')
         String? videoUrl,

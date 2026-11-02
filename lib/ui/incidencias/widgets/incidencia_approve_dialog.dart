@@ -9,11 +9,17 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/rejection_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_authorized_by_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_justificacion_goce_section.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-typedef IncidenciaApproveDialogResult = ({IncidenciaState state, String rejectionReason, bool? conGoce});
+typedef IncidenciaApproveDialogResult = ({
+  IncidenciaState state,
+  String rejectionReason,
+  bool? conGoce,
+  String? conGoceJustificacion,
+});
 
 class IncidenciaApproveDialog extends StatefulWidget {
   const IncidenciaApproveDialog({
@@ -36,6 +42,7 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
   late final DateTime _localEnd;
 
   bool _conGoce = false;
+  final _justificacionController = TextEditingController();
 
   /// Un Permiso "por horas" (rango de horas dentro del mismo dia, no un dia
   /// completo) nunca pide con/sin goce -- se trata siempre como un Retardo
@@ -60,11 +67,23 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
   bool get _isConGoceApproverTurn =>
       widget.incidencia.approvalStage == IncidenciaApprovalStage.awaitingConGoceApprover;
 
+  /// Con goce, el jefe directo debe justificar por que -- el backend tambien
+  /// lo exige (ApproveIncidenciaRequestSerializer).
+  bool get _requiereJustificacion => _askConGoce && _conGoce;
+
+  bool get _puedeAprobar => !_requiereJustificacion || _justificacionController.text.trim().isNotEmpty;
+
   @override
   void initState() {
     super.initState();
     _localStart = widget.incidencia.start.toLocal();
     _localEnd = widget.incidencia.end.toLocal();
+  }
+
+  @override
+  void dispose() {
+    _justificacionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -113,6 +132,8 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                 ),
               ),
             ),
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true && incidencia.conGoceJustificacion != null)
+            IncidenciaJustificacionGoceSection(justificacion: incidencia.conGoceJustificacion!),
           Text('Fecha de creación', style: textTheme.headlineSmall),
           Text(_yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
@@ -143,6 +164,21 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
               onChanged: (value) => setState(() => _conGoce = value),
               title: Text(_conGoce ? 'Con goce de sueldo' : 'Sin goce de sueldo'),
             ),
+            if (_conGoce) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _justificacionController,
+                onChanged: (_) => setState(() {}),
+                minLines: 2,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'Justificación del goce de sueldo',
+                  hintText: '¿Por qué este permiso debe ser con goce de sueldo?',
+                  helperText: 'Obligatoria. La verán Iván Romero y Recursos Humanos.',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
           ],
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
@@ -241,6 +277,7 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                 state: IncidenciaState.rejected,
                 rejectionReason: rejectionReason,
                 conGoce: null,
+                conGoceJustificacion: null,
               );
               context.pop(result);
             }
@@ -249,11 +286,14 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
           label: Text('Rechazar'),
         ),
         ElevatedButton.icon(
-          onPressed: () => context.pop((
-            state: IncidenciaState.approved,
-            rejectionReason: '',
-            conGoce: _askConGoce ? _conGoce : null,
-          )),
+          onPressed: _puedeAprobar
+            ? () => context.pop((
+                state: IncidenciaState.approved,
+                rejectionReason: '',
+                conGoce: _askConGoce ? _conGoce : null,
+                conGoceJustificacion: _requiereJustificacion ? _justificacionController.text.trim() : null,
+              ))
+            : null,
           icon: Icon(LucideIcons.circleCheckBig),
           label: Text('Aprobar'),
         ),

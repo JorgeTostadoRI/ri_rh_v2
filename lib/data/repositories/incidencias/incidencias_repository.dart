@@ -16,7 +16,8 @@ abstract class IncidenciasRepository {
   ///
   /// [conGoce] solo aplica cuando es un Permiso y lo aprueba el jefe
   /// directo (primer paso) -- decide si es con o sin goce de sueldo.
-  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce});
+  /// [conGoceJustificacion] es obligatoria cuando [conGoce] es true.
+  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce, String? conGoceJustificacion});
 
   /// Rechaza una [Incidencia].
   /// 

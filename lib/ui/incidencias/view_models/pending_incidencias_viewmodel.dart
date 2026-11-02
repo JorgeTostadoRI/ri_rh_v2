@@ -12,7 +12,7 @@ import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 typedef RejectParams = ({Incidencia incidencia, String rejectionReason});
-typedef ApproveParams = ({Incidencia incidencia, bool? conGoce});
+typedef ApproveParams = ({Incidencia incidencia, bool? conGoce, String? conGoceJustificacion});
 typedef SolicitorOption = ({int id, String name});
 typedef DownloadParams = ({Incidencia incidencia, bool force});
 
@@ -87,7 +87,11 @@ class PendingIncidenciasViewmodel extends ChangeNotifier {
 
   Future<Result<void>> _approve(ApproveParams params) async {
     final incidencia = params.incidencia;
-    final resultApproval = await _incidenciasRepository.approveIncidencia(incidencia, conGoce: params.conGoce);
+    final resultApproval = await _incidenciasRepository.approveIncidencia(
+      incidencia,
+      conGoce: params.conGoce,
+      conGoceJustificacion: params.conGoceJustificacion,
+    );
     switch (resultApproval) {
       case Error():
         _log.warning('Failed to approve ${incidencia.category.id} #${incidencia.id}', error: resultApproval.error);

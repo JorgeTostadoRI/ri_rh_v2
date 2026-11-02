@@ -96,11 +96,16 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   }
 
   @override
-  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce}) async {
+  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce, String? conGoceJustificacion}) async {
     try {
       final users = await _getUsers();
 
-      final resultApproval = await _apiClient.approveIncidencia(incidencia.category.url, incidencia.id!, conGoce: conGoce);
+      final resultApproval = await _apiClient.approveIncidencia(
+        incidencia.category.url,
+        incidencia.id!,
+        conGoce: conGoce,
+        conGoceJustificacion: conGoceJustificacion,
+      );
       switch (resultApproval) {
         case Error():
           return Result.error(resultApproval.error);
