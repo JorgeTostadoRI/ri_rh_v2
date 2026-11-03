@@ -57,6 +57,13 @@ class IncidenciasScreen extends StatelessWidget {
                     bg: Color(0xFFEDF7F1),
                   ),
                   IncidenciaCategoryCard(
+                    category: IncidenciaCategory.horaporhora,
+                    icon: LucideIcons.history,
+                    description: "Reponer las horas de un permiso por horas",
+                    color: Color(0xFF6B4FBB),
+                    bg: Color(0xFFF1EDFB),
+                  ),
+                  IncidenciaCategoryCard(
                     category: IncidenciaCategory.vacaciones,
                     icon: LucideIcons.palmtree,
                     description: "Solicitar periodo vacacional",

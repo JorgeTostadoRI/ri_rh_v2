@@ -2,6 +2,7 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -166,5 +167,15 @@ class IncidenciasRepositoryLocal extends IncidenciasRepository {
     );
 
     return Result.ok(incidenciaWithPDF);
+  }
+
+  @override
+  Future<Result<List<HoraPorHoraResumen>>> getHorasPorHoraDisponibles() async {
+    final currentUser = _authRepository.getCurrentUser();
+    final horasPorHora = _incidencias
+      .where((x) => x.category == IncidenciaCategory.horaporhora && x.solicitor?.id == currentUser?.id && x.state != IncidenciaState.rejected && x.permiso == null)
+      .map((x) => HoraPorHoraResumen(id: x.id!, start: x.start, end: x.end, state: x.state!))
+      .toList();
+    return Result.ok(horasPorHora);
   }
 }

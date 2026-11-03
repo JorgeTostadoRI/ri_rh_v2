@@ -1,4 +1,5 @@
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -29,4 +30,8 @@ abstract class IncidenciasRepository {
 
   /// Generar el PDF de la incidencia
   Future<Result<Incidencia>> generatePDF(Incidencia incidencia, bool force);
+
+  /// Hora por hora del usuario en sesion que todavia puede ligar a un
+  /// Permiso de dia completo por tiempo por tiempo.
+  Future<Result<List<HoraPorHoraResumen>>> getHorasPorHoraDisponibles();
 }

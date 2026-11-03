@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/data/services/api/models/asistencia/asistencia_api_mode
 import 'package:ri_rh_v2/data/services/api/models/empleado/empleado_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/huella/huella_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_model.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/incidencia_nomina/reporte_incidencia_nomina_response.dart';
@@ -278,6 +279,7 @@ class ApiClient {
         'reason': incidencia.reason,
         'solicitor': incidencia.solicitorRef,
         'uploaded_files': uploadList,
+        if (incidencia.horasPorHoraRefs != null) 'horas_por_hora': incidencia.horasPorHoraRefs,
         if (videoBytes != null)
           'video': MultipartFile.fromBytes(
             videoBytes,
@@ -378,6 +380,25 @@ class ApiClient {
         'rejection_reason': rejectionReason,
       });
       final result = IncidenciaApiModel.fromJson(response.data);
+      return Result.ok(result);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<List<HoraPorHoraResumen>>> getHorasPorHoraDisponibles() async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+
+      final response = await dio.get('/api/rh/horas-por-hora/disponibles/');
+      final result = (response.data as List)
+        .map((json) => HoraPorHoraResumen.fromJson(json))
+        .toList();
       return Result.ok(result);
     } on DioException catch (e) {
       return Result.error(ApiException.fromDioException(e));

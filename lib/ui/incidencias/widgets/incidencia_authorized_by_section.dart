@@ -24,7 +24,7 @@ class IncidenciaAuthorizedBySection extends StatelessWidget {
         Text('Autorizado por', style: textTheme.headlineSmall),
         const SizedBox(height: 4),
         _AuthorizerRow(label: 'Jefe directo', user: incidencia.approvedBy),
-        if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true)
+        if (incidencia.requiresConGoceApprover)
           _AuthorizerRow(label: 'Iván Romero (con goce)', user: incidencia.conGoceApprovedBy),
         _AuthorizerRow(label: 'Recursos Humanos', user: incidencia.rhApprovedBy),
       ],

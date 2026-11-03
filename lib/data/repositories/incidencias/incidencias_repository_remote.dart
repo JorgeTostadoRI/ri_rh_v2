@@ -2,6 +2,7 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.da
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -30,6 +31,7 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
         solicitorRef: incidencia.solicitor?.id,
         category: incidencia.category,
         videoFile: incidencia.videoFile,
+        horasPorHoraRefs: incidencia.horasPorHoraRefs,
       );
       final resultIncidencia = await _apiClient.postIncidencia(incidenciaApiModel);
       switch (resultIncidencia) {
@@ -155,6 +157,11 @@ class IncidenciasRepositoryRemote extends IncidenciasRepository {
   @override
   Future<Result<int>> getIncidenciasToReviewCount() async {
     return _apiClient.getIncidenciasPendingCount();
+  }
+
+  @override
+  Future<Result<List<HoraPorHoraResumen>>> getHorasPorHoraDisponibles() {
+    return _apiClient.getHorasPorHoraDisponibles();
   }
 
   @override

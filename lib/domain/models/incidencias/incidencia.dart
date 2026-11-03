@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/data/services/api/models/incidencia/incidencia_api_model.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/checador_discrepancy.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/permiso_reposicion.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/model_exception.dart';
 
@@ -28,6 +30,7 @@ extension IncidenciaStateValue on IncidenciaState {
 enum IncidenciaCategory {
   permiso('permiso', 'permisos', 'Permisos'),
   horasextra('horasextra', 'horas-extras', 'Horas Extras'),
+  horaporhora('horaporhora', 'horas-por-hora', 'Hora por hora'),
   vacaciones('vacaciones', 'vacaciones', 'Vacaciones'),
   incapacidad('incapacidad', 'incapacidades', 'Incapacidades'),
   requerimientojudicial('requerimientojudicial', 'requerimientos-judiciales', 'Requerimientos Judiciales'),
@@ -73,6 +76,17 @@ abstract class Incidencia with _$Incidencia {
         /// Por que el jefe directo decidio que fuera con goce. Solo la reciben
         /// quienes revisan (aprobador de con goce, RH), nunca el solicitante.
         String? conGoceJustificacion,
+
+        /// Solo aplican para Permiso por tiempo por tiempo: las Hora por hora
+        /// que lo pagan. [horasPorHoraRefs] se manda al pedirlo;
+        /// [horasPorHora] lo regresa el backend con su estado y checada.
+        bool? tiempoPorTiempo,
+        List<HoraPorHoraResumen>? horasPorHora,
+        @JsonKey(includeFromJson: false, includeToJson: false)
+        List<int>? horasPorHoraRefs,
+
+        /// Solo aplica para Hora por hora: el Permiso que paga, ya ligado.
+        PermisoReposicion? permiso,
 
         /// Video testimonial grabado con webcam -- obligatorio solo para
         /// solicitantes remotos registrando desde navegador (sustituye la
@@ -153,6 +167,9 @@ abstract class Incidencia with _$Incidencia {
         conGoce: model.conGoce,
         conGoceApprovedBy: conGoceApprovedBy,
         conGoceJustificacion: model.conGoceJustificacion,
+        tiempoPorTiempo: model.tiempoPorTiempo,
+        horasPorHora: model.horasPorHora,
+        permiso: model.permisoResumen,
         videoUrl: model.videoUrl,
         start: model.start,
         end: model.end,
@@ -177,6 +194,7 @@ extension IncidenciaGetters on Incidencia {
       IncidenciaCategory.permiso => 'Permiso',
       IncidenciaCategory.falta => 'Falta',
       IncidenciaCategory.horasextra => 'Horas Extra',
+      IncidenciaCategory.horaporhora => 'Hora por hora',
       IncidenciaCategory.vacaciones => 'Vacaciones',
       IncidenciaCategory.retardo => 'Retardo',
       IncidenciaCategory.incapacidad => 'Incapacidad',
@@ -184,7 +202,10 @@ extension IncidenciaGetters on Incidencia {
     };
   }
 
-  bool get _requiresConGoceApprover => category == IncidenciaCategory.permiso && conGoce == true;
+  /// Permiso con goce (también por tiempo por tiempo): necesita la
+  /// aprobación especial de con goce antes de RH (mismo criterio que
+  /// Permiso.requiere_aprobador_goce en el backend).
+  bool get requiresConGoceApprover => category == IncidenciaCategory.permiso && conGoce == true;
 
   IncidenciaApprovalStage get approvalStage {
     if (state == IncidenciaState.approved) {
@@ -195,7 +216,7 @@ extension IncidenciaGetters on Incidencia {
       return IncidenciaApprovalStage.awaitingBoss;
     }
 
-    if (_requiresConGoceApprover && conGoceApprovedBy == null) {
+    if (requiresConGoceApprover && conGoceApprovedBy == null) {
       return IncidenciaApprovalStage.awaitingConGoceApprover;
     }
 
@@ -205,7 +226,7 @@ extension IncidenciaGetters on Incidencia {
   /// Numero total de pasos de aprobacion de esta incidencia especifica --
   /// varia porque solo Permiso con goce tiene el paso extra de
   /// [IncidenciaApprovalStage.awaitingConGoceApprover].
-  int get totalApprovalSteps => _requiresConGoceApprover ? 4 : 3;
+  int get totalApprovalSteps => requiresConGoceApprover ? 4 : 3;
 
   /// Indice (0-based) del paso actual, consistente con [totalApprovalSteps] --
   /// no se debe usar [IncidenciaApprovalStage.index] directamente para esto,
@@ -218,7 +239,7 @@ extension IncidenciaGetters on Incidencia {
     if (approvedBy == null) {
       return 0;
     }
-    if (_requiresConGoceApprover) {
+    if (requiresConGoceApprover) {
       return conGoceApprovedBy == null ? 1 : 2;
     }
     return 1;
