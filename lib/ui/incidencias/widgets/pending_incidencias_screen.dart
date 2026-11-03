@@ -104,7 +104,11 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
   void _handleDialogStateResult(Incidencia incidencia, IncidenciaApproveDialogResult result) {
     switch (result.state) {
       case IncidenciaState.approved:
-        widget.viewmodel.approve.execute((incidencia: incidencia, conGoce: result.conGoce));
+        widget.viewmodel.approve.execute((
+          incidencia: incidencia,
+          conGoce: result.conGoce,
+          conGoceJustificacion: result.conGoceJustificacion,
+        ));
       case IncidenciaState.rejected:
         widget.viewmodel.reject.execute((incidencia: incidencia, rejectionReason: result.rejectionReason));
       default:

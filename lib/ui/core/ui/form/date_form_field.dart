@@ -88,13 +88,17 @@ class _DateFormFieldState extends State<DateFormField> {
 
   Future<void> _pickerHandler() async {
     final oneYear = const Duration(days: 365);
-    final initialDate = _parseStrict(_controller.text) ?? DateTime.now();
-    final earliestDate = _minDate(initialDate, DateTime.now());
+    final typedDate = _parseStrict(_controller.text) ?? DateTime.now();
+    final earliestDate = _minDate(typedDate, DateTime.now());
+    final firstDate = widget.firstDate ?? earliestDate.subtract(oneYear);
+    // showDatePicker falla si la fecha inicial queda antes de firstDate (ej.
+    // una fecha pasada escrita a mano con firstDate = hoy).
+    final initialDate = typedDate.isBefore(firstDate) ? firstDate : typedDate;
 
     final date = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: widget.firstDate ?? earliestDate.subtract(oneYear),
+      firstDate: firstDate,
       lastDate: widget.lastDate ?? earliestDate.add(oneYear),
     );
     if (date != null) {

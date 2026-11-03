@@ -1,4 +1,5 @@
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -16,7 +17,8 @@ abstract class IncidenciasRepository {
   ///
   /// [conGoce] solo aplica cuando es un Permiso y lo aprueba el jefe
   /// directo (primer paso) -- decide si es con o sin goce de sueldo.
-  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce});
+  /// [conGoceJustificacion] es obligatoria cuando [conGoce] es true.
+  Future<Result<Incidencia>> approveIncidencia(Incidencia incidencia, {bool? conGoce, String? conGoceJustificacion});
 
   /// Rechaza una [Incidencia].
   /// 
@@ -28,4 +30,8 @@ abstract class IncidenciasRepository {
 
   /// Generar el PDF de la incidencia
   Future<Result<Incidencia>> generatePDF(Incidencia incidencia, bool force);
+
+  /// Hora por hora del usuario en sesion que todavia puede ligar a un
+  /// Permiso de dia completo por tiempo por tiempo.
+  Future<Result<List<HoraPorHoraResumen>>> getHorasPorHoraDisponibles();
 }

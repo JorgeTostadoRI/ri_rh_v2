@@ -7,6 +7,9 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_authorized_by_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_justificacion_goce_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_permiso_repuesto_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_tiempo_por_tiempo_section.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -82,6 +85,14 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
           const SizedBox(height: 24),
           IncidenciaAuthorizedBySection(incidencia: incidencia),
           const SizedBox(height: 24),
+          // El backend no la manda al solicitante, asi que en "Mis
+          // incidencias" nunca aparece.
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true && incidencia.conGoceJustificacion != null)
+            IncidenciaJustificacionGoceSection(justificacion: incidencia.conGoceJustificacion!),
+          if (incidencia.category == IncidenciaCategory.horaporhora && incidencia.permiso != null)
+            IncidenciaPermisoRepuestoSection(permiso: incidencia.permiso!),
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.tiempoPorTiempo == true && incidencia.horasPorHora != null)
+            IncidenciaTiempoPorTiempoSection(horasPorHora: incidencia.horasPorHora!),
           Text('Motivo', style: textTheme.headlineSmall),
           Text(incidencia.reason, style: textTheme.bodyMedium),
           if (incidencia.rejectionReason != null && incidencia.rejectionReason!.isNotEmpty)

@@ -1,5 +1,6 @@
 abstract final class ApiErrorCodes {
   static const lateEntry = 'late_entry';
+  static const earlyEntry = 'early_entry';
   static const noHorario = 'no_horario';
   static const noJefe = 'no_jefe';
   static const faltaNoReportada = 'falta_no_reportada';

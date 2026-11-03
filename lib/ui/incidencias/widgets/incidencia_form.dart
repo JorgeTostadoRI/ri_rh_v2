@@ -12,6 +12,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/horas_por_hora_dialog.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/verify_identity_dialog.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/video_testimonio_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -157,6 +158,14 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         if (!authenticated) return;
       }
 
+      if (widget.category == IncidenciaCategory.permiso && _viewmodel.pagaConTiempoPorTiempo) {
+        final elegido = await _chooseHorasPorHora();
+        if (!elegido) {
+          await _viewmodel.cancelSubmit();
+          return;
+        }
+      }
+
       final result = await _viewmodel.submitData(widget.category);
       switch (result) {
         case Error():
@@ -174,6 +183,53 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         context.go(Routes.incidencias);
       }
     }
+  }
+
+  /// Permiso por tiempo por tiempo: con el usuario ya identificado, elige
+  /// cuales de sus Hora por hora lo pagan. False si no tiene ninguna, falla o
+  /// cancela.
+  Future<bool> _chooseHorasPorHora() async {
+    final result = await _viewmodel.getHorasPorHoraDisponibles();
+    if (!mounted) return false;
+
+    switch (result) {
+      case Error():
+        ScaffoldMessenger.of(context).showSnackBar(
+          errorSnackBar(context, 'No se pudieron obtener tus Hora por hora', error: result.error),
+        );
+        return false;
+      case Ok():
+    }
+
+    final horasPorHora = result.value;
+    if (horasPorHora.isEmpty) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Sin Hora por hora'),
+          content: Text(
+            'No tienes Hora por hora disponibles para pagar este permiso. '
+            'Primero solicita tu Hora por hora y después el permiso.'
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: Text('Entendido'),
+            ),
+          ],
+        ),
+      );
+      return false;
+    }
+
+    final ids = await showDialog<List<int>?>(
+      context: context,
+      builder: (context) => HorasPorHoraDialog(horasPorHora: horasPorHora),
+    );
+    if (ids == null || ids.isEmpty) return false;
+
+    _viewmodel.onHorasPorHoraSelected(ids);
+    return true;
   }
 
   Future<void> _handleFilePicker() async {
@@ -225,9 +281,43 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       return;
     }
 
+    // Permiso, Vacaciones y Hora por hora: el backend explica por que no se
+    // puede (dia anterior, se traslapa con el horario, Hora por hora ya
+    // ligada, etc.) -- se muestra tal cual.
+    if (_desdeHoy && e is ApiException && e.statusCode == 400) {
+      final mensaje = _primerMensaje(e.data);
+      if (mensaje != null) {
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar(context, mensaje));
+        return;
+      }
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       errorSnackBar(context, 'Ha ocurrido un error', error: e),
     );
+  }
+
+  /// Permiso, Vacaciones y Hora por hora no se piden para dias anteriores (el
+  /// backend lo valida; aqui el calendario empieza en hoy).
+  bool get _desdeHoy => const {
+    IncidenciaCategory.permiso,
+    IncidenciaCategory.vacaciones,
+    IncidenciaCategory.horaporhora,
+  }.contains(widget.category);
+
+  DateTime? get _firstDate {
+    if (!_desdeHoy) return null;
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  /// Primer mensaje de un error de validacion de DRF ({campo: [mensaje]}).
+  String? _primerMensaje(Map<String, dynamic>? data) {
+    for (final value in data?.values ?? const []) {
+      if (value is List && value.isNotEmpty) return value.first.toString();
+      if (value is String) return value;
+    }
+    return null;
   }
 
   @override
@@ -239,11 +329,12 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     _startTimeController = TextEditingController();
     _endTimeController = TextEditingController();
 
-    // Force horas extra y retardo to only allow hour input
+    // Force horas extra, hora por hora y retardo to only allow hour input
     switch (widget.category) {
       case IncidenciaCategory.horasextra:
+      case IncidenciaCategory.horaporhora:
       case IncidenciaCategory.retardo:
-        _viewmodel.onDateOptionChanged(1);
+        _viewmodel.initDateOption(IncidenciaDateOption.HOUR_RANGE);
       default:
     }
   }
@@ -285,7 +376,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
           children: [
             FieldLabel(labelText: 'Fecha', required: true),
             const SizedBox(height: _labelMargin),
-            if (widget.category != IncidenciaCategory.horasextra)
+            if (widget.category != IncidenciaCategory.horasextra && widget.category != IncidenciaCategory.horaporhora)
               ...[
                 Row(
                   children: [
@@ -311,6 +402,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'DESDE',
                         hintText: 'dd/mm/aa',
                       ),
+                      firstDate: _firstDate,
                       required: true,
                       onDateSaved: _viewmodel.onStartDateSaved,
                     ),
@@ -323,6 +415,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'HASTA (OPCIONAL)',
                         hintText: 'dd/mm/aa',
                       ),
+                      firstDate: _firstDate,
                       onDateSaved: _viewmodel.onEndDateSaved,
                     ),
                   ),
@@ -340,6 +433,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                         labelText: 'DÍA',
                         hintText: 'dd/mm/aa',
                       ),
+                      firstDate: _firstDate,
                       onDateSaved: _viewmodel.onStartDateSaved,
                       required: true,
                     ),
@@ -369,6 +463,15 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                     ),
                   ),
                 ],
+              ),
+            if (widget.category == IncidenciaCategory.permiso && _viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE)
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                value: _viewmodel.tiempoPorTiempo,
+                onChanged: (value) => _viewmodel.onTiempoPorTiempoChanged(value ?? false),
+                title: Text('Lo pagaré con tiempo por tiempo'),
+                subtitle: Text('Al enviar elegirás las Hora por hora con las que pagas este día.'),
               ),
             const SizedBox(height: _fieldMargin),
             FieldLabel(labelText: 'Motivo', required: true),

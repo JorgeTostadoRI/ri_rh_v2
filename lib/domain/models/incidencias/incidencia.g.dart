@@ -38,6 +38,14 @@ _Incidencia _$IncidenciaFromJson(Map<String, dynamic> json) => _Incidencia(
   conGoceApprovedBy: json['con_goce_approved_by'] == null
       ? null
       : User.fromJson(json['con_goce_approved_by'] as Map<String, dynamic>),
+  conGoceJustificacion: json['con_goce_justificacion'] as String?,
+  tiempoPorTiempo: json['tiempo_por_tiempo'] as bool?,
+  horasPorHora: (json['horas_por_hora'] as List<dynamic>?)
+      ?.map((e) => HoraPorHoraResumen.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  permiso: json['permiso'] == null
+      ? null
+      : PermisoReposicion.fromJson(json['permiso'] as Map<String, dynamic>),
   videoUrl: json['video_url'] as String?,
   start: DateTime.parse(json['start'] as String),
   end: DateTime.parse(json['end'] as String),
@@ -63,6 +71,10 @@ Map<String, dynamic> _$IncidenciaToJson(_Incidencia instance) =>
       'checador_discrepancy': instance.checadorDiscrepancy,
       'con_goce': instance.conGoce,
       'con_goce_approved_by': instance.conGoceApprovedBy,
+      'con_goce_justificacion': instance.conGoceJustificacion,
+      'tiempo_por_tiempo': instance.tiempoPorTiempo,
+      'horas_por_hora': instance.horasPorHora,
+      'permiso': instance.permiso,
       'video_url': instance.videoUrl,
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
@@ -80,6 +92,7 @@ const _$IncidenciaStateEnumMap = {
 const _$IncidenciaCategoryEnumMap = {
   IncidenciaCategory.permiso: 'permiso',
   IncidenciaCategory.horasextra: 'horasextra',
+  IncidenciaCategory.horaporhora: 'horaporhora',
   IncidenciaCategory.vacaciones: 'vacaciones',
   IncidenciaCategory.incapacidad: 'incapacidad',
   IncidenciaCategory.requerimientojudicial: 'requerimientojudicial',

@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -92,6 +93,13 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
 
   String? _reason;
 
+  // Solo Permiso de dia completo: se paga con tiempo por tiempo. Las Hora
+  // por hora que lo pagan se eligen al enviar (ver IncidenciaForm), ya con
+  // el usuario identificado.
+  bool _tiempoPorTiempo = false;
+  bool get tiempoPorTiempo => _tiempoPorTiempo;
+  List<int>? _horasPorHoraRefs;
+
   List<PlatformFile> _files = [];
   List<PlatformFile> get files => _files;
 
@@ -115,11 +123,36 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     notifyListeners();
   }
 
+  /// Fija la opcion de fecha sin avisar a los listeners -- para usarse en el
+  /// initState del formulario, que ya lee este valor en su primer build. Con
+  /// [onDateOptionChanged] ahi se reconstruiria la pantalla mientras se esta
+  /// construyendo ("setState() or markNeedsBuild() called during build").
+  void initDateOption(IncidenciaDateOption option) => _dateOption = option;
+
   void onStartDateSaved(DateTime? date) => _startDate = date;
   void onEndDateSaved(DateTime? date) => _endDate = date;
   void onStartTimeSaved(TimeOfDay? time) => _startTime = time;
   void onEndTimeSaved(TimeOfDay? time) => _endTime = time;
   void onReasonChanged(String? value) => _reason = value;
+  void onTiempoPorTiempoChanged(bool value) {
+    _tiempoPorTiempo = value;
+    notifyListeners();
+  }
+  void onHorasPorHoraSelected(List<int> ids) => _horasPorHoraRefs = ids;
+
+  /// El permiso se manda con sus Hora por hora solo si es de dia completo.
+  bool get pagaConTiempoPorTiempo => _tiempoPorTiempo && _dateOption == IncidenciaDateOption.DATE_RANGE;
+
+  /// Hora por hora del usuario ya identificado que todavia puede ligar a un
+  /// permiso.
+  Future<Result<List<HoraPorHoraResumen>>> getHorasPorHoraDisponibles() => _incidenciasRepository.getHorasPorHoraDisponibles();
+
+  /// Se abandona el envio despues de identificarse (ej. cancela la eleccion
+  /// del permiso): en escritorio la sesion de la huella se cierra igual que
+  /// al terminar un envio, ver [submitData].
+  Future<void> cancelSubmit() async {
+    if (!kIsWeb) await _authRepository.logout();
+  }
 
   void addFiles(List<PlatformFile> newFiles) {
     _files = [..._files, ...newFiles];
@@ -177,6 +210,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
       category: category,
       files: incidenciaFiles,
       videoFile: _video,
+      horasPorHoraRefs: category == IncidenciaCategory.permiso && pagaConTiempoPorTiempo ? _horasPorHoraRefs : null,
     );
     final incidenciaResult = await _incidenciasRepository.createIncidencia(incidencia);
     switch (incidenciaResult) {

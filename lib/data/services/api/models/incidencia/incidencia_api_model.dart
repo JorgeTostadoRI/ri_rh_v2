@@ -2,8 +2,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/checador_discrepancy.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
+import 'package:ri_rh_v2/domain/models/incidencias/permiso_reposicion.dart';
 
 part 'incidencia_api_model.freezed.dart';
 part 'incidencia_api_model.g.dart';
@@ -42,6 +44,23 @@ abstract class IncidenciaApiModel with _$IncidenciaApiModel {
         bool? conGoce,
         @JsonKey(name: 'con_goce_approved_by')
         int? conGoceApprovedByRef,
+        // El backend no la manda al propio solicitante.
+        @JsonKey(name: 'con_goce_justificacion')
+        String? conGoceJustificacion,
+
+        // Solo aplican para Permiso por tiempo por tiempo: las Hora por hora
+        // que lo pagan.
+        @JsonKey(name: 'tiempo_por_tiempo')
+        bool? tiempoPorTiempo,
+        @JsonKey(name: 'horas_por_hora_resumen')
+        List<HoraPorHoraResumen>? horasPorHora,
+        // Se mandan al pedir el permiso (`horas_por_hora`), ver postIncidencia.
+        @JsonKey(includeFromJson: false, includeToJson: false)
+        List<int>? horasPorHoraRefs,
+
+        // Solo aplica para Hora por hora: el Permiso que paga, ya ligado.
+        @JsonKey(name: 'permiso_resumen')
+        PermisoReposicion? permisoResumen,
 
         @JsonKey(name: 'video')
         String? videoUrl,

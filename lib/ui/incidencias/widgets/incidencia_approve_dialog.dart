@@ -9,11 +9,19 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/rejection_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/status_chip.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_authorized_by_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_justificacion_goce_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_permiso_repuesto_section.dart';
+import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_tiempo_por_tiempo_section.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-typedef IncidenciaApproveDialogResult = ({IncidenciaState state, String rejectionReason, bool? conGoce});
+typedef IncidenciaApproveDialogResult = ({
+  IncidenciaState state,
+  String rejectionReason,
+  bool? conGoce,
+  String? conGoceJustificacion,
+});
 
 class IncidenciaApproveDialog extends StatefulWidget {
   const IncidenciaApproveDialog({
@@ -36,6 +44,7 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
   late final DateTime _localEnd;
 
   bool _conGoce = false;
+  final _justificacionController = TextEditingController();
 
   /// Un Permiso "por horas" (rango de horas dentro del mismo dia, no un dia
   /// completo) nunca pide con/sin goce -- se trata siempre como un Retardo
@@ -60,11 +69,37 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
   bool get _isConGoceApproverTurn =>
       widget.incidencia.approvalStage == IncidenciaApprovalStage.awaitingConGoceApprover;
 
+  /// Con goce, el jefe directo debe justificar por que -- el backend tambien
+  /// lo exige (ApproveIncidenciaRequestSerializer).
+  bool get _requiereJustificacion => _askConGoce && _conGoce;
+
+  /// Hora por hora: el jefe directo deberia aprobarla antes de que empiece
+  /// la reposicion -- si ya empezo solo se le avisa, no se bloquea.
+  bool get _reposicionYaEmpezo =>
+      widget.incidencia.category == IncidenciaCategory.horaporhora &&
+      widget.incidencia.approvalStage == IncidenciaApprovalStage.awaitingBoss &&
+      DateTime.now().isAfter(widget.incidencia.start);
+
+  bool get _puedeAprobar =>!_requiereJustificacion || _justificacionController.text.trim().isNotEmpty;
+
   @override
   void initState() {
     super.initState();
     _localStart = widget.incidencia.start.toLocal();
     _localEnd = widget.incidencia.end.toLocal();
+
+    // Tiempo por tiempo: el jefe normalmente lo aprueba con goce por ese
+    // motivo -- se le prellena, pero lo puede cambiar.
+    if (_askConGoce && widget.incidencia.tiempoPorTiempo == true) {
+      _conGoce = true;
+      _justificacionController.text = 'Permiso con goce por tiempo por tiempo.';
+    }
+  }
+
+  @override
+  void dispose() {
+    _justificacionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -113,6 +148,40 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                 ),
               ),
             ),
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true && incidencia.conGoceJustificacion != null)
+            IncidenciaJustificacionGoceSection(justificacion: incidencia.conGoceJustificacion!),
+          if (_reposicionYaEmpezo)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24.0),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: statusWarningBgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Icon(LucideIcons.clockAlert, color: statusWarningColor),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'El horario de la Hora por hora ya empezó. Lo esperado es aprobarla antes de que la persona cheque; aun así puedes aprobarla.',
+                        style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (incidencia.category == IncidenciaCategory.horaporhora && incidencia.permiso != null)
+            IncidenciaPermisoRepuestoSection(permiso: incidencia.permiso!),
+          if (incidencia.category == IncidenciaCategory.permiso && incidencia.tiempoPorTiempo == true && incidencia.horasPorHora != null)
+            IncidenciaTiempoPorTiempoSection(
+              horasPorHora: incidencia.horasPorHora!,
+              mostrarAlerta: incidencia.approvalStage == IncidenciaApprovalStage.awaitingConGoceApprover
+                || incidencia.approvalStage == IncidenciaApprovalStage.awaitingRH,
+            ),
           Text('Fecha de creación', style: textTheme.headlineSmall),
           Text(_yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
@@ -143,6 +212,21 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
               onChanged: (value) => setState(() => _conGoce = value),
               title: Text(_conGoce ? 'Con goce de sueldo' : 'Sin goce de sueldo'),
             ),
+            if (_conGoce) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _justificacionController,
+                onChanged: (_) => setState(() {}),
+                minLines: 2,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'Justificación del goce de sueldo',
+                  hintText: '¿Por qué este permiso debe ser con goce de sueldo?',
+                  helperText: 'Obligatoria. La verán Iván Romero y Recursos Humanos.',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
           ],
           const SizedBox(height: 24),
           Text('Motivo', style: textTheme.headlineSmall),
@@ -206,7 +290,9 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                         spacing: 4,
                         children: [
                           Text(
-                            'Posible discrepancia con el checador',
+                            incidencia.category == IncidenciaCategory.horaporhora
+                              ? 'Reposición sin respaldo del checador'
+                              : 'Posible discrepancia con el checador',
                             style: textTheme.bodyMedium?.copyWith(
                               fontWeight: .w700,
                               color: statusWarningColor,
@@ -241,6 +327,7 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                 state: IncidenciaState.rejected,
                 rejectionReason: rejectionReason,
                 conGoce: null,
+                conGoceJustificacion: null,
               );
               context.pop(result);
             }
@@ -249,11 +336,14 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
           label: Text('Rechazar'),
         ),
         ElevatedButton.icon(
-          onPressed: () => context.pop((
-            state: IncidenciaState.approved,
-            rejectionReason: '',
-            conGoce: _askConGoce ? _conGoce : null,
-          )),
+          onPressed: _puedeAprobar
+            ? () => context.pop((
+                state: IncidenciaState.approved,
+                rejectionReason: '',
+                conGoce: _askConGoce ? _conGoce : null,
+                conGoceJustificacion: _requiereJustificacion ? _justificacionController.text.trim() : null,
+              ))
+            : null,
           icon: Icon(LucideIcons.circleCheckBig),
           label: Text('Aprobar'),
         ),

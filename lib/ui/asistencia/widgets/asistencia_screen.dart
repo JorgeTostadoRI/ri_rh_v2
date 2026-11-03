@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/entrada_temprana_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/scanner_status.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
@@ -67,6 +68,14 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
       Future.delayed(const Duration(seconds: 2), () => _viewmodel.register.clearResult());
 
       if (error is ApiException) {
+        if (error.errorCode == ApiErrorCodes.earlyEntry) {
+          showDialog(
+            context: context,
+            builder: (context) => EntradaTempranaDialog(error: error),
+          );
+          return;
+        }
+
         if (error.errorCode == ApiErrorCodes.lateEntry) {
           showDialog(
             context: context,

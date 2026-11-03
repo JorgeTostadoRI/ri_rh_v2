@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/ingreso_manual_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/entrada_temprana_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
@@ -304,6 +305,11 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
       } else if (error is NoRemoteAllowed) {
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, 'No puedes registrar tu asistencia remotamente'),
+        );
+      } else if (error is ApiException && error.errorCode == ApiErrorCodes.earlyEntry) {
+        showDialog(
+          context: context,
+          builder: (context) => EntradaTempranaDialog(error: error),
         );
       } else if (error is ApiException && error.errorCode == ApiErrorCodes.lateEntry) {
         showDialog(
