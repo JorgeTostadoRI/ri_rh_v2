@@ -81,6 +81,16 @@ class VacantesRepositoryRemote extends VacantesRepository {
   }
 
   @override
+  Future<Result<SolicitudVacante>> reenviarInvitacion(int candidatoId) async {
+    return _apiClient.reenviarInvitacionCandidato(candidatoId);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> cancelarCandidato(int candidatoId) async {
+    return _apiClient.cancelarCandidato(candidatoId);
+  }
+
+  @override
   Future<Result<SolicitudVacante>> iniciarContratacionPracticante({
     required int id,
     required String correo,

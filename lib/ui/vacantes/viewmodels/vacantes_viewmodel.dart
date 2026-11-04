@@ -56,6 +56,8 @@ class VacantesViewmodel extends ChangeNotifier {
     iniciarCandidatoBatch = Command1(_iniciarCandidatoBatch);
     retroalimentar = Command1(_retroalimentar);
     iniciarContratacionPracticante = Command1(_iniciarContratacionPracticante);
+    reenviarInvitacion = Command1(_reenviarInvitacion);
+    cancelarCandidato = Command1(_cancelarCandidato);
     createPuesto = Command1(_createPuesto);
     editPuesto = Command1(_editPuesto);
   }
@@ -80,6 +82,12 @@ class VacantesViewmodel extends ChangeNotifier {
   /// RH inicia la contratación de un practicante ya aprobada por Dirección.
   late final Command1<SolicitudVacante, ({int id, String correo, PlatformFile cartaOferta})>
   iniciarContratacionPracticante;
+
+  /// Candidato que todavía no completa su formulario (link vigente o
+  /// vencido): reenviarle el link, o cancelarlo para liberar su lugar.
+  /// Reciben el id del candidato.
+  late final Command1<SolicitudVacante, int> reenviarInvitacion;
+  late final Command1<SolicitudVacante, int> cancelarCandidato;
   late final Command1<Puesto, PuestoCreateParams> createPuesto;
   late final Command1<Puesto, PuestoEditParams> editPuesto;
 
@@ -268,6 +276,26 @@ class VacantesViewmodel extends ChangeNotifier {
     );
     if (result case Error()) {
       _log.warning('Failed to iniciar contratacion de practicante', error: result.error);
+      return result;
+    }
+    _reemplazar((result as Ok<SolicitudVacante>).value);
+    return result;
+  }
+
+  Future<Result<SolicitudVacante>> _reenviarInvitacion(int candidatoId) async {
+    final result = await _vacantesRepository.reenviarInvitacion(candidatoId);
+    if (result case Error()) {
+      _log.warning('Failed to reenviar invitacion de candidato', error: result.error);
+      return result;
+    }
+    _reemplazar((result as Ok<SolicitudVacante>).value);
+    return result;
+  }
+
+  Future<Result<SolicitudVacante>> _cancelarCandidato(int candidatoId) async {
+    final result = await _vacantesRepository.cancelarCandidato(candidatoId);
+    if (result case Error()) {
+      _log.warning('Failed to cancelar candidato', error: result.error);
       return result;
     }
     _reemplazar((result as Ok<SolicitudVacante>).value);

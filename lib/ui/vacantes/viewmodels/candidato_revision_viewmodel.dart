@@ -18,9 +18,9 @@ class CandidatoRevisionViewmodel extends ChangeNotifier {
        _empleadosRepository = empleadosRepository {
     load = Command1(_load)..execute(candidatoId);
     guardarDetalles = Command1(_guardarDetalles);
-    solicitarContrato = Command0(_solicitarContrato);
+    solicitarContrato = Command1(_solicitarContrato);
     rechazarDocumentacion = Command1(_rechazarDocumentacion);
-    vistaPreviaDocumentos = Command0(_vistaPreviaDocumentos);
+    vistaPreviaDocumentos = Command1(_vistaPreviaDocumentos);
     completarAlta = Command1(_completarAlta);
   }
 
@@ -34,9 +34,12 @@ class CandidatoRevisionViewmodel extends ChangeNotifier {
   CandidatoDetalle? get candidato => _candidato;
 
   late final Command1<CandidatoDetalle, DetalleContratacionParams> guardarDetalles;
-  late final Command0<CandidatoDetalle> solicitarContrato;
+  /// Guardan primero lo que hay en pantalla (y esperan a que termine) antes
+  /// de generar el documento -- si no, el backend lo armaría con lo que
+  /// tenía guardado antes.
+  late final Command1<CandidatoDetalle, DetalleContratacionParams> solicitarContrato;
   late final Command1<CandidatoDetalle, String> rechazarDocumentacion;
-  late final Command0<VistaPreviaDocumentos> vistaPreviaDocumentos;
+  late final Command1<VistaPreviaDocumentos, DetalleContratacionParams> vistaPreviaDocumentos;
   late final Command1<AltaCompletada, CompletarAltaParams> completarAlta;
 
   Future<Result<CandidatoDetalle>> _load(int id) async {
@@ -63,7 +66,10 @@ class CandidatoRevisionViewmodel extends ChangeNotifier {
     return result;
   }
 
-  Future<Result<CandidatoDetalle>> _solicitarContrato() async {
+  Future<Result<CandidatoDetalle>> _solicitarContrato(DetalleContratacionParams params) async {
+    final guardado = await _guardarDetalles(params);
+    if (guardado is Error<CandidatoDetalle>) return guardado;
+
     final result = await _vacantesRepository.solicitarContrato(candidatoId);
     switch (result) {
       case Error():
@@ -87,7 +93,10 @@ class CandidatoRevisionViewmodel extends ChangeNotifier {
     return result;
   }
 
-  Future<Result<VistaPreviaDocumentos>> _vistaPreviaDocumentos() async {
+  Future<Result<VistaPreviaDocumentos>> _vistaPreviaDocumentos(DetalleContratacionParams params) async {
+    final guardado = await _guardarDetalles(params);
+    if (guardado is Error<CandidatoDetalle>) return Result.error(guardado.error);
+
     final result = await _vacantesRepository.obtenerVistaPreviaDocumentos(candidatoId);
     if (result case Error()) {
       _log.warning('Failed to obtener vista previa de documentos', error: result.error);

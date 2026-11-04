@@ -60,6 +60,7 @@ class EmpleadoCreateParams {
     this.departamentoIds,
     this.rol,
     this.fechaAlta,
+    required this.fechaIngreso,
     this.identificacionOficial,
     this.actaNacimiento,
     this.constanciaEstudio,
@@ -107,6 +108,9 @@ class EmpleadoCreateParams {
   final String? rol;
   /// Por default el backend usa la fecha de hoy si se omite.
   final DateTime? fechaAlta;
+  /// Primer día que trabaja (no antes de [fechaAlta]). Antes de esa fecha
+  /// el cálculo de asistencia no le marca faltas.
+  final DateTime fechaIngreso;
 
   final PlatformFile? identificacionOficial;
   final PlatformFile? actaNacimiento;
@@ -153,6 +157,7 @@ class PracticanteCreateParams {
     this.departamentoId,
     this.rol,
     this.fechaAlta,
+    required this.fechaIngreso,
     this.identificacionOficial,
     this.actaNacimiento,
     this.estadoCuenta,
@@ -190,8 +195,11 @@ class PracticanteCreateParams {
   final String? rol;
   /// Por default el backend usa la fecha de hoy si se omite.
   final DateTime? fechaAlta;
+  /// Primer día que trabaja (no antes de [fechaAlta]). Antes de esa fecha
+  /// el cálculo de asistencia no le marca faltas.
+  final DateTime fechaIngreso;
   /// Fin de sus prácticas -- obligatoria al dar de alta y posterior a
-  /// [fechaAlta]. Después solo se corrige desde el admin de Django.
+  /// [fechaIngreso]. Después solo se corrige desde el admin de Django.
   final DateTime fechaTerminacion;
 
   final PlatformFile? identificacionOficial;
@@ -851,6 +859,36 @@ class ApiClient {
     }
   }
 
+  Future<Result<SolicitudVacante>> reenviarInvitacionCandidato(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/candidatos/$id/reenviar-invitacion/');
+      return Result.ok(SolicitudVacante.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> cancelarCandidato(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/candidatos/$id/cancelar/');
+      return Result.ok(SolicitudVacante.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id) async {
     final dio = _dioFactory();
     try {
@@ -1056,6 +1094,7 @@ class ApiClient {
         if (params.departamentoIds != null) 'departamentos_permitidos': params.departamentoIds,
         if (params.rol != null) 'rol': params.rol,
         if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'fecha_ingreso': params.fechaIngreso.toShortIsoString(),
         'identificacion_oficial': toMultipart(params.identificacionOficial),
         'acta_nacimiento': toMultipart(params.actaNacimiento),
         'constancia_estudio': toMultipart(params.constanciaEstudio),
@@ -1376,6 +1415,7 @@ class ApiClient {
         if (params.departamentoId != null) 'departamento': params.departamentoId,
         if (params.rol != null) 'rol': params.rol,
         if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'fecha_ingreso': params.fechaIngreso.toShortIsoString(),
         'fecha_terminacion': params.fechaTerminacion.toShortIsoString(),
         'identificacion_oficial': toMultipart(params.identificacionOficial),
         'acta_nacimiento': toMultipart(params.actaNacimiento),
