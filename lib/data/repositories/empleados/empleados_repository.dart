@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 abstract class EmpleadosRepository {
   Future<Result<List<Empleado>>> getEmpleados();
@@ -72,6 +73,14 @@ abstract class EmpleadosRepository {
   /// Regenera la contraseña del Usuarios vinculado a este empleado,
   /// invalidando la anterior. Se muestra una sola vez.
   Future<Result<CredencialesGeneradas>> regenerarPassword(int empleadoId);
+
+  /// Últimos 4 días laborables según el checador, para decidir si se puede
+  /// "Forzar baja por abandono" (ver RevisionAbandono).
+  Future<Result<RevisionAbandono>> revisionAbandono(int empleadoId);
+
+  /// Cierra el proceso de baja sin documentos de separación -- el backend
+  /// vuelve a revisar los 4 días y genera la constancia de inasistencias.
+  Future<Result<void>> bajaPorAbandono(BajaAbandonoParams params);
 
   /// Para la pestaña "Altas IMSS" de Reclutamiento: todos los empleados
   /// que vienen de una vacante, cada uno con su paso de Fase 2 (el envío al

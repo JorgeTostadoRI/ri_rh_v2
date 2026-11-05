@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_mo
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/incidencia_nomina/reporte_incidencia_nomina_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/dias_festivos/dia_festivo.dart';
@@ -1386,6 +1387,62 @@ class ApiClient {
       dio.close();
     }
   }
+
+  // "Forzar baja por abandono": `base` es la ruta del empleado o practicante
+  // (mismas acciones en los dos ViewSets del backend).
+  Future<Result<RevisionAbandono>> _revisionAbandono(String base) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('$base/revision-abandono/');
+      return Result.ok(RevisionAbandono.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> _bajaPorAbandono(String base, BajaAbandonoParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'fecha_baja': params.fechaBaja.toShortIsoString(),
+        'justificacion': params.justificacion,
+        'nota': params.nota,
+      });
+      for (final evidencia in params.evidencias) {
+        formData.files.add(MapEntry('evidencias', MultipartFile.fromBytes(
+          evidencia.bytes!,
+          filename: evidencia.name,
+          contentType: getMediaTypeFromExtension(evidencia.extension!),
+        )));
+      }
+      await dio.post('$base/baja-por-abandono/', data: formData);
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<RevisionAbandono>> revisionAbandonoEmpleado(int id) =>
+      _revisionAbandono('/api/rh/empleados/$id');
+
+  Future<Result<void>> bajaPorAbandonoEmpleado(BajaAbandonoParams params) =>
+      _bajaPorAbandono('/api/rh/empleados/${params.id}', params);
+
+  Future<Result<RevisionAbandono>> revisionAbandonoPracticante(int id) =>
+      _revisionAbandono('/api/rh/PracticantesResidentes/$id');
+
+  Future<Result<void>> bajaPorAbandonoPracticante(BajaAbandonoParams params) =>
+      _bajaPorAbandono('/api/rh/PracticantesResidentes/${params.id}', params);
 
   Future<Result<PracticanteApiModel>> createPracticante(PracticanteCreateParams params) async {
     final dio = _dioFactory();

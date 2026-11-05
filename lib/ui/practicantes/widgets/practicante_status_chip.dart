@@ -5,9 +5,11 @@ class PracticanteStatusChip extends StatelessWidget {
   const PracticanteStatusChip({
     super.key,
     required this.status,
+    this.porAbandono = false,
   });
 
   final StatusPracticante status;
+  final bool porAbandono;
 
   Color get backgroundColor {
     return switch (status) {
@@ -29,7 +31,7 @@ class PracticanteStatusChip extends StatelessWidget {
     return switch (status) {
       StatusPracticante.alta => 'ALTA',
       StatusPracticante.procesoBaja => 'EN PROCESO DE BAJA',
-      StatusPracticante.baja => 'BAJA',
+      StatusPracticante.baja => porAbandono ? 'BAJA POR ABANDONO' : 'BAJA',
     };
   }
 

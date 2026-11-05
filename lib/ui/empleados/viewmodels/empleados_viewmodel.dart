@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_gener
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 class CambiarEstatusEmpleadoParams {
   const CambiarEstatusEmpleadoParams({
@@ -37,6 +38,8 @@ class EmpleadosViewmodel extends ChangeNotifier {
     load = Command0(_load)..execute();
     cambiarEstatus = Command1(_cambiarEstatus);
     regenerarPassword = Command1(_regenerarPassword);
+    revisionAbandono = Command1(_revisionAbandono);
+    bajaPorAbandono = Command1(_bajaPorAbandono);
   }
 
   final EmpleadosRepository _empleadosRepository;
@@ -45,6 +48,8 @@ class EmpleadosViewmodel extends ChangeNotifier {
   late final Command0 load;
   late final Command1<String, CambiarEstatusEmpleadoParams> cambiarEstatus;
   late final Command1<CredencialesGeneradas, int> regenerarPassword;
+  late final Command1<RevisionAbandono, int> revisionAbandono;
+  late final Command1<void, BajaAbandonoParams> bajaPorAbandono;
 
   List<Empleado> _empleados = [];
   List<Empleado> get empleados => _empleados;
@@ -95,6 +100,17 @@ class EmpleadosViewmodel extends ChangeNotifier {
     final result = await _empleadosRepository.regenerarPassword(empleadoId);
     if (result case Error()) {
       _log.warning('Failed to regenerar password de empleado', error: result.error);
+    }
+    return result;
+  }
+
+  Future<Result<RevisionAbandono>> _revisionAbandono(int id) => _empleadosRepository.revisionAbandono(id);
+
+  Future<Result<void>> _bajaPorAbandono(BajaAbandonoParams params) async {
+    final result = await _empleadosRepository.bajaPorAbandono(params);
+    if (result case Ok()) {
+      _empleadosRepository.invalidateCache();
+      await load.execute();
     }
     return result;
   }

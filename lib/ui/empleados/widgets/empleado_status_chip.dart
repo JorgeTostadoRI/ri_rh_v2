@@ -5,9 +5,11 @@ class EmpleadoStatusChip extends StatelessWidget {
   const EmpleadoStatusChip({
     super.key,
     required this.status,
+    this.porAbandono = false,
   });
 
   final EmpleadoEstatus status;
+  final bool porAbandono;
 
   Color get backgroundColor {
     return switch (status) {
@@ -29,7 +31,7 @@ class EmpleadoStatusChip extends StatelessWidget {
     return switch (status) {
       EmpleadoEstatus.activo => 'ACTIVO',
       EmpleadoEstatus.procesoFiniquito => 'EN PROCESO DE FINIQUITO',
-      EmpleadoEstatus.finiquitado => 'FINIQUITADO',
+      EmpleadoEstatus.finiquitado => porAbandono ? 'FINIQUITADO POR ABANDONO' : 'FINIQUITADO',
     };
   }
 

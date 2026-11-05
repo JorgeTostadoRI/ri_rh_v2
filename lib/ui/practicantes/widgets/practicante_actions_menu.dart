@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
+import 'package:ri_rh_v2/ui/core/ui/baja_abandono_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/credenciales_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
@@ -29,11 +31,15 @@ class PracticanteActionsMenu extends StatelessWidget {
     required this.practicante,
     required this.cambiarEstado,
     required this.regenerarPassword,
+    required this.revisionAbandono,
+    required this.bajaPorAbandono,
   });
 
   final Practicante practicante;
   final Command1<String, CambiarEstadoPracticanteParams> cambiarEstado;
   final Command1<CredencialesGeneradas, int> regenerarPassword;
+  final Command1<RevisionAbandono, int> revisionAbandono;
+  final Command1<void, BajaAbandonoParams> bajaPorAbandono;
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +55,28 @@ class PracticanteActionsMenu extends StatelessWidget {
       ));
     }
 
-    // Desde "en proceso de baja" solo se puede cerrar la baja definitiva,
-    // nunca regresar a alta (el backend tambien lo bloquea).
-    if (practicante.status == StatusPracticante.alta || practicante.status == StatusPracticante.procesoBaja) {
+    // La baja definitiva solo se cierra desde "en proceso de baja" (de ahí
+    // nunca regresa a alta; el backend también lo bloquea): con la carta de
+    // liberación, o sin ella si dejó de presentarse (ver BajaAbandonoDialog).
+    if (practicante.status == StatusPracticante.procesoBaja) {
       items.add(PopupMenuItem(
         value: () => showDialog(
           context: context,
           builder: (context) => _BajaDialog(practicante: practicante, cambiarEstado: cambiarEstado),
         ),
         child: Text('Pasar a inactivo'),
+      ));
+      items.add(PopupMenuItem(
+        value: () => showDialog(
+          context: context,
+          builder: (context) => BajaAbandonoDialog(
+            id: practicante.base.id,
+            nombre: practicante.base.nombre,
+            revisionAbandono: revisionAbandono,
+            bajaPorAbandono: bajaPorAbandono,
+          ),
+        ),
+        child: Text('Forzar baja por abandono'),
       ));
     }
 

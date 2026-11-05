@@ -139,13 +139,15 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                     final practicante = widget.viewmodel.practicantes[index];
                     return BaseEmpleadoCard(
                       baseEmpleado: practicante.base,
-                      statusChip: PracticanteStatusChip(status: practicante.status!),
+                      statusChip: PracticanteStatusChip(status: practicante.status!, porAbandono: practicante.bajaPorAbandono),
                       onExpedientePressed: () => context.go(Routes.expedienteOfPracticante(practicante)),
                       hasPendingActions: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
                       actionsMenu: PracticanteActionsMenu(
                         practicante: practicante,
                         cambiarEstado: widget.viewmodel.cambiarEstado,
                         regenerarPassword: widget.viewmodel.regenerarPassword,
+                        revisionAbandono: widget.viewmodel.revisionAbandono,
+                        bajaPorAbandono: widget.viewmodel.bajaPorAbandono,
                       ),
                     );
                   }

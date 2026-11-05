@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 class EmpleadosRepositoryLocal extends EmpleadosRepository {
   EmpleadosRepositoryLocal({
@@ -117,6 +118,16 @@ class EmpleadosRepositoryLocal extends EmpleadosRepository {
   @override
   Future<Result<List<Departamento>>> getDepartamentos() async {
     return const Result.ok([]);
+  }
+
+  @override
+  Future<Result<RevisionAbandono>> revisionAbandono(int empleadoId) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<void>> bajaPorAbandono(BajaAbandonoParams params) async {
+    return Result.error(Exception('No soportado en modo local'));
   }
 
   @override

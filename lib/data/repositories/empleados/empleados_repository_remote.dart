@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 String _estatusToApiValue(EmpleadoEstatus estatus) => switch (estatus) {
   EmpleadoEstatus.activo => 'activo',
@@ -298,6 +299,24 @@ class EmpleadosRepositoryRemote extends EmpleadosRepository {
       case Ok():
     }
     return Result.ok(result.value);
+  }
+
+  @override
+  Future<Result<RevisionAbandono>> revisionAbandono(int empleadoId) async {
+    final result = await _apiClient.revisionAbandonoEmpleado(empleadoId);
+    if (result case Error()) {
+      _log.warning('Failed to get revision de abandono de empleado', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<void>> bajaPorAbandono(BajaAbandonoParams params) async {
+    final result = await _apiClient.bajaPorAbandonoEmpleado(params);
+    if (result case Error()) {
+      _log.warning('Failed to forzar baja por abandono de empleado', error: result.error);
+    }
+    return result;
   }
 
   @override

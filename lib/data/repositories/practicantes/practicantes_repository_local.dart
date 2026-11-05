@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 class PracticantesRepositoryLocal extends PracticantesRepository {
   PracticantesRepositoryLocal({
@@ -89,6 +90,16 @@ class PracticantesRepositoryLocal extends PracticantesRepository {
 
   @override
   Future<Result<void>> asignarFechaTerminacion(int practicanteId, DateTime fecha) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<RevisionAbandono>> revisionAbandono(int practicanteId) async {
+    return Result.error(Exception('No soportado en modo local'));
+  }
+
+  @override
+  Future<Result<void>> bajaPorAbandono(BajaAbandonoParams params) async {
     return Result.error(Exception('No soportado en modo local'));
   }
 
