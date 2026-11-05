@@ -86,6 +86,9 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
 
   DateTime? _fechaNacimiento;
   DateTime? _fechaAlta = DateTime.now();
+  // Sin valor por defecto: RH debe elegir el primer día de trabajo, o el
+  // cálculo de asistencia le marca faltas desde que existe el usuario.
+  DateTime? _fechaIngreso;
   Puesto? _puesto;
   Escolaridad? _escolaridad;
   final Set<int> _departamentosSeleccionados = {};
@@ -264,6 +267,18 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
       );
       return;
     }
+    if (_fechaIngreso == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ingresa la fecha de ingreso')),
+      );
+      return;
+    }
+    if (_fechaAlta != null && _fechaIngreso!.isBefore(_fechaAlta!)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('La fecha de ingreso no puede ser anterior a la fecha de alta')),
+      );
+      return;
+    }
     if (_departamentosSeleccionados.isEmpty || _rol == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Selecciona al menos un departamento y el rol del usuario')),
@@ -290,6 +305,7 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
       departamentoIds: _departamentosSeleccionados.toList(),
       rol: _rol,
       fechaAlta: _fechaAlta,
+      fechaIngreso: _fechaIngreso!,
       identificacionOficial: _files['identificacionOficial'],
       actaNacimiento: _files['actaNacimiento'],
       constanciaEstudio: _files['constanciaEstudio'],
@@ -479,14 +495,31 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                       );
                     },
                   ),
-                  DateFormField(
-                    decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
-                    required: true,
-                    fourDigitYear: true,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                    initialValue: _formatDate(_fechaAlta!),
-                    onDateSaved: (value) => _fechaAlta = value,
+                  Row(
+                    spacing: 24,
+                    children: [
+                      Expanded(
+                        child: DateFormField(
+                          decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
+                          required: true,
+                          fourDigitYear: true,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          initialValue: _formatDate(_fechaAlta!),
+                          onDateSaved: (value) => _fechaAlta = value,
+                        ),
+                      ),
+                      Expanded(
+                        child: DateFormField(
+                          decoration: InputDecoration(labelText: 'FECHA DE INGRESO'),
+                          required: true,
+                          fourDigitYear: true,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          onDateSaved: (value) => _fechaIngreso = value,
+                        ),
+                      ),
+                    ],
                   ),
                   Row(
                     spacing: 24,

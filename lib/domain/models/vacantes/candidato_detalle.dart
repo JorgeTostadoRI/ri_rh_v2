@@ -19,7 +19,8 @@ abstract class CandidatoBeneficiario with _$CandidatoBeneficiario {
 }
 
 /// Equipo entregado al candidato -- lo captura RH al solicitar el contrato,
-/// solo si `entregaEquipo` es true. Alimenta el Anexo II.
+/// solo si `entregaEquipo` es true. Va como tabla en el apartado
+/// Herramientas de la solicitud de contrato.
 @freezed
 abstract class CandidatoEquipo with _$CandidatoEquipo {
   const factory CandidatoEquipo({

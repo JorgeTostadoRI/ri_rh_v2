@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/data/services/api/models/practicante/practicante_api_mo
 import 'package:ri_rh_v2/data/services/api/models/reportes/asistencia/reporte_asistencia_response.dart';
 import 'package:ri_rh_v2/data/services/api/models/reportes/incidencia_nomina/reporte_incidencia_nomina_response.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/dias_festivos/dia_festivo.dart';
@@ -60,6 +61,7 @@ class EmpleadoCreateParams {
     this.departamentoIds,
     this.rol,
     this.fechaAlta,
+    required this.fechaIngreso,
     this.identificacionOficial,
     this.actaNacimiento,
     this.constanciaEstudio,
@@ -107,6 +109,9 @@ class EmpleadoCreateParams {
   final String? rol;
   /// Por default el backend usa la fecha de hoy si se omite.
   final DateTime? fechaAlta;
+  /// Primer día que trabaja (no antes de [fechaAlta]). Antes de esa fecha
+  /// el cálculo de asistencia no le marca faltas.
+  final DateTime fechaIngreso;
 
   final PlatformFile? identificacionOficial;
   final PlatformFile? actaNacimiento;
@@ -153,6 +158,7 @@ class PracticanteCreateParams {
     this.departamentoId,
     this.rol,
     this.fechaAlta,
+    required this.fechaIngreso,
     this.identificacionOficial,
     this.actaNacimiento,
     this.estadoCuenta,
@@ -190,8 +196,11 @@ class PracticanteCreateParams {
   final String? rol;
   /// Por default el backend usa la fecha de hoy si se omite.
   final DateTime? fechaAlta;
+  /// Primer día que trabaja (no antes de [fechaAlta]). Antes de esa fecha
+  /// el cálculo de asistencia no le marca faltas.
+  final DateTime fechaIngreso;
   /// Fin de sus prácticas -- obligatoria al dar de alta y posterior a
-  /// [fechaAlta]. Después solo se corrige desde el admin de Django.
+  /// [fechaIngreso]. Después solo se corrige desde el admin de Django.
   final DateTime fechaTerminacion;
 
   final PlatformFile? identificacionOficial;
@@ -851,6 +860,36 @@ class ApiClient {
     }
   }
 
+  Future<Result<SolicitudVacante>> reenviarInvitacionCandidato(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/candidatos/$id/reenviar-invitacion/');
+      return Result.ok(SolicitudVacante.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<SolicitudVacante>> cancelarCandidato(int id) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.post('/api/rh/candidatos/$id/cancelar/');
+      return Result.ok(SolicitudVacante.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id) async {
     final dio = _dioFactory();
     try {
@@ -1056,6 +1095,7 @@ class ApiClient {
         if (params.departamentoIds != null) 'departamentos_permitidos': params.departamentoIds,
         if (params.rol != null) 'rol': params.rol,
         if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'fecha_ingreso': params.fechaIngreso.toShortIsoString(),
         'identificacion_oficial': toMultipart(params.identificacionOficial),
         'acta_nacimiento': toMultipart(params.actaNacimiento),
         'constancia_estudio': toMultipart(params.constanciaEstudio),
@@ -1348,6 +1388,62 @@ class ApiClient {
     }
   }
 
+  // "Forzar baja por abandono": `base` es la ruta del empleado o practicante
+  // (mismas acciones en los dos ViewSets del backend).
+  Future<Result<RevisionAbandono>> _revisionAbandono(String base) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final response = await dio.get('$base/revision-abandono/');
+      return Result.ok(RevisionAbandono.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<void>> _bajaPorAbandono(String base, BajaAbandonoParams params) async {
+    final dio = _dioFactory();
+    try {
+      _authHeader(dio);
+      final formData = FormData.fromMap({
+        'fecha_baja': params.fechaBaja.toShortIsoString(),
+        'justificacion': params.justificacion,
+        'nota': params.nota,
+      });
+      for (final evidencia in params.evidencias) {
+        formData.files.add(MapEntry('evidencias', MultipartFile.fromBytes(
+          evidencia.bytes!,
+          filename: evidencia.name,
+          contentType: getMediaTypeFromExtension(evidencia.extension!),
+        )));
+      }
+      await dio.post('$base/baja-por-abandono/', data: formData);
+      return const Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(ApiException.fromDioException(e));
+    } on Exception catch (e) {
+      return Result.error(e);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<Result<RevisionAbandono>> revisionAbandonoEmpleado(int id) =>
+      _revisionAbandono('/api/rh/empleados/$id');
+
+  Future<Result<void>> bajaPorAbandonoEmpleado(BajaAbandonoParams params) =>
+      _bajaPorAbandono('/api/rh/empleados/${params.id}', params);
+
+  Future<Result<RevisionAbandono>> revisionAbandonoPracticante(int id) =>
+      _revisionAbandono('/api/rh/PracticantesResidentes/$id');
+
+  Future<Result<void>> bajaPorAbandonoPracticante(BajaAbandonoParams params) =>
+      _bajaPorAbandono('/api/rh/PracticantesResidentes/${params.id}', params);
+
   Future<Result<PracticanteApiModel>> createPracticante(PracticanteCreateParams params) async {
     final dio = _dioFactory();
     try {
@@ -1376,6 +1472,7 @@ class ApiClient {
         if (params.departamentoId != null) 'departamento': params.departamentoId,
         if (params.rol != null) 'rol': params.rol,
         if (params.fechaAlta != null) 'fecha_alta': params.fechaAlta!.toShortIsoString(),
+        'fecha_ingreso': params.fechaIngreso.toShortIsoString(),
         'fecha_terminacion': params.fechaTerminacion.toShortIsoString(),
         'identificacion_oficial': toMultipart(params.identificacionOficial),
         'acta_nacimiento': toMultipart(params.actaNacimiento),

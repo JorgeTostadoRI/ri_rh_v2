@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 abstract class PracticantesRepository {
   /// List practicantes.
@@ -51,6 +52,14 @@ abstract class PracticantesRepository {
   /// Regenera la contraseña del Usuarios vinculado a este practicante,
   /// invalidando la anterior. Se muestra una sola vez.
   Future<Result<CredencialesGeneradas>> regenerarPassword(int practicanteId);
+
+  /// Últimos 4 días laborables según el checador, para decidir si se puede
+  /// "Forzar baja por abandono" (ver RevisionAbandono).
+  Future<Result<RevisionAbandono>> revisionAbandono(int practicanteId);
+
+  /// Cierra el proceso de baja sin documentos de separación -- el backend
+  /// vuelve a revisar los 4 días y genera la constancia de inasistencias.
+  Future<Result<void>> bajaPorAbandono(BajaAbandonoParams params);
 
   /// El jefe directo consulta la evaluación de un practicante por terminar
   /// sus prácticas (por el token que le llegó por correo). El backend

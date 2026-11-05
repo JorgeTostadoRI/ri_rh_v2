@@ -8,8 +8,8 @@ import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 
 /// Tarjeta editable de "Detalles de contratación" (Fase F): RH llena todo
-/// lo que falta para armar la Solicitud de contrato (y el Anexo II si
-/// aplica) antes de presionar "Solicitar contrato". Guarda su propio estado
+/// lo que falta para armar la Solicitud de contrato antes de presionar
+/// "Solicitar contrato". Guarda su propio estado
 /// local (controllers) inicializado desde `candidato`, independiente del
 /// resto de la pantalla (de solo lectura).
 class DetallesContratacionCard extends StatefulWidget {
@@ -24,9 +24,9 @@ class DetallesContratacionCard extends StatefulWidget {
 
   final CandidatoDetalle candidato;
   final Command1<CandidatoDetalle, DetalleContratacionParams> guardarDetalles;
-  final Command0<CandidatoDetalle> solicitarContrato;
+  final Command1<CandidatoDetalle, DetalleContratacionParams> solicitarContrato;
   final Command1<CandidatoDetalle, String> rechazarDocumentacion;
-  final Command0<VistaPreviaDocumentos> vistaPreviaDocumentos;
+  final Command1<VistaPreviaDocumentos, DetalleContratacionParams> vistaPreviaDocumentos;
 
   @override
   State<DetallesContratacionCard> createState() =>
@@ -79,7 +79,6 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
   final _bonoAsistencia = TextEditingController();
   final _bonoPuntualidad = TextEditingController();
   final _comisionesDetalle = TextEditingController();
-  final _herramientas = TextEditingController();
   // Solo se usa (y se muestra) cuando el tipo de contrato es "determinado".
   final _duracionDias = TextEditingController();
 
@@ -126,7 +125,6 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     _bonoAsistencia.text = c.bonoAsistencia;
     _bonoPuntualidad.text = c.bonoPuntualidad;
     _comisionesDetalle.text = c.comisionesDetalle;
-    _herramientas.text = c.herramientas;
     _fechaIngreso = c.fechaIngreso;
     _tipoContrato = c.tipoContrato.isEmpty ? null : c.tipoContrato;
     _duracionDias.text = c.duracionDias?.toString() ?? '';
@@ -181,7 +179,6 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     _bonoAsistencia.dispose();
     _bonoPuntualidad.dispose();
     _comisionesDetalle.dispose();
-    _herramientas.dispose();
     _duracionDias.dispose();
     for (final equipo in _equipos) {
       equipo.dispose();
@@ -210,8 +207,36 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     if (hora != null) setState(() => onElegida(hora));
   }
 
-  void _guardar() {
-    widget.guardarDetalles.execute((
+  void _guardar() => widget.guardarDetalles.execute(_params());
+
+  Future<void> _solicitarContrato() async {
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Solicitar contrato'),
+        content: const Text(
+          'Se enviará la solicitud de contrato a los abogados. '
+          'Ya no podrás modificar estos datos. ¿Continuar?',
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Enviar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmado == true) {
+      widget.solicitarContrato.execute(_params());
+    }
+  }
+
+  DetalleContratacionParams _params() {
+    return (
       id: widget.candidato.id,
       salarioDiario: double.tryParse(_salario.text.replaceAll(',', '')),
       montoRetencionInfonavit: double.tryParse(
@@ -235,10 +260,12 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
       valesDespensaMonedero: _valesMonedero,
       percibeComisiones: _percibeComisiones,
       comisionesDetalle: _comisionesDetalle.text.trim(),
-      herramientas: _herramientas.text.trim(),
+      // Ya no se captura: el apartado Herramientas del documento sale solo
+      // de "¿Se entrega equipo?". Se reenvía tal cual para no tocarlo.
+      herramientas: widget.candidato.herramientas,
       entregaEquipo: _entregaEquipo,
       equiposEntregados: _equipos.map((e) => e.toEquipo()).toList(),
-    ));
+    );
   }
 
   Future<void> _rechazar() async {
@@ -518,13 +545,6 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                     ),
                   ),
                   const Divider(),
-                  TextFormField(
-                    controller: _herramientas,
-                    decoration: const InputDecoration(
-                      labelText: 'Herramientas',
-                    ),
-                  ),
-                  const Divider(),
                   _equipoSection(),
                 ],
               ),
@@ -563,7 +583,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                   builder: (context, _) => OutlinedButton.icon(
                     onPressed: widget.vistaPreviaDocumentos.running
                         ? null
-                        : widget.vistaPreviaDocumentos.execute,
+                        : () => widget.vistaPreviaDocumentos.execute(_params()),
                     icon: const Icon(Icons.download_outlined),
                     label: const Text('Descargar documentos'),
                   ),
@@ -573,10 +593,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                   builder: (context, _) => ElevatedButton.icon(
                     onPressed: widget.solicitarContrato.running
                         ? null
-                        : () {
-                            _guardar();
-                            widget.solicitarContrato.execute();
-                          },
+                        : _solicitarContrato,
                     icon: const Icon(Icons.send_outlined),
                     label: const Text('Solicitar contrato'),
                   ),
@@ -651,7 +668,8 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
           contentPadding: EdgeInsets.zero,
           title: const Text('¿Se entrega equipo?'),
           subtitle: const Text(
-            'Genera el Anexo II con el equipo que se agregue abajo',
+            'Se agrega como tabla en Herramientas de la solicitud de contrato. '
+            'Si no se entrega equipo, Herramientas dirá N/A.',
           ),
           value: _entregaEquipo,
           onChanged: (v) => setState(() => _entregaEquipo = v),

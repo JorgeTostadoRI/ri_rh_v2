@@ -23,6 +23,8 @@ abstract class Practicante with _$Practicante {
     /// Fin de sus prácticas. Null solo en los dados de alta antes de que
     /// existiera el campo -- se le puede asignar una sola vez (solo RH).
     DateTime? fechaTerminacion,
+    /// De baja con "Forzar baja por abandono" (sin carta de liberación).
+    @Default(false) bool bajaPorAbandono,
   }) = _Practicante;
 
   factory Practicante.fromApiModel({
@@ -103,6 +105,7 @@ abstract class Practicante with _$Practicante {
       university: university,
       credencialesGeneradas: model.credencialesGeneradas,
       fechaTerminacion: model.fechaTerminacion,
+      bajaPorAbandono: model.bajaPorAbandono,
     );
   }
 }

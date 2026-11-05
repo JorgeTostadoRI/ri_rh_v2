@@ -80,6 +80,15 @@ abstract class VacantesRepository {
     required PlatformFile cartaOferta,
   });
 
+  /// Candidato que todavía no completa su formulario (link vigente o ya
+  /// vencido): le da otros 3 días y le vuelve a mandar el correo, sin
+  /// perder lo que ya capturó. Regresa la solicitud actualizada.
+  Future<Result<SolicitudVacante>> reenviarInvitacion(int candidatoId);
+
+  /// Candidato que ya no sigue: libera su lugar en la vacante y su link
+  /// deja de funcionar. Regresa la solicitud actualizada.
+  Future<Result<SolicitudVacante>> cancelarCandidato(int candidatoId);
+
   /// Solo en la contratación de un practicante: en vez de aprobar o
   /// rechazar, Dirección le regresa la evaluación al jefe con un comentario.
   Future<Result<SolicitudVacante>> retroalimentar(int id, String comentario);
@@ -101,8 +110,7 @@ abstract class VacantesRepository {
   /// el contrato (salario, fecha de alta, horario, equipo a entregar, etc.).
   Future<Result<CandidatoDetalle>> actualizarDetalleContratacion(DetalleContratacionParams params);
 
-  /// Genera la solicitud de contrato (y el Anexo II si aplica) y los manda
-  /// por correo a los abogados. Solo se puede hacer una vez por candidato.
+  /// Genera la solicitud de contrato y la manda por correo a los abogados. Solo se puede hacer una vez por candidato.
   Future<Result<CandidatoDetalle>> solicitarContrato(int id);
 
   /// Rechaza manualmente la documentación de un candidato ya completado
@@ -110,9 +118,8 @@ abstract class VacantesRepository {
   /// reabierto y el motivo visible para que lo corrija.
   Future<Result<CandidatoDetalle>> rechazarDocumentacion(int id, String motivo);
 
-  /// Genera la Solicitud de contrato (y el Anexo II si aplica) con lo que
-  /// ya esté guardado y regresa dónde descargarlos -- para que RH los
-  /// revise antes de decidir solicitar el contrato de verdad. No manda
+  /// Genera la Solicitud de contrato con lo que ya esté guardado y regresa
+  /// dónde descargarla -- para que RH la revise antes de decidir solicitar el contrato de verdad. No manda
   /// correo ni marca nada, se puede llamar las veces que haga falta.
   Future<Result<VistaPreviaDocumentos>> obtenerVistaPreviaDocumentos(int id);
 

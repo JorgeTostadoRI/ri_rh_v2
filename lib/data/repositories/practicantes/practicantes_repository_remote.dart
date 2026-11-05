@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/universidad/universidad.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 String _estadoToApiValue(StatusPracticante estado) => switch (estado) {
   StatusPracticante.alta => 'alta',
@@ -254,6 +255,24 @@ class PracticantesRepositoryRemote extends PracticantesRepository {
     }
     _cachedDepartamentos = result.value;
     return Result.ok(_cachedDepartamentos!);
+  }
+
+  @override
+  Future<Result<RevisionAbandono>> revisionAbandono(int practicanteId) async {
+    final result = await _apiClient.revisionAbandonoPracticante(practicanteId);
+    if (result case Error()) {
+      _log.warning('Failed to get revision de abandono de practicante', error: result.error);
+    }
+    return result;
+  }
+
+  @override
+  Future<Result<void>> bajaPorAbandono(BajaAbandonoParams params) async {
+    final result = await _apiClient.bajaPorAbandonoPracticante(params);
+    if (result case Error()) {
+      _log.warning('Failed to forzar baja por abandono de practicante', error: result.error);
+    }
+    return result;
   }
 
   @override

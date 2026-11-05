@@ -44,6 +44,8 @@ abstract class EmpleadoApiModel with _$EmpleadoApiModel {
     DateTime? registeredAt,
     @JsonKey(name: 'fecha_baja')
     DateTime? terminatedAt,
+    /// Se cerró con "Forzar baja por abandono" (sin documentos de separación).
+    @Default(false) bool bajaPorAbandono,
     // Documentos
     @JsonKey(name: 'identificacion_oficial')
     String? ineUrl,

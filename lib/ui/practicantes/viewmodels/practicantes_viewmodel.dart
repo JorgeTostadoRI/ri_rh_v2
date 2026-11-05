@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_gener
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 
 class CambiarEstadoPracticanteParams {
   const CambiarEstadoPracticanteParams({
@@ -29,6 +30,8 @@ class PracticantesViewmodel extends ChangeNotifier {
     search = Command0(_search)..execute();
     cambiarEstado = Command1(_cambiarEstado);
     regenerarPassword = Command1(_regenerarPassword);
+    revisionAbandono = Command1(_revisionAbandono);
+    bajaPorAbandono = Command1(_bajaPorAbandono);
   }
 
   final AppLogger _log;
@@ -37,6 +40,8 @@ class PracticantesViewmodel extends ChangeNotifier {
   late final Command0 search;
   late final Command1<String, CambiarEstadoPracticanteParams> cambiarEstado;
   late final Command1<CredencialesGeneradas, int> regenerarPassword;
+  late final Command1<RevisionAbandono, int> revisionAbandono;
+  late final Command1<void, BajaAbandonoParams> bajaPorAbandono;
 
   List<Practicante> _practicantes = [];
   List<Practicante> get practicantes => _practicantes;
@@ -86,6 +91,17 @@ class PracticantesViewmodel extends ChangeNotifier {
     final result = await _practicantesRepository.regenerarPassword(practicanteId);
     if (result case Error()) {
       _log.warning('Failed to regenerar password de practicante', error: result.error);
+    }
+    return result;
+  }
+
+  Future<Result<RevisionAbandono>> _revisionAbandono(int id) => _practicantesRepository.revisionAbandono(id);
+
+  Future<Result<void>> _bajaPorAbandono(BajaAbandonoParams params) async {
+    final result = await _practicantesRepository.bajaPorAbandono(params);
+    if (result case Ok()) {
+      _practicantesRepository.invalidateCache();
+      await search.execute();
     }
     return result;
   }

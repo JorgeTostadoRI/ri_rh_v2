@@ -61,6 +61,8 @@ class _VacantesScreenState extends State<VacantesScreen> {
     widget.viewmodel.iniciarCandidatoBatch.addListener(_onIniciarCandidato);
     widget.viewmodel.retroalimentar.addListener(_onRetroalimentar);
     widget.viewmodel.iniciarContratacionPracticante.addListener(_onIniciarContratacionPracticante);
+    widget.viewmodel.reenviarInvitacion.addListener(_onReenviarInvitacion);
+    widget.viewmodel.cancelarCandidato.addListener(_onCancelarCandidato);
     widget.seguimientoPracticantesViewmodel.loadMisPendientes.execute();
   }
 
@@ -72,6 +74,8 @@ class _VacantesScreenState extends State<VacantesScreen> {
     widget.viewmodel.iniciarCandidatoBatch.removeListener(_onIniciarCandidato);
     widget.viewmodel.retroalimentar.removeListener(_onRetroalimentar);
     widget.viewmodel.iniciarContratacionPracticante.removeListener(_onIniciarContratacionPracticante);
+    widget.viewmodel.reenviarInvitacion.removeListener(_onReenviarInvitacion);
+    widget.viewmodel.cancelarCandidato.removeListener(_onCancelarCandidato);
     super.dispose();
   }
 
@@ -169,6 +173,65 @@ class _VacantesScreenState extends State<VacantesScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         errorSnackBar(context, 'No se pudo iniciar la contratación', error: error),
       );
+    }
+  }
+
+  void _onReenviarInvitacion() {
+    final command = widget.viewmodel.reenviarInvitacion;
+    if (command.completed) {
+      command.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Se le reenvió el link por correo (válido 3 días)')),
+      );
+    } else if (command.error) {
+      final error = (command.result as Error).error;
+      command.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'No se pudo reenviar el link', error: error),
+      );
+    }
+  }
+
+  void _onCancelarCandidato() {
+    final command = widget.viewmodel.cancelarCandidato;
+    if (command.completed) {
+      command.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Candidato cancelado, su lugar quedó libre')),
+      );
+    } else if (command.error) {
+      final error = (command.result as Error).error;
+      command.clearResult();
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'No se pudo cancelar al candidato', error: error),
+      );
+    }
+  }
+
+  Future<void> _handleCancelarCandidato(Candidato candidato) async {
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancelar candidato'),
+        content: Text(
+          '${candidato.nombre} ya no seguirá en el proceso: su link dejará de '
+          'funcionar y su lugar en la vacante quedará libre. ¿Continuar?',
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Regresar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: errorColor),
+            child: const Text('Cancelar candidato'),
+          ),
+        ],
+      ),
+    );
+    if (confirmado == true) {
+      widget.viewmodel.cancelarCandidato.execute(candidato.id!);
     }
   }
 
@@ -463,6 +526,8 @@ class _VacantesScreenState extends State<VacantesScreen> {
                                       _CandidatoRow(
                                         candidato: candidato,
                                         onRevisar: () => context.go(Routes.revisionOfCandidato(candidato.id!)),
+                                        onReenviar: () => widget.viewmodel.reenviarInvitacion.execute(candidato.id!),
+                                        onCancelar: () => _handleCancelarCandidato(candidato),
                                         altasImssViewmodel: widget.altasImssViewmodel,
                                         mostrarAccionesRH: widget.viewmodel.esRH,
                                       ),
@@ -640,12 +705,16 @@ class _CandidatoRow extends StatelessWidget {
   const _CandidatoRow({
     required this.candidato,
     required this.onRevisar,
+    required this.onReenviar,
+    required this.onCancelar,
     required this.altasImssViewmodel,
     required this.mostrarAccionesRH,
   });
 
   final Candidato candidato;
   final VoidCallback onRevisar;
+  final VoidCallback onReenviar;
+  final VoidCallback onCancelar;
   final AltasImssViewmodel altasImssViewmodel;
 
   /// "Revisar" y las acciones de Fase 2 son trabajo de RH -- Dirección solo
@@ -688,6 +757,9 @@ class _CandidatoRow extends StatelessWidget {
     final color = _color();
     final puedeRevisar = mostrarAccionesRH &&
         (candidato.estado == CandidatoEstado.completado || candidato.estado == CandidatoEstado.contratado);
+    // Todavía no completa su formulario (link vigente o ya vencido).
+    final sinCompletar = mostrarAccionesRH &&
+        (candidato.estado == CandidatoEstado.iniciado || candidato.estado == CandidatoEstado.expirado);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(
@@ -721,7 +793,19 @@ class _CandidatoRow extends StatelessWidget {
                   ),
                   child: Text(_label(), style: TextStyle(color: color, fontSize: 12, fontWeight: .w600)),
                 ),
-              if (puedeRevisar)
+              if (sinCompletar) ...[
+                TextButton.icon(
+                  onPressed: onReenviar,
+                  icon: const Icon(Icons.forward_to_inbox_outlined, size: 16),
+                  label: const Text('Reenviar link'),
+                ),
+                TextButton.icon(
+                  onPressed: onCancelar,
+                  style: TextButton.styleFrom(foregroundColor: errorColor),
+                  icon: const Icon(Icons.person_off_outlined, size: 16),
+                  label: const Text('Cancelar'),
+                ),
+              ] else if (puedeRevisar)
                 TextButton.icon(
                   onPressed: onRevisar,
                   icon: const Icon(Icons.visibility_outlined, size: 16),

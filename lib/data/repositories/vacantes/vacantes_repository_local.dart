@@ -90,6 +90,29 @@ class VacantesRepositoryLocal extends VacantesRepository {
   }
 
   @override
+  Future<Result<SolicitudVacante>> reenviarInvitacion(int candidatoId) async {
+    return _cambiarEstadoCandidato(candidatoId, CandidatoEstado.iniciado);
+  }
+
+  @override
+  Future<Result<SolicitudVacante>> cancelarCandidato(int candidatoId) async {
+    return _cambiarEstadoCandidato(candidatoId, CandidatoEstado.cancelado);
+  }
+
+  Result<SolicitudVacante> _cambiarEstadoCandidato(int candidatoId, CandidatoEstado estado) {
+    final index = _solicitudes.indexWhere((s) => s.candidatos.any((c) => c.id == candidatoId));
+    if (index == -1) return Result.error(Exception('Not found'));
+    final updated = _solicitudes[index].copyWith(
+      candidatos: [
+        for (final c in _solicitudes[index].candidatos)
+          if (c.id == candidatoId) c.copyWith(estado: estado) else c,
+      ],
+    );
+    _solicitudes[index] = updated;
+    return Result.ok(updated);
+  }
+
+  @override
   Future<Result<SolicitudVacante>> iniciarContratacionPracticante({
     required int id,
     required String correo,

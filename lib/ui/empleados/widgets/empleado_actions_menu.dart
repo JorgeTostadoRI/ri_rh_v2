@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/domain/models/baja_abandono/revision_abandono.dart';
 import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
+import 'package:ri_rh_v2/ui/core/ui/baja_abandono_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/credenciales_dialog.dart';
 import 'package:ri_rh_v2/ui/core/ui/document_picker_row.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
@@ -30,11 +32,15 @@ class EmpleadoActionsMenu extends StatelessWidget {
     required this.empleado,
     required this.cambiarEstatus,
     required this.regenerarPassword,
+    required this.revisionAbandono,
+    required this.bajaPorAbandono,
   });
 
   final Empleado empleado;
   final Command1<String, CambiarEstatusEmpleadoParams> cambiarEstatus;
   final Command1<CredencialesGeneradas, int> regenerarPassword;
+  final Command1<RevisionAbandono, int> revisionAbandono;
+  final Command1<void, BajaAbandonoParams> bajaPorAbandono;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +61,20 @@ class EmpleadoActionsMenu extends StatelessWidget {
           builder: (context) => _FiniquitadoDialog(empleado: empleado, cambiarEstatus: cambiarEstatus),
         ),
         child: Text('Marcar como finiquitado'),
+      ));
+      // Para quien dejó de presentarse y ya no va a entregar los documentos
+      // de separación (ver BajaAbandonoDialog).
+      items.add(PopupMenuItem(
+        value: () => showDialog(
+          context: context,
+          builder: (context) => BajaAbandonoDialog(
+            id: empleado.base.id,
+            nombre: empleado.base.nombre,
+            revisionAbandono: revisionAbandono,
+            bajaPorAbandono: bajaPorAbandono,
+          ),
+        ),
+        child: Text('Forzar baja por abandono'),
       ));
     }
 

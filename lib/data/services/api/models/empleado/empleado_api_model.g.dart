@@ -35,6 +35,7 @@ _EmpleadoApiModel _$EmpleadoApiModelFromJson(
   terminatedAt: json['fecha_baja'] == null
       ? null
       : DateTime.parse(json['fecha_baja'] as String),
+  bajaPorAbandono: json['baja_por_abandono'] as bool? ?? false,
   ineUrl: json['identificacion_oficial'] as String?,
   actaNacimientoUrl: json['acta_nacimiento'] as String?,
   constanciaEstudioUrl: json['constancia_estudio'] as String?,
@@ -90,6 +91,7 @@ Map<String, dynamic> _$EmpleadoApiModelToJson(_EmpleadoApiModel instance) =>
       'has_signature': instance.hasSignature,
       'fecha_alta': instance.registeredAt?.toIso8601String(),
       'fecha_baja': instance.terminatedAt?.toIso8601String(),
+      'baja_por_abandono': instance.bajaPorAbandono,
       'identificacion_oficial': instance.ineUrl,
       'acta_nacimiento': instance.actaNacimientoUrl,
       'constancia_estudio': instance.constanciaEstudioUrl,

@@ -41,6 +41,7 @@ _PracticanteApiModel _$PracticanteApiModelFromJson(Map<String, dynamic> json) =>
       terminatedAt: json['fecha_baja'] == null
           ? null
           : DateTime.parse(json['fecha_baja'] as String),
+      bajaPorAbandono: json['baja_por_abandono'] as bool? ?? false,
       fechaTerminacion: json['fecha_terminacion'] == null
           ? null
           : DateTime.parse(json['fecha_terminacion'] as String),
@@ -83,6 +84,7 @@ Map<String, dynamic> _$PracticanteApiModelToJson(
   'curriculum_vitae': instance.cvUrl,
   'fecha_alta': instance.registeredAt?.toIso8601String(),
   'fecha_baja': instance.terminatedAt?.toIso8601String(),
+  'baja_por_abandono': instance.bajaPorAbandono,
   'fecha_terminacion': instance.fechaTerminacion?.toIso8601String(),
   'credenciales_generadas': instance.credencialesGeneradas,
 };

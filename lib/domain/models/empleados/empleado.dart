@@ -36,6 +36,8 @@ abstract class Empleado with _$Empleado {
     required AltaEmpleo alta,
     required BajaEmpleo baja,
     CredencialesGeneradas? credencialesGeneradas,
+    /// Finiquitado con "Forzar baja por abandono" (sin documentos de separación).
+    @Default(false) bool bajaPorAbandono,
   }) = _Empleado;
 
   factory Empleado.fromApiModel({
@@ -129,6 +131,7 @@ abstract class Empleado with _$Empleado {
         comprobanteFiniquitoUrl: model.comprobanteFiniquitoUrl,
       ),
       credencialesGeneradas: model.credencialesGeneradas,
+      bajaPorAbandono: model.bajaPorAbandono,
     );
   }
 }

@@ -147,13 +147,15 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                     final empleado = widget.viewmodel.empleados[index];
                     return BaseEmpleadoCard(
                       baseEmpleado: empleado.base,
-                      statusChip: EmpleadoStatusChip(status: empleado.estatus),
+                      statusChip: EmpleadoStatusChip(status: empleado.estatus, porAbandono: empleado.bajaPorAbandono),
                       onExpedientePressed: () => context.go(Routes.expedienteOfEmpleado(empleado)),
                       hasPendingActions: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
                       actionsMenu: EmpleadoActionsMenu(
                         empleado: empleado,
                         cambiarEstatus: widget.viewmodel.cambiarEstatus,
                         regenerarPassword: widget.viewmodel.regenerarPassword,
+                        revisionAbandono: widget.viewmodel.revisionAbandono,
+                        bajaPorAbandono: widget.viewmodel.bajaPorAbandono,
                       ),
                     );
                   },
