@@ -163,6 +163,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                 incidenciasRepository: context.read(),
                 usersRepository: context.read(),
               ),
+              openIncidenciaId: int.tryParse(
+                state.uri.queryParameters['incidencia'] ?? '',
+              ),
+              openCategoria: state.uri.queryParameters['categoria'],
             );
           },
         ),

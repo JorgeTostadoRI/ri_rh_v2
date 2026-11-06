@@ -18,9 +18,16 @@ class PendingIncidenciasScreen extends StatefulWidget {
   const PendingIncidenciasScreen({
     super.key,
     required this.viewmodel,
+    this.openIncidenciaId,
+    this.openCategoria,
   });
 
   final PendingIncidenciasViewmodel viewmodel;
+
+  /// Deep link desde la campanita de otro frontend: abre directamente el
+  /// dialogo de aprobacion de esta incidencia.
+  final int? openIncidenciaId;
+  final String? openCategoria;
 
   @override
   State<PendingIncidenciasScreen> createState() => _PendingIncidenciasScreenState();
@@ -30,6 +37,7 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
   late TabController _tabController;
   final yMd = DateFormat.yMd();
   int viewSelectIndex = 0;
+  bool _openedDeepLink = false;
 
   @override
   void initState() {
@@ -38,6 +46,8 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
     _tabController.addListener(_onTabChanged);
     widget.viewmodel.approve.addListener(_onApproved);
     widget.viewmodel.reject.addListener(_onRejected);
+    widget.viewmodel.load.addListener(_tryOpenDeepLink);
+    _tryOpenDeepLink();
   }
 
   @override
@@ -49,11 +59,14 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
     widget.viewmodel.approve.addListener(_onApproved);
     widget.viewmodel.reject.removeListener(_onRejected);
     widget.viewmodel.reject.addListener(_onRejected);
+    widget.viewmodel.load.removeListener(_tryOpenDeepLink);
+    widget.viewmodel.load.addListener(_tryOpenDeepLink);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    widget.viewmodel.load.removeListener(_tryOpenDeepLink);
     super.dispose();
   }
 
@@ -114,6 +127,39 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
       default:
         throw ArgumentError('Invalid state option');
     }
+  }
+
+  /// Si la pantalla se abrio desde la campanita de otro frontend con
+  /// ``?incidencia=<id>&categoria=<url>``, abre el dialogo de aprobacion en
+  /// cuanto termina de cargar la lista.
+  void _tryOpenDeepLink() {
+    if (_openedDeepLink || !mounted || widget.openIncidenciaId == null) return;
+    final pendientes = widget.viewmodel.pendingToReview;
+    if (pendientes == null) return;
+
+    Incidencia? encontrada;
+    for (final incidencia in pendientes) {
+      if (incidencia.id == widget.openIncidenciaId &&
+          (widget.openCategoria == null ||
+              incidencia.category.id == widget.openCategoria)) {
+        encontrada = incidencia;
+        break;
+      }
+    }
+    if (encontrada == null) return;
+
+    _openedDeepLink = true;
+    final incidencia = encontrada;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final result = await showDialog<IncidenciaApproveDialogResult>(
+        context: context,
+        builder: (_) => IncidenciaApproveDialog(incidencia: incidencia),
+      );
+      if (result != null && mounted) {
+        _handleDialogStateResult(incidencia, result);
+      }
+    });
   }
 
   void _onApproved() {
