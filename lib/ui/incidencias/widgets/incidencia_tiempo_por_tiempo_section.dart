@@ -73,7 +73,7 @@ class IncidenciaTiempoPorTiempoSection extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Alguna Hora por hora todavía no está aprobada o no tiene checada que la respalde. '
-                      'Revísalas antes de aprobar el permiso con goce; puedes aprobarlo de todos modos.',
+                      'Revísalas antes de aprobar el permiso; puedes aprobarlo de todos modos.',
                       style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
                     ),
                   ),

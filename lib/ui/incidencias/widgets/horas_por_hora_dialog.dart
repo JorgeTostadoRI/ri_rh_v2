@@ -4,16 +4,19 @@ import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 
-/// Al enviar un Permiso de día completo por tiempo por tiempo (ya
-/// identificado el usuario), elige cuáles de sus Hora por hora lo pagan.
-/// Regresa los ids elegidos, o null si cancela.
+/// Al enviar un Permiso por tiempo por tiempo (ya identificado el usuario),
+/// elige cuáles de sus Hora por hora lo pagan. Regresa los ids elegidos, o
+/// null si cancela. En un permiso por horas deben sumar al menos
+/// [minutosPorCubrir]; lo que sobre se pierde.
 class HorasPorHoraDialog extends StatefulWidget {
   const HorasPorHoraDialog({
     super.key,
     required this.horasPorHora,
+    this.minutosPorCubrir,
   });
 
   final List<HoraPorHoraResumen> horasPorHora;
+  final int? minutosPorCubrir;
 
   @override
   State<HorasPorHoraDialog> createState() => _HorasPorHoraDialogState();
@@ -28,6 +31,8 @@ class _HorasPorHoraDialogState extends State<HorasPorHoraDialog> {
     final minutos = widget.horasPorHora
       .where((h) => _seleccionadas.contains(h.id))
       .fold(0, (total, h) => total + h.end.difference(h.start).inMinutes);
+    final porCubrir = widget.minutosPorCubrir;
+    final alcanza = porCubrir == null || minutos >= porCubrir;
 
     return AlertDialog(
       title: Text('¿Con qué Hora por hora pagarás este permiso?'),
@@ -58,6 +63,11 @@ class _HorasPorHoraDialogState extends State<HorasPorHoraDialog> {
             ),
             const SizedBox(height: 12),
             Text('Total elegido: ${formatMinutos(minutos)}', style: textTheme.bodyMedium),
+            if (porCubrir != null)
+              Text(
+                'Debes cubrir al menos ${formatMinutos(porCubrir)}. Lo que sobre no se podrá usar en otro permiso.',
+                style: textTheme.bodySmall,
+              ),
           ],
         ),
       ),
@@ -67,7 +77,7 @@ class _HorasPorHoraDialogState extends State<HorasPorHoraDialog> {
           child: Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: _seleccionadas.isEmpty ? null : () => context.pop(_seleccionadas.toList()),
+          onPressed: _seleccionadas.isEmpty || !alcanza ? null : () => context.pop(_seleccionadas.toList()),
           child: Text('Continuar'),
         ),
       ],

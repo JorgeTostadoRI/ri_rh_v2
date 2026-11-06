@@ -93,9 +93,9 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
 
   String? _reason;
 
-  // Solo Permiso de dia completo: se paga con tiempo por tiempo. Las Hora
-  // por hora que lo pagan se eligen al enviar (ver IncidenciaForm), ya con
-  // el usuario identificado.
+  // Solo Permiso: se paga con tiempo por tiempo. Las Hora por hora que lo
+  // pagan se eligen al enviar (ver IncidenciaForm), ya con el usuario
+  // identificado. Sin marcar, un permiso por horas sale como retardo.
   bool _tiempoPorTiempo = false;
   bool get tiempoPorTiempo => _tiempoPorTiempo;
   List<int>? _horasPorHoraRefs;
@@ -140,8 +140,17 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
   }
   void onHorasPorHoraSelected(List<int> ids) => _horasPorHoraRefs = ids;
 
-  /// El permiso se manda con sus Hora por hora solo si es de dia completo.
-  bool get pagaConTiempoPorTiempo => _tiempoPorTiempo && _dateOption == IncidenciaDateOption.DATE_RANGE;
+  bool get pagaConTiempoPorTiempo => _tiempoPorTiempo;
+
+  /// Lo que deben sumar las Hora por hora de un permiso por horas (el
+  /// backend lo vuelve a validar). Null si es de dia completo, donde no se
+  /// exige un minimo, o si las horas capturadas no son validas.
+  int? get minutosPorCubrir {
+    if (_dateOption != IncidenciaDateOption.HOUR_RANGE) return null;
+    if (_startDate == null || _startTime == null || _endTime == null) return null;
+    final minutos = _constructDate(_startDate!, _endTime!).difference(_constructDate(_startDate!, _startTime!)).inMinutes;
+    return minutos > 0 ? minutos : null;
+  }
 
   /// Hora por hora del usuario ya identificado que todavia puede ligar a un
   /// permiso.

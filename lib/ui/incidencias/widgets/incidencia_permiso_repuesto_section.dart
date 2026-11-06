@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/permiso_reposicion.dart';
 
-/// Hora por hora: el Permiso de día completo que paga (tiempo por tiempo),
+/// Hora por hora: el Permiso que paga (tiempo por tiempo),
 /// una vez que el empleado lo liga al pedir ese permiso.
 class IncidenciaPermisoRepuestoSection extends StatelessWidget {
   const IncidenciaPermisoRepuestoSection({
