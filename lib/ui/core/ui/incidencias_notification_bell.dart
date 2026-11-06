@@ -42,12 +42,18 @@ class _IncidenciasNotificationBellState
   Timer? _timer;
   bool _loading = false;
   int _pendientes = 0;
+  List<_IncidenciaPendiente> _incidencias = [];
   List<_Notificacion> _notificaciones = [];
 
   String get _base => widget.apiBaseUrl.replaceFirst(RegExp(r'/+$'), '');
 
   int get _total {
-    if (widget.includePending && _pendientes > 0) return _pendientes;
+    if (widget.includePending) {
+      final pendientes = _incidencias.isNotEmpty
+          ? _incidencias.length
+          : _pendientes;
+      if (pendientes > 0) return pendientes;
+    }
     return _notificaciones.where((item) => !item.leida).length;
   }
 
@@ -90,10 +96,17 @@ class _IncidenciasNotificationBellState
           ? Map<String, dynamic>.from(response.data as Map)
           : <String, dynamic>{};
       final items = (data['notificaciones'] as List?) ?? const [];
+      final incidencias = (data['incidencias'] as List?) ?? const [];
       if (!mounted) return;
 
       setState(() {
         _pendientes = (data['incidencias_pendientes'] as num?)?.toInt() ?? 0;
+        _incidencias = incidencias
+            .whereType<Map>()
+            .map((item) => _IncidenciaPendiente.fromJson(
+                  Map<String, dynamic>.from(item),
+                ))
+            .toList();
         _notificaciones = items
             .whereType<Map>()
             .map((item) => _Notificacion.fromJson(
@@ -120,6 +133,7 @@ class _IncidenciasNotificationBellState
         readToken: widget.readToken,
         rhUrl: widget.rhUrl,
         pendientes: widget.includePending ? _pendientes : 0,
+        incidencias: widget.includePending ? _incidencias : const [],
         notificaciones: _notificaciones,
       ),
     );
@@ -148,6 +162,7 @@ class _NotificationCenterDialog extends StatefulWidget {
     required this.readToken,
     required this.rhUrl,
     required this.pendientes,
+    required this.incidencias,
     required this.notificaciones,
   });
 
@@ -155,6 +170,7 @@ class _NotificationCenterDialog extends StatefulWidget {
   final Future<String?> Function() readToken;
   final String rhUrl;
   final int pendientes;
+  final List<_IncidenciaPendiente> incidencias;
   final List<_Notificacion> notificaciones;
 
   @override
@@ -199,8 +215,14 @@ class _NotificationCenterDialogState extends State<_NotificationCenterDialog> {
     }
   }
 
+  String get _rhPendingUrl {
+    final base = widget.rhUrl.replaceFirst(RegExp(r'/+$'), '');
+    if (base.isEmpty) return '';
+    return '$base/#/incidencias-pending';
+  }
+
   Future<void> _abrirRh() async {
-    final uri = Uri.tryParse(widget.rhUrl);
+    final uri = Uri.tryParse(_rhPendingUrl);
     if (uri == null) return;
     try {
       if (kIsWeb) {
@@ -232,7 +254,32 @@ class _NotificationCenterDialogState extends State<_NotificationCenterDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (widget.pendientes > 0) ...[
+              if (widget.incidencias.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Incidencias por aprobar (${widget.incidencias.length})',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
+                    if (widget.rhUrl.isNotEmpty)
+                      TextButton(
+                        onPressed: _abrirRh,
+                        child: const Text('Abrir RH'),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                for (final incidencia in widget.incidencias)
+                  _IncidenciaPendienteTile(
+                    item: incidencia,
+                    onVer: widget.rhUrl.isEmpty ? null : _abrirRh,
+                  ),
+                const SizedBox(height: 14),
+              ] else if (widget.pendientes > 0) ...[
                 Card(
                   margin: EdgeInsets.zero,
                   color: scheme.errorContainer.withValues(alpha: 0.55),
@@ -300,6 +347,59 @@ class _NotificationCenterDialogState extends State<_NotificationCenterDialog> {
           child: const Text('Cerrar'),
         ),
       ],
+    );
+  }
+}
+
+class _IncidenciaPendienteTile extends StatelessWidget {
+  const _IncidenciaPendienteTile({required this.item, this.onVer});
+
+  final _IncidenciaPendiente item;
+  final VoidCallback? onVer;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final icon = switch (item.categoria) {
+      'permiso' => Icons.event_busy_outlined,
+      'vacaciones' => Icons.beach_access_outlined,
+      'horasextra' => Icons.more_time_outlined,
+      'horaporhora' => Icons.schedule_outlined,
+      'incapacidad' => Icons.medical_services_outlined,
+      'retardo' => Icons.timer_outlined,
+      'falta' => Icons.event_busy_outlined,
+      'requerimientojudicial' => Icons.gavel_outlined,
+      _ => Icons.description_outlined,
+    };
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 6),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      child: ListTile(
+        dense: true,
+        leading: Icon(icon, color: scheme.primary),
+        title: Text(
+          '${item.tipo} · ${item.solicitante}',
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          '${item.rango}\n${item.etapa} · ${item.estado}'
+          '${item.motivo.isNotEmpty ? '\nMotivo: ${item.motivo}' : ''}',
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: onVer == null
+            ? null
+            : TextButton(
+                onPressed: onVer,
+                child: const Text('Ver'),
+              ),
+        onTap: onVer,
+      ),
     );
   }
 }
@@ -401,3 +501,61 @@ class _Notificacion {
         '${date.minute.toString().padLeft(2, '0')}';
   }
 }
+
+class _IncidenciaPendiente {
+  _IncidenciaPendiente({
+    required this.id,
+    required this.categoria,
+    required this.tipo,
+    required this.solicitante,
+    required this.inicio,
+    required this.fin,
+    required this.motivo,
+    required this.estado,
+    required this.etapa,
+  });
+
+  factory _IncidenciaPendiente.fromJson(Map<String, dynamic> json) {
+    return _IncidenciaPendiente(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      categoria: json['categoria']?.toString() ?? '',
+      tipo: json['tipo']?.toString() ?? 'Incidencia',
+      solicitante: json['solicitante']?.toString() ?? 'Sin solicitante',
+      inicio: DateTime.tryParse(json['inicio']?.toString() ?? ''),
+      fin: DateTime.tryParse(json['fin']?.toString() ?? ''),
+      motivo: json['motivo']?.toString() ?? '',
+      estado: json['estado']?.toString() ?? '',
+      etapa: json['etapa']?.toString() ?? '',
+    );
+  }
+
+  final int id;
+  final String categoria;
+  final String tipo;
+  final String solicitante;
+  final DateTime? inicio;
+  final DateTime? fin;
+  final String motivo;
+  final String estado;
+  final String etapa;
+
+  String get rango {
+    final desde = inicio?.toLocal();
+    final hasta = fin?.toLocal();
+    if (desde == null || hasta == null) return 'Sin fecha';
+
+    final dia = '${_dos(desde.day)}/${_dos(desde.month)}/${desde.year}';
+    final hora = '${_dos(desde.hour)}:${_dos(desde.minute)}';
+    final horaFin = '${_dos(hasta.hour)}:${_dos(hasta.minute)}';
+
+    if (desde.year == hasta.year &&
+        desde.month == hasta.month &&
+        desde.day == hasta.day) {
+      return '$dia $hora a $horaFin';
+    }
+    return '$dia $hora a '
+        '${_dos(hasta.day)}/${_dos(hasta.month)}/${hasta.year} $horaFin';
+  }
+}
+
+String _dos(int value) => value.toString().padLeft(2, '0');
