@@ -224,7 +224,10 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
 
     final ids = await showDialog<List<int>?>(
       context: context,
-      builder: (context) => HorasPorHoraDialog(horasPorHora: horasPorHora),
+      builder: (context) => HorasPorHoraDialog(
+        horasPorHora: horasPorHora,
+        minutosPorCubrir: _viewmodel.minutosPorCubrir,
+      ),
     );
     if (ids == null || ids.isEmpty) return false;
 
@@ -464,14 +467,19 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                   ),
                 ],
               ),
-            if (widget.category == IncidenciaCategory.permiso && _viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE)
+            if (widget.category == IncidenciaCategory.permiso)
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
                 value: _viewmodel.tiempoPorTiempo,
                 onChanged: (value) => _viewmodel.onTiempoPorTiempoChanged(value ?? false),
                 title: Text('Lo pagaré con tiempo por tiempo'),
-                subtitle: Text('Al enviar elegirás las Hora por hora con las que pagas este día.'),
+                subtitle: Text(
+                  _viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE
+                    ? 'Al enviar elegirás las Hora por hora con las que pagas este día.'
+                    : 'Al enviar elegirás las Hora por hora con las que repones estas horas. '
+                      'Si no lo marcas, saldrá como retardo con sus minutos.',
+                ),
               ),
             const SizedBox(height: _fieldMargin),
             FieldLabel(labelText: 'Motivo', required: true),
