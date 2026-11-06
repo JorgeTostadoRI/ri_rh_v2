@@ -7,8 +7,20 @@ import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/incidencias_notification_bell.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+const String _apiBaseUrl = String.fromEnvironment(
+  'api_url',
+  defaultValue: 'http://localhost:8000',
+);
+
+Future<String?> _readToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('TOKEN');
+}
 
 class CollapsibleSidebar extends StatefulWidget {
   const CollapsibleSidebar({super.key});
@@ -226,6 +238,12 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             },
           ),
           Spacer(),
+          IncidenciasNotificationBell(
+            apiBaseUrl: _apiBaseUrl,
+            readToken: _readToken,
+            includePending: false,
+          ),
+          const SizedBox(height: 8),
           IconButton.outlined(
             icon: Icon(
               isCollapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
