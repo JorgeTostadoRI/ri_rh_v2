@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/challenge/auth_challenge.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/login_request/login_request.dart';
 import 'package:ri_rh_v2/data/services/api/models/auth/login_response/login_response.dart';
@@ -24,7 +25,9 @@ class AuthApiClient {
         return const Result.error(HttpException("Login error"));
       }
     } on DioException catch (e) {
-      return Result.error(Exception("${e.response?.statusCode} - ${e.response?.data}"));
+      // ApiException conserva el status (ej. 403 de usuario desactivado)
+      // para que la pantalla de login pueda mostrar un mensaje claro.
+      return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
       return Result.error(e);
     } finally {
@@ -52,7 +55,9 @@ class AuthApiClient {
       final response = await dio.post('/api/auth/challenges/verify/', data: request.toJson());
       return Result.ok(LoginResponse.fromJson(response.data));
     } on DioException catch (e) {
-      return Result.error(Exception("${e.response?.statusCode} - ${e.response?.data}"));
+      // ApiException conserva el `code` (ej. usuario_inactivo) para el
+      // diálogo del checador.
+      return Result.error(ApiException.fromDioException(e));
     } on Exception catch (e) {
       return Result.error(e);
     } finally {
