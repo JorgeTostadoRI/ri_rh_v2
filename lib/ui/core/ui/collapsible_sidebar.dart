@@ -8,7 +8,6 @@ import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
   const CollapsibleSidebar({super.key});
@@ -138,17 +137,15 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                         route: Routes.avisos,
                         isCollapsed: isCollapsed,
                       ),
-                      _UrlNavItem(
+                      _NavItem(
                         icon: LucideIcons.users,
                         label: 'Empleados',
-                        url: const String.fromEnvironment('empleados_table_url'),
                         route: Routes.empleados,
                         isCollapsed: isCollapsed,
                       ),
-                      _UrlNavItem(
+                      _NavItem(
                         icon: LucideIcons.school,
                         label: 'Practicantes',
-                        url: const String.fromEnvironment('practicantes_table_url'),
                         route: Routes.practicantes,
                         isCollapsed: isCollapsed,
                       ),
@@ -366,69 +363,6 @@ class _EvaluacionesCountBadge extends StatelessWidget {
           backgroundColor: Colors.orange,
         );
       }
-    );
-  }
-}
-
-class _UrlNavItem extends StatelessWidget {
-  const _UrlNavItem({
-    required this.icon,
-    required this.label,
-    required this.url,
-    required this.route,
-    required this.isCollapsed,
-  });
-
-  final IconData icon;
-  final String label;
-  final String url;
-  final String route;
-  final bool isCollapsed;
-
-  @override
-  Widget build(BuildContext context) {
-    final state = GoRouterState.of(context);
-    final fullPath = state.fullPath ?? '';
-    final Color textColor = Color(0xFF9A7B5A);
-    final selected = fullPath.startsWith(route);
-
-    return Material(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-        child: ListTile(
-          leading: Icon(
-            icon,
-            color: selected ? Colors.white : primaryColor,
-            size: 20,
-          ),
-          title: isCollapsed 
-              ? null 
-              : Text(
-                  label,
-                  style: TextTheme.of(context).labelLarge?.copyWith(
-                    color: selected ? Colors.white : textColor,
-                  ),
-                ),
-          selected: selected,
-          tileColor: Colors.white,
-          selectedTileColor: primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),
-          ),
-          onTap: () async {
-            final Uri uri = Uri.parse(url);
-            if (!await launchUrl(uri)) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('No se pudo abrir el enlace'),
-                ),
-              );
-            }
-          },
-          onLongPress: () => context.go(route),
-        ),
-      ),
     );
   }
 }
