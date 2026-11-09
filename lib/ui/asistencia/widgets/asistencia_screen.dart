@@ -120,6 +120,28 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
           return;
         }
 
+        if (error.errorCode == ApiErrorCodes.usuarioInactivo) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Usuario desactivado'),
+                content: Text(
+                  'Tu usuario está desactivado, por lo que no se registró tu asistencia. '
+                  'Si crees que es un error, contacta al departamento de Recursos Humanos.'
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => context.pop(),
+                    child: Text('Entendido'),
+                  ),
+                ],
+              );
+            }
+          );
+          return;
+        }
+
         if (error.errorCode == ApiErrorCodes.noHorario) {
           showDialog(
             context: context,

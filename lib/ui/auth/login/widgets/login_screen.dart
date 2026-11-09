@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/config/assets.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/auth/login/viewmodels/login_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
@@ -11,6 +12,7 @@ import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
 import 'package:ri_rh_v2/ui/core/ui/version_label.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
+import 'package:ri_rh_v2/utils/result.dart' as result;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -38,10 +40,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (widget.viewmodel.login.error) {
+      final error = (widget.viewmodel.login.result as result.Error).error;
       widget.viewmodel.login.clearResult();
+      // /api/login/ responde 403 solo cuando el usuario está desactivado
+      // (ej. empleado en proceso de finiquito o finiquitado).
+      final inactivo = error is ApiException && error.statusCode == 403;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('No se ha podido iniciar sesión'),
+          content: Text(inactivo
+              ? 'Tu usuario está desactivado. Si crees que es un error, contacta a Recursos Humanos.'
+              : 'No se ha podido iniciar sesión'),
         ),
       );
     }

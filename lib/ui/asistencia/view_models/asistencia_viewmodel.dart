@@ -111,7 +111,10 @@ class AsistenciaViewmodel extends ChangeNotifier {
         case Ok():
           break;
         case Error():
-          return Result.error(Exception('Failed to log in'));
+          // Se propaga tal cual: si es ApiException con `usuario_inactivo`,
+          // la pantalla muestra el diálogo de usuario desactivado.
+          _log.warning('AsistenciaViewmodel | Failed to log in', error: loggedIn.error);
+          return Result.error(loggedIn.error);
       }
 
       final currentUser = _authRepository.getCurrentUser();
