@@ -32,6 +32,11 @@ class AsistenciaViewmodel extends ChangeNotifier {
     _capturesSub = _fingerprintRepository.capture()
     .listen(
       (scan) {
+        // Avisa de cada lectura (aunque se ignore abajo) para que la
+        // pantalla cierre ventanas como RegistrosCompletosDialog en cuanto
+        // alguien más pone el dedo.
+        _lecturas.add(null);
+
         // Mientras haya un ciclo de match->foto->registro en curso, se
         // ignoran nuevas lecturas del sensor. Sin este candado, si alguien
         // más pone el dedo mientras se toma la foto de la persona anterior
@@ -67,6 +72,10 @@ class AsistenciaViewmodel extends ChangeNotifier {
   String get fingerName => _fingerNames[_fingerIndex];
 
   late final StreamSubscription<Scan> _capturesSub;
+
+  final StreamController<void> _lecturas = StreamController<void>.broadcast();
+  /// Emite cada vez que alguien pone el dedo en el lector.
+  Stream<void> get lecturas => _lecturas.stream;
   bool _scannerAvailable = true;
   bool get scannerAvailable => _scannerAvailable; 
 
@@ -87,6 +96,7 @@ class AsistenciaViewmodel extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _capturesSub.cancel();
+    _lecturas.close();
     super.dispose();
   }
 

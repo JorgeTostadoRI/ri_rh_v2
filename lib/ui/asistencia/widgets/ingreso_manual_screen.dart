@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/ingreso_manual_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/entrada_temprana_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/registros_completos_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
 import 'package:ri_rh_v2/ui/core/ui/confirm_action_dialog.dart';
@@ -305,6 +306,49 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
       } else if (error is NoRemoteAllowed) {
         ScaffoldMessenger.of(context).showSnackBar(
           errorSnackBar(context, 'No puedes registrar tu asistencia remotamente'),
+        );
+      } else if (error is UsuarioInactivo) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Usuario desactivado'),
+              content: Text(
+                'Tu usuario está desactivado, por lo que no se registró tu asistencia. '
+                'Si crees que es un error, contacta al departamento de Recursos Humanos.'
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => context.pop(),
+                  child: Text('Entendido'),
+                ),
+              ],
+            );
+          }
+        );
+      } else if (error is ApiException && error.errorCode == ApiErrorCodes.noHorario) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Horario no asignado'),
+              content: Text(
+                'No cuentas con un horario de entrada asignado. '
+                'Contacta al departamento de Recursos Humanos para que te asignen uno.'
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => context.pop(),
+                  child: Text('Entendido'),
+                ),
+              ],
+            );
+          }
+        );
+      } else if (error is ApiException && error.errorCode == ApiErrorCodes.registrosCompletos) {
+        showDialog(
+          context: context,
+          builder: (context) => RegistrosCompletosDialog(error: error),
         );
       } else if (error is ApiException && error.errorCode == ApiErrorCodes.earlyEntry) {
         showDialog(
