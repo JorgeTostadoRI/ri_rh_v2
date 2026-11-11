@@ -290,20 +290,20 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                         spacing: 4,
                         children: [
                           Text(
-                            incidencia.category == IncidenciaCategory.horaporhora
-                              ? 'Reposición sin respaldo del checador'
-                              : 'Posible discrepancia con el checador',
+                            _tituloAlertaChecador(incidencia),
                             style: textTheme.bodyMedium?.copyWith(
                               fontWeight: .w700,
                               color: statusWarningColor,
                             ),
                           ),
-                          Text(
-                            incidencia.checadorDiscrepancy!.message,
+                          Text.rich(
+                            TextSpan(children: mensajeAlertaSpans(incidencia.checadorDiscrepancy!.message)),
                             style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
                           ),
                           Text(
-                            'Esto no impide aprobar la solicitud, es solo informativo.',
+                            incidencia.category == IncidenciaCategory.horasextra
+                              ? 'Esto no impide aprobar; en nómina se pagan solo las horas que respalda el checador.'
+                              : 'Esto no impide aprobar la solicitud, es solo informativo.',
                             style: textTheme.labelMedium?.copyWith(color: statusWarningColor),
                           ),
                         ],
@@ -365,4 +365,44 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
     }
     return '${_yMMMMdjm.format(_localStart)} hasta ${_yMMMMdjm.format(_localEnd)}';
   }
+}
+
+/// Título de la alerta del checador. En Horas extra, cuando el servidor ya
+/// puede calcularlo (no mientras todavía no terminan), dice cuántas horas se
+/// pagan en nómina de las solicitadas.
+String _tituloAlertaChecador(Incidencia incidencia) {
+  final discrepancy = incidencia.checadorDiscrepancy!;
+  if (incidencia.category == IncidenciaCategory.horaporhora) {
+    return 'Reposición sin respaldo del checador';
+  }
+  final aPagar = discrepancy.horasAPagar;
+  final solicitadas = discrepancy.horasSolicitadas;
+  if (incidencia.category == IncidenciaCategory.horasextra && aPagar != null && solicitadas != null) {
+    return 'Horas extra a pagar: ${formatoHoras(aPagar)} de ${formatoHoras(solicitadas)}';
+  }
+  return 'Posible discrepancia con el checador';
+}
+
+/// 2.5 -> "2.5 h", 3.0 -> "3 h".
+String formatoHoras(double horas) {
+  final texto = horas == horas.roundToDouble() ? horas.toInt().toString() : horas.toString();
+  return '$texto h';
+}
+
+/// Mensaje de la alerta del checador con "Si apruebas" en negritas (lo manda
+/// el servidor cuando no marcó su salida: se pagan las horas solicitadas
+/// solo si se aprueba). El resto del texto va tal cual.
+List<TextSpan> mensajeAlertaSpans(String mensaje) {
+  const resaltado = 'Si apruebas';
+  final spans = <TextSpan>[];
+  var inicio = 0;
+  while (true) {
+    final i = mensaje.indexOf(resaltado, inicio);
+    if (i == -1) break;
+    if (i > inicio) spans.add(TextSpan(text: mensaje.substring(inicio, i)));
+    spans.add(const TextSpan(text: resaltado, style: TextStyle(fontWeight: FontWeight.w700)));
+    inicio = i + resaltado.length;
+  }
+  if (inicio < mensaje.length) spans.add(TextSpan(text: mensaje.substring(inicio)));
+  return spans;
 }

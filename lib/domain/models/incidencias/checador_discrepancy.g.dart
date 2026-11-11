@@ -13,6 +13,9 @@ _ChecadorDiscrepancy _$ChecadorDiscrepancyFromJson(Map<String, dynamic> json) =>
       overlapsNormalSchedule: json['overlaps_normal_schedule'] as bool,
       hasChecadorEvidence: json['has_checador_evidence'] as bool,
       message: json['message'] as String,
+      horasSolicitadas: (json['horas_solicitadas'] as num?)?.toDouble(),
+      horasAPagar: (json['horas_a_pagar'] as num?)?.toDouble(),
+      sinSalida: json['sin_salida'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ChecadorDiscrepancyToJson(
@@ -23,4 +26,7 @@ Map<String, dynamic> _$ChecadorDiscrepancyToJson(
   'overlaps_normal_schedule': instance.overlapsNormalSchedule,
   'has_checador_evidence': instance.hasChecadorEvidence,
   'message': instance.message,
+  'horas_solicitadas': instance.horasSolicitadas,
+  'horas_a_pagar': instance.horasAPagar,
+  'sin_salida': instance.sinSalida,
 };

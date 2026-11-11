@@ -284,10 +284,10 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       return;
     }
 
-    // Permiso, Vacaciones y Hora por hora: el backend explica por que no se
-    // puede (dia anterior, se traslapa con el horario, Hora por hora ya
-    // ligada, etc.) -- se muestra tal cual.
-    if (_desdeHoy && e is ApiException && e.statusCode == 400) {
+    // Permiso, Vacaciones, Hora por hora y Horas extra: el backend explica por
+    // que no se puede (dia anterior, se traslapa con el horario, Hora por
+    // hora ya ligada, etc.) -- se muestra tal cual.
+    if (_muestraErrorDelServidor && e is ApiException && e.statusCode == 400) {
       final mensaje = _primerMensaje(e.data);
       if (mensaje != null) {
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar(context, mensaje));
@@ -307,6 +307,11 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     IncidenciaCategory.vacaciones,
     IncidenciaCategory.horaporhora,
   }.contains(widget.category);
+
+  /// Categorias cuyo error de validacion del backend se muestra tal cual.
+  /// Horas extra si se piden para dias anteriores, pero no dentro del
+  /// horario (el backend lo valida).
+  bool get _muestraErrorDelServidor => _desdeHoy || widget.category == IncidenciaCategory.horasextra;
 
   DateTime? get _firstDate {
     if (!_desdeHoy) return null;
