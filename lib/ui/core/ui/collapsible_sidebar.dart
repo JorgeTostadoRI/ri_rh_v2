@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/compras_notifications_bell.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
@@ -97,13 +98,16 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                 ),
                 if (!isCollapsed) ...[
                   const SizedBox(width: 10),
-                  Text(
-                    'Recursos Humanos',
-                    style: TextTheme.of(context).titleSmall?.copyWith(
-                      color: Color(0xFF9A7B5A),
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      'Recursos Humanos',
+                      style: TextTheme.of(context).titleSmall?.copyWith(
+                        color: Color(0xFF9A7B5A),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
+                  const ComprasNotificationsBell(),
                 ]
               ],
             ),
