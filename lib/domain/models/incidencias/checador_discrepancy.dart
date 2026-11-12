@@ -22,6 +22,10 @@ abstract class ChecadorDiscrepancy with _$ChecadorDiscrepancy {
         double? horasAPagar,
         @JsonKey(name: 'sin_salida')
         @Default(false) bool sinSalida,
+        /// True solo para RH en Horas extra: el mensaje incluye cuánto se paga.
+        /// Al jefe directo le llega solo lo que checó.
+        @JsonKey(name: 'detalle_de_pago')
+        @Default(false) bool detalleDePago,
     }) = _ChecadorDiscrepancy;
 
     factory ChecadorDiscrepancy.fromJson(Map<String, Object?> json) => _$ChecadorDiscrepancyFromJson(json);

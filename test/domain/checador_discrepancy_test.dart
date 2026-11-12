@@ -22,6 +22,12 @@ void main() {
     expect(d.horasSolicitadas, 3.0);
     expect(d.horasAPagar, 2.5);
     expect(d.sinSalida, isFalse);
+    expect(d.detalleDePago, isFalse);
+  });
+
+  test('RH recibe detalle_de_pago', () {
+    final d = ChecadorDiscrepancy.fromJson({..._base(), 'detalle_de_pago': true, 'horas_a_pagar': 2.5});
+    expect(d.detalleDePago, isTrue);
   });
 
   test('acepta enteros en el JSON', () {

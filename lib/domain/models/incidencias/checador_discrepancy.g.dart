@@ -16,6 +16,7 @@ _ChecadorDiscrepancy _$ChecadorDiscrepancyFromJson(Map<String, dynamic> json) =>
       horasSolicitadas: (json['horas_solicitadas'] as num?)?.toDouble(),
       horasAPagar: (json['horas_a_pagar'] as num?)?.toDouble(),
       sinSalida: json['sin_salida'] as bool? ?? false,
+      detalleDePago: json['detalle_de_pago'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ChecadorDiscrepancyToJson(
@@ -29,4 +30,5 @@ Map<String, dynamic> _$ChecadorDiscrepancyToJson(
   'horas_solicitadas': instance.horasSolicitadas,
   'horas_a_pagar': instance.horasAPagar,
   'sin_salida': instance.sinSalida,
+  'detalle_de_pago': instance.detalleDePago,
 };
