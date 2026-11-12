@@ -7,4 +7,6 @@ abstract final class ApiErrorCodes {
   /// Usuario desactivado (empleado en proceso de finiquito/finiquitado o
   /// practicante en proceso de baja/baja) al checar con huella.
   static const usuarioInactivo = 'usuario_inactivo';
+  /// Ya hizo todas sus checadas del día. Trae `nombre` en el cuerpo.
+  static const registrosCompletos = 'registros_completos';
 }

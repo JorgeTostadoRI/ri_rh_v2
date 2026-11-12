@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/entrada_temprana_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/registros_completos_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/scanner_status.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
@@ -116,6 +117,17 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                 ],
               );
             }
+          );
+          return;
+        }
+
+        if (error.errorCode == ApiErrorCodes.registrosCompletos) {
+          showDialog(
+            context: context,
+            builder: (context) => RegistrosCompletosDialog(
+              error: error,
+              cerrarCon: _viewmodel.lecturas,
+            ),
           );
           return;
         }

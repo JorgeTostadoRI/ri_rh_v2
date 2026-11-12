@@ -182,6 +182,50 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
               mostrarAlerta: incidencia.approvalStage == IncidenciaApprovalStage.awaitingConGoceApprover
                 || incidencia.approvalStage == IncidenciaApprovalStage.awaitingRH,
             ),
+          // Arriba de todo para que RH no la pase por alto.
+          if (incidencia.checadorDiscrepancy?.isSuspicious ?? false)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24.0),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: statusWarningBgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Icon(LucideIcons.triangleAlert, color: statusWarningColor),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        spacing: 4,
+                        children: [
+                          Text(
+                            _tituloAlertaChecador(incidencia),
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: .w700,
+                              color: statusWarningColor,
+                            ),
+                          ),
+                          Text.rich(
+                            TextSpan(children: mensajeAlertaSpans(incidencia.checadorDiscrepancy!.message)),
+                            style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
+                          ),
+                          Text(
+                            incidencia.checadorDiscrepancy!.detalleDePago
+                              ? 'Esto no impide aprobar; en nómina se pagan solo las horas que respalda el checador.'
+                              : 'Esto no impide aprobar la solicitud, es solo informativo.',
+                            style: textTheme.labelMedium?.copyWith(color: statusWarningColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           Text('Fecha de creación', style: textTheme.headlineSmall),
           Text(_yMMMMdjm.format(widget.incidencia.createdAt!.toLocal())),
           const SizedBox(height: 24),
@@ -270,49 +314,6 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                 ],
               ),
             ),
-          if (incidencia.checadorDiscrepancy?.isSuspicious ?? false)
-            Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: statusWarningBgColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Icon(LucideIcons.triangleAlert, color: statusWarningColor),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        spacing: 4,
-                        children: [
-                          Text(
-                            incidencia.category == IncidenciaCategory.horaporhora
-                              ? 'Reposición sin respaldo del checador'
-                              : 'Posible discrepancia con el checador',
-                            style: textTheme.bodyMedium?.copyWith(
-                              fontWeight: .w700,
-                              color: statusWarningColor,
-                            ),
-                          ),
-                          Text(
-                            incidencia.checadorDiscrepancy!.message,
-                            style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
-                          ),
-                          Text(
-                            'Esto no impide aprobar la solicitud, es solo informativo.',
-                            style: textTheme.labelMedium?.copyWith(color: statusWarningColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
         ],
       ),
       actions: [
@@ -365,4 +366,44 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
     }
     return '${_yMMMMdjm.format(_localStart)} hasta ${_yMMMMdjm.format(_localEnd)}';
   }
+}
+
+/// Título de la alerta del checador. En Horas extra, solo para RH y cuando el
+/// servidor ya puede calcularlo (no mientras todavía no terminan), dice
+/// cuántas horas se pagan en nómina de las solicitadas.
+String _tituloAlertaChecador(Incidencia incidencia) {
+  final discrepancy = incidencia.checadorDiscrepancy!;
+  if (incidencia.category == IncidenciaCategory.horaporhora) {
+    return 'Reposición sin respaldo del checador';
+  }
+  final aPagar = discrepancy.horasAPagar;
+  final solicitadas = discrepancy.horasSolicitadas;
+  if (incidencia.category == IncidenciaCategory.horasextra && discrepancy.detalleDePago && aPagar != null && solicitadas != null) {
+    return 'Horas extra a pagar: ${formatoHoras(aPagar)} de ${formatoHoras(solicitadas)}';
+  }
+  return 'Posible discrepancia con el checador';
+}
+
+/// 2.5 -> "2.5 h", 3.0 -> "3 h".
+String formatoHoras(double horas) {
+  final texto = horas == horas.roundToDouble() ? horas.toInt().toString() : horas.toString();
+  return '$texto h';
+}
+
+/// Mensaje de la alerta del checador con "Si apruebas" en negritas (lo manda
+/// el servidor cuando no marcó su salida: se pagan las horas solicitadas
+/// solo si se aprueba). El resto del texto va tal cual.
+List<TextSpan> mensajeAlertaSpans(String mensaje) {
+  const resaltado = 'Si apruebas';
+  final spans = <TextSpan>[];
+  var inicio = 0;
+  while (true) {
+    final i = mensaje.indexOf(resaltado, inicio);
+    if (i == -1) break;
+    if (i > inicio) spans.add(TextSpan(text: mensaje.substring(inicio, i)));
+    spans.add(const TextSpan(text: resaltado, style: TextStyle(fontWeight: FontWeight.w700)));
+    inicio = i + resaltado.length;
+  }
+  if (inicio < mensaje.length) spans.add(TextSpan(text: mensaje.substring(inicio)));
+  return spans;
 }

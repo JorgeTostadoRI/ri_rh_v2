@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/repositories/asistencia/asistencia_repository.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
@@ -40,6 +41,13 @@ class IngresoManualViewmodel extends ChangeNotifier {
       switch(resultLogin) {
         case Error():
           _log.warning('Failed to log in', error: resultLogin.error);
+          // /api/login/ responde 403 solo cuando el usuario está desactivado;
+          // cualquier otro error (contraseña, usuario inexistente) sigue
+          // siendo "verifica tus credenciales".
+          final error = resultLogin.error;
+          if (error is ApiException && error.statusCode == 403) {
+            return Result.error(UsuarioInactivo());
+          }
           return Result.error(LoginError());
         case Ok():
       }
