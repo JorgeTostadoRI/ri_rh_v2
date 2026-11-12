@@ -27,9 +27,6 @@ import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_lo
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_local.dart';
-import 'package:ri_rh_v2/data/repositories/notificaciones/compras_notificaciones_repository.dart';
-import 'package:ri_rh_v2/data/repositories/notificaciones/compras_notificaciones_repository_local.dart';
-import 'package:ri_rh_v2/data/repositories/notificaciones/compras_notificaciones_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository_remote.dart';
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository.dart';
 import 'package:ri_rh_v2/data/repositories/reportes/reportes_repository_local.dart';
@@ -54,7 +51,6 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/auth_viewmodel.dart';
-import 'package:ri_rh_v2/ui/core/viewmodels/compras_notificaciones_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
@@ -105,11 +101,6 @@ List<SingleChildWidget> get _sharedViewmodels {
         authRepository: context.read(),
       ),
     ),
-    ChangeNotifierProvider(create: (context) =>
-      ComprasNotificacionesViewmodel(
-        repository: context.read(),
-      )
-    ),
   ];
 }
 
@@ -119,6 +110,11 @@ Future<List<SingleChildWidget>> get providersLocal async {
   return [
     ..._sharedProviders,
     Provider.value(value: LogManager.logger),
+    Provider(create: (context) =>
+      SharedPreferencesService(
+        log: context.read(),
+      )
+    ),
     Provider.value(value: LocalDataService()),
     Provider(create: (context) =>
       FingerScanDev() as FingerScanService,
@@ -137,9 +133,6 @@ Future<List<SingleChildWidget>> get providersLocal async {
         authRepository: context.read(),
         localDataService: context.read(),
       ) as IncidenciasRepository
-    ),
-    Provider<ComprasNotificacionesRepository>(
-      create: (_) => ComprasNotificacionesRepositoryLocal(),
     ),
     Provider(create: (context) =>
       AvisosRepositoryLocal(
@@ -234,12 +227,6 @@ Future<List<SingleChildWidget>> get providersRemote async {
       IncidenciasRepositoryRemote(
         apiClient: context.read(),
       ) as IncidenciasRepository
-    ),
-    Provider<ComprasNotificacionesRepository>(
-      create: (context) => ComprasNotificacionesRepositoryRemote(
-        sharedPreferences: context.read(),
-        log: context.read(),
-      ),
     ),
     Provider(create: (context) =>
       AvisosRepositoryRemote(
