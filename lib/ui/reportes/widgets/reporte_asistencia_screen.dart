@@ -14,6 +14,7 @@ import 'package:ri_rh_v2/ui/reportes/widgets/incidencia_nomina_report_view.dart'
 import 'package:ri_rh_v2/ui/reportes/widgets/individual_attendance_table.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class ReporteAsistenciaScreen extends StatefulWidget {
   final ReporteAsistenciaViewmodel viewmodel;
@@ -58,13 +59,33 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
     return '${dateFormat.format(start)} - ${dateFormat.format(end)}';
   }
 
+  /// Rango de fechas y selector Empresa/Empleados: en computadora en una
+  /// fila (uno a cada lado); en navegador de celular uno debajo del otro, a
+  /// todo el ancho.
+  Widget _filaRangoYVista(Widget rango, Widget vista) {
+    if (esNavegadorMovil) {
+      return Column(
+        crossAxisAlignment: .stretch,
+        spacing: 12,
+        children: [rango, vista],
+      );
+    }
+    return Row(
+      children: [
+        rango,
+        Spacer(),
+        vista,
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Column(
-          spacing: 32,
+          spacing: esNavegadorMovil ? 16 : 32,
           crossAxisAlignment: .start,
           children: [
             PageHeader(
@@ -75,53 +96,51 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
               selectedIndex: reportTypeIndex,
               options: reportTypeLabels,
               onSelected: (value) => setState(() => reportTypeIndex = value),
+              // En celular a todo el ancho: si no, se sale por la derecha.
+              expandir: esNavegadorMovil,
             ),
             if (reportTypeIndex == 1)
               IncidenciaNominaReportView(viewmodel: widget.incidenciaNominaViewmodel)
             else ...[
-            Row(
-              children: [
-                ListenableBuilder(
-                  listenable: widget.viewmodel,
-                  builder: (context, _) {
-                    return OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: headingTextColor,
-                        iconColor: primaryColor,
-                      ),
-                      onPressed: () async {
-                        final today = DateTime.now();
-                        final selection = await showDateRangePicker(
-                          context: context,
-                          firstDate: DateTime(2026, 01, 01),
-                          lastDate: today,
-                        );
-                        if (selection == null) {
-                          return;
-                        }
-                        widget.viewmodel.searchRange = selection;
-                        widget.viewmodel.load.execute();
-                      },
-                      icon: Icon(LucideIcons.calendar),
-                      label: Text(_formatSearchRange()),
-                    );
-                  }
-                ),
-                Spacer(),
-                FieldSwitcher(
-                  selectedIndex: viewSelectIndex,
-                  options: viewSelectionLabels,
-                  onSelected: (value) => setState(() => viewSelectIndex = value),
-                ),
-              ],
+            _filaRangoYVista(
+              ListenableBuilder(
+                listenable: widget.viewmodel,
+                builder: (context, _) {
+                  return OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: headingTextColor,
+                      iconColor: primaryColor,
+                    ),
+                    onPressed: () async {
+                      final today = DateTime.now();
+                      final selection = await showDateRangePicker(
+                        context: context,
+                        firstDate: DateTime(2026, 01, 01),
+                        lastDate: today,
+                      );
+                      if (selection == null) {
+                        return;
+                      }
+                      widget.viewmodel.searchRange = selection;
+                      widget.viewmodel.load.execute();
+                    },
+                    icon: Icon(LucideIcons.calendar),
+                    label: Text(_formatSearchRange()),
+                  );
+                }
+              ),
+              FieldSwitcher(
+                selectedIndex: viewSelectIndex,
+                options: viewSelectionLabels,
+                onSelected: (value) => setState(() => viewSelectIndex = value),
+                expandir: esNavegadorMovil,
+              ),
             ),
             ListenableBuilder(
               listenable: widget.viewmodel,
               builder: (context, _) {
-                return Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
+                final tarjetas = [
                     MetricCard(
                       label: 'EMPLEADOS',
                       value: widget.viewmodel.employeeCount.toString(),
@@ -162,7 +181,28 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                         icon: LucideIcons.trendingDown,
                       ),
                     ),
-                  ],
+                ];
+                // Navegador de celular: las 4 en una fila no caben; van 2 por fila.
+                if (esNavegadorMovil) {
+                  return Column(
+                    spacing: 8,
+                    children: [
+                      for (var i = 0; i < tarjetas.length; i += 2)
+                        IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: .stretch,
+                            children: [
+                              Expanded(child: tarjetas[i]),
+                              Expanded(child: tarjetas[i + 1]),
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                }
+                return Row(
+                  mainAxisAlignment: .spaceBetween,
+                  children: tarjetas,
                 );
               }
             ),

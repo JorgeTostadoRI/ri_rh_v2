@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Tarjeta de Fase G: una vez solicitado el contrato, RH sube aquí el PDF ya
 /// firmado y presiona "Completar alta" para crear el Empleado (y su
@@ -89,6 +90,37 @@ class _CompletarAltaCardState extends State<CompletarAltaCard> {
               onPressed: () => context.go(Routes.expedienteOfEmpleadoId(empleadoId)),
               icon: const Icon(Icons.folder_open_outlined),
               label: const Text('Ver expediente'),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Navegador de celular: adjuntar, fecha y "Completar alta" a todo el
+    // ancho, uno debajo de otro.
+    if (esNavegadorMovil) {
+      return IconCard(
+        icon: Icons.verified_outlined,
+        title: 'Completar alta',
+        children: [
+          OutlinedButton.icon(
+            onPressed: _elegirArchivo,
+            icon: const Icon(Icons.attach_file),
+            label: Text(_contratoFirmado?.name ?? 'Adjuntar contrato firmado'),
+          ),
+          InkWell(
+            onTap: _elegirFecha,
+            child: InputDecorator(
+              decoration: const InputDecoration(labelText: 'Fecha de alta'),
+              child: Text(_fechaAlta?.toShortIsoString() ?? 'Elegir fecha'),
+            ),
+          ),
+          ListenableBuilder(
+            listenable: widget.completarAlta,
+            builder: (context, _) => ElevatedButton.icon(
+              onPressed: widget.completarAlta.running ? null : _completar,
+              icon: const Icon(Icons.check_circle_outline),
+              label: const Text('Completar alta'),
             ),
           ),
         ],

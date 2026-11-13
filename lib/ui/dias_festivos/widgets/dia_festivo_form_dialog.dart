@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/domain/models/dias_festivos/dia_festivo.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class DiaFestivoFormDialog extends StatefulWidget {
   const DiaFestivoFormDialog({super.key});
@@ -32,6 +33,10 @@ class _DiaFestivoFormDialogState extends State<DiaFestivoFormDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text('Nuevo día festivo'),
       content: Form(
         key: _formKey,

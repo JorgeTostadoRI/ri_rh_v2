@@ -15,6 +15,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/nuevo_empleado_viewmodel.dart';
 import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 const _documentSections = [
   (
@@ -221,6 +222,10 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        // En celular la ventana usa casi todo el ancho de la pantalla.
+        insetPadding: esNavegadorMovil
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+            : null,
         title: Text('Eliminar puesto'),
         content: Text('¿Eliminar "${actual.nombre}"? Esta acción no se puede deshacer.'),
         actions: [
@@ -352,15 +357,20 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
             title.toUpperCase(),
             style: TextTheme.of(context).labelMedium?.copyWith(fontWeight: .w700, color: primaryColor),
           ),
-          for (var i = 0; i < fields.length; i += 2)
-            Row(
-              spacing: 24,
-              crossAxisAlignment: .start,
-              children: [
-                Expanded(child: _documentPicker(fields[i])),
-                Expanded(child: i + 1 < fields.length ? _documentPicker(fields[i + 1]) : const SizedBox.shrink()),
-              ],
-            ),
+          // Navegador de celular: uno por fila; dos por fila el nombre del
+          // documento casi no se ve junto a "Adjuntar".
+          if (esNavegadorMovil)
+            for (final field in fields) _documentPicker(field)
+          else
+            for (var i = 0; i < fields.length; i += 2)
+              Row(
+                spacing: 24,
+                crossAxisAlignment: .start,
+                children: [
+                  Expanded(child: _documentPicker(fields[i])),
+                  Expanded(child: i + 1 < fields.length ? _documentPicker(fields[i + 1]) : const SizedBox.shrink()),
+                ],
+              ),
         ],
       ),
     );
@@ -392,15 +402,28 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
     );
   }
 
+  /// Campos lado a lado; en navegador de celular, uno debajo de otro (lado a
+  /// lado cada campo queda de ~125 px y las etiquetas salen cortadas).
+  Widget _fila(List<Widget> campos, {CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center}) {
+    if (esNavegadorMovil) {
+      return Column(crossAxisAlignment: .stretch, spacing: 24, children: campos);
+    }
+    return Row(
+      spacing: 24,
+      crossAxisAlignment: crossAxisAlignment,
+      children: [for (final campo in campos) Expanded(child: campo)],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Form(
           key: _formKey,
           child: Column(
-            spacing: 32,
+            spacing: esNavegadorMovil ? 16 : 32,
             crossAxisAlignment: .start,
             children: [
               PageHeader(
@@ -412,29 +435,21 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                 icon: Icons.person,
                 title: 'Datos Generales',
                 children: [
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('Nombre completo', _nombreCompleto)),
-                      Expanded(
-                        child: DateFormField(
-                          decoration: InputDecoration(labelText: 'FECHA DE NACIMIENTO'),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime(1950),
-                          lastDate: DateTime.now(),
-                          onDateSaved: (value) => _fechaNacimiento = value,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('CURP', _curp)),
-                      Expanded(child: _text('RFC', _rfc)),
-                    ],
-                  ),
+                  _fila([
+                    _text('Nombre completo', _nombreCompleto),
+                    DateFormField(
+                      decoration: InputDecoration(labelText: 'FECHA DE NACIMIENTO'),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime(1950),
+                      lastDate: DateTime.now(),
+                      onDateSaved: (value) => _fechaNacimiento = value,
+                    ),
+                  ]),
+                  _fila([
+                    _text('CURP', _curp),
+                    _text('RFC', _rfc),
+                  ]),
                   _text('Número de seguro social', _numeroSeguroSocial),
                 ],
               ),
@@ -445,121 +460,115 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                   ListenableBuilder(
                     listenable: widget.viewmodel.loadCatalogos,
                     builder: (context, _) {
+                      final puesto = DropdownButtonFormField<Puesto>(
+                        key: ValueKey(_puesto?.id),
+                        initialValue: _puesto,
+                        isExpanded: true,
+                        decoration: InputDecoration(labelText: 'PUESTO'),
+                        items: widget.viewmodel.puestos
+                            .map((p) => DropdownMenuItem(
+                                  value: p,
+                                  child: Text(p.nombre, overflow: TextOverflow.ellipsis),
+                                ))
+                            .toList(),
+                        onChanged: (value) => setState(() {
+                          _puesto = value;
+                          if (value != null) _applyPuestoDefaults(value);
+                        }),
+                        validator: (value) => value == null ? 'Selecciona un puesto' : null,
+                      );
+                      final botones = [
+                        IconButton(
+                          tooltip: 'Crear puesto nuevo',
+                          onPressed: _openCreatePuestoDialog,
+                          icon: Icon(Icons.add_circle_outline),
+                        ),
+                        IconButton(
+                          tooltip: 'Editar puesto',
+                          onPressed: _puesto == null ? null : _openEditPuestoDialog,
+                          icon: Icon(Icons.edit_outlined),
+                        ),
+                        ListenableBuilder(
+                          listenable: widget.viewmodel.deletePuesto,
+                          builder: (context, _) {
+                            final running = widget.viewmodel.deletePuesto.running;
+                            return IconButton(
+                              tooltip: 'Eliminar puesto',
+                              onPressed: _puesto == null || running ? null : _confirmDeletePuesto,
+                              icon: running
+                                  ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : Icon(Icons.delete_outline),
+                            );
+                          },
+                        ),
+                      ];
+                      // Navegador de celular: junto a los 3 botones la lista
+                      // queda de ~100 px; los botones bajan a la derecha.
+                      if (esNavegadorMovil) {
+                        return Column(
+                          crossAxisAlignment: .stretch,
+                          children: [
+                            puesto,
+                            Row(mainAxisAlignment: .end, children: botones),
+                          ],
+                        );
+                      }
                       return Row(
                         spacing: 12,
                         crossAxisAlignment: .end,
                         children: [
-                          Expanded(
-                            child: DropdownButtonFormField<Puesto>(
-                              key: ValueKey(_puesto?.id),
-                              initialValue: _puesto,
-                              isExpanded: true,
-                              decoration: InputDecoration(labelText: 'PUESTO'),
-                              items: widget.viewmodel.puestos
-                                  .map((p) => DropdownMenuItem(
-                                        value: p,
-                                        child: Text(p.nombre, overflow: TextOverflow.ellipsis),
-                                      ))
-                                  .toList(),
-                              onChanged: (value) => setState(() {
-                                _puesto = value;
-                                if (value != null) _applyPuestoDefaults(value);
-                              }),
-                              validator: (value) => value == null ? 'Selecciona un puesto' : null,
-                            ),
-                          ),
-                          IconButton(
-                            tooltip: 'Crear puesto nuevo',
-                            onPressed: _openCreatePuestoDialog,
-                            icon: Icon(Icons.add_circle_outline),
-                          ),
-                          IconButton(
-                            tooltip: 'Editar puesto',
-                            onPressed: _puesto == null ? null : _openEditPuestoDialog,
-                            icon: Icon(Icons.edit_outlined),
-                          ),
-                          ListenableBuilder(
-                            listenable: widget.viewmodel.deletePuesto,
-                            builder: (context, _) {
-                              final running = widget.viewmodel.deletePuesto.running;
-                              return IconButton(
-                                tooltip: 'Eliminar puesto',
-                                onPressed: _puesto == null || running ? null : _confirmDeletePuesto,
-                                icon: running
-                                    ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                    : Icon(Icons.delete_outline),
-                              );
-                            },
-                          ),
+                          Expanded(child: puesto),
+                          ...botones,
                         ],
                       );
                     },
                   ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(
-                        child: DateFormField(
-                          decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                          initialValue: _formatDate(_fechaAlta!),
-                          onDateSaved: (value) => _fechaAlta = value,
-                        ),
-                      ),
-                      Expanded(
-                        child: DateFormField(
-                          decoration: InputDecoration(labelText: 'FECHA DE INGRESO'),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                          onDateSaved: (value) => _fechaIngreso = value,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<Escolaridad>(
-                          initialValue: _escolaridad,
-                          decoration: InputDecoration(labelText: 'ESCOLARIDAD'),
-                          items: Escolaridad.values
-                              .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
-                              .toList(),
-                          onChanged: (value) => setState(() => _escolaridad = value),
-                          validator: (value) => value == null ? 'Selecciona una escolaridad' : null,
-                        ),
-                      ),
-                      Expanded(
-                        child: _text(
-                          'Salario diario',
-                          _salarioDiario,
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
-                          validator: _decimalValidator,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('CLABE interbancaria', _clabeInterbancaria)),
-                      Expanded(
-                        child: _text(
-                          'Monto retención infonavit',
-                          _montoRetencionInfonavit,
-                          required: false,
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
-                          validator: _decimalValidator,
-                        ),
-                      ),
-                    ],
-                  ),
+                  _fila([
+                    DateFormField(
+                      decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      initialValue: _formatDate(_fechaAlta!),
+                      onDateSaved: (value) => _fechaAlta = value,
+                    ),
+                    DateFormField(
+                      decoration: InputDecoration(labelText: 'FECHA DE INGRESO'),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      onDateSaved: (value) => _fechaIngreso = value,
+                    ),
+                  ]),
+                  _fila([
+                    DropdownButtonFormField<Escolaridad>(
+                      initialValue: _escolaridad,
+                      decoration: InputDecoration(labelText: 'ESCOLARIDAD'),
+                      items: Escolaridad.values
+                          .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
+                          .toList(),
+                      onChanged: (value) => setState(() => _escolaridad = value),
+                      validator: (value) => value == null ? 'Selecciona una escolaridad' : null,
+                    ),
+                    _text(
+                      'Salario diario',
+                      _salarioDiario,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      validator: _decimalValidator,
+                    ),
+                  ]),
+                  _fila([
+                    _text('CLABE interbancaria', _clabeInterbancaria),
+                    _text(
+                      'Monto retención infonavit',
+                      _montoRetencionInfonavit,
+                      required: false,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      validator: _decimalValidator,
+                    ),
+                  ]),
                   ListenableBuilder(
                     listenable: widget.viewmodel.loadCatalogos,
                     builder: (context, _) {
@@ -607,13 +616,10 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                 title: 'Contacto y Dirección',
                 children: [
                   _text('Teléfono del empleado', _telefono),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('Nombre de contacto de emergencia', _numeroContacto)),
-                      Expanded(child: _text('Teléfono de contacto de emergencia', _contactoEmergencia)),
-                    ],
-                  ),
+                  _fila([
+                    _text('Nombre de contacto de emergencia', _numeroContacto),
+                    _text('Teléfono de contacto de emergencia', _contactoEmergencia),
+                  ]),
                   _text('Dirección completa', _direccionCompleta, maxLines: 3),
                   _text(
                     'Correo',
@@ -640,14 +646,17 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
                 listenable: widget.viewmodel.create,
                 builder: (context, _) {
                   final running = widget.viewmodel.create.running;
+                  final boton = ElevatedButton(
+                    onPressed: running ? null : _submit,
+                    child: running
+                        ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text('Dar de alta'),
+                  );
+                  // En celular a todo el ancho, fácil de presionar.
+                  if (esNavegadorMovil) return SizedBox(width: double.infinity, child: boton);
                   return Align(
                     alignment: .centerRight,
-                    child: ElevatedButton(
-                      onPressed: running ? null : _submit,
-                      child: running
-                          ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                          : Text('Dar de alta'),
-                    ),
+                    child: boton,
                   );
                 },
               ),

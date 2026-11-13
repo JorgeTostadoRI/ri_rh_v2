@@ -4,6 +4,7 @@ import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/altas_imss_viewmodel.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Pestaña "Altas IMSS" de Reclutamiento: solo de consulta -- quiénes se
 /// van a incluir en el envío automático de esta semana al contador
@@ -100,8 +101,39 @@ class _PendienteDeEnvioRow extends StatelessWidget {
   final AltaImssItem item;
   final AltasImssViewmodel viewmodel;
 
+  /// Navegador de celular: de arriba a abajo (en una fila no cabe).
+  Widget _buildMovil() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      ),
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 2,
+        children: [
+          Text(item.nombreCompleto),
+          Text(item.puesto, style: const TextStyle(color: Color(0xFF9A7B5A))),
+          const Text('Se incluirá en el envío del viernes', style: TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ListenableBuilder(
+              listenable: viewmodel.vistaPrevia,
+              builder: (context, _) => TextButton.icon(
+                onPressed: viewmodel.vistaPrevia.running ? null : () => viewmodel.vistaPrevia.execute(item.id),
+                icon: const Icon(Icons.download_outlined, size: 16),
+                label: const Text('Ver documento'),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (esNavegadorMovil) return _buildMovil();
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(

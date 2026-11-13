@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
 import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Edita puesto/rol/cantidad/área/turno/justificación de una solicitud ya
 /// existente. Solo lo usa Dirección (el backend también lo valida).
@@ -66,6 +67,10 @@ class _SolicitudVacanteEditDialogState extends State<SolicitudVacanteEditDialog>
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text('Editar solicitud'),
       content: SizedBox(
         width: 500,

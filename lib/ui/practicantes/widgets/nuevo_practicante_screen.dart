@@ -17,6 +17,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/nuevo_practicante_viewmodel.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 const _documentSections = [
   (
@@ -55,6 +56,15 @@ const _rolOptions = [
   ('OPERADOR', 'Operador'),
   ('LIDER', 'Lider'),
 ];
+
+/// En celular los nombres largos de las listas se cortan con "..."; en
+/// computadora se dejan como siempre.
+TextOverflow? get _cortar => esNavegadorMovil ? TextOverflow.ellipsis : null;
+
+/// En celular el contenido de las ventanas usa todo el ancho disponible (sin
+/// esto se quedan en el mínimo de 280 px); en computadora va igual que siempre.
+Widget _anchoMovil(Widget contenido) =>
+    esNavegadorMovil ? SizedBox(width: double.maxFinite, child: contenido) : contenido;
 
 class NuevoPracticanteScreen extends StatefulWidget {
   const NuevoPracticanteScreen({
@@ -292,15 +302,20 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
             title.toUpperCase(),
             style: TextTheme.of(context).labelMedium?.copyWith(fontWeight: .w700, color: primaryColor),
           ),
-          for (var i = 0; i < fields.length; i += 2)
-            Row(
-              spacing: 24,
-              crossAxisAlignment: .start,
-              children: [
-                Expanded(child: _documentPicker(fields[i])),
-                Expanded(child: i + 1 < fields.length ? _documentPicker(fields[i + 1]) : const SizedBox.shrink()),
-              ],
-            ),
+          // Navegador de celular: uno por fila; dos por fila el nombre del
+          // documento casi no se ve junto a "Adjuntar".
+          if (esNavegadorMovil)
+            for (final field in fields) _documentPicker(field)
+          else
+            for (var i = 0; i < fields.length; i += 2)
+              Row(
+                spacing: 24,
+                crossAxisAlignment: .start,
+                children: [
+                  Expanded(child: _documentPicker(fields[i])),
+                  Expanded(child: i + 1 < fields.length ? _documentPicker(fields[i + 1]) : const SizedBox.shrink()),
+                ],
+              ),
         ],
       ),
     );
@@ -332,15 +347,28 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
     );
   }
 
+  /// Campos lado a lado; en navegador de celular, uno debajo de otro (lado a
+  /// lado cada campo queda de ~125 px y las etiquetas salen cortadas).
+  Widget _fila(List<Widget> campos, {CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center}) {
+    if (esNavegadorMovil) {
+      return Column(crossAxisAlignment: .stretch, spacing: 24, children: campos);
+    }
+    return Row(
+      spacing: 24,
+      crossAxisAlignment: crossAxisAlignment,
+      children: [for (final campo in campos) Expanded(child: campo)],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Form(
           key: _formKey,
           child: Column(
-            spacing: 32,
+            spacing: esNavegadorMovil ? 16 : 32,
             crossAxisAlignment: .start,
             children: [
               PageHeader(
@@ -361,29 +389,21 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                     selected: {_tipo},
                     onSelectionChanged: (value) => setState(() => _tipo = value.first),
                   ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('Nombre completo', _nombreCompleto)),
-                      Expanded(
-                        child: DateFormField(
-                          decoration: InputDecoration(labelText: 'FECHA DE NACIMIENTO'),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime(1950),
-                          lastDate: DateTime.now(),
-                          onDateSaved: (value) => _fechaNacimiento = value,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('CURP', _curp)),
-                      Expanded(child: _text('RFC', _rfc)),
-                    ],
-                  ),
+                  _fila([
+                    _text('Nombre completo', _nombreCompleto),
+                    DateFormField(
+                      decoration: InputDecoration(labelText: 'FECHA DE NACIMIENTO'),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime(1950),
+                      lastDate: DateTime.now(),
+                      onDateSaved: (value) => _fechaNacimiento = value,
+                    ),
+                  ]),
+                  _fila([
+                    _text('CURP', _curp),
+                    _text('RFC', _rfc),
+                  ]),
                   _text('Número de seguro social', _numeroSeguroSocial),
                 ],
               ),
@@ -404,9 +424,11 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                               Expanded(
                                 child: DropdownButtonFormField<Puesto>(
                                   initialValue: _puesto,
+                                  // En celular un nombre largo se corta con "..." en vez de salirse.
+                                  isExpanded: esNavegadorMovil,
                                   decoration: InputDecoration(labelText: 'PUESTO'),
                                   items: widget.viewmodel.puestos
-                                      .map((p) => DropdownMenuItem(value: p, child: Text(p.nombre)))
+                                      .map((p) => DropdownMenuItem(value: p, child: Text(p.nombre, overflow: _cortar)))
                                       .toList(),
                                   onChanged: (value) => setState(() => _puesto = value),
                                   validator: (value) => value == null ? 'Selecciona un puesto' : null,
@@ -426,9 +448,10 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                               Expanded(
                                 child: DropdownButtonFormField<Universidad>(
                                   initialValue: _universidad,
+                                  isExpanded: esNavegadorMovil,
                                   decoration: InputDecoration(labelText: 'UNIVERSIDAD'),
                                   items: widget.viewmodel.universidades
-                                      .map((u) => DropdownMenuItem(value: u, child: Text(u.nombre)))
+                                      .map((u) => DropdownMenuItem(value: u, child: Text(u.nombre, overflow: _cortar)))
                                       .toList(),
                                   onChanged: (value) => setState(() => _universidad = value),
                                   validator: (value) => value == null ? 'Selecciona una universidad' : null,
@@ -441,93 +464,72 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                               ),
                             ],
                           ),
-                          Row(
-                            spacing: 24,
-                            children: [
-                              Expanded(
-                                child: DropdownButtonFormField<Departamento>(
-                                  initialValue: _departamento,
-                                  decoration: InputDecoration(labelText: 'DEPARTAMENTO (USUARIO)'),
-                                  items: widget.viewmodel.departamentos
-                                      .map((d) => DropdownMenuItem(value: d, child: Text(d.nombre)))
-                                      .toList(),
-                                  onChanged: (value) => setState(() => _departamento = value),
-                                  validator: (value) => value == null ? 'Selecciona un departamento' : null,
-                                ),
-                              ),
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  initialValue: _rol,
-                                  decoration: InputDecoration(labelText: 'ROL (USUARIO)'),
-                                  items: _rolOptions
-                                      .map((r) => DropdownMenuItem(value: r.$1, child: Text(r.$2)))
-                                      .toList(),
-                                  onChanged: (value) => setState(() => _rol = value),
-                                  validator: (value) => value == null ? 'Selecciona un rol' : null,
-                                ),
-                              ),
-                            ],
-                          ),
+                          _fila([
+                            DropdownButtonFormField<Departamento>(
+                              initialValue: _departamento,
+                              isExpanded: esNavegadorMovil,
+                              decoration: InputDecoration(labelText: 'DEPARTAMENTO (USUARIO)'),
+                              items: widget.viewmodel.departamentos
+                                  .map((d) => DropdownMenuItem(value: d, child: Text(d.nombre, overflow: _cortar)))
+                                  .toList(),
+                              onChanged: (value) => setState(() => _departamento = value),
+                              validator: (value) => value == null ? 'Selecciona un departamento' : null,
+                            ),
+                            DropdownButtonFormField<String>(
+                              initialValue: _rol,
+                              decoration: InputDecoration(labelText: 'ROL (USUARIO)'),
+                              items: _rolOptions
+                                  .map((r) => DropdownMenuItem(value: r.$1, child: Text(r.$2)))
+                                  .toList(),
+                              onChanged: (value) => setState(() => _rol = value),
+                              validator: (value) => value == null ? 'Selecciona un rol' : null,
+                            ),
+                          ]),
                         ],
                       );
                     },
                   ),
-                  Row(
-                    spacing: 24,
-                    crossAxisAlignment: .start,
-                    children: [
-                      Expanded(
-                        child: DateFormField(
-                          decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now(),
-                          initialValue: _formatDate(_fechaAlta!),
-                          onDateSaved: (value) => _fechaAlta = value,
-                        ),
+                  _fila(crossAxisAlignment: .start, [
+                    DateFormField(
+                      decoration: InputDecoration(labelText: 'FECHA DE ALTA'),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now(),
+                      initialValue: _formatDate(_fechaAlta!),
+                      onDateSaved: (value) => _fechaAlta = value,
+                    ),
+                    DateFormField(
+                      decoration: InputDecoration(labelText: 'FECHA DE INGRESO'),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      onDateSaved: (value) => _fechaIngreso = value,
+                    ),
+                    // Obligatoria; después ya no se puede cambiar desde
+                    // la app (solo desde el admin de Django).
+                    DateFormField(
+                      decoration: InputDecoration(
+                        labelText: 'FECHA DE TERMINACIÓN',
+                        helperText: 'No se podrá cambiar después',
                       ),
-                      Expanded(
-                        child: DateFormField(
-                          decoration: InputDecoration(labelText: 'FECHA DE INGRESO'),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                          onDateSaved: (value) => _fechaIngreso = value,
-                        ),
-                      ),
-                      Expanded(
-                        // Obligatoria; después ya no se puede cambiar desde
-                        // la app (solo desde el admin de Django).
-                        child: DateFormField(
-                          decoration: InputDecoration(
-                            labelText: 'FECHA DE TERMINACIÓN',
-                            helperText: 'No se podrá cambiar después',
-                          ),
-                          required: true,
-                          fourDigitYear: true,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
-                          onDateSaved: (value) => _fechaTerminacion = value,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(
-                        child: _text(
-                          'Salario diario',
-                          _salarioDiario,
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
-                          validator: _decimalValidator,
-                        ),
-                      ),
-                      Expanded(child: _text('CLABE interbancaria', _clabeInterbancaria)),
-                    ],
-                  ),
+                      required: true,
+                      fourDigitYear: true,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+                      onDateSaved: (value) => _fechaTerminacion = value,
+                    ),
+                  ]),
+                  _fila([
+                    _text(
+                      'Salario diario',
+                      _salarioDiario,
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      validator: _decimalValidator,
+                    ),
+                    _text('CLABE interbancaria', _clabeInterbancaria),
+                  ]),
                 ],
               ),
               IconCard(
@@ -535,13 +537,10 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                 title: 'Contacto y Dirección',
                 children: [
                   _text('Teléfono del practicante', _telefono),
-                  Row(
-                    spacing: 24,
-                    children: [
-                      Expanded(child: _text('Nombre de contacto de emergencia', _numeroContacto)),
-                      Expanded(child: _text('Teléfono de contacto de emergencia', _contactoEmergencia)),
-                    ],
-                  ),
+                  _fila([
+                    _text('Nombre de contacto de emergencia', _numeroContacto),
+                    _text('Teléfono de contacto de emergencia', _contactoEmergencia),
+                  ]),
                   _text('Dirección completa', _direccionCompleta, maxLines: 3),
                   _text(
                     'Correo',
@@ -568,14 +567,17 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
                 listenable: widget.viewmodel.create,
                 builder: (context, _) {
                   final running = widget.viewmodel.create.running;
+                  final boton = ElevatedButton(
+                    onPressed: running ? null : _submit,
+                    child: running
+                        ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text('Dar de alta'),
+                  );
+                  // En celular a todo el ancho, fácil de presionar.
+                  if (esNavegadorMovil) return SizedBox(width: double.infinity, child: boton);
                   return Align(
                     alignment: .centerRight,
-                    child: ElevatedButton(
-                      onPressed: running ? null : _submit,
-                      child: running
-                          ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                          : Text('Dar de alta'),
-                    ),
+                    child: boton,
                   );
                 },
               ),
@@ -638,8 +640,13 @@ class _CreatePuestoDialogState extends State<_CreatePuestoDialog> {
       builder: (context, _) {
         final running = widget.createPuesto.running;
         return AlertDialog(
+          // En celular la ventana usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Crear puesto'),
-          content: Column(
+          // En celular los campos usan todo el ancho de la ventana.
+          content: _anchoMovil(Column(
             mainAxisSize: .min,
             spacing: 16,
             children: [
@@ -654,7 +661,7 @@ class _CreatePuestoDialogState extends State<_CreatePuestoDialog> {
                 onChanged: (value) => setState(() => _tipo = value ?? _tipo),
               ),
             ],
-          ),
+          )),
           actions: [
             TextButton(
               onPressed: running ? null : () => Navigator.of(context).pop(),
@@ -732,8 +739,13 @@ class _CreateUniversidadDialogState extends State<_CreateUniversidadDialog> {
             _direccion.text.trim().isNotEmpty &&
             _numeroContacto.text.trim().isNotEmpty;
         return AlertDialog(
+          // En celular la ventana usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Crear universidad'),
-          content: Column(
+          // En celular los campos usan todo el ancho de la ventana.
+          content: _anchoMovil(Column(
             mainAxisSize: .min,
             spacing: 16,
             children: [
@@ -753,7 +765,7 @@ class _CreateUniversidadDialogState extends State<_CreateUniversidadDialog> {
                 onChanged: (_) => setState(() {}),
               ),
             ],
-          ),
+          )),
           actions: [
             TextButton(
               onPressed: running ? null : () => Navigator.of(context).pop(),

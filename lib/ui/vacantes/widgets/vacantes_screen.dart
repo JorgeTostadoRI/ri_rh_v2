@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
+import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/domain/models/puestos/puesto.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/solicitud_vacante.dart';
@@ -25,6 +26,7 @@ import 'package:ri_rh_v2/ui/vacantes/widgets/retroalimentacion_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/solicitud_vacante_edit_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/widgets/solicitud_vacante_form_dialog.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class VacantesScreen extends StatefulWidget {
   const VacantesScreen({
@@ -212,6 +214,10 @@ class _VacantesScreenState extends State<VacantesScreen> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        // En celular la ventana usa casi todo el ancho de la pantalla.
+        insetPadding: esNavegadorMovil
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+            : null,
         title: const Text('Cancelar candidato'),
         content: Text(
           '${candidato.nombre} ya no seguirá en el proceso: su link dejará de '
@@ -344,6 +350,39 @@ class _VacantesScreenState extends State<VacantesScreen> {
     };
   }
 
+  /// Navegador de celular: título más chico y el estatus abajo (a un lado
+  /// el título quedaba de ~120 px, en muchos renglones).
+  Widget _encabezadoMovil(BuildContext context, SolicitudVacante solicitud, List<String> subtitleParts) {
+    return Row(
+      spacing: 12,
+      crossAxisAlignment: .start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Icon(LucideIcons.userPlus, color: primaryColor),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 4,
+            children: [
+              Text(
+                '${solicitud.puestoNombre ?? 'Puesto'} (${solicitud.rol}) × ${solicitud.cantidad}',
+                style: TextTheme.of(context).titleLarge,
+              ),
+              if (subtitleParts.isNotEmpty) Text(subtitleParts.join(' · ')),
+              Chip(
+                label: Text(_estatusLabel(solicitud.estatus)),
+                backgroundColor: _estatusColor(solicitud.estatus).withValues(alpha: 0.15),
+                labelStyle: TextStyle(color: _estatusColor(solicitud.estatus)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat.yMMMMd();
@@ -363,9 +402,13 @@ class _VacantesScreenState extends State<VacantesScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(40),
+          // En celular: márgenes de 16 y espacio abajo para que la última
+          // solicitud suba por encima del botón (+).
+          padding: esNavegadorMovil
+              ? const EdgeInsets.fromLTRB(16, 16, 16, 88)
+              : EdgeInsets.all(40),
           child: Column(
-            spacing: 32,
+            spacing: esNavegadorMovil ? 16 : 32,
             crossAxisAlignment: .start,
             children: [
               PageHeader(
@@ -379,6 +422,10 @@ class _VacantesScreenState extends State<VacantesScreen> {
                   selectedIndex: _tabs.indexOf(_tab),
                   options: [for (final tab in _tabs) tab.label],
                   onSelected: (value) => setState(() => _tab = _tabs[value]),
+                  // En celular las 4 pestañas de RH no caben en una fila: van
+                  // en dos renglones de dos (Dirección tiene 2, en una fila).
+                  expandir: esNavegadorMovil,
+                  porRenglon: esNavegadorMovil && _tabs.length > 2 ? 2 : null,
                 ),
               if (_tab == _Tab.altasImss)
                 Fase2AltasImssSection(viewmodel: widget.altasImssViewmodel)
@@ -474,6 +521,9 @@ class _VacantesScreenState extends State<VacantesScreen> {
                           crossAxisAlignment: .start,
                           spacing: 4,
                           children: [
+                            if (esNavegadorMovil)
+                              _encabezadoMovil(context, solicitud, subtitleParts)
+                            else
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: Icon(LucideIcons.userPlus, color: primaryColor),
@@ -488,7 +538,20 @@ class _VacantesScreenState extends State<VacantesScreen> {
                                 labelStyle: TextStyle(color: _estatusColor(solicitud.estatus)),
                               ),
                             ),
-                            if (dePracticante)
+                            // En celular un chip no baja de renglón y el nombre
+                            // largo se sale; va como texto.
+                            if (dePracticante && esNavegadorMovil)
+                              Row(
+                                spacing: 8,
+                                crossAxisAlignment: .start,
+                                children: [
+                                  Icon(LucideIcons.graduationCap, size: 16, color: primaryColor),
+                                  Expanded(
+                                    child: Text('Contratación de practicante: ${solicitud.practicanteNombre ?? ''}'),
+                                  ),
+                                ],
+                              )
+                            else if (dePracticante)
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Chip(
@@ -652,6 +715,9 @@ class _PracticantesPorEvaluar extends StatelessWidget {
             children: [
               Text('Practicantes por evaluar', style: TextTheme.of(context).headlineSmall),
               for (final item in items)
+                if (esNavegadorMovil)
+                  _itemMovil(context, item)
+                else
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
@@ -687,6 +753,49 @@ class _PracticantesPorEvaluar extends StatelessWidget {
       },
     );
   }
+}
+
+/// Navegador de celular: el chip "Evaluación pendiente" va abajo del
+/// nombre (a un lado le dejaba ~60 px al nombre).
+Widget _itemMovil(BuildContext context, PracticantePorEvaluarItem item) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Column(
+      crossAxisAlignment: .start,
+      spacing: 6,
+      children: [
+        Row(
+          spacing: 12,
+          crossAxisAlignment: .start,
+          children: [
+            CircleAvatar(
+              radius: 14,
+              backgroundColor: Colors.orange.withValues(alpha: 0.2),
+              child: const Icon(Icons.school_outlined, size: 14, color: Colors.orange),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  Text(item.nombreCompleto),
+                  Text(
+                    '${item.tipo} · ${item.puesto} · termina el ${_PracticantesPorEvaluar._fecha.format(item.fechaTerminacion)}',
+                    style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: _EvaluacionPendienteChip(
+            onPressed: () => context.go(Routes.evaluacionPracticanteOfToken(item.evaluacionToken)),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 enum _Tab {
@@ -752,8 +861,137 @@ class _CandidatoRow extends StatelessWidget {
     };
   }
 
+  /// Fase 2 (alta IMSS, contrato definitivo) del candidato ya contratado.
+  Widget _fase2Panel() {
+    return ListenableBuilder(
+      listenable: Listenable.merge([altasImssViewmodel, altasImssViewmodel.load]),
+      builder: (context, _) {
+        AltaImssItem? item;
+        for (final i in altasImssViewmodel.items ?? const <AltaImssItem>[]) {
+          if (i.id == candidato.empleado) {
+            item = i;
+            break;
+          }
+        }
+        if (item == null) return const SizedBox.shrink();
+        return Fase2ProgressPanel(
+          item: item,
+          viewmodel: altasImssViewmodel,
+          mostrarAcciones: mostrarAccionesRH,
+        );
+      },
+    );
+  }
+
+  /// Navegador de celular: en una fila el nombre (con su etiqueta si
+  /// salió del flujo); abajo la barra de pasos con su etiqueta, y los
+  /// botones abajo a la derecha (en una sola fila no cabían).
+  Widget _buildMovil(BuildContext context) {
+    final color = _color();
+    final puedeRevisar = mostrarAccionesRH &&
+        (candidato.estado == CandidatoEstado.completado || candidato.estado == CandidatoEstado.contratado);
+    final sinCompletar = mostrarAccionesRH &&
+        (candidato.estado == CandidatoEstado.iniciado || candidato.estado == CandidatoEstado.expirado);
+    final acciones = [
+      if (candidato.evaluacionTokenJefe != null)
+        _EvaluacionPendienteChip(
+          onPressed: () => context.go(Routes.evaluacionOfToken(candidato.evaluacionTokenJefe!)),
+        ),
+      if (sinCompletar) ...[
+        TextButton.icon(
+          onPressed: onReenviar,
+          icon: const Icon(Icons.forward_to_inbox_outlined, size: 16),
+          label: const Text('Reenviar link'),
+        ),
+        TextButton.icon(
+          onPressed: onCancelar,
+          style: TextButton.styleFrom(foregroundColor: errorColor),
+          icon: const Icon(Icons.person_off_outlined, size: 16),
+          label: const Text('Cancelar'),
+        ),
+      ] else if (puedeRevisar)
+        TextButton.icon(
+          onPressed: onRevisar,
+          icon: const Icon(Icons.visibility_outlined, size: 16),
+          label: const Text('Revisar'),
+        ),
+    ];
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      ),
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 4,
+        children: [
+          Row(
+            spacing: 12,
+            children: [
+              CircleAvatar(
+                radius: 14,
+                backgroundColor: color.withValues(alpha: 0.2),
+                child: Icon(Icons.person, size: 14, color: color),
+              ),
+              Expanded(child: Text(candidato.nombre)),
+              if (_fueraDeFlujo)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(_label(), style: TextStyle(color: color, fontSize: 12, fontWeight: .w600)),
+                ),
+            ],
+          ),
+          if (!_fueraDeFlujo)
+            Padding(
+              padding: const EdgeInsets.only(left: 40),
+              child: Column(
+                crossAxisAlignment: .start,
+                spacing: 4,
+                children: [
+                  StepTimeline(
+                    length: CandidatoStage.values.length,
+                    currentStep: candidato.stage.index,
+                    stepLabels: const [
+                      'Pendiente',
+                      'Aprobado',
+                      'Invitación enviada',
+                      'Formulario completado',
+                      'Contrato solicitado',
+                      'Contratado',
+                    ],
+                  ),
+                  Text(_label(), style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+                ],
+              ),
+            ),
+          if (candidato.estado == CandidatoEstado.contratado && candidato.empleado != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 40),
+              child: _fase2Panel(),
+            ),
+          if (acciones.isNotEmpty)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Wrap(
+                alignment: .end,
+                crossAxisAlignment: .center,
+                spacing: 4,
+                runSpacing: 4,
+                children: acciones,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (esNavegadorMovil) return _buildMovil(context);
     final color = _color();
     final puedeRevisar = mostrarAccionesRH &&
         (candidato.estado == CandidatoEstado.completado || candidato.estado == CandidatoEstado.contratado);
@@ -845,24 +1083,7 @@ class _CandidatoRow extends StatelessWidget {
           if (candidato.estado == CandidatoEstado.contratado && candidato.empleado != null)
             Padding(
               padding: const EdgeInsets.only(left: 40),
-              child: ListenableBuilder(
-                listenable: Listenable.merge([altasImssViewmodel, altasImssViewmodel.load]),
-                builder: (context, _) {
-                  AltaImssItem? item;
-                  for (final i in altasImssViewmodel.items ?? const <AltaImssItem>[]) {
-                    if (i.id == candidato.empleado) {
-                      item = i;
-                      break;
-                    }
-                  }
-                  if (item == null) return const SizedBox.shrink();
-                  return Fase2ProgressPanel(
-                    item: item,
-                    viewmodel: altasImssViewmodel,
-                    mostrarAcciones: mostrarAccionesRH,
-                  );
-                },
-              ),
+              child: _fase2Panel(),
             ),
         ],
       ),

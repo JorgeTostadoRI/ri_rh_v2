@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/ui/core/ui/document_picker_row.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 typedef IniciarContratacionPracticanteRow = ({String correo, PlatformFile cartaOferta});
 
@@ -58,6 +59,10 @@ class _IniciarContratacionPracticanteDialogState extends State<IniciarContrataci
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: const Text('Iniciar contratación'),
       content: SizedBox(
         width: 520,

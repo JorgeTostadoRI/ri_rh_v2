@@ -15,6 +15,7 @@ import 'package:ri_rh_v2/ui/vacantes/widgets/detalles_contratacion_card.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Traduce el value crudo de un choice (ej. 'masculino', 'soltero') a su
 /// etiqueta para mostrar (ej. 'Masculino', 'Soltero(a)') -- mismas listas
@@ -180,7 +181,7 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
       backgroundColor: backgroundColor,
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(40),
+          padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
           child: ListenableBuilder(
             listenable: Listenable.merge([widget.viewmodel, widget.viewmodel.load]),
             builder: (context, _) {
@@ -206,7 +207,7 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
               final candidato = widget.viewmodel.candidato!;
               return Column(
                 crossAxisAlignment: .start,
-                spacing: 32,
+                spacing: esNavegadorMovil ? 16 : 32,
                 children: [
                   PageHeader(
                     title: '${candidato.nombres} ${candidato.apellidoPaterno} ${candidato.apellidoMaterno}'.trim(),
@@ -222,7 +223,10 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
                         Expanded(flex: 2, child: _DocumentosSection(candidato: candidato)),
                       ];
                       if (ancho < 900) {
-                        return Column(spacing: 24, children: datosYDocumentos.map((e) => e.child).toList());
+                        return Column(
+                          spacing: esNavegadorMovil ? 16 : 24,
+                          children: datosYDocumentos.map((e) => e.child).toList(),
+                        );
                       }
                       return Row(
                         crossAxisAlignment: .start,

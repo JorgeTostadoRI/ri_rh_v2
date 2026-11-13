@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
 import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/vacantes_viewmodel.dart';
 import 'package:ri_rh_v2/utils/command.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class _VacanteFormRow {
   Puesto? puesto;
@@ -104,6 +105,98 @@ class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog>
     context.pop(params);
   }
 
+  /// Navegador de celular: puesto (con su lápiz) en una fila; abajo rol y
+  /// cantidad; abajo área y turno, uno por fila. En una sola fila a
+  /// "Cantidad" le quedaban ~25 px.
+  List<Widget> _camposMovil(_VacanteFormRow fila, int index) {
+    return [
+      Row(
+        crossAxisAlignment: .start,
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<Puesto>(
+              key: ValueKey(fila.puesto?.id),
+              initialValue: fila.puesto,
+              isExpanded: true,
+              decoration: InputDecoration(labelText: 'PUESTO'),
+              items: _puestos
+                  .map((p) => DropdownMenuItem(value: p, child: Text(p.nombre, overflow: TextOverflow.ellipsis)))
+                  .toList(),
+              onChanged: (value) => setState(() {
+                fila.puesto = value;
+                if (value?.rol != null && rolOptions.any((r) => r.$1 == value!.rol)) {
+                  fila.rol = value!.rol;
+                }
+              }),
+              validator: (value) => value == null ? 'Requerido' : null,
+            ),
+          ),
+          IconButton(
+            tooltip: 'Editar puesto',
+            onPressed: fila.puesto == null ? null : () => _openEditPuestoDialog(fila),
+            icon: Icon(Icons.edit_outlined),
+          ),
+          if (_filas.length > 1)
+            IconButton(
+              icon: Icon(Icons.remove_circle_outline),
+              onPressed: () => setState(() {
+                fila.dispose();
+                _filas.removeAt(index);
+              }),
+            ),
+        ],
+      ),
+      Row(
+        crossAxisAlignment: .start,
+        spacing: 12,
+        children: [
+          Expanded(
+            flex: 2,
+            child: DropdownButtonFormField<String>(
+              key: ValueKey(fila.rol),
+              initialValue: fila.rol,
+              isExpanded: true,
+              decoration: InputDecoration(labelText: 'ROL'),
+              items: rolOptions.map((r) => DropdownMenuItem(value: r.$1, child: Text(r.$2))).toList(),
+              onChanged: (value) => setState(() => fila.rol = value),
+              validator: (value) => value == null ? 'Requerido' : null,
+            ),
+          ),
+          Expanded(
+            child: TextFormField(
+              controller: fila.cantidad,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'CANTIDAD'),
+              validator: (value) {
+                final n = int.tryParse((value ?? '').trim());
+                if (n == null || n < 1) return 'Inválido';
+                return null;
+              },
+            ),
+          ),
+        ],
+      ),
+      TextFormField(
+        controller: fila.area,
+        decoration: InputDecoration(labelText: 'AREA'),
+        validator: (value) => (value ?? '').trim().isEmpty ? 'Requerido' : null,
+      ),
+      DropdownButtonFormField<Horario>(
+        initialValue: fila.turno,
+        isExpanded: true,
+        decoration: InputDecoration(labelText: 'TURNO'),
+        items: widget.horarios
+            .map((h) => DropdownMenuItem(
+                  value: h,
+                  child: Text(horarioDisplayName(h), overflow: TextOverflow.ellipsis),
+                ))
+            .toList(),
+        onChanged: (value) => setState(() => fila.turno = value),
+        validator: (value) => value == null ? 'Requerido' : null,
+      ),
+    ];
+  }
+
   Widget _filaForm(_VacanteFormRow fila, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -116,6 +209,7 @@ class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog>
         crossAxisAlignment: .start,
         spacing: 8,
         children: [
+          if (esNavegadorMovil) ..._camposMovil(fila, index) else
           Row(
             crossAxisAlignment: .start,
             spacing: 12,
@@ -179,6 +273,7 @@ class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog>
                 ),
             ],
           ),
+          if (!esNavegadorMovil)
           Row(
             crossAxisAlignment: .start,
             spacing: 12,
@@ -222,6 +317,10 @@ class _SolicitudVacanteFormDialogState extends State<SolicitudVacanteFormDialog>
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text('Solicitar vacante(s)'),
       content: SizedBox(
         width: 600,

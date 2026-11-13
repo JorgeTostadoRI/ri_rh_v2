@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ri_rh_v2/data/repositories/practicantes/practicantes_repository.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/seguimiento_practicantes_viewmodel.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Pestaña "Practicantes" de Reclutamiento: solo de consulta -- los
 /// practicantes en alta con fecha de terminación, si su jefe ya contestó la
@@ -122,54 +123,68 @@ class _PracticanteRow extends StatelessWidget {
 
     const secundario = TextStyle(fontSize: 12, color: labelTextColor);
 
+    final columnas = <Expanded>[
+      Expanded(
+        flex: 3,
+        child: Column(
+          crossAxisAlignment: .start,
+          spacing: 2,
+          children: [
+            Text(item.nombreCompleto, overflow: esNavegadorMovil ? null : .ellipsis),
+            Text(
+              '${item.tipo} · ${item.puesto}',
+              style: secundario,
+              overflow: esNavegadorMovil ? null : .ellipsis,
+            ),
+          ],
+        ),
+      ),
+      Expanded(
+        flex: 2,
+        child: Column(
+          crossAxisAlignment: .start,
+          spacing: 2,
+          children: [
+            Text('Termina el ${_fecha.format(item.fechaTerminacion)}'),
+            Text(item.jefe.isEmpty ? 'Sin jefe directo' : 'Jefe: ${item.jefe}', style: secundario),
+          ],
+        ),
+      ),
+      Expanded(
+        flex: 4,
+        child: Column(
+          crossAxisAlignment: .start,
+          spacing: 4,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(color: fondo, borderRadius: BorderRadius.circular(12)),
+              child: Text(etiqueta, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
+            ),
+            if (detalle != null) Text(detalle, style: secundario),
+          ],
+        ),
+      ),
+    ];
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
       ),
-      child: Row(
-        spacing: 16,
-        crossAxisAlignment: .start,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Column(
+      // Navegador de celular: los 3 bloques uno debajo de otro (en columnas
+      // quedaban de ~90, 60 y 120 px, casi todo cortado).
+      child: esNavegadorMovil
+          ? Column(
+              crossAxisAlignment: .stretch,
+              spacing: 8,
+              children: [for (final Expanded(:child) in columnas) child],
+            )
+          : Row(
+              spacing: 16,
               crossAxisAlignment: .start,
-              spacing: 2,
-              children: [
-                Text(item.nombreCompleto, overflow: .ellipsis),
-                Text('${item.tipo} · ${item.puesto}', style: secundario, overflow: .ellipsis),
-              ],
+              children: columnas,
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: .start,
-              spacing: 2,
-              children: [
-                Text('Termina el ${_fecha.format(item.fechaTerminacion)}'),
-                Text(item.jefe.isEmpty ? 'Sin jefe directo' : 'Jefe: ${item.jefe}', style: secundario),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Column(
-              crossAxisAlignment: .start,
-              spacing: 4,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                  decoration: BoxDecoration(color: fondo, borderRadius: BorderRadius.circular(12)),
-                  child: Text(etiqueta, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
-                ),
-                if (detalle != null) Text(detalle, style: secundario),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
