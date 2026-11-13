@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class DeleteFingerprintDialog extends StatelessWidget {
   const DeleteFingerprintDialog({super.key});
@@ -6,6 +7,10 @@ class DeleteFingerprintDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       backgroundColor: Colors.white,
       title: Text('Confimar Eliminación'),
       content: Text('¿Estás seguro de eliminar esta huella?\n'

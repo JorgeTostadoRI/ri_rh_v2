@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/jefe_field.dart';
 import 'package:ri_rh_v2/utils/command.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class ExpedienteForm extends StatefulWidget {
   const ExpedienteForm({
@@ -80,10 +81,28 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
     super.dispose();
   }
 
+  static const double _crossSpacing = 24;
+
+  /// Un par de campos: lado a lado en computadora; en navegador de celular
+  /// uno debajo de otro (lado a lado quedarían de ~80 px cada uno).
+  Widget _fila(List<Widget> campos) {
+    if (esNavegadorMovil) {
+      return Column(
+        crossAxisAlignment: .stretch,
+        spacing: _crossSpacing,
+        children: campos,
+      );
+    }
+    return Row(
+      spacing: _crossSpacing,
+      children: [
+        for (final campo in campos) Flexible(child: campo),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double crossSpacing = 24;
-
     return Column(
       mainAxisAlignment: .start,
       crossAxisAlignment: .stretch,
@@ -93,52 +112,38 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
           icon: LucideIcons.user,
           title: 'Datos Generales',
           children: [
-            Row(
-              spacing: crossSpacing,
-              children: [
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _nombre,
-                    decoration: InputDecoration(
-                      labelText: 'NOMBRE COMPLETO',
-                    ),
-                  ),
+            _fila([
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _nombre,
+                decoration: InputDecoration(
+                  labelText: 'NOMBRE COMPLETO',
                 ),
-                Flexible(
-                  child: TextField(
-                    readOnly: widget.readOnly,
-                    controller: _nss,
-                    decoration: InputDecoration(
-                      labelText: 'NSS',
-                    ),
-                  ),
+              ),
+              TextField(
+                readOnly: widget.readOnly,
+                controller: _nss,
+                decoration: InputDecoration(
+                  labelText: 'NSS',
                 ),
-              ],
-            ),
-            Row(
-              spacing: crossSpacing,
-              children: [
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _curp,
-                    decoration: InputDecoration(
-                      labelText: 'CURP',
-                    ),
-                  ),
+              ),
+            ]),
+            _fila([
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _curp,
+                decoration: InputDecoration(
+                  labelText: 'CURP',
                 ),
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _rfc,
-                    decoration: InputDecoration(
-                      labelText: 'RFC',
-                    ),
-                  ),
+              ),
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _rfc,
+                decoration: InputDecoration(
+                  labelText: 'RFC',
                 ),
-              ],
-            ),
+              ),
+            ]),
             TextFormField(
               readOnly: true,
               controller: _usuario,
@@ -152,90 +157,67 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
           icon: LucideIcons.briefcase,
           title: 'Datos Laborales',
           children: [
-            Row(
-              spacing: crossSpacing,
-              children: [
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _puesto,
-                    decoration: InputDecoration(
-                      labelText: 'PUESTO',
-                    ),
-                  ),
+            _fila([
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _puesto,
+                decoration: InputDecoration(
+                  labelText: 'PUESTO',
                 ),
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _salario,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(LucideIcons.dollarSign, color: labelTextColor),
-                      labelText: 'SALARIO DIARIO',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              spacing: crossSpacing,
-              children: [
-                Flexible(
-                  child: DateFormField(
-                    readOnly: widget.readOnly,
-                    controller: _alta,
-                    decoration: InputDecoration(
-                      labelText: 'FECHA ALTA',
-                    ),
-                  ),
-                ),
-                Flexible(
-                  child: JefeField(
-                    candidates: widget.jefeCandidates,
-                    currentUserId: widget.baseEmpleado.user?.id,
-                    selectedJefeId: widget.baseEmpleado.user?.jefeId,
-                    assignJefe: widget.assignJefe,
-                  ),
-                ),
-              ],
-            ),
-            if (widget.fechaTerminacion != null)
-              Row(
-                spacing: crossSpacing,
-                children: [
-                  Flexible(child: widget.fechaTerminacion!),
-                  // Mitad derecha vacía: el campo queda alineado bajo FECHA ALTA.
-                  const Flexible(child: SizedBox.shrink()),
-                ],
               ),
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _salario,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(LucideIcons.dollarSign, color: labelTextColor),
+                  labelText: 'SALARIO DIARIO',
+                ),
+              ),
+            ]),
+            _fila([
+              DateFormField(
+                readOnly: widget.readOnly,
+                controller: _alta,
+                decoration: InputDecoration(
+                  labelText: 'FECHA ALTA',
+                ),
+              ),
+              JefeField(
+                candidates: widget.jefeCandidates,
+                currentUserId: widget.baseEmpleado.user?.id,
+                selectedJefeId: widget.baseEmpleado.user?.jefeId,
+                assignJefe: widget.assignJefe,
+              ),
+            ]),
+            if (widget.fechaTerminacion != null)
+              _fila([
+                widget.fechaTerminacion!,
+                // Mitad derecha vacía: el campo queda alineado bajo FECHA ALTA.
+                // (En celular no se agrega: va solo a todo el ancho.)
+                if (!esNavegadorMovil) const SizedBox.shrink(),
+              ]),
           ],
         ),
         IconCard(
           icon: LucideIcons.phone,
           title: 'Contacto y Dirección',
           children: [
-            Row(
-              spacing: crossSpacing,
-              children: [
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _nombreEmergencia,
-                    decoration: InputDecoration(
-                      labelText: 'NOMBRE EMERGENCIA',
-                    ),
-                  ),
+            _fila([
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _nombreEmergencia,
+                decoration: InputDecoration(
+                  labelText: 'NOMBRE EMERGENCIA',
                 ),
-                Flexible(
-                  child: TextFormField(
-                    readOnly: widget.readOnly,
-                    controller: _contactoEmergencia,
-                    decoration: InputDecoration(
-                      labelText: 'CONTACTO EMERGENCIA',
-                    ),
-                  ),
+              ),
+              TextFormField(
+                readOnly: widget.readOnly,
+                controller: _contactoEmergencia,
+                decoration: InputDecoration(
+                  labelText: 'CONTACTO EMERGENCIA',
                 ),
-              ],
-            ),
+              ),
+            ]),
             Flexible(
               child: TextFormField(
                 readOnly: widget.readOnly,

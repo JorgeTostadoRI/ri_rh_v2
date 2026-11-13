@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 // Mismas opciones (y mismo criterio de exclusión de MASTER/ADMINISTRADOR/
 // COMPRADOR) que usa home_screen.dart para el auto-cambio de rol.
@@ -267,6 +268,10 @@ class _PuestoFormDialogState extends State<PuestoFormDialog> {
       builder: (context, _) {
         final running = widget.createPuesto.running || widget.editPuesto.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text(widget._isEditing ? 'Editar puesto' : 'Crear puesto'),
           content: SizedBox(
             width: 560,

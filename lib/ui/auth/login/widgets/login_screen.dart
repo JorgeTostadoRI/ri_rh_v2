@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
 import 'package:ri_rh_v2/ui/core/ui/version_label.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -78,11 +79,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
+    final movil = esNavegadorMovil;
 
     return Center(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(40),
+          padding: EdgeInsets.all(movil ? 16 : 40),
           child: Column(
             spacing: 24,
             children: [
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Text(
                       'Recursos Humanos',
-                      style: textTheme.headlineMedium,
+                      style: movil ? textTheme.headlineSmall : textTheme.headlineMedium,
                     ),
                     Text(
                       'R&I AUTOMATION',
@@ -119,7 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 36),
                     SizedBox(
-                      width: 400,
+                      // En celular ocupa el ancho disponible (400 no cabe).
+                      width: movil ? double.infinity : 400,
                       child: Form(
                         key: _formKey,
                         child: Column(

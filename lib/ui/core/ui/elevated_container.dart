@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class ElevatedContainer extends StatelessWidget {
   const ElevatedContainer({
@@ -32,7 +33,8 @@ class ElevatedContainer extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(40),
+      // En celular el margen interno de 40 se come demasiado ancho.
+      padding: EdgeInsets.all(esNavegadorMovil ? 20 : 40),
       child: child,
     );
   }

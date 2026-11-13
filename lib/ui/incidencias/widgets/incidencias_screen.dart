@@ -11,6 +11,7 @@ import 'package:ri_rh_v2/ui/core/viewmodels/auth_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/incidencias_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_category_card.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class IncidenciasScreen extends StatelessWidget {
   const IncidenciasScreen({
@@ -24,7 +25,7 @@ class IncidenciasScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Column(
           mainAxisAlignment: .start,
           crossAxisAlignment: .start,
@@ -39,7 +40,7 @@ class IncidenciasScreen extends StatelessWidget {
             Center(
               child: Wrap(
                 spacing: 20,
-                runSpacing: 20,
+                runSpacing: esNavegadorMovil ? 12 : 20,
                 alignment: .start,
                 children: [
                   IncidenciaCategoryCard(
@@ -179,7 +180,7 @@ class _PendingReviewNotification extends StatelessWidget {
                           backgroundColor:const Color(0xFFFDDCB0),
                           shape: BoxShape.circle,
                         ),
-                        Text.rich(
+                        _textoBanner(Text.rich(
                           TextSpan(
                             text: 'Tienes ',
                             style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
@@ -190,14 +191,14 @@ class _PendingReviewNotification extends StatelessWidget {
                               ),
                             ],
                           ),
-                        ),
+                        )),
                       ],
                     if (!hasNotifications)
-                      Text(
+                      _textoBanner(Text(
                         'Revisar historial de incidencias',
                         style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
-                      ),
-                    Spacer(),
+                      )),
+                    if (!esNavegadorMovil) Spacer(),
                     IconButton.filled(
                       onPressed: () => context.push(
                         Routes.pendingIncidencias,
@@ -254,11 +255,11 @@ class _MyIncidenciasBanner extends StatelessWidget {
               backgroundColor: const Color(0xFFF5E8D8),
               shape: BoxShape.circle,
             ),
-            Text(
+            _textoBanner(Text(
               'Consulta el estatus de tus solicitudes',
               style: textTheme.labelLarge?.copyWith(fontWeight: .w600),
-            ),
-            Spacer(),
+            )),
+            if (!esNavegadorMovil) Spacer(),
             IconButton.filled(
               onPressed: () => context.push(Routes.misIncidencias),
               icon: Icon(LucideIcons.arrowRight),
@@ -273,3 +274,8 @@ class _MyIncidenciasBanner extends StatelessWidget {
     );
   }
 }
+
+/// En celular el texto de los avisos no cabe en una línea junto al ícono y la
+/// flecha: ahí ocupa el espacio que sobra y hace salto de línea (en lugar del
+/// Spacer). En computadora queda igual que siempre.
+Widget _textoBanner(Widget texto) => esNavegadorMovil ? Expanded(child: texto) : texto;

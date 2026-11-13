@@ -16,6 +16,7 @@ import 'package:ri_rh_v2/ui/expediente/widgets/expediente_files.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_expediente_viewmodel.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class PracticanteExpedienteScreen extends StatefulWidget {
   const PracticanteExpedienteScreen({
@@ -34,7 +35,7 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: ListenableBuilder(
           listenable: Listenable.merge([
             widget.viewmodel.load,
@@ -61,6 +62,46 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
             }
 
             final practicante = widget.viewmodel.practicante;
+            final datos = ExpedienteForm(
+              baseEmpleado: practicante.base,
+              readOnly: true,
+              jefeCandidates: widget.viewmodel.jefes,
+              assignJefe: widget.viewmodel.assignJefe,
+              fechaTerminacion: _FechaTerminacionField(viewmodel: widget.viewmodel),
+            );
+            final lateral = [
+              ExpedienteFiles(
+                files: practicante.base.files,
+                altaPracticante: practicante.alta,
+              ),
+              HorarioCard(
+                horarios: widget.viewmodel.horarios,
+                selectedHorarioId: practicante.base.user?.horarioId,
+                userNombre: practicante.base.nombre,
+                assignHorario: widget.viewmodel.assignHorario,
+                createCustomHorario: widget.viewmodel.createCustomHorario,
+                loadingHorarios: widget.viewmodel.loadHorarios.running,
+                hasUser: practicante.base.user != null,
+              ),
+              Badge(
+                backgroundColor: statusWarningColor,
+                label: const Text('!'),
+                isLabelVisible: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
+                child: IconCard(
+                  icon: LucideIcons.fingerprintPattern,
+                  title: 'Huellas',
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        context.go(Routes.huellasOfPracticante(practicante));
+                      },
+                      child: Text('Ver')
+                    ),
+                  ],
+                ),
+              ),
+            ];
+
             return Column(
               mainAxisSize: .min,
               crossAxisAlignment: .start,
@@ -70,61 +111,33 @@ class _PracticanteExpedienteScreenState extends State<PracticanteExpedienteScree
                   subtitle: practicante.base.nombre,
                   showBackButton: true,
                 ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  crossAxisAlignment: .start,
-                  children: [
-                    Flexible(
-                      flex: 3,
-                      child: ExpedienteForm(
-                        baseEmpleado: practicante.base,
-                        readOnly: true,
-                        jefeCandidates: widget.viewmodel.jefes,
-                        assignJefe: widget.viewmodel.assignJefe,
-                        fechaTerminacion: _FechaTerminacionField(viewmodel: widget.viewmodel),
+                SizedBox(height: esNavegadorMovil ? 16 : 32),
+            // Navegador de celular: con la columna derecha a 1/4 del ancho
+            // Documentación, Horario y Huellas quedarían de ~75 px. Va todo
+            // en una columna: primero los datos y abajo lo de la derecha.
+                if (esNavegadorMovil)
+                  Column(
+                    crossAxisAlignment: .stretch,
+                    children: [datos, ...lateral],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    crossAxisAlignment: .start,
+                    children: [
+                      Flexible(
+                        flex: 3,
+                        child: datos,
                       ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: .stretch,
-                        children: [
-                          ExpedienteFiles(
-                            files: practicante.base.files,
-                            altaPracticante: practicante.alta,
-                          ),
-                          HorarioCard(
-                            horarios: widget.viewmodel.horarios,
-                            selectedHorarioId: practicante.base.user?.horarioId,
-                            userNombre: practicante.base.nombre,
-                            assignHorario: widget.viewmodel.assignHorario,
-                            createCustomHorario: widget.viewmodel.createCustomHorario,
-                            loadingHorarios: widget.viewmodel.loadHorarios.running,
-                            hasUser: practicante.base.user != null,
-                          ),
-                          Badge(
-                            backgroundColor: statusWarningColor,
-                            label: const Text('!'),
-                            isLabelVisible: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
-                            child: IconCard(
-                              icon: LucideIcons.fingerprintPattern,
-                              title: 'Huellas',
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    context.go(Routes.huellasOfPracticante(practicante));
-                                  },
-                                  child: Text('Ver')
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      Flexible(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: .stretch,
+                          children: lateral,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             );
           }
@@ -238,6 +251,10 @@ class _AsignarFechaTerminacionDialogState extends State<_AsignarFechaTerminacion
       builder: (context, _) {
         final running = _command.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: const Text('Asignar fecha de terminación'),
           content: SizedBox(
             width: 380,

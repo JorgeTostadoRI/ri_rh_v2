@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/avisos/viewmodels/avisos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/aviso_card.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/box_container.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class AvisosListView extends StatelessWidget {
   const AvisosListView({
@@ -79,46 +80,57 @@ class AvisosListView extends StatelessWidget {
             }
           ),
           const SizedBox(height: 32),
+          // En celular la lista crece con los avisos (se desplaza toda la
+          // página) en lugar de un recuadro de 300 px con su propio scroll.
+          if (esNavegadorMovil)
+            _lista(dentroDeLaPagina: true)
+          else
           SizedBox(
             height: 300,
-            child: ListenableBuilder(
-              listenable: viewmodel,
-              builder: (context, _) {
-                if (viewmodel.load.running) {
-                  return Center(
-                    child: CircularProgressIndicator(color: primaryColor),
-                  );
-                }
-
-                if (viewmodel.load.error) {
-                  return Center(
-                    child: ElevatedButton.icon(
-                      onPressed: () => viewmodel.load.execute(viewmodel.focusedDay),
-                      icon: Icon(LucideIcons.rotateCcw),
-                      label: Text('Reintentar'),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  itemCount: viewmodel.avisos.length,
-                  itemBuilder: (context, index) {
-                    final aviso = viewmodel.avisos[index];
-                    return Padding(
-                      padding: index != 0 ? const EdgeInsets.only(top: 16.0) : EdgeInsets.zero,
-                      child: AvisoCard(
-                        aviso: aviso,
-                        onUpdate: viewmodel.hasPermissions ? _onUpdateHandler : null,
-                        onDelete: viewmodel.hasPermissions ? _onDeleteHandler : null,
-                      ),
-                    );
-                  }
-                );
-              }
-            ),
+            child: _lista(dentroDeLaPagina: false),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _lista({required bool dentroDeLaPagina}) {
+    return ListenableBuilder(
+      listenable: viewmodel,
+      builder: (context, _) {
+        if (viewmodel.load.running) {
+          return Center(
+            child: CircularProgressIndicator(color: primaryColor),
+          );
+        }
+
+        if (viewmodel.load.error) {
+          return Center(
+            child: ElevatedButton.icon(
+              onPressed: () => viewmodel.load.execute(viewmodel.focusedDay),
+              icon: Icon(LucideIcons.rotateCcw),
+              label: Text('Reintentar'),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: dentroDeLaPagina,
+          physics: dentroDeLaPagina ? const NeverScrollableScrollPhysics() : null,
+          itemCount: viewmodel.avisos.length,
+          itemBuilder: (context, index) {
+            final aviso = viewmodel.avisos[index];
+            return Padding(
+              padding: index != 0 ? const EdgeInsets.only(top: 16.0) : EdgeInsets.zero,
+              child: AvisoCard(
+                aviso: aviso,
+                onUpdate: viewmodel.hasPermissions ? _onUpdateHandler : null,
+                onDelete: viewmodel.hasPermissions ? _onDeleteHandler : null,
+              ),
+            );
+          }
+        );
+      }
     );
   }
 }

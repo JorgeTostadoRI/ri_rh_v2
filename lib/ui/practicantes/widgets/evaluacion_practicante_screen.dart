@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/evaluacion_practicante_viewmodel.dart';
 import 'package:ri_rh_v2/ui/puestos/widgets/puesto_form_dialog.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Pantalla donde el jefe directo decide qué pasa con un practicante al
 /// terminar sus prácticas: contratarlo como empleado o terminarlas. Llega
@@ -214,51 +215,68 @@ class _EvaluacionPracticanteScreenState extends State<EvaluacionPracticanteScree
     final opciones = widget.viewmodel.opcionesPuesto;
     final valor = opciones.any((p) => p.id == _puestoId) ? _puestoId : null;
     final puedeEditar = widget.viewmodel.puedeEditarPuestos;
+    final lista = DropdownButtonFormField<int>(
+      key: ValueKey('puesto-$valor-${opciones.length}'),
+      initialValue: valor,
+      isExpanded: true,
+      decoration: const InputDecoration(labelText: 'PUESTO COMO EMPLEADO'),
+      items: [
+        for (final p in opciones)
+          DropdownMenuItem(value: p.id, child: Text(p.nombre, overflow: TextOverflow.ellipsis)),
+      ],
+      onChanged: (value) => setState(() {
+        _puestoId = value;
+        _aplicarRolDelPuesto(opciones.where((p) => p.id == value).firstOrNull?.rol);
+      }),
+    );
+    final botones = [
+      IconButton(
+        tooltip: 'Crear puesto nuevo',
+        onPressed: _openCreatePuestoDialog,
+        icon: const Icon(Icons.add_circle_outline),
+      ),
+      IconButton(
+        tooltip: 'Editar puesto',
+        onPressed: _puestoSeleccionado == null ? null : _openEditPuestoDialog,
+        icon: const Icon(Icons.edit_outlined),
+      ),
+      ListenableBuilder(
+        listenable: widget.viewmodel.deletePuesto,
+        builder: (context, _) {
+          final running = widget.viewmodel.deletePuesto.running;
+          return IconButton(
+            tooltip: 'Eliminar puesto',
+            onPressed: _puestoSeleccionado == null || running ? null : _confirmDeletePuesto,
+            icon: running
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Icon(Icons.delete_outline),
+          );
+        },
+      ),
+    ];
+
+    // Navegador de celular: junto a los 3 botones la lista quedaría de ~150
+    // px; va a todo el ancho y los botones abajo, a la derecha.
+    if (esNavegadorMovil) {
+      return Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          lista,
+          if (puedeEditar)
+            Row(
+              mainAxisAlignment: .end,
+              children: botones,
+            ),
+        ],
+      );
+    }
+
     return Row(
       spacing: 12,
       crossAxisAlignment: .end,
       children: [
-        Expanded(
-          child: DropdownButtonFormField<int>(
-            key: ValueKey('puesto-$valor-${opciones.length}'),
-            initialValue: valor,
-            isExpanded: true,
-            decoration: const InputDecoration(labelText: 'PUESTO COMO EMPLEADO'),
-            items: [
-              for (final p in opciones)
-                DropdownMenuItem(value: p.id, child: Text(p.nombre, overflow: TextOverflow.ellipsis)),
-            ],
-            onChanged: (value) => setState(() {
-              _puestoId = value;
-              _aplicarRolDelPuesto(opciones.where((p) => p.id == value).firstOrNull?.rol);
-            }),
-          ),
-        ),
-        if (puedeEditar) ...[
-          IconButton(
-            tooltip: 'Crear puesto nuevo',
-            onPressed: _openCreatePuestoDialog,
-            icon: const Icon(Icons.add_circle_outline),
-          ),
-          IconButton(
-            tooltip: 'Editar puesto',
-            onPressed: _puestoSeleccionado == null ? null : _openEditPuestoDialog,
-            icon: const Icon(Icons.edit_outlined),
-          ),
-          ListenableBuilder(
-            listenable: widget.viewmodel.deletePuesto,
-            builder: (context, _) {
-              final running = widget.viewmodel.deletePuesto.running;
-              return IconButton(
-                tooltip: 'Eliminar puesto',
-                onPressed: _puestoSeleccionado == null || running ? null : _confirmDeletePuesto,
-                icon: running
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.delete_outline),
-              );
-            },
-          ),
-        ],
+        Expanded(child: lista),
+        if (puedeEditar) ...botones,
       ],
     );
   }
@@ -276,7 +294,7 @@ class _EvaluacionPracticanteScreenState extends State<EvaluacionPracticanteScree
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         constraints: const BoxConstraints(maxWidth: 640),
         child: Column(
           crossAxisAlignment: .start,
@@ -400,11 +418,15 @@ class _EvaluacionPracticanteScreenState extends State<EvaluacionPracticanteScree
                       ),
                     ListenableBuilder(
                       listenable: widget.viewmodel.responder,
-                      builder: (context, _) => ElevatedButton(
-                        onPressed: _respuesta == null || widget.viewmodel.responder.running
-                            ? null
-                            : () => _enviar(detalle),
-                        child: const Text('Enviar respuesta'),
+                      builder: (context, _) => SizedBox(
+                        // En celular, a todo el ancho para que sea fácil de tocar.
+                        width: esNavegadorMovil ? double.infinity : null,
+                        child: ElevatedButton(
+                          onPressed: _respuesta == null || widget.viewmodel.responder.running
+                              ? null
+                              : () => _enviar(detalle),
+                          child: const Text('Enviar respuesta'),
+                        ),
                       ),
                     ),
                   ],

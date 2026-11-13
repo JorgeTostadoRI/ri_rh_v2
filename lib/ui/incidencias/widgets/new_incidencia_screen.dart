@@ -3,6 +3,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/new_incidencia_viewmodel.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_form.dart';
 import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class NewIncidenciaScreen extends StatefulWidget {
   const NewIncidenciaScreen({
@@ -59,9 +60,11 @@ class _NewIncidenciaScreenState extends State<NewIncidenciaScreen> {
     return ListenableBuilder(
       listenable: _viewmodel,
       builder: (context, _) {
+        final movil = esNavegadorMovil;
+
         return SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(32),
+            padding: EdgeInsets.all(movil ? 16 : 32),
             child: Column(
               mainAxisAlignment: .start,
               crossAxisAlignment: .start,
@@ -70,13 +73,22 @@ class _NewIncidenciaScreenState extends State<NewIncidenciaScreen> {
                   spacing: 16,
                   children: [
                     AppBackButton(),
-                    Text(
-                      'Nueva Incidencia - ${widget.category.label}',
-                      style: TextTheme.of(context).headlineLarge,
-                    ),
+                    if (movil)
+                      // En celular el título no cabe en una línea.
+                      Expanded(
+                        child: Text(
+                          'Nueva Incidencia - ${widget.category.label}',
+                          style: TextTheme.of(context).headlineSmall,
+                        ),
+                      )
+                    else
+                      Text(
+                        'Nueva Incidencia - ${widget.category.label}',
+                        style: TextTheme.of(context).headlineLarge,
+                      ),
                   ],
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: movil ? 16 : 40),
                 IncidenciaForm(viewmodel: _viewmodel, category: widget.category),
               ],
             ),

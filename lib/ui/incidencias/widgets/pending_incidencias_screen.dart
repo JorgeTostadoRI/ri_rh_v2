@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_filters.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_approve_dialog.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_overview_dialog.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class PendingIncidenciasScreen extends StatefulWidget {
   const PendingIncidenciasScreen({
@@ -73,7 +74,7 @@ class _PendingIncidenciasScreenState extends State<PendingIncidenciasScreen> wit
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(40.0),
+      padding: EdgeInsets.all(esNavegadorMovil ? 16.0 : 40.0),
       child: NestedScrollView(
         headerSliverBuilder: ((context, innerBoxIsScrolled) {
           return [
@@ -217,45 +218,14 @@ class _IncidenciaListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
+    if (esNavegadorMovil) return _buildMovil(context);
+
     return ListTile(
       tileColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      leading: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          switch(incidencia.state!) {
-            IncidenciaState.pending => ColorIcon(
-              icon: LucideIcons.clock,
-              backgroundColor: statusWarningBgColor,
-            ),
-            IncidenciaState.rejected => ColorIcon(
-              icon: LucideIcons.x,
-              backgroundColor: statusFailureBgColor,
-              iconColor: statusFailureColor,
-            ),
-            IncidenciaState.approved => ColorIcon(
-              icon: LucideIcons.circleCheckBig,
-              backgroundColor: statusSuccessBgColor,
-              iconColor: statusSuccessColor,
-            ),
-          },
-          if (incidencia.checadorDiscrepancy?.isSuspicious ?? false)
-            Positioned(
-              top: -4,
-              right: -4,
-              child: Tooltip(
-                message: incidencia.checadorDiscrepancy!.message,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(color: Colors.white, shape: .circle),
-                  child: Icon(LucideIcons.triangleAlert, color: statusWarningColor, size: 16),
-                ),
-              ),
-            ),
-        ],
-      ),
+      leading: _iconoEstado,
       trailing: StepTimeline(
         length: incidencia.totalApprovalSteps,
         currentStep: incidencia.approvalStepIndex,
@@ -283,31 +253,119 @@ class _IncidenciaListTile extends StatelessWidget {
         overflow: .ellipsis,
         maxLines: 2,
       ),
-      onTap: () async {
-        if (!canApprove) {
-          showDialog(
-            context: context,
-            builder: (context) => IncidenciaOverviewDialog(
-              incidencia: incidencia,
-              onDownload: onDownload,
+      onTap: () => _abrir(context),
+    );
+  }
+
+  /// Ícono de estado, con el triangulito si hay alerta del checador.
+  Widget get _iconoEstado => Stack(
+    clipBehavior: Clip.none,
+    children: [
+      switch(incidencia.state!) {
+        IncidenciaState.pending => ColorIcon(
+          icon: LucideIcons.clock,
+          backgroundColor: statusWarningBgColor,
+        ),
+        IncidenciaState.rejected => ColorIcon(
+          icon: LucideIcons.x,
+          backgroundColor: statusFailureBgColor,
+          iconColor: statusFailureColor,
+        ),
+        IncidenciaState.approved => ColorIcon(
+          icon: LucideIcons.circleCheckBig,
+          backgroundColor: statusSuccessBgColor,
+          iconColor: statusSuccessColor,
+        ),
+      },
+      if (incidencia.checadorDiscrepancy?.isSuspicious ?? false)
+        Positioned(
+          top: -4,
+          right: -4,
+          child: Tooltip(
+            message: incidencia.checadorDiscrepancy!.message,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(color: Colors.white, shape: .circle),
+              child: Icon(LucideIcons.triangleAlert, color: statusWarningColor, size: 16),
             ),
-          );
-          return;
-        }
+          ),
+        ),
+    ],
+  );
 
-        final IncidenciaApproveDialogResult? result = await showDialog<IncidenciaApproveDialogResult>(
-          context: context,
-          builder: (context) {
-            return IncidenciaApproveDialog(
-              incidencia: incidencia,
-            );
-          }
+  Future<void> _abrir(BuildContext context) async {
+    if (!canApprove) {
+      showDialog(
+        context: context,
+        builder: (context) => IncidenciaOverviewDialog(
+          incidencia: incidencia,
+          onDownload: onDownload,
+        ),
+      );
+      return;
+    }
+
+    final IncidenciaApproveDialogResult? result = await showDialog<IncidenciaApproveDialogResult>(
+      context: context,
+      builder: (context) {
+        return IncidenciaApproveDialog(
+          incidencia: incidencia,
         );
-
-        if (result == null) return;
-
-        onResult(incidencia, result);
       }
+    );
+
+    if (result == null) return;
+
+    onResult(incidencia, result);
+  }
+
+  /// Navegador de celular: en la fila de computadora el título va en una sola
+  /// línea entre el ícono y la línea de pasos y casi no se lee a quién es.
+  /// Aquí es una tarjeta: ícono y título completo arriba, "CON GOCE",
+  /// motivo y la línea de pasos abajo.
+  Widget _buildMovil(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => _abrir(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 8,
+            children: [
+              Row(
+                spacing: 12,
+                children: [
+                  _iconoEstado,
+                  Expanded(
+                    child: Text(
+                      '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
+                      style: textTheme.titleMedium?.copyWith(fontWeight: .w700),
+                    ),
+                  ),
+                ],
+              ),
+              if (incidencia.category == IncidenciaCategory.permiso && incidencia.conGoce == true)
+                StatusChip(type: StatusChipType.warning, label: 'CON GOCE'),
+              Text(
+                incidencia.reason,
+                style: textTheme.labelLarge,
+                overflow: .ellipsis,
+                maxLines: 2,
+              ),
+              StepTimeline(
+                length: incidencia.totalApprovalSteps,
+                currentStep: incidencia.approvalStepIndex,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

@@ -25,7 +25,14 @@ abstract interface class WebVideoRecorder {
   /// -- sus nombres ya vienen poblados sin necesitar una llamada
   /// `getUserMedia` adicional por dispositivo (a diferencia de
   /// `camera_web`, que es justo lo que rompe en ciertos webcams).
-  Future<List<CameraOption>> open();
+  ///
+  /// Con [movil] (navegador de celular) pide de preferencia la camara
+  /// frontal y el video llena el recuadro de la vista previa.
+  Future<List<CameraOption>> open({bool movil = false});
+
+  /// deviceId de la camara que se esta usando (despues de [open]), o null
+  /// si el navegador no lo reporta.
+  String? get currentDeviceId;
 
   /// Cambia a la camara indicada -- una sola llamada `getUserMedia` nueva,
   /// iniciada por el usuario (nunca automatica/en cadena).

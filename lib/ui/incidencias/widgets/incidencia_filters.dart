@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/pending_incidencias_viewmodel.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class IncidenciaFilters extends StatefulWidget {
   const IncidenciaFilters({
@@ -47,68 +48,10 @@ class _IncidenciaFiltersState extends State<IncidenciaFilters> {
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      child: Row(
+      child: esNavegadorMovil ? _buildMovil() : Row(
         spacing: 12,
         children: [
-          IconButton(
-            onPressed: () async {
-              final today = DateTime.now();
-              final selection = await showDateRangePicker(
-                context: context,
-                firstDate: DateTime(2026, 01, 01),
-                lastDate: today,
-              );
-              if (selection == null) {
-                return;
-              }
-              setState(() => _range = selection);
-            },
-            icon: Badge(
-              isLabelVisible: _range != null,
-              child: Icon(LucideIcons.calendar),
-            ),
-            tooltip: _range == null
-              ? 'Todos'
-              : '${yMd.format(_range!.start)} - ${yMd.format(_range!.end)}'
-          ),
-          IconButton(
-            onPressed: () async {
-              final selection = await showDialog<List<int>?>(
-                context: context,
-                builder: (context) => _UsersDialog(
-                  users: widget.viewmodel.users,
-                  initialSelection: _solicitores,
-                ),
-              );
-              if (selection == null) {
-                return;
-              }
-              setState(() => _solicitores = selection);
-            },
-            icon: Badge.count(
-              count: _solicitores.length,
-              isLabelVisible: _solicitores.isNotEmpty,
-              child: Icon(LucideIcons.user),
-            ),
-            tooltip: 'Solicitor',
-          ),
-          IconButton(
-            onPressed: () async {
-              final selection = await showDialog<List<IncidenciaCategory>?>(
-                context: context,
-                builder: (context) => _CategoriesDialog(categories: _categories),
-              );
-              if (selection != null) {
-                setState(() => _categories = selection);
-              }
-            },
-            icon: Badge.count(
-              count: _categories.length,
-              isLabelVisible: _categories.isNotEmpty,
-              child: Icon(LucideIcons.shapes),
-            ),
-            tooltip: 'Categorías',
-          ),
+          ..._filtros(),
           Spacer(),
           OutlinedButton(
             onPressed: clearFilters,
@@ -121,6 +64,102 @@ class _IncidenciaFiltersState extends State<IncidenciaFilters> {
         ],
       ),
     );
+  }
+
+  /// Navegador de celular: en una sola fila no caben los 3 filtros y los 2
+  /// botones. Arriba van los filtros y abajo "Limpiar" y "Aplicar".
+  Widget _buildMovil() {
+    return Column(
+      spacing: 8,
+      children: [
+        Row(
+          spacing: 12,
+          children: _filtros(),
+        ),
+        Row(
+          spacing: 12,
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: clearFilters,
+                child: Text('Limpiar'),
+              ),
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: applyFilters,
+                child: Text('Aplicar'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Fecha, solicitor y categorías.
+  List<Widget> _filtros() {
+    return [
+      IconButton(
+        onPressed: () async {
+          final today = DateTime.now();
+          final selection = await showDateRangePicker(
+            context: context,
+            firstDate: DateTime(2026, 01, 01),
+            lastDate: today,
+          );
+          if (selection == null) {
+            return;
+          }
+          setState(() => _range = selection);
+        },
+        icon: Badge(
+          isLabelVisible: _range != null,
+          child: Icon(LucideIcons.calendar),
+        ),
+        tooltip: _range == null
+          ? 'Todos'
+          : '${yMd.format(_range!.start)} - ${yMd.format(_range!.end)}'
+      ),
+      IconButton(
+        onPressed: () async {
+          final selection = await showDialog<List<int>?>(
+            context: context,
+            builder: (context) => _UsersDialog(
+              users: widget.viewmodel.users,
+              initialSelection: _solicitores,
+            ),
+          );
+          if (selection == null) {
+            return;
+          }
+          setState(() => _solicitores = selection);
+        },
+        icon: Badge.count(
+          count: _solicitores.length,
+          isLabelVisible: _solicitores.isNotEmpty,
+          child: Icon(LucideIcons.user),
+        ),
+        tooltip: 'Solicitor',
+      ),
+      IconButton(
+        onPressed: () async {
+          final selection = await showDialog<List<IncidenciaCategory>?>(
+            context: context,
+            builder: (context) => _CategoriesDialog(categories: _categories),
+          );
+          if (selection != null) {
+            setState(() => _categories = selection);
+          }
+        },
+        icon: Badge.count(
+          count: _categories.length,
+          isLabelVisible: _categories.isNotEmpty,
+          child: Icon(LucideIcons.shapes),
+        ),
+        tooltip: 'Categorías',
+      ),
+    ];
   }
 
   void clearFilters() {
@@ -167,6 +206,10 @@ class _CategoriesDialogState extends State<_CategoriesDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       scrollable: true,
       title: Text('Categorías'),
       content: SingleChildScrollView(
@@ -249,6 +292,10 @@ class __UsersDialogState extends State<_UsersDialog> {
         }).toList();
 
     return AlertDialog(
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       scrollable: true,
       title: Text('Solicitores'),
       content: SingleChildScrollView(

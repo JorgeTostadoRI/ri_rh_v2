@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
 import 'package:ri_rh_v2/ui/core/ui/version_label.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 import 'package:ri_rh_v2/ui/home/viewmodels/home_viewmodel.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -40,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
+    final movil = esNavegadorMovil;
 
     return Center(
       child: SingleChildScrollView(
@@ -56,12 +58,13 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             return Padding(
-              padding: const EdgeInsets.all(48),
+              padding: EdgeInsets.all(movil ? 16 : 48),
               child: Column(
                 spacing: 24,
                 children: [
                   SizedBox(
-                    width: 400,
+                    // En celular la tarjeta ocupa el ancho disponible (400 no cabe).
+                    width: movil ? double.infinity : 400,
                     child: ElevatedContainer(
                       child: Column(
                         spacing: 24,
@@ -85,7 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
-                                      Text(user.nombre, style: textTheme.headlineMedium),
+                                      Text(
+                                        user.nombre,
+                                        style: movil ? textTheme.headlineSmall : textTheme.headlineMedium,
+                                      ),
                                       Text(
                                         '${user.rol?.capitalize() ?? "Sin rol"} - ${user.departamento?.nombre ?? "Sin departamento"}',
                                         style: textTheme.labelLarge,
@@ -101,6 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               final running = widget.viewmodel.updateRole.running;
                   
                               return DropdownButtonFormField<String?>(
+                                // En celular angosto el texto se corta con "…" en vez
+                                // de salirse de la tarjeta.
+                                isExpanded: movil,
                                 decoration: InputDecoration(
                                   labelText: 'Rol',
                                   hintText: 'Selecciona un rol',
@@ -133,6 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               final running = widget.viewmodel.updateDepartment.running;
                   
                               return DropdownButtonFormField<Departamento?>(
+                                // En celular angosto el texto se corta con "…" en vez
+                                // de salirse de la tarjeta.
+                                isExpanded: movil,
                                 decoration: InputDecoration(
                                   labelText: 'Departamento',
                                   hintText: 'Selecciona un departamento',

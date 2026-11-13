@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
@@ -18,6 +19,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/clock.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class AsistenciaScreen extends StatefulWidget {
   const AsistenciaScreen({
@@ -287,8 +289,25 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
     super.dispose();
   }
 
+  /// "Registra tu asistencia aquí" (posición remota): lleva al Ingreso Manual.
+  void _irAIngresoRemoto() {
+    final currentUser = _viewmodel.currentUser;
+    if (currentUser != null && !currentUser.isRemote) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lo sentimos pero no estás permitido para registrar tu asistencia remotamente.'),
+        ),
+      );
+      return;
+    }
+
+    context.go(Routes.ingresoManual);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (esNavegadorMovil) return _buildMovil(context);
+
     return Stack(
       children: [
         SingleChildScrollView(
@@ -407,19 +426,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                                       text: 'Registra tu asistencia aquí',
                                       style: TextTheme.of(context).bodySmall?.copyWith(color: primaryColor),
                                       recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          final currentUser = _viewmodel.currentUser;
-                                          if (currentUser != null && !currentUser.isRemote) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('Lo sentimos pero no estás permitido para registrar tu asistencia remotamente.'),
-                                              ),
-                                            );
-                                            return;
-                                          }
-        
-                                          context.go(Routes.ingresoManual);
-                                        },
+                                        ..onTap = _irAIngresoRemoto,
                                     ),
                                   ],
                                 ),
@@ -443,6 +450,60 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Navegador de celular: una sola columna. Un teléfono no tiene lector de
+  /// huella, así que no se muestra esa sección ni el aviso del escáner; en su
+  /// lugar va el botón al registro remoto (Ingreso Manual con foto).
+  Widget _buildMovil(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Text(
+            'SISTEMA DE REGISTRO',
+            style: textTheme.titleSmall?.copyWith(
+              color: primaryColor,
+              letterSpacing: 0.35,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '¡Bienvenido!',
+            style: textTheme.displayLarge?.copyWith(
+              color: headingTextColor,
+              fontSize: 40,
+              fontWeight: .w900,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // El reloj mide 700 px de ancho en computadora; aquí se escala
+          // para que quepa en la pantalla.
+          FittedBox(fit: BoxFit.scaleDown, child: Clock()),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _irAIngresoRemoto,
+              icon: const Icon(LucideIcons.camera),
+              label: const Text('Registrar mi asistencia'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Solo para posiciones remotas. Si tienes problemas con el registro, contacta a Recursos Humanos.',
+            style: textTheme.bodySmall?.copyWith(color: Color(0xFFC4A47A)),
+          ),
+          MotdList(viewmodel: _viewmodel),
+        ],
+      ),
     );
   }
 }

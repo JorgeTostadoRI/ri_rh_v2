@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleado_actions_menu.dart';
 import 'package:ri_rh_v2/ui/empleados/widgets/empleado_status_chip.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class EmpleadosScreen extends StatefulWidget {
   const EmpleadosScreen({
@@ -62,38 +63,41 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Column(
           mainAxisAlignment: .start,
           crossAxisAlignment: .start,
           children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              crossAxisAlignment: .start,
-              children: [
-                Column(
-                  crossAxisAlignment: .start,
-                  spacing: 8,
-                  children: [
-                    Text(
-                      'Listado de Empleados',
-                      style: TextTheme.of(context).headlineLarge?.copyWith(
-                        fontSize: 48,
+            if (esNavegadorMovil)
+              _encabezadoMovil(context)
+            else
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                crossAxisAlignment: .start,
+                children: [
+                  Column(
+                    crossAxisAlignment: .start,
+                    spacing: 8,
+                    children: [
+                      Text(
+                        'Listado de Empleados',
+                        style: TextTheme.of(context).headlineLarge?.copyWith(
+                          fontSize: 48,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Gestiona y visualiza la información de todo el personal activo.',
-                      style: TextTheme.of(context).titleSmall,
-                    ),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => context.push('${Routes.empleados}/${Routes.newEmpleado}'),
-                  icon: Icon(LucideIcons.userPlus),
-                  label: Text('Nuevo Empleado'),
-                ),
-              ],
-            ),
+                      Text(
+                        'Gestiona y visualiza la información de todo el personal activo.',
+                        style: TextTheme.of(context).titleSmall,
+                      ),
+                    ],
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => context.push('${Routes.empleados}/${Routes.newEmpleado}'),
+                    icon: Icon(LucideIcons.userPlus),
+                    label: Text('Nuevo Empleado'),
+                  ),
+                ],
+              ),
             const SizedBox(height: 32),
             TextField(
               decoration: InputDecoration(
@@ -133,6 +137,18 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                   );
                 }
             
+                // Navegador de celular: una tarjeta por fila, del alto que
+                // necesite su contenido.
+                if (esNavegadorMovil) {
+                  return Column(
+                    crossAxisAlignment: .stretch,
+                    spacing: 16,
+                    children: [
+                      for (final empleado in widget.viewmodel.empleados) _tarjeta(empleado),
+                    ],
+                  );
+                }
+
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -143,28 +159,56 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                     crossAxisSpacing: 24,
                     mainAxisExtent: 350,
                   ),
-                  itemBuilder: (context, index) {
-                    final empleado = widget.viewmodel.empleados[index];
-                    return BaseEmpleadoCard(
-                      baseEmpleado: empleado.base,
-                      statusChip: EmpleadoStatusChip(status: empleado.estatus, porAbandono: empleado.bajaPorAbandono),
-                      onExpedientePressed: () => context.go(Routes.expedienteOfEmpleado(empleado)),
-                      hasPendingActions: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
-                      actionsMenu: EmpleadoActionsMenu(
-                        empleado: empleado,
-                        cambiarEstatus: widget.viewmodel.cambiarEstatus,
-                        regenerarPassword: widget.viewmodel.regenerarPassword,
-                        revisionAbandono: widget.viewmodel.revisionAbandono,
-                        bajaPorAbandono: widget.viewmodel.bajaPorAbandono,
-                      ),
-                    );
-                  },
+                  itemBuilder: (context, index) => _tarjeta(widget.viewmodel.empleados[index]),
                 );
               }
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _tarjeta(Empleado empleado) {
+    return BaseEmpleadoCard(
+      baseEmpleado: empleado.base,
+      statusChip: EmpleadoStatusChip(status: empleado.estatus, porAbandono: empleado.bajaPorAbandono),
+      onExpedientePressed: () => context.go(Routes.expedienteOfEmpleado(empleado)),
+      hasPendingActions: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
+      actionsMenu: EmpleadoActionsMenu(
+        empleado: empleado,
+        cambiarEstatus: widget.viewmodel.cambiarEstatus,
+        regenerarPassword: widget.viewmodel.regenerarPassword,
+        revisionAbandono: widget.viewmodel.revisionAbandono,
+        bajaPorAbandono: widget.viewmodel.bajaPorAbandono,
+      ),
+    );
+  }
+
+  /// Navegador de celular: el título a 48 junto al botón no cabe; va el
+  /// título más chico y el botón abajo, a todo el ancho.
+  Widget _encabezadoMovil(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .stretch,
+      spacing: 8,
+      children: [
+        Text(
+          'Listado de Empleados',
+          style: TextTheme.of(context).headlineLarge?.copyWith(
+            fontSize: 32,
+          ),
+        ),
+        Text(
+          'Gestiona y visualiza la información de todo el personal activo.',
+          style: TextTheme.of(context).titleSmall,
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton.icon(
+          onPressed: () => context.push('${Routes.empleados}/${Routes.newEmpleado}'),
+          icon: Icon(LucideIcons.userPlus),
+          label: Text('Nuevo Empleado'),
+        ),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class BaseEmpleadoCard extends StatelessWidget {
   const BaseEmpleadoCard({
@@ -23,6 +24,8 @@ class BaseEmpleadoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (esNavegadorMovil) return _buildMovil(context);
+
     final dateFormat = DateFormat.yMMMd();
     return Badge(
       backgroundColor: statusWarningColor,
@@ -127,17 +130,129 @@ class BaseEmpleadoCard extends StatelessWidget {
                       spacing: 8,
                       children: [
                         OutlinedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Esta funcionalidad no se encuentra disponible.'),
-                              ),
-                            );
-                          },
+                          onPressed: () => _noDisponible(context),
                           child: Text('Estadísticas', style: TextStyle(fontSize: 12)),
                         ),
                         ?actionsMenu,
                       ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _noDisponible(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Esta funcionalidad no se encuentra disponible.'),
+      ),
+    );
+  }
+
+  /// Navegador de celular: una tarjeta por fila, del alto de su contenido.
+  /// El estatus va abajo del nombre (para que el nombre se lea completo) y
+  /// los botones en dos filas: "Ver Expediente" con el menú ⋮ y abajo
+  /// "Estadísticas".
+  Widget _buildMovil(BuildContext context) {
+    final dateFormat = DateFormat.yMMMd();
+    return Badge(
+      backgroundColor: statusWarningColor,
+      isLabelVisible: hasPendingActions,
+      label: const Text('!'),
+      child: Card(
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .start,
+            spacing: 8,
+            children: [
+              Text(
+                baseEmpleado.nombre,
+                style: TextTheme.of(context).headlineSmall,
+              ),
+              statusChip,
+              Row(
+                spacing: 6,
+                children: [
+                  Icon(
+                    LucideIcons.briefcase,
+                    color: primaryColor,
+                  ),
+                  Expanded(
+                    child: Text(
+                      baseEmpleado.puesto.nombre,
+                      style: TextTheme.of(context).labelMedium?.copyWith(
+                        color: primaryColor,
+                        fontWeight: .w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Flexible(
+                    child: _AttributeLabel(
+                      name: 'SALARIO DIARIO',
+                      icon: LucideIcons.dollarSign,
+                      value: baseEmpleado.salario.toString(),
+                    ),
+                  ),
+                  Flexible(
+                    child: _AttributeLabel(
+                      name: 'REGISTRADO EN',
+                      icon: LucideIcons.calendar,
+                      value: dateFormat.format(baseEmpleado.registradoEn!),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _AttributeLabel(
+                name: 'NSS (SEGURO SOCIAL)',
+                icon: LucideIcons.hospital,
+                value: baseEmpleado.nss,
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.only(top: 16),
+                decoration: BoxDecoration(
+                  border: BoxBorder.fromLTRB(
+                    top: const BorderSide(
+                      color: Color(0xFFF5E8D8),
+                      width: 0.8,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  spacing: 8,
+                  children: [
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: onExpedientePressed,
+                            child: Text('Ver Expediente'),
+                          ),
+                        ),
+                        ?actionsMenu,
+                      ],
+                    ),
+                    OutlinedButton(
+                      onPressed: () => _noDisponible(context),
+                      child: Text('Estadísticas'),
                     ),
                   ],
                 ),

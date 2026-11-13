@@ -19,7 +19,10 @@ class WebVideoRecorderImpl implements WebVideoRecorder {
   String get previewViewType => _unsupported();
 
   @override
-  Future<List<CameraOption>> open() => _unsupported();
+  Future<List<CameraOption>> open({bool movil = false}) => _unsupported();
+
+  @override
+  String? get currentDeviceId => _unsupported();
 
   @override
   Future<void> switchCamera(String deviceId) => _unsupported();

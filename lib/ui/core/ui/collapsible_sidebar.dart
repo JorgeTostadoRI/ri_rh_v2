@@ -10,7 +10,18 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
-  const CollapsibleSidebar({super.key});
+  const CollapsibleSidebar({
+    super.key,
+    this.enMenuMovil = false,
+    this.onNavegar,
+  });
+
+  /// `true` cuando va dentro del menú ☰ del navegador de celular (ver
+  /// MainScaffold): ahí no se colapsa, así que se oculta el botón de colapsar.
+  final bool enMenuMovil;
+
+  /// Se llama después de navegar (en celular, para cerrar el menú ☰).
+  final VoidCallback? onNavegar;
 
   @override
   State<CollapsibleSidebar> createState() => _CollapsibleSidebarState();
@@ -55,7 +66,10 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                         if (snapshot.data!) {
                           return InkWell(
                             mouseCursor: SystemMouseCursors.click,
-                            onTap: () => context.go(Routes.home),
+                            onTap: () {
+                              context.go(Routes.home);
+                              widget.onNavegar?.call();
+                            },
                             child: Container(
                               padding: EdgeInsets.all(4.0),
                               decoration: BoxDecoration(
@@ -69,7 +83,10 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                         } else {
                           return InkWell(
                             mouseCursor: SystemMouseCursors.click,
-                            onTap: () => context.go(Routes.login),
+                            onTap: () {
+                              context.go(Routes.login);
+                              widget.onNavegar?.call();
+                            },
                             child: Container(
                               padding: EdgeInsets.all(4.0),
                               decoration: BoxDecoration(
@@ -223,6 +240,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             },
           ),
           Spacer(),
+          if (!widget.enMenuMovil)
           IconButton.outlined(
             icon: Icon(
               isCollapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
@@ -297,7 +315,10 @@ class _NavItem extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),
           ),
-          onTap: () => context.go(route),
+          onTap: () {
+            context.go(route);
+            context.findAncestorWidgetOfExactType<CollapsibleSidebar>()?.onNavegar?.call();
+          },
         ),
       ),
     );

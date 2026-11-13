@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Solo MASTER/ADMINISTRADOR, o un LIDER del departamento de RH, pueden
 /// regenerar la contraseña de otro usuario (el backend hace el mismo
@@ -158,6 +159,10 @@ class _ConfirmRegenerarPasswordDialogState extends State<_ConfirmRegenerarPasswo
       builder: (context, _) {
         final running = widget.regenerarPassword.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Regenerar contraseña'),
           content: Text(
             '¿Confirmas que quieres regenerar la contraseña de ${widget.practicante.base.nombre}? '
@@ -236,6 +241,10 @@ class _ConfirmProcesoBajaDialogState extends State<_ConfirmProcesoBajaDialog> {
       builder: (context, _) {
         final running = widget.cambiarEstado.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Pasar a proceso de baja'),
           content: SizedBox(
             width: 380,
@@ -335,6 +344,10 @@ class _BajaDialogState extends State<_BajaDialog> {
       builder: (context, _) {
         final running = widget.cambiarEstado.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Pasar a inactivo'),
           content: SizedBox(
             width: 380,

@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// "Forzar baja por abandono" -- lo usan el menú de empleados (en proceso de
 /// finiquito) y el de practicantes (en proceso de baja). Primero muestra la
@@ -138,6 +139,10 @@ class _BajaAbandonoDialogState extends State<BajaAbandonoDialog> {
         final procede = revision?.procede ?? false;
 
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Forzar baja por abandono'),
           content: SizedBox(
             width: 480,

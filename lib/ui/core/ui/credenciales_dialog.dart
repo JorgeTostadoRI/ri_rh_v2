@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ri_rh_v2/domain/models/credenciales_generadas/credenciales_generadas.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Diálogo que muestra un usuario/contraseña generados por el backend (al
 /// dar de alta, o al regenerar), con botones para copiar cada uno al
@@ -17,6 +18,10 @@ class CredencialesDialog {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        // En celular el diálogo usa casi todo el ancho de la pantalla.
+        insetPadding: esNavegadorMovil
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+            : null,
         title: Text(isRegeneracion ? 'Contraseña regenerada' : 'Usuario creado'),
         content: Column(
           mainAxisSize: .min,

@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/ui/delete_fingerprint_dialog.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/enroll_dialog.dart';
 import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicante_huellas_viewmodel.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/signature_dialog.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class PracticanteHuellasScreen extends StatelessWidget {
   const PracticanteHuellasScreen({
@@ -51,13 +52,27 @@ class PracticanteHuellasScreen extends StatelessWidget {
     }
   }
 
+  Widget _mano(String titulo, {required bool izquierda}) {
+    return ListenableBuilder(
+      listenable: Listenable.merge([viewmodel.delete, viewmodel.enroll]),
+      builder: (context, _) {
+        return HandCard(
+          title: titulo,
+          fingers: izquierda ? viewmodel.leftHandFingers : viewmodel.rightHandFingers,
+          onAdd: onAddHandler,
+          onDelete: onDeleteHandler,
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: ListenableBuilder(
           listenable: Listenable.merge([
             viewmodel.load,
@@ -74,7 +89,7 @@ class PracticanteHuellasScreen extends StatelessWidget {
 
             final practicante = viewmodel.practicante;
             return Column(
-              spacing: 32,
+              spacing: esNavegadorMovil ? 16 : 32,
               crossAxisAlignment: .stretch,
               children: [
                 PageHeader(
@@ -103,50 +118,39 @@ class PracticanteHuellasScreen extends StatelessWidget {
                           mainAxisSize: .min,
                           children: [
                             Icon(LucideIcons.briefcase, color: primaryColor, size: 14),
-                            Text(
+                            // En celular el puesto largo baja de renglón.
+                            _puestoFlexible(Text(
                               practicante.base.puesto.nombre,
                               style: textTheme.labelMedium?.copyWith(
                                 color: primaryColor,
                                 fontWeight: .w700,
                               ),
-                            ),
+                            )),
                           ],
                         ),
                       ],
                     ),
                   ),
                 ),
-                Row(
-                  spacing: 24,
-                  children: [
-                    Flexible(
-                      child: ListenableBuilder(
-                        listenable: Listenable.merge([viewmodel.delete, viewmodel.enroll]),
-                        builder: (context, _) {
-                          return HandCard(
-                            title: 'Mano izquierda',
-                            fingers: viewmodel.leftHandFingers,
-                            onAdd: onAddHandler,
-                            onDelete: onDeleteHandler,
-                          );
-                        }
-                      ),
-                    ),
-                    Flexible(
-                      child: ListenableBuilder(
-                        listenable: Listenable.merge([viewmodel.delete, viewmodel.enroll]),
-                        builder: (context, _) {
-                          return HandCard(
-                            title: 'Mano derecha',
-                            fingers: viewmodel.rightHandFingers,
-                            onAdd: onAddHandler,
-                            onDelete: onDeleteHandler,
-                          );
-                        }
-                      ),
-                    ),
-                  ],
-                ),
+                // Navegador de celular: lado a lado cada mano queda de ~140 px y
+                // las filas de los dedos no caben; va una debajo de la otra.
+                if (esNavegadorMovil)
+                  Column(
+                    crossAxisAlignment: .stretch,
+                    spacing: 16,
+                    children: [
+                      _mano('Mano izquierda', izquierda: true),
+                      _mano('Mano derecha', izquierda: false),
+                    ],
+                  )
+                else
+                  Row(
+                    spacing: 24,
+                    children: [
+                      Flexible(child: _mano('Mano izquierda', izquierda: true)),
+                      Flexible(child: _mano('Mano derecha', izquierda: false)),
+                    ],
+                  ),
                 _SignatureCard(viewmodel: viewmodel),
               ],
             );
@@ -156,6 +160,10 @@ class PracticanteHuellasScreen extends StatelessWidget {
     );
   }
 }
+
+/// En celular el puesto puede bajar de renglón; en computadora va igual que
+/// siempre (sin Flexible).
+Widget _puestoFlexible(Widget texto) => esNavegadorMovil ? Flexible(child: texto) : texto;
 
 class _SignatureCard extends StatelessWidget {
   const _SignatureCard({
@@ -181,18 +189,29 @@ class _SignatureCard extends StatelessWidget {
                 title: Text('Se requieren acciones', style: textTheme.headlineSmall),
                 subtitle: Text('Este practicante no tiene capturada huella para firma de incidencias.')
               ),
-              Row(
-                mainAxisAlignment: .end,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) => SignatureDialog(viewmodel: viewmodel),
-                    ),
-                    child: const Text('Agregar'),
+              // Navegador de celular: no hay lector de huella, la ventana de
+              // captura se quedaría esperando. Solo se avisa dónde hacerlo.
+              if (esNavegadorMovil)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text(
+                    'La firma se captura desde la computadora con el lector de huella.',
+                    style: textTheme.bodyMedium?.copyWith(fontWeight: .w700),
                   ),
-                ],
-              ),
+                )
+              else
+                Row(
+                  mainAxisAlignment: .end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => SignatureDialog(viewmodel: viewmodel),
+                      ),
+                      child: const Text('Agregar'),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
