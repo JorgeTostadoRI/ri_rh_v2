@@ -6,6 +6,18 @@ import 'package:ri_rh_v2/domain/models/reportes/reporte_incidencia_nomina.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/frozen_column_table_wrapper.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
+
+/// Navegador de celular: la columna EMPLEADO (fija) más angosta, con el
+/// nombre en hasta 3 renglones, para que quede ancho para lo que se desliza.
+/// Ambas mitades de la tabla usan la misma altura de renglón para que no se
+/// desalineen.
+const double _anchoNombreMovil = 120;
+double? get _altoRenglonMovil => esNavegadorMovil ? 64 : null;
+double? get _margenMovil => esNavegadorMovil ? 12 : null;
+
+Widget _nombreMovil(Widget nombre) =>
+    esNavegadorMovil ? SizedBox(width: _anchoNombreMovil, child: nombre) : nombre;
 
 class IncidenciaNominaTable extends StatelessWidget {
   final List<DateTime> dates;
@@ -38,6 +50,9 @@ class IncidenciaNominaTable extends StatelessWidget {
     // Columna EMPLEADO congelada -- se queda fija mientras el resto de la
     // tabla se desliza horizontalmente, ver FrozenColumnTableWrapper.
     final frozenColumn = DataTable(
+      horizontalMargin: _margenMovil,
+      dataRowMinHeight: _altoRenglonMovil,
+      dataRowMaxHeight: _altoRenglonMovil,
       columns: [
         DataColumn(label: Text('EMPLEADO')),
       ],
@@ -48,10 +63,12 @@ class IncidenciaNominaTable extends StatelessWidget {
           color: WidgetStateProperty.resolveWith<Color?>((states) => rowColor(index)),
           cells: [
             DataCell(
-              Text(
+              _nombreMovil(Text(
                 item.fullName,
                 style: textTheme.headlineSmall?.copyWith(fontSize: 14),
-              ),
+                maxLines: esNavegadorMovil ? 3 : null,
+                overflow: esNavegadorMovil ? TextOverflow.ellipsis : null,
+              )),
             ),
           ],
         );
@@ -59,6 +76,8 @@ class IncidenciaNominaTable extends StatelessWidget {
     );
 
     final scrollableColumns = DataTable(
+      dataRowMinHeight: _altoRenglonMovil,
+      dataRowMaxHeight: _altoRenglonMovil,
       columns: [
         DataColumn(label: Text('TIPO')),
         DataColumn(label: Text('DEPARTAMENTO')),

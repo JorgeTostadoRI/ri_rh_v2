@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Campo de "Jefe Directo" pensado para embeberse dentro de un formulario
 /// (junto a los demás datos laborales), en vez de ser una tarjeta aparte.
@@ -133,6 +134,10 @@ class _AssignJefeDialogState extends State<_AssignJefeDialog> {
       builder: (context, _) {
         final running = widget.assignJefe.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Asignar Jefe Directo'),
           content: SizedBox(
             width: 360,

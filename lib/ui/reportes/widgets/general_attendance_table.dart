@@ -6,6 +6,18 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/frozen_column_table_wrapper.dart';
 import 'package:ri_rh_v2/ui/reportes/widgets/entra_a_las_label.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
+
+/// Navegador de celular: la columna EMPLEADO (fija) más angosta, con el
+/// nombre en hasta 3 renglones, para que quede ancho para lo que se desliza.
+/// Ambas mitades de la tabla usan la misma altura de renglón para que no se
+/// desalineen.
+const double _anchoNombreMovil = 120;
+double? get _altoRenglonMovil => esNavegadorMovil ? 64 : null;
+double? get _margenMovil => esNavegadorMovil ? 12 : null;
+
+Widget _nombreMovil(Widget nombre) =>
+    esNavegadorMovil ? SizedBox(width: _anchoNombreMovil, child: nombre) : nombre;
 
 class GeneralAttendanceTable extends StatelessWidget {
   final ReporteAsistencia reporte;
@@ -26,6 +38,9 @@ class GeneralAttendanceTable extends StatelessWidget {
     // tabla se desliza horizontalmente, ver FrozenColumnTableWrapper.
     final frozenColumn = DataTable(
       headingRowHeight: 80,
+      horizontalMargin: _margenMovil,
+      dataRowMinHeight: _altoRenglonMovil,
+      dataRowMaxHeight: _altoRenglonMovil,
       columns: [
         DataColumn(label: Text('EMPLEADO')),
       ],
@@ -38,12 +53,14 @@ class GeneralAttendanceTable extends StatelessWidget {
             color: WidgetStateProperty.resolveWith<Color?>((states) => rowColor(index)),
             cells: [
               DataCell(
-                Text(
+                _nombreMovil(Text(
                   item.user.nombre,
                   style: textTheme.headlineSmall?.copyWith(
                     fontSize: 14,
-                  )
-                ),
+                  ),
+                  maxLines: esNavegadorMovil ? 3 : null,
+                  overflow: esNavegadorMovil ? TextOverflow.ellipsis : null,
+                )),
               ),
             ],
           );
@@ -53,6 +70,8 @@ class GeneralAttendanceTable extends StatelessWidget {
 
     final scrollableColumns = DataTable(
       headingRowHeight: 80,
+      dataRowMinHeight: _altoRenglonMovil,
+      dataRowMaxHeight: _altoRenglonMovil,
       columns: [
         DataColumn(
           label: Text('DEPARTAMENTO'),

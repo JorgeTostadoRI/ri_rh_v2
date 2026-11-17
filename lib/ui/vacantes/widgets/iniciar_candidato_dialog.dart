@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/ui/core/ui/document_picker_row.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 typedef IniciarCandidatoRow = ({String nombre, String correo, PlatformFile cartaOferta});
 
@@ -82,6 +83,10 @@ class _IniciarCandidatoDialogState extends State<IniciarCandidatoDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text(widget.vacantesDisponibles > 1 ? 'Iniciar candidatos' : 'Iniciar candidato'),
       content: SizedBox(
         width: 520,

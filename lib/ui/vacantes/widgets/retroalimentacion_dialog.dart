@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Dirección, en vez de aprobar o rechazar la contratación de un
 /// practicante, le regresa la evaluación a su jefe con un comentario (ej. el
@@ -27,6 +28,10 @@ class _RetroalimentacionDialogState extends State<RetroalimentacionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: const Text('Retroalimentación'),
       content: SizedBox(
         width: 480,

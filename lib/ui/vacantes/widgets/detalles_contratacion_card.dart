@@ -6,12 +6,17 @@ import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Tarjeta editable de "Detalles de contratación" (Fase F): RH llena todo
 /// lo que falta para armar la Solicitud de contrato antes de presionar
 /// "Solicitar contrato". Guarda su propio estado
 /// local (controllers) inicializado desde `candidato`, independiente del
 /// resto de la pantalla (de solo lectura).
+/// Ancho de los campos de la tarjeta: en navegador de celular todo el ancho
+/// (con anchos fijos quedaban chuecos, unos debajo de otros).
+double _ancho(double ancho) => esNavegadorMovil ? double.infinity : ancho;
+
 class DetallesContratacionCard extends StatefulWidget {
   const DetallesContratacionCard({
     super.key,
@@ -213,6 +218,10 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        // En celular la ventana usa casi todo el ancho de la pantalla.
+        insetPadding: esNavegadorMovil
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+            : null,
         title: const Text('Solicitar contrato'),
         content: const Text(
           'Se enviará la solicitud de contrato a los abogados. '
@@ -322,7 +331,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                     runSpacing: 16,
                     children: [
                       SizedBox(
-                        width: 200,
+                        width: _ancho(200),
                         child: TextFormField(
                           controller: _salario,
                           keyboardType: const TextInputType.numberWithOptions(
@@ -335,7 +344,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 220,
+                        width: _ancho(220),
                         child: InkWell(
                           onTap: _elegirFecha,
                           child: InputDecorator(
@@ -349,7 +358,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 280,
+                        width: _ancho(280),
                         child: _dropdown(
                           'Tipo de contrato',
                           _tipoContrato,
@@ -359,7 +368,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                       ),
                       if (_tipoContrato == 'determinado')
                         SizedBox(
-                          width: 160,
+                          width: _ancho(160),
                           child: TextFormField(
                             controller: _duracionDias,
                             keyboardType: TextInputType.number,
@@ -370,7 +379,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                           ),
                         ),
                       SizedBox(
-                        width: 200,
+                        width: _ancho(200),
                         child: TextFormField(
                           controller: _montoRetencionInfonavit,
                           keyboardType: const TextInputType.numberWithOptions(
@@ -390,7 +399,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                     runSpacing: 16,
                     children: [
                       SizedBox(
-                        width: 180,
+                        width: _ancho(180),
                         child: _dropdown(
                           'Tipo de jornada',
                           _tipoJornada,
@@ -400,7 +409,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                       ),
                       if (_tipoJornada == 'rotativo')
                         SizedBox(
-                          width: 260,
+                          width: _ancho(260),
                           child: TextFormField(
                             controller: _rotacionDetalle,
                             decoration: const InputDecoration(
@@ -409,7 +418,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                           ),
                         ),
                       SizedBox(
-                        width: 220,
+                        width: _ancho(220),
                         child: TextFormField(
                           controller: _diasLaborados,
                           decoration: const InputDecoration(
@@ -418,7 +427,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 220,
+                        width: _ancho(220),
                         child: TextFormField(
                           controller: _diaDescanso,
                           decoration: const InputDecoration(
@@ -426,38 +435,50 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 160,
-                        child: _horaField(
-                          'Hora de entrada',
-                          _horaEntrada,
-                          (h) => _horaEntrada = h,
+                      // Navegador de celular: las 4 horas de 2 en 2.
+                      if (esNavegadorMovil) ...[
+                        _parMovil(
+                          _horaField('Hora de entrada', _horaEntrada, (h) => _horaEntrada = h),
+                          _horaField('Inicio de comida', _horaComidaInicio, (h) => _horaComidaInicio = h),
                         ),
-                      ),
-                      SizedBox(
-                        width: 160,
-                        child: _horaField(
-                          'Inicio de comida',
-                          _horaComidaInicio,
-                          (h) => _horaComidaInicio = h,
+                        _parMovil(
+                          _horaField('Fin de comida', _horaComidaFin, (h) => _horaComidaFin = h),
+                          _horaField('Hora de salida', _horaSalida, (h) => _horaSalida = h),
                         ),
-                      ),
-                      SizedBox(
-                        width: 160,
-                        child: _horaField(
-                          'Fin de comida',
-                          _horaComidaFin,
-                          (h) => _horaComidaFin = h,
+                      ] else ...[
+                        SizedBox(
+                          width: _ancho(160),
+                          child: _horaField(
+                            'Hora de entrada',
+                            _horaEntrada,
+                            (h) => _horaEntrada = h,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 160,
-                        child: _horaField(
-                          'Hora de salida',
-                          _horaSalida,
-                          (h) => _horaSalida = h,
+                        SizedBox(
+                          width: _ancho(160),
+                          child: _horaField(
+                            'Inicio de comida',
+                            _horaComidaInicio,
+                            (h) => _horaComidaInicio = h,
+                          ),
                         ),
-                      ),
+                        SizedBox(
+                          width: _ancho(160),
+                          child: _horaField(
+                            'Fin de comida',
+                            _horaComidaFin,
+                            (h) => _horaComidaFin = h,
+                          ),
+                        ),
+                        SizedBox(
+                          width: _ancho(160),
+                          child: _horaField(
+                            'Hora de salida',
+                            _horaSalida,
+                            (h) => _horaSalida = h,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   const Divider(),
@@ -466,7 +487,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                     runSpacing: 16,
                     children: [
                       SizedBox(
-                        width: 200,
+                        width: _ancho(200),
                         child: _dropdown(
                           'Forma de pago',
                           _formaPago,
@@ -475,7 +496,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 200,
+                        width: _ancho(200),
                         child: _dropdown(
                           'Modalidad de pago',
                           _modalidadPago,
@@ -484,7 +505,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 200,
+                        width: _ancho(200),
                         child: TextFormField(
                           controller: _bonoAsistencia,
                           decoration: const InputDecoration(
@@ -493,7 +514,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 200,
+                        width: _ancho(200),
                         child: TextFormField(
                           controller: _bonoPuntualidad,
                           decoration: const InputDecoration(
@@ -502,7 +523,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 220,
+                        width: _ancho(220),
                         child: _triStateDropdown(
                           'Vales de despensa (monedero)',
                           _valesMonedero,
@@ -510,7 +531,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         ),
                       ),
                       SizedBox(
-                        width: 220,
+                        width: _ancho(220),
                         child: _triStateDropdown(
                           '¿Percibe comisiones?',
                           _percibeComisiones,
@@ -519,7 +540,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                       ),
                       if (_percibeComisiones == true)
                         SizedBox(
-                          width: 300,
+                          width: _ancho(300),
                           child: TextFormField(
                             controller: _comisionesDetalle,
                             decoration: const InputDecoration(
@@ -550,57 +571,77 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
               ),
             ),
           ),
-          if (!yaSolicitado)
+          // Navegador de celular: a todo el ancho, uno debajo de otro
+          // ("Solicitar contrato" hasta abajo).
+          if (!yaSolicitado && esNavegadorMovil)
+            Column(crossAxisAlignment: .stretch, spacing: 12, children: _botones())
+          else if (!yaSolicitado)
             Wrap(
               alignment: .end,
               spacing: 12,
               runSpacing: 12,
-              children: [
-                ListenableBuilder(
-                  listenable: widget.rechazarDocumentacion,
-                  builder: (context, _) => OutlinedButton.icon(
-                    onPressed: widget.rechazarDocumentacion.running
-                        ? null
-                        : _rechazar,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: errorColor,
-                      side: BorderSide(color: errorColor),
-                    ),
-                    icon: const Icon(Icons.block),
-                    label: const Text('Rechazar documentación'),
-                  ),
-                ),
-                ListenableBuilder(
-                  listenable: widget.guardarDetalles,
-                  builder: (context, _) => OutlinedButton.icon(
-                    onPressed: widget.guardarDetalles.running ? null : _guardar,
-                    icon: const Icon(Icons.save_outlined),
-                    label: const Text('Guardar detalles'),
-                  ),
-                ),
-                ListenableBuilder(
-                  listenable: widget.vistaPreviaDocumentos,
-                  builder: (context, _) => OutlinedButton.icon(
-                    onPressed: widget.vistaPreviaDocumentos.running
-                        ? null
-                        : () => widget.vistaPreviaDocumentos.execute(_params()),
-                    icon: const Icon(Icons.download_outlined),
-                    label: const Text('Descargar documentos'),
-                  ),
-                ),
-                ListenableBuilder(
-                  listenable: widget.solicitarContrato,
-                  builder: (context, _) => ElevatedButton.icon(
-                    onPressed: widget.solicitarContrato.running
-                        ? null
-                        : _solicitarContrato,
-                    icon: const Icon(Icons.send_outlined),
-                    label: const Text('Solicitar contrato'),
-                  ),
-                ),
-              ],
+              children: _botones(),
             ),
         ],
+      ),
+    );
+  }
+
+  List<Widget> _botones() {
+    return [
+      ListenableBuilder(
+        listenable: widget.rechazarDocumentacion,
+        builder: (context, _) => OutlinedButton.icon(
+          onPressed: widget.rechazarDocumentacion.running
+              ? null
+              : _rechazar,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: errorColor,
+            side: BorderSide(color: errorColor),
+          ),
+          icon: const Icon(Icons.block),
+          label: const Text('Rechazar documentación'),
+        ),
+      ),
+      ListenableBuilder(
+        listenable: widget.guardarDetalles,
+        builder: (context, _) => OutlinedButton.icon(
+          onPressed: widget.guardarDetalles.running ? null : _guardar,
+          icon: const Icon(Icons.save_outlined),
+          label: const Text('Guardar detalles'),
+        ),
+      ),
+      ListenableBuilder(
+        listenable: widget.vistaPreviaDocumentos,
+        builder: (context, _) => OutlinedButton.icon(
+          onPressed: widget.vistaPreviaDocumentos.running
+              ? null
+              : () => widget.vistaPreviaDocumentos.execute(_params()),
+          icon: const Icon(Icons.download_outlined),
+          label: const Text('Descargar documentos'),
+        ),
+      ),
+      ListenableBuilder(
+        listenable: widget.solicitarContrato,
+        builder: (context, _) => ElevatedButton.icon(
+          onPressed: widget.solicitarContrato.running
+              ? null
+              : _solicitarContrato,
+          icon: const Icon(Icons.send_outlined),
+          label: const Text('Solicitar contrato'),
+        ),
+      ),
+    ];
+  }
+
+  /// Dos campos lado a lado a todo el ancho (navegador de celular).
+  Widget _parMovil(Widget a, Widget b) {
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        spacing: 16,
+        crossAxisAlignment: .start,
+        children: [Expanded(child: a), Expanded(child: b)],
       ),
     );
   }
@@ -704,42 +745,42 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
             runSpacing: 12,
             children: [
               SizedBox(
-                width: 220,
+                width: _ancho(220),
                 child: TextFormField(
                   controller: equipo.descripcion,
                   decoration: const InputDecoration(labelText: 'Descripción'),
                 ),
               ),
               SizedBox(
-                width: 140,
+                width: _ancho(140),
                 child: TextFormField(
                   controller: equipo.marca,
                   decoration: const InputDecoration(labelText: 'Marca'),
                 ),
               ),
               SizedBox(
-                width: 160,
+                width: _ancho(160),
                 child: TextFormField(
                   controller: equipo.modelo,
                   decoration: const InputDecoration(labelText: 'Modelo'),
                 ),
               ),
               SizedBox(
-                width: 160,
+                width: _ancho(160),
                 child: TextFormField(
                   controller: equipo.numeroSerie,
                   decoration: const InputDecoration(labelText: 'No. de serie'),
                 ),
               ),
               SizedBox(
-                width: 180,
+                width: _ancho(180),
                 child: TextFormField(
                   controller: equipo.accesorios,
                   decoration: const InputDecoration(labelText: 'Accesorios'),
                 ),
               ),
               SizedBox(
-                width: 200,
+                width: _ancho(200),
                 child: TextFormField(
                   controller: equipo.condicionesEntrega,
                   decoration: const InputDecoration(
@@ -793,6 +834,10 @@ class _MotivoRechazoDialogState extends State<_MotivoRechazoDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: const Text('Rechazar documentación'),
       content: SizedBox(
         width: 480,

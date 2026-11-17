@@ -19,6 +19,7 @@ import 'package:ri_rh_v2/ui/core/ui/elevated_container.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class IngresoManualScreen extends StatefulWidget {
   const IngresoManualScreen({
@@ -77,7 +78,7 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16.0 : 40.0),
         child: Column(
           spacing: 32,
           crossAxisAlignment: .start,
@@ -128,10 +129,19 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
                             spacing: 12,
                             children: [
                               Icon(LucideIcons.circleQuestionMark, color: primaryColor),
-                              Text(
-                                'Solo podrás realizar el registro de tu asistencia si te asignaron como usuario remoto.',
-                                style: textTheme.labelLarge,
-                              )
+                              if (esNavegadorMovil)
+                                // En celular no cabe en una línea: que haga salto.
+                                Expanded(
+                                  child: Text(
+                                    'Solo podrás realizar el registro de tu asistencia si te asignaron como usuario remoto.',
+                                    style: textTheme.labelLarge,
+                                  ),
+                                )
+                              else
+                                Text(
+                                  'Solo podrás realizar el registro de tu asistencia si te asignaron como usuario remoto.',
+                                  style: textTheme.labelLarge,
+                                )
                             ],
                           ),
                         TextFormField(
@@ -419,7 +429,14 @@ class _CameraDialogState extends State<_CameraDialog> {
   Future<void> _initializeCamera() async {
     final cameras = await _availableCameras;
     if (!mounted) return;
-    _currentCamera ??= cameras[0];
+    // En celular se abre de inicio la cámara frontal (el navegador a veces
+    // da primero la trasera); se puede cambiar con la lista de cámaras.
+    _currentCamera ??= esNavegadorMovil
+        ? cameras.firstWhere(
+            (camera) => camera.lensDirection == CameraLensDirection.front,
+            orElse: () => cameras[0],
+          )
+        : cameras[0];
 
     if (_controller == null) {
       _controller = CameraController(
@@ -452,6 +469,14 @@ class _CameraDialogState extends State<_CameraDialog> {
     final textTheme = TextTheme.of(context);
 
     return AlertDialog(
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
+      // En celular, si no cabe (pantalla baja, o con el mensaje de error de
+      // la cámara), el contenido se desliza y "Cancelar"/"Capturar" quedan
+      // siempre visibles abajo.
+      scrollable: esNavegadorMovil,
       title: Text('Fotografía'),
       content: Column(
         mainAxisSize: .min,
@@ -517,8 +542,7 @@ class _CameraDialogState extends State<_CameraDialog> {
   }
 
   Widget _buildPreview() {
-    const double width = 500;
-    const double height = 300;
+    final (width, height) = esNavegadorMovil ? _tamanoPreviewMovil() : (500.0, 300.0);
 
     if (_controller == null) {
       return Container(
@@ -544,6 +568,18 @@ class _CameraDialogState extends State<_CameraDialog> {
         child: CameraPreview(_controller!),
       ),
     );
+  }
+
+  /// En celular la cámara está vertical y la foto sale de 480x720 (2:3), así
+  /// que la vista previa también es vertical y ocupa el ancho del diálogo
+  /// (pantalla - insetPadding 16 - contentPadding 24, por lado), sin pasar
+  /// del 40% del alto de la pantalla (con más, en celulares chicos ya no
+  /// cabían el texto, la lista de cámaras o el error y los botones).
+  (double, double) _tamanoPreviewMovil() {
+    final pantalla = MediaQuery.sizeOf(context);
+    final width = pantalla.width - 2 * 16 - 2 * 24;
+    final height = (width * 3 / 2).clamp(0.0, pantalla.height * 0.4);
+    return (width, height);
   }
 
   Widget _buildErrorDescription(Object? e) {

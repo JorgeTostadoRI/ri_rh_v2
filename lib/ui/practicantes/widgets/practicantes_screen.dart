@@ -8,6 +8,7 @@ import 'package:ri_rh_v2/ui/practicantes/viewmodels/practicantes_viewmodel.dart'
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_actions_menu.dart';
 import 'package:ri_rh_v2/ui/practicantes/widgets/practicante_status_chip.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class PracticantesScreen extends StatefulWidget {
   const PracticantesScreen({
@@ -61,39 +62,42 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Column(
           spacing: 32,
           mainAxisAlignment: .start,
           crossAxisAlignment: .start,
           children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              crossAxisAlignment: .start,
-              children: [
-                Column(
-                  crossAxisAlignment: .start,
-                  spacing: 8,
-                  children: [
-                    Text(
-                      'Listado de Practicantes',
-                      style: TextTheme.of(context).headlineLarge?.copyWith(
-                        fontSize: 48,
+            if (esNavegadorMovil)
+              _encabezadoMovil(context)
+            else
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                crossAxisAlignment: .start,
+                children: [
+                  Column(
+                    crossAxisAlignment: .start,
+                    spacing: 8,
+                    children: [
+                      Text(
+                        'Listado de Practicantes',
+                        style: TextTheme.of(context).headlineLarge?.copyWith(
+                          fontSize: 48,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Gestiona y visualiza la información de todos los practicantes y residentes.',
-                      style: TextTheme.of(context).titleSmall,
-                    ),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => context.push('${Routes.practicantes}/${Routes.newPracticante}'),
-                  icon: Icon(LucideIcons.userPlus),
-                  label: Text('Nuevo Practicante'),
-                ),
-              ],
-            ),
+                      Text(
+                        'Gestiona y visualiza la información de todos los practicantes y residentes.',
+                        style: TextTheme.of(context).titleSmall,
+                      ),
+                    ],
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => context.push('${Routes.practicantes}/${Routes.newPracticante}'),
+                    icon: Icon(LucideIcons.userPlus),
+                    label: Text('Nuevo Practicante'),
+                  ),
+                ],
+              ),
             TextField(
               decoration: InputDecoration(
                 prefixIcon: Icon(LucideIcons.search),
@@ -125,6 +129,18 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                   );
                 }
 
+                // Navegador de celular: una tarjeta por fila, del alto que
+                // necesite su contenido.
+                if (esNavegadorMovil) {
+                  return Column(
+                    crossAxisAlignment: .stretch,
+                    spacing: 16,
+                    children: [
+                      for (final practicante in widget.viewmodel.practicantes) _tarjeta(practicante),
+                    ],
+                  );
+                }
+
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -135,28 +151,56 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
                     crossAxisSpacing: 24,
                     mainAxisExtent: 350,
                   ),
-                  itemBuilder: (context, index) {
-                    final practicante = widget.viewmodel.practicantes[index];
-                    return BaseEmpleadoCard(
-                      baseEmpleado: practicante.base,
-                      statusChip: PracticanteStatusChip(status: practicante.status!, porAbandono: practicante.bajaPorAbandono),
-                      onExpedientePressed: () => context.go(Routes.expedienteOfPracticante(practicante)),
-                      hasPendingActions: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
-                      actionsMenu: PracticanteActionsMenu(
-                        practicante: practicante,
-                        cambiarEstado: widget.viewmodel.cambiarEstado,
-                        regenerarPassword: widget.viewmodel.regenerarPassword,
-                        revisionAbandono: widget.viewmodel.revisionAbandono,
-                        bajaPorAbandono: widget.viewmodel.bajaPorAbandono,
-                      ),
-                    );
-                  }
+                  itemBuilder: (context, index) => _tarjeta(widget.viewmodel.practicantes[index]),
                 );
               }
             )
           ],
         ),
       ),
+    );
+  }
+
+  Widget _tarjeta(Practicante practicante) {
+    return BaseEmpleadoCard(
+      baseEmpleado: practicante.base,
+      statusChip: PracticanteStatusChip(status: practicante.status!, porAbandono: practicante.bajaPorAbandono),
+      onExpedientePressed: () => context.go(Routes.expedienteOfPracticante(practicante)),
+      hasPendingActions: practicante.status == StatusPracticante.alta && !practicante.base.hasSignature,
+      actionsMenu: PracticanteActionsMenu(
+        practicante: practicante,
+        cambiarEstado: widget.viewmodel.cambiarEstado,
+        regenerarPassword: widget.viewmodel.regenerarPassword,
+        revisionAbandono: widget.viewmodel.revisionAbandono,
+        bajaPorAbandono: widget.viewmodel.bajaPorAbandono,
+      ),
+    );
+  }
+
+  /// Navegador de celular: el título a 48 junto al botón no cabe; va el
+  /// título más chico y el botón abajo, a todo el ancho.
+  Widget _encabezadoMovil(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .stretch,
+      spacing: 8,
+      children: [
+        Text(
+          'Listado de Practicantes',
+          style: TextTheme.of(context).headlineLarge?.copyWith(
+            fontSize: 32,
+          ),
+        ),
+        Text(
+          'Gestiona y visualiza la información de todos los practicantes y residentes.',
+          style: TextTheme.of(context).titleSmall,
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton.icon(
+          onPressed: () => context.push('${Routes.practicantes}/${Routes.newPracticante}'),
+          icon: Icon(LucideIcons.userPlus),
+          label: Text('Nuevo Practicante'),
+        ),
+      ],
     );
   }
 }

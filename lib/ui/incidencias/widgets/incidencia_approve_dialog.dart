@@ -15,6 +15,7 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_tiempo_por_tiempo_sec
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 typedef IncidenciaApproveDialogResult = ({
   IncidenciaState state,
@@ -108,6 +109,10 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
     final incidencia = widget.incidencia;
 
     return AlertDialog(
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       scrollable: true,
       title: Column(
         crossAxisAlignment: .start,

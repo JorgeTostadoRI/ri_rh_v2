@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:ri_rh_v2/utils/time/time.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 const _customDayLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
 
@@ -351,6 +352,10 @@ class _AssignHorarioDialogState extends State<_AssignHorarioDialog> {
         final running = widget.assignHorario.running || widget.createCustomHorario.running;
 
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Asignar Horario de Entrada'),
           content: SizedBox(
             width: 480,
@@ -522,32 +527,40 @@ class _CustomDayRow extends StatelessWidget {
               ],
             ),
             if (data.hasLunch)
-              Row(
-                spacing: 12,
-                children: [
-                  Expanded(
-                    child: TimeFormField(
-                      key: ValueKey('${data.day}-lunch-start'),
-                      initialValue: _timeOfDayToInitialValue(data.lunchStart),
-                      decoration: InputDecoration(labelText: 'SALIDA A COMER'),
-                      required: true,
-                      onTimeSaved: enabled ? (value) => data.lunchStart = value : null,
+              // Navegador de celular: lado a lado "SALIDA A COMER" y
+              // "REGRESO DE COMER" se cortan; van uno debajo de otro.
+              esNavegadorMovil
+                  ? Column(
+                      crossAxisAlignment: .stretch,
+                      spacing: 8,
+                      children: _lunchFields(),
+                    )
+                  : Row(
+                      spacing: 12,
+                      children: [
+                        for (final field in _lunchFields()) Expanded(child: field),
+                      ],
                     ),
-                  ),
-                  Expanded(
-                    child: TimeFormField(
-                      key: ValueKey('${data.day}-lunch-end'),
-                      initialValue: _timeOfDayToInitialValue(data.lunchEnd),
-                      decoration: InputDecoration(labelText: 'REGRESO DE COMER'),
-                      required: true,
-                      onTimeSaved: enabled ? (value) => data.lunchEnd = value : null,
-                    ),
-                  ),
-                ],
-              ),
           ],
         ],
       ),
     );
   }
+
+  List<Widget> _lunchFields() => [
+    TimeFormField(
+      key: ValueKey('${data.day}-lunch-start'),
+      initialValue: _timeOfDayToInitialValue(data.lunchStart),
+      decoration: InputDecoration(labelText: 'SALIDA A COMER'),
+      required: true,
+      onTimeSaved: enabled ? (value) => data.lunchStart = value : null,
+    ),
+    TimeFormField(
+      key: ValueKey('${data.day}-lunch-end'),
+      initialValue: _timeOfDayToInitialValue(data.lunchEnd),
+      decoration: InputDecoration(labelText: 'REGRESO DE COMER'),
+      required: true,
+      onTimeSaved: enabled ? (value) => data.lunchEnd = value : null,
+    ),
+  ];
 }

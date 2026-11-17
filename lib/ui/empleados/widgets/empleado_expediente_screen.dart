@@ -10,6 +10,7 @@ import 'package:ri_rh_v2/ui/empleados/viewmodels/empleado_expediente_viewmodel.d
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_files.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/expediente_form.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/horario_card.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class EmpleadoExpedienteScreen extends StatefulWidget {
   const EmpleadoExpedienteScreen({
@@ -28,7 +29,7 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: ListenableBuilder(
           listenable: Listenable.merge([
             widget.viewmodel.load,
@@ -55,6 +56,45 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
             }
 
             final empleado = widget.viewmodel.empleado;
+            final datos = ExpedienteForm(
+              baseEmpleado: empleado.base,
+              readOnly: true,
+              jefeCandidates: widget.viewmodel.jefes,
+              assignJefe: widget.viewmodel.assignJefe,
+            );
+            final lateral = [
+              ExpedienteFiles(
+                files: empleado.base.files,
+                altaEmpleo: empleado.alta,
+              ),
+              HorarioCard(
+                horarios: widget.viewmodel.horarios,
+                selectedHorarioId: empleado.base.user?.horarioId,
+                userNombre: empleado.base.nombre,
+                assignHorario: widget.viewmodel.assignHorario,
+                createCustomHorario: widget.viewmodel.createCustomHorario,
+                loadingHorarios: widget.viewmodel.loadHorarios.running,
+                hasUser: empleado.base.user != null,
+              ),
+              Badge(
+                backgroundColor: statusWarningColor,
+                label: const Text('!'),
+                isLabelVisible: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
+                child: IconCard(
+                  icon: LucideIcons.fingerprintPattern,
+                  title: 'Huellas',
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        context.go(Routes.huellasOfEmpleado(empleado));
+                      },
+                      child: Text('Ver')
+                    ),
+                  ],
+                ),
+              ),
+            ];
+
             return Column(
               mainAxisSize: .min,
               crossAxisAlignment: .start,
@@ -64,61 +104,33 @@ class _EmpleadoExpedienteScreenState extends State<EmpleadoExpedienteScreen> {
                   subtitle: empleado.base.nombre,
                   showBackButton: true,
                 ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  crossAxisAlignment: .start,
-                  children: [
-                    Flexible(
-                      flex: 3,
-                      child: ExpedienteForm(
-                        baseEmpleado: empleado.base,
-                        readOnly: true,
-                        jefeCandidates: widget.viewmodel.jefes,
-                        assignJefe: widget.viewmodel.assignJefe,
+                SizedBox(height: esNavegadorMovil ? 16 : 32),
+            // Navegador de celular: con la columna derecha a 1/4 del ancho
+            // Documentación, Horario y Huellas quedarían de ~75 px. Va todo
+            // en una columna: primero los datos y abajo lo de la derecha.
+                if (esNavegadorMovil)
+                  Column(
+                    crossAxisAlignment: .stretch,
+                    children: [datos, ...lateral],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    crossAxisAlignment: .start,
+                    children: [
+                      Flexible(
+                        flex: 3,
+                        child: datos,
                       ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Column(
-
-                        crossAxisAlignment: .stretch,
-                        children: [
-                          ExpedienteFiles(
-                            files: empleado.base.files,
-                            altaEmpleo: empleado.alta,
-                          ),
-                          HorarioCard(
-                            horarios: widget.viewmodel.horarios,
-                            selectedHorarioId: empleado.base.user?.horarioId,
-                            userNombre: empleado.base.nombre,
-                            assignHorario: widget.viewmodel.assignHorario,
-                            createCustomHorario: widget.viewmodel.createCustomHorario,
-                            loadingHorarios: widget.viewmodel.loadHorarios.running,
-                            hasUser: empleado.base.user != null,
-                          ),
-                          Badge(
-                            backgroundColor: statusWarningColor,
-                            label: const Text('!'),
-                            isLabelVisible: empleado.estatus == EmpleadoEstatus.activo && !empleado.base.hasSignature,
-                            child: IconCard(
-                              icon: LucideIcons.fingerprintPattern,
-                              title: 'Huellas',
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    context.go(Routes.huellasOfEmpleado(empleado));
-                                  },
-                                  child: Text('Ver')
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      Flexible(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: .stretch,
+                          children: lateral,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             );
           }

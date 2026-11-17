@@ -52,11 +52,31 @@ class WebVideoRecorderImpl implements WebVideoRecorder {
   String get previewViewType => _viewType;
 
   @override
-  Future<List<CameraOption>> open() async {
-    final stream = await _getUserMediaWithRetry(video: true.toJS);
+  Future<List<CameraOption>> open({bool movil = false}) async {
+    if (movil) {
+      // Sin esto el <video> se muestra a su tamaño natural y en la vista
+      // previa vertical del celular solo se ve un pedazo.
+      _videoElement.style
+        ..setProperty('width', '100%')
+        ..setProperty('height', '100%')
+        ..setProperty('object-fit', 'cover');
+    }
+    // En celular, de preferencia la camara frontal ('user'); si no hay,
+    // el navegador da la que tenga.
+    final stream = await _getUserMediaWithRetry(
+      video: movil ? web.MediaTrackConstraints(facingMode: 'user'.toJS) : true.toJS,
+    );
     _stream = stream;
     _videoElement.srcObject = stream;
     return _listCameras();
+  }
+
+  @override
+  String? get currentDeviceId {
+    final tracks = _stream?.getVideoTracks().toDart ?? [];
+    if (tracks.isEmpty) return null;
+    final deviceId = tracks.first.getSettings().deviceId;
+    return deviceId.isEmpty ? null : deviceId;
   }
 
   @override

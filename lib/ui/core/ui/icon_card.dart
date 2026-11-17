@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class IconCard extends StatelessWidget {
   const IconCard({
@@ -18,7 +19,8 @@ class IconCard extends StatelessWidget {
     return Card(
       color: Colors.white,
       child: Container(
-        padding: EdgeInsets.all(24),
+        // En navegador de celular un poco menos, para que quepan los campos.
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 24),
         child: Column(
           spacing: 24,
           mainAxisSize: .min,

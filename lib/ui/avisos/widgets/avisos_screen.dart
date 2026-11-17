@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/ui/avisos/widgets/aviso_form_dialog.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_calendar.dart';
 import 'package:ri_rh_v2/ui/avisos/widgets/avisos_list_view.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class AvisosScreen extends StatefulWidget {
   const AvisosScreen({
@@ -103,6 +104,8 @@ class _AvisosScreenState extends State<AvisosScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final movil = esNavegadorMovil;
+
     return Scaffold(
       backgroundColor: backgroundColor,
       floatingActionButton: ListenableBuilder(
@@ -129,7 +132,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(32),
+          padding: EdgeInsets.all(movil ? 16 : 32),
           child: Column(
             mainAxisAlignment: .start,
             children: [
@@ -166,6 +169,21 @@ class _AvisosScreenState extends State<AvisosScreen> {
                       color: primaryColor,
                     ),
                   ),
+                  if (movil)
+                    // En celular el subtítulo no cabe en una línea.
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          Text('Gestión de Avisos', style: TextTheme.of(context).headlineSmall),
+                          Text(
+                            'Configura los mensajes que verán los empleados al registrar su asistencia.',
+                            style: TextTheme.of(context).titleSmall,
+                          ),
+                        ],
+                      ),
+                    )
+                  else
                   Column(
                     crossAxisAlignment: .start,
                     children: [
@@ -178,7 +196,19 @@ class _AvisosScreenState extends State<AvisosScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: movil ? 16 : 40),
+              if (movil)
+                // En celular el calendario y la lista lado a lado quedarían de
+                // ~170 px cada uno: el calendario va arriba y la lista abajo.
+                Column(
+                  crossAxisAlignment: .stretch,
+                  spacing: 16,
+                  children: [
+                    AvisosCalendar(viewmodel: widget.viewmodel),
+                    AvisosListView(viewmodel: widget.viewmodel),
+                  ],
+                )
+              else
               Flex(
                 direction: .horizontal,
                 crossAxisAlignment: .start,

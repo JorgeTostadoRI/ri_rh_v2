@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/domain/models/asistencia_daily/asistencia_daily.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Resultado de [EditCodigoDialog]: el status elegido, y los minutos de
 /// retardo capturados junto con el (solo no-null cuando status == late,
@@ -67,6 +68,10 @@ class _EditCodigoDialogState extends State<EditCodigoDialog> {
     }.toList();
 
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text('Corregir código de nómina'),
       content: Form(
         key: _formKey,
@@ -180,6 +185,10 @@ class _EditNumeroDialogState extends State<EditNumeroDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      // En celular la ventana usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text(widget.titulo),
       content: Form(
         key: _formKey,

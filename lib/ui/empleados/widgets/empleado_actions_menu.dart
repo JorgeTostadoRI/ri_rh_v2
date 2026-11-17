@@ -14,6 +14,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/empleados_viewmodel.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Solo MASTER/ADMINISTRADOR, o un LIDER del departamento de RH, pueden
 /// regenerar la contraseña de otro usuario (el backend hace el mismo
@@ -156,6 +157,10 @@ class _ConfirmRegenerarPasswordDialogState extends State<_ConfirmRegenerarPasswo
       builder: (context, _) {
         final running = widget.regenerarPassword.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Regenerar contraseña'),
           content: Text(
             '¿Confirmas que quieres regenerar la contraseña de ${widget.empleado.base.nombre}? '
@@ -244,6 +249,10 @@ class _ConfirmProcesoFiniquitoDialogState extends State<_ConfirmProcesoFiniquito
       builder: (context, _) {
         final running = widget.cambiarEstatus.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Pasar a proceso de finiquito'),
           content: Text(
             '¿Confirmas que quieres iniciar el proceso de finiquito de ${widget.empleado.base.nombre}? '
@@ -342,6 +351,10 @@ class _FiniquitadoDialogState extends State<_FiniquitadoDialog>
       builder: (context, _) {
         final running = widget.cambiarEstatus.running;
         return AlertDialog(
+          // En celular el diálogo usa casi todo el ancho de la pantalla.
+          insetPadding: esNavegadorMovil
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+              : null,
           title: Text('Marcar como finiquitado'),
           content: SizedBox(
             width: 420,

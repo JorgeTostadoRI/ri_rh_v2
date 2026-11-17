@@ -12,6 +12,7 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_overview_dialog.dart'
 import 'package:ri_rh_v2/ui/incidencias/widgets/verify_identity_dialog.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class MisIncidenciasScreen extends StatefulWidget {
   const MisIncidenciasScreen({
@@ -119,7 +120,7 @@ class _MisIncidenciasScreenState extends State<MisIncidenciasScreen> {
 
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         child: Column(
           spacing: 32,
           mainAxisAlignment: .start,
@@ -210,27 +211,14 @@ class _MiIncidenciaTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
 
+    if (esNavegadorMovil) return _buildMovil(context);
+
     return ListTile(
       tileColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      leading: switch (incidencia.state!) {
-        IncidenciaState.pending => ColorIcon(
-          icon: LucideIcons.clock,
-          backgroundColor: statusWarningBgColor,
-        ),
-        IncidenciaState.rejected => ColorIcon(
-          icon: LucideIcons.x,
-          backgroundColor: statusFailureBgColor,
-          iconColor: statusFailureColor,
-        ),
-        IncidenciaState.approved => ColorIcon(
-          icon: LucideIcons.circleCheckBig,
-          backgroundColor: statusSuccessBgColor,
-          iconColor: statusSuccessColor,
-        ),
-      },
+      leading: _iconoEstado,
       trailing: StepTimeline(
         length: incidencia.totalApprovalSteps,
         currentStep: incidencia.approvalStepIndex,
@@ -245,11 +233,79 @@ class _MiIncidenciaTile extends StatelessWidget {
         overflow: .ellipsis,
         maxLines: 2,
       ),
-      onTap: () => showDialog(
-        context: context,
-        builder: (context) => IncidenciaOverviewDialog(
-          incidencia: incidencia,
-          onDownload: onDownload,
+      onTap: () => _abrirDetalle(context),
+    );
+  }
+
+  Widget get _iconoEstado => switch (incidencia.state!) {
+    IncidenciaState.pending => ColorIcon(
+      icon: LucideIcons.clock,
+      backgroundColor: statusWarningBgColor,
+    ),
+    IncidenciaState.rejected => ColorIcon(
+      icon: LucideIcons.x,
+      backgroundColor: statusFailureBgColor,
+      iconColor: statusFailureColor,
+    ),
+    IncidenciaState.approved => ColorIcon(
+      icon: LucideIcons.circleCheckBig,
+      backgroundColor: statusSuccessBgColor,
+      iconColor: statusSuccessColor,
+    ),
+  };
+
+  void _abrirDetalle(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => IncidenciaOverviewDialog(
+        incidencia: incidencia,
+        onDownload: onDownload,
+      ),
+    );
+  }
+
+  /// Navegador de celular: en la fila de computadora el título queda
+  /// apretado entre el ícono y la línea de pasos. Aquí es una tarjeta: ícono
+  /// y título arriba, motivo en medio y la línea de pasos abajo.
+  Widget _buildMovil(BuildContext context) {
+    final textTheme = TextTheme.of(context);
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => _abrirDetalle(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 8,
+            children: [
+              Row(
+                spacing: 12,
+                children: [
+                  _iconoEstado,
+                  Expanded(
+                    child: Text(
+                      '${incidencia.categoryName} en ${_formatStartEndDates(incidencia)}',
+                      style: textTheme.titleMedium?.copyWith(fontWeight: .w700),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                incidencia.reason,
+                style: textTheme.labelLarge,
+                overflow: .ellipsis,
+                maxLines: 2,
+              ),
+              StepTimeline(
+                length: incidencia.totalApprovalSteps,
+                currentStep: incidencia.approvalStepIndex,
+              ),
+            ],
+          ),
         ),
       ),
     );

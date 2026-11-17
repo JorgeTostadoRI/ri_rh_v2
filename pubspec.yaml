@@ -72,6 +72,8 @@ dev_dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
+  # Pruebas: simular errores de la cámara (ya viene con el paquete camera).
+  camera_platform_interface: ^2.13.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

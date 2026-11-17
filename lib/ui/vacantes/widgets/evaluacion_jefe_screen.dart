@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/evaluacion_jefe_viewmodel.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Actividad 16: pantalla donde el jefe directo contesta la evaluación de
 /// un empleado con contrato "determinado" que está por vencer -- a la que
@@ -95,7 +96,7 @@ class _EvaluacionJefeScreenState extends State<EvaluacionJefeScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
         constraints: const BoxConstraints(maxWidth: 640),
         child: Column(
           crossAxisAlignment: .start,
@@ -196,13 +197,17 @@ class _EvaluacionJefeScreenState extends State<EvaluacionJefeScreen> {
                       ),
                     ListenableBuilder(
                       listenable: widget.viewmodel.responder,
-                      builder: (context, _) => ElevatedButton(
-                        onPressed:
-                            _respuesta == null ||
-                                widget.viewmodel.responder.running
-                            ? null
-                            : _enviar,
-                        child: const Text('Enviar respuesta'),
+                      builder: (context, _) => SizedBox(
+                        // En celular, a todo el ancho para que sea fácil de tocar.
+                        width: esNavegadorMovil ? double.infinity : null,
+                        child: ElevatedButton(
+                          onPressed:
+                              _respuesta == null ||
+                                  widget.viewmodel.responder.running
+                              ? null
+                              : _enviar,
+                          child: const Text('Enviar respuesta'),
+                        ),
                       ),
                     ),
                   ],

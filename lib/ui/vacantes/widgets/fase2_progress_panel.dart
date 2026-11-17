@@ -4,6 +4,7 @@ import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/altas_imss_viewmodel.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 const _fase2StepLabelsIndeterminado = ['Solicitud enviada', 'Alta archivada'];
 
@@ -117,6 +118,10 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        // En celular la ventana usa casi todo el ancho de la pantalla.
+        insetPadding: esNavegadorMovil
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+            : null,
         title: const Text('Subir alta IMSS'),
         content: Text(
           '¿Archivar "${archivo.name}" como el acuse de alta IMSS de ${widget.item.nombreCompleto}?',
@@ -141,6 +146,10 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        // En celular la ventana usa casi todo el ancho de la pantalla.
+        insetPadding: esNavegadorMovil
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+            : null,
         title: const Text('Subir contrato definitivo'),
         content: Text(
           '¿Archivar "${archivo.name}" como el contrato definitivo firmado de ${widget.item.nombreCompleto}?',

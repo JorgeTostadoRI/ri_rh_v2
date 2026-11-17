@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class IncidenciaCategoryCard extends StatefulWidget {
   const IncidenciaCategoryCard({
@@ -32,6 +33,8 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
 
   @override
   Widget build(BuildContext context) {
+    if (esNavegadorMovil) return _buildMovil(context);
+
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
@@ -85,6 +88,59 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Navegador de celular: 8 tarjetas de 350x300 serían casi 2.5 pantallas de
+  /// scroll, así que aquí cada una es una fila a todo el ancho (ícono a la
+  /// izquierda, nombre y descripción a la derecha).
+  Widget _buildMovil(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.go(Routes.newIncidenciaOfCategory(widget.category)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: BoxBorder.all(color: Color(0xFFF5E8D8)),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          spacing: 16,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: widget.bg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(widget.icon, color: widget.color),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    widget.category.label,
+                    style: TextTheme.of(context).titleMedium?.copyWith(
+                      fontWeight: .w700,
+                      color: headingTextColor,
+                    ),
+                  ),
+                  Text(
+                    widget.description,
+                    style: TextTheme.of(context).labelMedium?.copyWith(
+                      color: labelTextColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: widget.color),
+          ],
         ),
       ),
     );

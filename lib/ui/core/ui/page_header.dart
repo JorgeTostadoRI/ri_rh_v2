@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/ui/core/ui/app_back_button.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class PageHeader extends StatelessWidget {
   const PageHeader({
@@ -30,7 +31,7 @@ class PageHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: .start,
             children: [
-              Text(title, style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: 48)),
+              Text(title, style: TextTheme.of(context).headlineLarge?.copyWith(fontSize: esNavegadorMovil ? 32 : 48)),
               if (subtitle != null)
                 Text(subtitle!, style: TextTheme.of(context).titleSmall),
             ],

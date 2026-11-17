@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/viewmodels/dias_festivos_viewmodel.dart';
 import 'package:ri_rh_v2/ui/dias_festivos/widgets/dia_festivo_form_dialog.dart';
 import 'package:ri_rh_v2/utils/result.dart' as result;
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class DiasFestivosScreen extends StatefulWidget {
   const DiasFestivosScreen({super.key, required this.viewmodel});
@@ -136,9 +137,13 @@ class _DiasFestivosScreenState extends State<DiasFestivosScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(40),
+          // En celular: márgenes de 16 y espacio abajo para que el último
+          // día suba por encima del botón (+) y su bote de basura se pueda tocar.
+          padding: esNavegadorMovil
+              ? const EdgeInsets.fromLTRB(16, 16, 16, 88)
+              : EdgeInsets.all(40),
           child: Column(
-            spacing: 32,
+            spacing: esNavegadorMovil ? 16 : 32,
             crossAxisAlignment: .start,
             children: [
               PageHeader(
@@ -212,7 +217,11 @@ class _DiasFestivosScreenState extends State<DiasFestivosScreen> {
                         ),
                         title: Text(
                           dateFormat.format(diaFestivo.fecha),
-                          style: TextTheme.of(context).headlineSmall,
+                          // En celular un poco más chica: con la grande la
+                          // fecha completa ocupaba 3 renglones.
+                          style: esNavegadorMovil
+                              ? TextTheme.of(context).titleLarge
+                              : TextTheme.of(context).headlineSmall,
                         ),
                         subtitle: diaFestivo.nombre.isEmpty
                             ? null

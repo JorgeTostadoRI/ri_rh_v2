@@ -21,6 +21,7 @@ import 'package:ri_rh_v2/ui/core/ui/form/date_form_field.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/field_label.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/time_form_field.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 const _fieldMargin = 32.0;
 const _labelMargin = 16.0;
@@ -368,12 +369,38 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     super.dispose();
   }
 
+  /// Campos que en computadora van lado a lado. En celular quedarían
+  /// diminutos (ej. Día / Hora inicio / Hora fin), así que van uno debajo
+  /// del otro.
+  Widget _filaDeCampos(List<Widget> campos) {
+    if (esNavegadorMovil) {
+      return Column(
+        crossAxisAlignment: .stretch,
+        spacing: 16,
+        children: campos,
+      );
+    }
+
+    return Row(
+      spacing: 16,
+      children: [
+        for (final campo in campos)
+          Flexible(
+            flex: 1,
+            child: campo,
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final movil = esNavegadorMovil;
+
     return Form(
       key: _formKey,
       child: Container(
-        padding: EdgeInsets.all(32),
+        padding: EdgeInsets.all(movil ? 16 : 32),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
@@ -399,79 +426,58 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
                 const SizedBox(height: 8),
               ],
             if (_viewmodel.dateOption == IncidenciaDateOption.DATE_RANGE)
-              Row(
-                spacing: 16,
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: DateFormField(
-                      controller: _startDateController,
-                      decoration: InputDecoration(
-                        labelText: 'DESDE',
-                        hintText: 'dd/mm/aa',
-                      ),
-                      firstDate: _firstDate,
-                      required: true,
-                      onDateSaved: _viewmodel.onStartDateSaved,
-                    ),
+              _filaDeCampos([
+                DateFormField(
+                  controller: _startDateController,
+                  decoration: InputDecoration(
+                    labelText: 'DESDE',
+                    hintText: 'dd/mm/aa',
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: DateFormField(
-                      controller: _endDateController,
-                      decoration: InputDecoration(
-                        labelText: 'HASTA (OPCIONAL)',
-                        hintText: 'dd/mm/aa',
-                      ),
-                      firstDate: _firstDate,
-                      onDateSaved: _viewmodel.onEndDateSaved,
-                    ),
+                  firstDate: _firstDate,
+                  required: true,
+                  onDateSaved: _viewmodel.onStartDateSaved,
+                ),
+                DateFormField(
+                  controller: _endDateController,
+                  decoration: InputDecoration(
+                    labelText: 'HASTA (OPCIONAL)',
+                    hintText: 'dd/mm/aa',
                   ),
-                ],
-              ),
+                  firstDate: _firstDate,
+                  onDateSaved: _viewmodel.onEndDateSaved,
+                ),
+              ]),
             if (_viewmodel.dateOption == IncidenciaDateOption.HOUR_RANGE)
-              Row(
-                spacing: 16,
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: DateFormField(
-                      controller: _startDateController,
-                      decoration: InputDecoration(
-                        labelText: 'DÍA',
-                        hintText: 'dd/mm/aa',
-                      ),
-                      firstDate: _firstDate,
-                      onDateSaved: _viewmodel.onStartDateSaved,
-                      required: true,
-                    ),
+              _filaDeCampos([
+                DateFormField(
+                  controller: _startDateController,
+                  decoration: InputDecoration(
+                    labelText: 'DÍA',
+                    hintText: 'dd/mm/aa',
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: TimeFormField(
-                      controller: _startTimeController,
-                      decoration: InputDecoration(
-                        labelText: 'HORA INICIO',
-                        hintText: '--:--',
-                      ),
-                      onTimeSaved: _viewmodel.onStartTimeSaved,
-                      required: true,
-                    ),
+                  firstDate: _firstDate,
+                  onDateSaved: _viewmodel.onStartDateSaved,
+                  required: true,
+                ),
+                TimeFormField(
+                  controller: _startTimeController,
+                  decoration: InputDecoration(
+                    labelText: 'HORA INICIO',
+                    hintText: '--:--',
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: TimeFormField(
-                      controller: _endTimeController,
-                      decoration: InputDecoration(
-                        labelText: 'HORA FIN',
-                        hintText: '--:--',
-                      ),
-                      onTimeSaved: _viewmodel.onEndTimeSaved,
-                      required: true,
-                    ),
+                  onTimeSaved: _viewmodel.onStartTimeSaved,
+                  required: true,
+                ),
+                TimeFormField(
+                  controller: _endTimeController,
+                  decoration: InputDecoration(
+                    labelText: 'HORA FIN',
+                    hintText: '--:--',
                   ),
-                ],
-              ),
+                  onTimeSaved: _viewmodel.onEndTimeSaved,
+                  required: true,
+                ),
+              ]),
             if (widget.category == IncidenciaCategory.permiso)
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
@@ -555,6 +561,24 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
               ),
             ],
             const SizedBox(height: _fieldMargin),
+            if (movil)
+              // En celular: botones a todo el ancho, "Enviar" primero.
+              Column(
+                crossAxisAlignment: .stretch,
+                spacing: 12,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _submitForm,
+                    icon: Icon(LucideIcons.send),
+                    label: Text('Enviar Solicitud'),
+                  ),
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Cancelar'),
+                  ),
+                ],
+              )
+            else
             Row(
               spacing: 16,
               mainAxisAlignment: .end,

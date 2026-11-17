@@ -10,6 +10,7 @@ import 'package:ri_rh_v2/ui/core/ui/snack_bar.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/video_testimonio/web_video_recorder.dart';
 import 'package:ri_rh_v2/ui/incidencias/widgets/video_testimonio/web_video_recorder_factory.dart';
 import 'package:video_player/video_player.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Duracion maxima de grabacion -- se detiene sola al llegar a este limite
 /// en vez de depender unicamente de que el usuario la corte, para no
@@ -65,7 +66,10 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   VideoPlayerController? _playbackController;
 
   Future<List<CameraOption>> _openCamera() async {
-    final cameras = await _recorder.open();
+    final cameras = await _recorder.open(movil: esNavegadorMovil);
+    // En celular se abrio la frontal (no necesariamente la primera de la
+    // lista): que el selector muestre la que de verdad se esta usando.
+    if (esNavegadorMovil) _currentDeviceId = _recorder.currentDeviceId;
     if (mounted) setState(() => _cameraReady = true);
     return cameras;
   }
@@ -91,6 +95,10 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     final textTheme = TextTheme.of(context);
 
     return AlertDialog(
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Text('Video de verificación'),
       content: Column(
         mainAxisSize: .min,
@@ -195,9 +203,19 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
     ];
   }
 
+  /// En celular la cámara está vertical: la vista previa también, a lo
+  /// ancho del diálogo (pantalla - insetPadding 16 - contentPadding 24, por
+  /// lado) y sin pasar de la mitad del alto de la pantalla.
+  (double, double) get _tamanoPreview {
+    if (!esNavegadorMovil) return (500.0, 300.0);
+    final pantalla = MediaQuery.sizeOf(context);
+    final width = pantalla.width - 2 * 16 - 2 * 24;
+    final height = (width * 3 / 2).clamp(0.0, pantalla.height * 0.5);
+    return (width, height);
+  }
+
   Widget _buildSavingIndicator() {
-    const double width = 500;
-    const double height = 300;
+    final (width, height) = _tamanoPreview;
 
     return Container(
       width: width,
@@ -224,8 +242,7 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   }
 
   Widget _buildCameraPreview() {
-    const double width = 500;
-    const double height = 300;
+    final (width, height) = _tamanoPreview;
 
     if (!_cameraReady) {
       return Container(
@@ -254,8 +271,7 @@ class _VideoTestimonioDialogState extends State<VideoTestimonioDialog> {
   }
 
   Widget _buildPlaybackPreview() {
-    const double width = 500;
-    const double height = 300;
+    final (width, height) = _tamanoPreview;
 
     final playback = _playbackController;
     if (playback == null || !playback.value.isInitialized) {

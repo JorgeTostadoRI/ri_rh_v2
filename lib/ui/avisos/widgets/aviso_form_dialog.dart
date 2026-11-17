@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/image_picker.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class AvisoFormDialog extends StatefulWidget {
   const AvisoFormDialog({
@@ -61,14 +62,22 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final movil = esNavegadorMovil;
+    // En celular los campos (380/400 px en computadora) no caben: ocupan el
+    // ancho de la pantalla menos insetPadding (16) y padding (20) por lado.
+    final anchoMovil = MediaQuery.sizeOf(context).width - 2 * 16 - 2 * 20;
+
     return Dialog(
+      insetPadding: movil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(32),
       ),
       child: Form(
         key: _formKey,
         child: Container(
-          padding: EdgeInsets.all(32),
+          padding: EdgeInsets.all(movil ? 20 : 32),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(32),
@@ -101,7 +110,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
                     ),
                   ),
                   SizedBox(
-                    width: 380,
+                    width: movil ? anchoMovil : 380,
                     child: TextFormField(
                       controller: _content,
                       validator: (value) {
@@ -124,7 +133,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
                     ),
                   ),
                   ImagePicker(
-                    width: 380,
+                    width: movil ? anchoMovil : 380,
                     height: 95,
                     initialValue: widget.aviso?.attachment,
                     onChanged: _onChangedImageHandler,
@@ -132,7 +141,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
                 ],
               ),
               SizedBox(
-                width: 400,
+                width: movil ? anchoMovil : 400,
                 child: ElevatedButton.icon(
                   onPressed: _submitForm,
                   icon: Icon(LucideIcons.check),

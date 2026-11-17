@@ -6,6 +6,7 @@ import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 /// Muestra el video testimonial adjunto a una incidencia (obligatorio solo
 /// para solicitantes remotos, ver `video_testimonio_dialog.dart`) para que
@@ -58,6 +59,16 @@ class _IncidenciaVideoSectionState extends State<IncidenciaVideoSection> {
     }
   }
 
+  /// En celular el video (grabado vertical en el celular del remoto) va a lo
+  /// ancho del diálogo (pantalla - insetPadding 16 - contentPadding 24, por
+  /// lado) y más alto, sin pasar de la mitad del alto de la pantalla.
+  (double, double) _tamanoMovil() {
+    final pantalla = MediaQuery.sizeOf(context);
+    final width = pantalla.width - 2 * 16 - 2 * 24;
+    final height = (width * 3 / 2).clamp(0.0, pantalla.height * 0.5);
+    return (width, height);
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = TextTheme.of(context);
@@ -84,8 +95,7 @@ class _IncidenciaVideoSectionState extends State<IncidenciaVideoSection> {
   }
 
   Widget _buildWebPlayer() {
-    const double width = 500;
-    const double height = 300;
+    final (width, height) = esNavegadorMovil ? _tamanoMovil() : (500.0, 300.0);
 
     return FutureBuilder(
       future: _initialization,

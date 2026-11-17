@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/debouncer.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 const _campoStatus = 'status';
 const _campoMinutosRetardo = 'minutos_retardo';
@@ -197,14 +198,12 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: 32,
+      spacing: esNavegadorMovil ? 16 : 32,
       children: [
         ListenableBuilder(
           listenable: widget.viewmodel,
           builder: (context, _) {
-            return Row(
-              spacing: 16,
-              children: [
+            final botones = [
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -262,7 +261,20 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
                     icon: Icon(LucideIcons.download),
                     label: Text('Descargar PDF'),
                   ),
-              ],
+            ];
+            // Navegador de celular: fecha, "Generar PDF" y "Descargar PDF"
+            // juntos no caben; pasan al siguiente renglón.
+            if (esNavegadorMovil) {
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                crossAxisAlignment: .center,
+                children: botones,
+              );
+            }
+            return Row(
+              spacing: 16,
+              children: botones,
             );
           },
         ),

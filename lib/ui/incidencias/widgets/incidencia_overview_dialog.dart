@@ -13,6 +13,7 @@ import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_tiempo_por_tiempo_sec
 import 'package:ri_rh_v2/ui/incidencias/widgets/incidencia_video_section.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class IncidenciaOverviewDialog extends StatefulWidget {
   const IncidenciaOverviewDialog({
@@ -53,6 +54,10 @@ class _IncidenciaOverviewDialogState extends State<IncidenciaOverviewDialog> {
 
     return AlertDialog(
       scrollable: true,
+      // En celular el diálogo usa casi todo el ancho de la pantalla.
+      insetPadding: esNavegadorMovil
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
+          : null,
       title: Column(
         crossAxisAlignment: .start,
         mainAxisSize: .min,
