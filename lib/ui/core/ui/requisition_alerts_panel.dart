@@ -20,6 +20,8 @@ class RequisitionAlertsButton extends StatefulWidget {
     required this.readToken,
     required this.comprasUrl,
     this.tooltip = 'Avisos de requisiciones y órdenes',
+    this.onOpen,
+    this.preferInApp = false,
   });
 
   final String apiBaseUrl;
@@ -29,6 +31,8 @@ class RequisitionAlertsButton extends StatefulWidget {
   final String comprasUrl;
 
   final String tooltip;
+  final Future<void> Function(String tipo, int id)? onOpen;
+  final bool preferInApp;
 
   @override
   State<RequisitionAlertsButton> createState() =>
@@ -101,6 +105,8 @@ class _RequisitionAlertsButtonState extends State<RequisitionAlertsButton> {
       apiBaseUrl: _base,
       readToken: widget.readToken,
       comprasUrl: widget.comprasUrl,
+      onOpen: widget.onOpen,
+      preferInApp: widget.preferInApp,
     );
 
     if (mounted) await _refreshUnread();
@@ -126,6 +132,8 @@ Future<void> showRequisitionAlertsPanel(
   required String apiBaseUrl,
   required Future<String?> Function() readToken,
   required String comprasUrl,
+  Future<void> Function(String tipo, int id)? onOpen,
+  bool preferInApp = false,
 }) {
   final width = math.min(MediaQuery.sizeOf(context).width * 0.92, 440.0);
   final height = math.min(MediaQuery.sizeOf(context).height * 0.7, 460.0);
@@ -141,6 +149,8 @@ Future<void> showRequisitionAlertsPanel(
           apiBaseUrl: apiBaseUrl,
           readToken: readToken,
           comprasUrl: comprasUrl,
+          onOpen: onOpen,
+          preferInApp: preferInApp,
         ),
       ),
     ),
@@ -153,11 +163,20 @@ class RequisitionAlertsPanel extends StatefulWidget {
     required this.apiBaseUrl,
     required this.readToken,
     required this.comprasUrl,
+    this.onOpen,
+    this.preferInApp = false,
   });
 
   final String apiBaseUrl;
   final Future<String?> Function() readToken;
   final String comprasUrl;
+
+  /// Navegación interna opcional. Se usa como respaldo si no se puede abrir
+  /// una pestaña nueva (por ejemplo en desarrollo local).
+  final Future<void> Function(String tipo, int id)? onOpen;
+
+  /// Si es true, navega dentro de la app antes de intentar una pestaña nueva.
+  final bool preferInApp;
 
   @override
   State<RequisitionAlertsPanel> createState() => _RequisitionAlertsPanelState();
@@ -329,7 +348,8 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
     };
   }
 
-  bool get _puedeAbrir => widget.comprasUrl.trim().isNotEmpty;
+  bool get _puedeAbrir =>
+      widget.comprasUrl.trim().isNotEmpty || widget.onOpen != null;
 
   String _urlAbrir(_Alerta alerta) {
     final base = widget.comprasUrl.replaceFirst(RegExp(r'/+$'), '');
@@ -342,6 +362,14 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
     };
   }
 
+  Future<void> _navegarInterno(String tipo, int id) async {
+    try {
+      await widget.onOpen!(tipo, id);
+    } catch (_) {
+      // Si la navegación interna falla, se conserva el aviso y se ignora.
+    }
+  }
+
   Future<void> _abrir(_Alerta alerta) async {
     await _marcarLeido(alerta);
     if (!mounted) return;
@@ -350,19 +378,34 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
       if (index != -1) _alertas[index].leido = true;
     });
 
-    final url = _urlAbrir(alerta);
-    if (url.isEmpty) return;
+    final referenciaId = alerta.referenciaId;
+    if (referenciaId == null) return;
 
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    try {
-      if (kIsWeb) {
-        await launchUrl(uri, webOnlyWindowName: '_blank');
-      } else {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (widget.preferInApp && widget.onOpen != null) {
+      await _navegarInterno(alerta.referenciaTipo, referenciaId);
+      return;
+    }
+
+    final url = _urlAbrir(alerta);
+    if (url.isNotEmpty) {
+      final uri = Uri.tryParse(url);
+      if (uri != null) {
+        try {
+          final opened = kIsWeb
+              ? await launchUrl(uri, webOnlyWindowName: '_blank')
+              : await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication,
+                );
+          if (opened) return;
+        } catch (_) {
+          // Sin navegador disponible: se intenta la navegación interna.
+        }
       }
-    } catch (_) {
-      // Sin navegador disponible.
+    }
+
+    if (widget.onOpen != null) {
+      await _navegarInterno(alerta.referenciaTipo, referenciaId);
     }
   }
 
@@ -409,7 +452,7 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
           ),
         ),
         actions: [
-          if (_puedeAbrir && _urlAbrir(alerta).isNotEmpty)
+          if (_puedeAbrir && alerta.referenciaId != null)
             FilledButton.icon(
               onPressed: () {
                 Navigator.pop(dialogContext);
@@ -417,6 +460,19 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
               },
               icon: const Icon(Icons.open_in_new, size: 16),
               label: Text(_etiquetaAbrir(alerta)),
+            ),
+          if (widget.onOpen != null &&
+              !widget.preferInApp &&
+              alerta.referenciaId != null)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _navegarInterno(
+                  alerta.referenciaTipo,
+                  alerta.referenciaId!,
+                );
+              },
+              child: const Text('Abrir aquí'),
             ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
