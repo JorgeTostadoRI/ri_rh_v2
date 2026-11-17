@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
@@ -686,6 +688,23 @@ Future<void> _cerrar(WidgetTester tester) async {
   _notificaciones = null;
 }
 
+/// Como cuando otro programa ya está usando la cámara de la computadora.
+/// La primera vez (Ingreso, que en pruebas se cree la app de Windows y pide
+/// las cámaras; en el navegador no lo hace) responde sin cámaras; desde la
+/// ventana "Fotografía" falla.
+class _CamaraOcupada extends CameraPlatform {
+  var _llamadas = 0;
+
+  @override
+  Future<List<CameraDescription>> availableCameras() async {
+    if (_llamadas++ == 0) return [];
+    throw CameraException(
+      'cameraNotReadable',
+      'The camera is not readable due to a hardware error that prevented access to the device.',
+    );
+  }
+}
+
 void main() {
   final pantallas = {
     'Login': Routes.login,
@@ -1332,6 +1351,36 @@ void main() {
     expect(tester.getSize(campo('Hora de entrada')).width, 160);
     // Botones de su tamaño (no a todo el ancho).
     expect(tester.getSize(find.widgetWithText(ElevatedButton, 'Solicitar contrato')).width, lessThan(400));
+    await _cerrar(tester);
+  });
+
+  // Ventana "Fotografía" de Ingreso Manual en un celular chico, con la
+  // cámara ocupada por otro programa (el mensaje de error es el caso más
+  // alto: 3 renglones).
+  testWidgets('celular chico: la ventana "Fotografía" cabe con el error de cámara', (tester) async {
+    final camaraOriginal = CameraPlatform.instance;
+    CameraPlatform.instance = _CamaraOcupada();
+    addTearDown(() => CameraPlatform.instance = camaraOriginal);
+    // Más baja que un iPhone SE: en pruebas la letra mide la mitad.
+    const chico = Size(390, 600);
+    await _abrir(tester, Routes.ingresoManual, movil: true, size: chico);
+    await tester.ensureVisible(find.text('Tomar foto'));
+    await tester.pumpAndSettle();
+    // El error de la cámara ocupada es esperado: la ventana lo muestra y,
+    // como siempre, también se escapa sin atrapar (en la app va al log). Se
+    // recoge aquí para que no cuente como falla; cualquier otro error sí.
+    final errores = <Object>[];
+    await runZonedGuarded(() async {
+      await tester.tap(find.text('Tomar foto'));
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+    }, (error, _) => errores.add(error));
+    expect(errores, everyElement(isA<CameraException>()));
+    expect(find.text('Fotografía'), findsOneWidget);
+    expect(find.text('cameraNotReadable'), findsOneWidget);
+    // Botones dentro de la pantalla.
+    expect(tester.getRect(find.text('Capturar')).bottom, lessThan(chico.height));
     await _cerrar(tester);
   });
 

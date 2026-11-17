@@ -473,6 +473,10 @@ class _CameraDialogState extends State<_CameraDialog> {
       insetPadding: esNavegadorMovil
           ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
           : null,
+      // En celular, si no cabe (pantalla baja, o con el mensaje de error de
+      // la cámara), el contenido se desliza y "Cancelar"/"Capturar" quedan
+      // siempre visibles abajo.
+      scrollable: esNavegadorMovil,
       title: Text('Fotografía'),
       content: Column(
         mainAxisSize: .min,
@@ -569,11 +573,12 @@ class _CameraDialogState extends State<_CameraDialog> {
   /// En celular la cámara está vertical y la foto sale de 480x720 (2:3), así
   /// que la vista previa también es vertical y ocupa el ancho del diálogo
   /// (pantalla - insetPadding 16 - contentPadding 24, por lado), sin pasar
-  /// de la mitad del alto de la pantalla.
+  /// del 40% del alto de la pantalla (con más, en celulares chicos ya no
+  /// cabían el texto, la lista de cámaras o el error y los botones).
   (double, double) _tamanoPreviewMovil() {
     final pantalla = MediaQuery.sizeOf(context);
     final width = pantalla.width - 2 * 16 - 2 * 24;
-    final height = (width * 3 / 2).clamp(0.0, pantalla.height * 0.5);
+    final height = (width * 3 / 2).clamp(0.0, pantalla.height * 0.4);
     return (width, height);
   }
 
