@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/ui/core/ui/field_switcher.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato.dart';
@@ -30,6 +31,7 @@ import 'package:ri_rh_v2/data/repositories/users/users_repository.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/data/services/api/models/scan/scan.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
 import 'package:ri_rh_v2/domain/models/finger/finger.dart';
 import 'package:ri_rh_v2/data/repositories/signature/signature_repository.dart';
@@ -124,6 +126,14 @@ class _Auth extends AuthRepository {
 class _Log implements AppLogger {
   @override
   dynamic noSuchMethod(Invocation invocation) => null;
+}
+
+/// Sin sesión guardada: el botón "Avisos de requisiciones y órdenes" del
+/// menú no consulta al servidor durante las pruebas.
+class _SinToken extends SharedPreferencesService {
+  _SinToken() : super(log: _Log());
+  @override
+  Future<Result<String?>> fetchToken() async => const Result.ok(null);
 }
 
 class _Huellas implements FingerprintRepository {
@@ -609,6 +619,7 @@ Future<void> _abrir(
     providers: [
       ChangeNotifierProvider<AuthRepository>.value(value: auth),
       Provider<AppLogger>.value(value: _Log()),
+      Provider<SharedPreferencesService>.value(value: _SinToken()),
       Provider<FingerprintRepository>.value(value: _Huellas()),
       Provider<AvisosRepository>.value(value: _Avisos()),
       Provider<IncidenciasRepository>.value(value: incidencias),
@@ -1402,6 +1413,14 @@ void main() {
       final fin = tester.getTopLeft(find.text('HORA FIN'));
       expect(inicio.dy, greaterThan(dia.dy));
       expect(fin.dy, greaterThan(inicio.dy));
+      // Primero a Inicio: al quitar Nueva incidencia sale el error conocido
+      // (dispose doble), que si pasa en _cerrar corta el cierre del resto y el
+      // botón de avisos de compras de la barra no apaga su temporizador.
+      GoRouter.of(tester.element(find.text('HORA FIN'))).go(Routes.home);
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(find.text('HORA FIN'), findsNothing);
       await _cerrar(tester);
     });
   });
@@ -1418,5 +1437,41 @@ void main() {
       expect(fin.dx, greaterThan(dia.dx));
       await _cerrar(tester);
     });
+  });
+
+  testWidgets('celular chico: el menú ☰ de un líder de RH cabe completo (se desplaza)', (tester) async {
+    // Líder de RH: todas las opciones, incluida Reclutamiento.
+    final rh = _depto(9, 'Recursos Humanos');
+    _usuarioSesion = _usuario.copyWith(departamento: rh, departamentosPermitidos: [rh]);
+    addTearDown(() => _usuarioSesion = null);
+    await _abrir(tester, Routes.home, movil: true, size: const Size(320, 568), conSesion: true);
+    await tester.tap(find.byIcon(Icons.menu));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    // Antes se pasaba de alto (error de "overflowed").
+    expect(tester.takeException(), isNull);
+    final reclutamiento = find.text('Reclutamiento');
+    await tester.ensureVisible(reclutamiento);
+    await tester.pump();
+    expect(tester.getBottomLeft(reclutamiento).dy, lessThan(568));
+    await _cerrar(tester);
+  });
+
+  testWidgets('computadora con ventana baja: el menú de un líder de RH se desplaza', (tester) async {
+    final rh = _depto(9, 'Recursos Humanos');
+    _usuarioSesion = _usuario.copyWith(departamento: rh, departamentosPermitidos: [rh]);
+    addTearDown(() => _usuarioSesion = null);
+    await _abrir(tester, Routes.home, movil: false, size: const Size(1280, 500), conSesion: true);
+    // Antes se pasaba de alto (error de "overflowed").
+    expect(tester.takeException(), isNull);
+    final reclutamiento = find.text('Reclutamiento');
+    await tester.ensureVisible(reclutamiento);
+    await tester.pump();
+    expect(tester.getBottomLeft(reclutamiento).dy, lessThan(500));
+    // El botón de colapsar sigue abajo de todas las opciones.
+    expect(tester.getTopLeft(find.byIcon(Icons.arrow_back_ios)).dy,
+        greaterThan(tester.getBottomLeft(reclutamiento).dy));
+    await _cerrar(tester);
   });
 }

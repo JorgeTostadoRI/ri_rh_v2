@@ -16,6 +16,15 @@ bool get esNavegadorMovil =>
 @visibleForTesting
 bool? debugNavegadorMovil;
 
+/// `true` en cualquier navegador (computadora o celular); `false` en la app de
+/// Windows.
+bool get esWeb => debugEsWeb ?? kIsWeb;
+
+/// Solo para pruebas: permite ver la versión web de computadora (en
+/// `flutter test` nunca es web). Siempre regresarlo a `null`.
+@visibleForTesting
+bool? debugEsWeb;
+
 @visibleForTesting
 bool esNavegadorMovilPara({required bool esWeb, required TargetPlatform plataforma}) =>
     esWeb && (plataforma == TargetPlatform.android || plataforma == TargetPlatform.iOS);

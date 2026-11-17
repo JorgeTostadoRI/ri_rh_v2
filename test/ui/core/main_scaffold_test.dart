@@ -7,6 +7,7 @@ import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/data/repositories/incidencias/incidencias_repository.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
+import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
 import 'package:ri_rh_v2/domain/models/departamento/departamento.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
@@ -59,6 +60,14 @@ class _NoUsadoLog implements AppLogger {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
+/// Sin sesión guardada: el botón "Avisos de requisiciones y órdenes" del
+/// menú no consulta al servidor durante las pruebas.
+class _SinToken extends SharedPreferencesService {
+  _SinToken() : super(log: _NoUsadoLog());
+  @override
+  Future<Result<String?>> fetchToken() async => const Result.ok(null);
+}
+
 Future<void> _abrir(WidgetTester tester, {required bool esMovil, Size size = const Size(390, 844)}) async {
   debugNavegadorMovil = esMovil;
   addTearDown(() => debugNavegadorMovil = null);
@@ -84,6 +93,7 @@ Future<void> _abrir(WidgetTester tester, {required bool esMovil, Size size = con
   await tester.pumpWidget(MultiProvider(
     providers: [
       ChangeNotifierProvider<AuthRepository>.value(value: auth),
+      Provider<SharedPreferencesService>.value(value: _SinToken()),
       ChangeNotifierProvider(
         create: (_) => NotificationViewmodel(
           log: _NoUsadoLog(),
@@ -128,6 +138,32 @@ void main() {
     expect(find.byIcon(Icons.arrow_back_ios), findsOneWidget); // botón de colapsar
   });
 
+  final avisosCompras = find.byTooltip('Avisos de requisiciones y órdenes');
+
+  testWidgets('app de Windows: sin el botón de avisos de compras y sin franja', (tester) async {
+    // Las pruebas corren como app de escritorio (no navegador).
+    await _abrir(tester, esMovil: false, size: const Size(1366, 768));
+
+    expect(find.text('Recursos Humanos'), findsOneWidget);
+    expect(avisosCompras, findsNothing);
+    // El contenido empieza hasta arriba, como siempre.
+    expect(tester.getTopLeft(find.text('pantalla inicio')).dy, 0);
+  });
+
+  testWidgets('web de computadora: avisos de compras en una franja arriba a la derecha', (tester) async {
+    debugEsWeb = true;
+    addTearDown(() => debugEsWeb = null);
+    await _abrir(tester, esMovil: false, size: const Size(1366, 768));
+
+    expect(avisosCompras, findsOneWidget);
+    final boton = tester.getRect(avisosCompras);
+    expect(boton.right, closeTo(1366 - 16, 4)); // el botón mide 40 dentro de su área de 48
+    expect(boton.top, closeTo(12, 4));
+    // Fuera del menú, y el contenido empieza abajo del botón (no se enciman).
+    expect(find.descendant(of: find.byType(CollapsibleSidebar), matching: avisosCompras), findsNothing);
+    expect(tester.getTopLeft(find.text('pantalla inicio')).dy, greaterThanOrEqualTo(boton.bottom));
+  });
+
   testWidgets('celular: menú oculto tras ☰, se abre encima y se cierra al navegar', (tester) async {
     await _abrir(tester, esMovil: true);
 
@@ -135,6 +171,9 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
     expect(find.byType(CollapsibleSidebar), findsNothing);
     expect(tester.getSize(find.text('pantalla inicio')).width, greaterThan(0));
+    // Avisos de compras a la derecha de la barra de arriba.
+    expect(find.descendant(of: find.byType(AppBar), matching: avisosCompras), findsOneWidget);
+    expect(tester.getRect(avisosCompras).right, greaterThan(390 - 60));
 
     await tester.tap(find.byTooltip('Open navigation menu'));
     await tester.pumpAndSettle();
