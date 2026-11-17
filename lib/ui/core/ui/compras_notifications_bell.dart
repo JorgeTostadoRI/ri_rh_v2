@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/requisition_alerts_panel.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
@@ -42,16 +43,30 @@ class ComprasNotificationsBell extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = context.read<SharedPreferencesService>();
 
-    return RequisitionAlertsButton(
-      apiBaseUrl: _apiBase,
-      comprasUrl: _comprasUrl,
-      readToken: () async {
-        final result = await prefs.fetchToken();
-        return switch (result) {
-          Ok(value: final token) => token,
-          Error() => null,
-        };
-      },
+    // Con los colores de RH (icono naranja en círculo con borde, número en
+    // naranja); el panel que abre se queda igual que en los demás sistemas.
+    return IconButtonTheme(
+      data: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: primaryColor,
+          backgroundColor: Colors.white,
+          side: const BorderSide(color: Color(0xFFFDDEB0)),
+        ),
+      ),
+      child: BadgeTheme(
+        data: const BadgeThemeData(backgroundColor: primaryColor),
+        child: RequisitionAlertsButton(
+          apiBaseUrl: _apiBase,
+          comprasUrl: _comprasUrl,
+          readToken: () async {
+            final result = await prefs.fetchToken();
+            return switch (result) {
+              Ok(value: final token) => token,
+              Error() => null,
+            };
+          },
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/collapsible_sidebar.dart';
+import 'package:ri_rh_v2/ui/core/ui/compras_notifications_bell.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class MainScaffold extends StatelessWidget {
@@ -17,16 +18,42 @@ class MainScaffold extends StatelessWidget {
       return _MobileScaffold(child: child);
     }
 
-    // Computadora y app de Windows: sin cambios.
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Row(
         children: [
           CollapsibleSidebar(),
           Expanded(
-            child: child,
+            // Web de computadora: franja arriba con el botón de avisos de
+            // compras a la derecha (en una franja propia para no encimarse
+            // con los botones de cada pantalla). App de Windows: sin cambios.
+            child: esWeb
+                ? Column(
+                    children: [
+                      const _BarraAvisosCompras(),
+                      Expanded(child: child),
+                    ],
+                  )
+                : child,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Franja de arriba del contenido (web de computadora) con el botón de
+/// "Avisos de requisiciones y órdenes" a la derecha.
+class _BarraAvisosCompras extends StatelessWidget {
+  const _BarraAvisosCompras();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: ComprasNotificationsBell(),
       ),
     );
   }
@@ -59,6 +86,8 @@ class _MobileScaffold extends StatelessWidget {
           ),
         ),
         shape: const Border(bottom: BorderSide(color: Color(0xFFF5E8D8))),
+        // Avisos de requisiciones y órdenes, a la derecha de la barra.
+        actions: const [ComprasNotificationsBell(), SizedBox(width: 8)],
       ),
       drawer: Builder(
         builder: (drawerContext) => Drawer(

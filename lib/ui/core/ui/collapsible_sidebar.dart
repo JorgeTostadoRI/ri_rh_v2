@@ -7,7 +7,6 @@ import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/data/repositories/auth/auth_repository.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
-import 'package:ri_rh_v2/ui/core/ui/compras_notifications_bell.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
 
 class CollapsibleSidebar extends StatefulWidget {
@@ -49,7 +48,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
       duration: const Duration(milliseconds: 300),
       width: isCollapsed ? 70 : 240,
       color: backgroundColor,
-      child: Column(
+      child: _desplazableEnCelular(Column(
         children: [
           const SizedBox(height: 20),
           // Toggle Button
@@ -124,7 +123,6 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                       ),
                     ),
                   ),
-                  const ComprasNotificationsBell(),
                 ]
               ],
             ),
@@ -243,7 +241,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
               );
             },
           ),
-          Spacer(),
+          if (!widget.enMenuMovil) Spacer(),
           if (!widget.enMenuMovil)
           IconButton.outlined(
             icon: Icon(
@@ -260,8 +258,16 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             onPressed: () => setState(() => isCollapsed = !isCollapsed),
           ),
         ],
-      ),
+      )),
   );
+  }
+
+  /// Menú ☰ del celular: si las opciones no caben a lo alto (celulares
+  /// chicos), se desplaza en vez de cortarse. En computadora y en la app de
+  /// Windows queda igual que siempre.
+  Widget _desplazableEnCelular(Widget menu) {
+    if (!widget.enMenuMovil) return menu;
+    return SingleChildScrollView(child: menu);
   }
 }
 
