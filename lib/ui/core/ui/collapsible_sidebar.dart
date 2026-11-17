@@ -48,7 +48,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
       duration: const Duration(milliseconds: 300),
       width: isCollapsed ? 70 : 240,
       color: backgroundColor,
-      child: _desplazableEnCelular(Column(
+      child: _desplazable(Column(
         children: [
           const SizedBox(height: 20),
           // Toggle Button
@@ -262,12 +262,22 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
   );
   }
 
-  /// Menú ☰ del celular: si las opciones no caben a lo alto (celulares
-  /// chicos), se desplaza en vez de cortarse. En computadora y en la app de
-  /// Windows queda igual que siempre.
-  Widget _desplazableEnCelular(Widget menu) {
-    if (!widget.enMenuMovil) return menu;
-    return SingleChildScrollView(child: menu);
+  /// Si las opciones no caben a lo alto (celulares chicos o ventanas bajas),
+  /// el menú se desplaza en vez de cortarse.
+  Widget _desplazable(Widget menu) {
+    // Menú ☰ del celular: sin botón de colapsar abajo.
+    if (widget.enMenuMovil) return SingleChildScrollView(child: menu);
+
+    // Computadora y app de Windows: cuando sí cabe ocupa todo el alto, con el
+    // botón de colapsar hasta abajo, igual que siempre.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(child: menu),
+        ),
+      ),
+    );
   }
 }
 

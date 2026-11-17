@@ -1457,4 +1457,21 @@ void main() {
     expect(tester.getBottomLeft(reclutamiento).dy, lessThan(568));
     await _cerrar(tester);
   });
+
+  testWidgets('computadora con ventana baja: el menú de un líder de RH se desplaza', (tester) async {
+    final rh = _depto(9, 'Recursos Humanos');
+    _usuarioSesion = _usuario.copyWith(departamento: rh, departamentosPermitidos: [rh]);
+    addTearDown(() => _usuarioSesion = null);
+    await _abrir(tester, Routes.home, movil: false, size: const Size(1280, 500), conSesion: true);
+    // Antes se pasaba de alto (error de "overflowed").
+    expect(tester.takeException(), isNull);
+    final reclutamiento = find.text('Reclutamiento');
+    await tester.ensureVisible(reclutamiento);
+    await tester.pump();
+    expect(tester.getBottomLeft(reclutamiento).dy, lessThan(500));
+    // El botón de colapsar sigue abajo de todas las opciones.
+    expect(tester.getTopLeft(find.byIcon(Icons.arrow_back_ios)).dy,
+        greaterThan(tester.getBottomLeft(reclutamiento).dy));
+    await _cerrar(tester);
+  });
 }
