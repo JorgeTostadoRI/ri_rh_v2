@@ -12,6 +12,8 @@ import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service.dar
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/routing/router.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
+import 'package:ri_rh_v2/ui/core/ui/aviso_pantalla_completa.dart';
+import 'package:ri_rh_v2/ui/core/ui/barra_titulo_pantalla_completa.dart';
 import 'package:ri_rh_v2/main_development.dart' as development;
 
 void main() {
@@ -88,6 +90,12 @@ class _MainAppState extends State<MainApp> {
         return const Locale('en');
       },
       routerConfig: _router,
+      // App de Windows en pantalla completa (F11): aviso de cómo salir y la
+      // barra de título que baja al acercar el mouse a la esquina de arriba
+      // a la derecha.
+      builder: (context, child) => AvisoPantallaCompleta(
+        child: BarraTituloPantallaCompleta(child: child!),
+      ),
     );
   }
 }
