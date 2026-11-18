@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/image_preview.dart';
 
@@ -61,7 +62,7 @@ class _CameraDialogState extends State<CameraDialog> {
           return AlertDialog(
             constraints: const BoxConstraints(maxWidth: 800),
             contentPadding: const EdgeInsets.all(32),
-            backgroundColor: Colors.white,
+            backgroundColor: context.rh.superficie,
             content: Column(
               mainAxisSize: .min,
               spacing: 20,

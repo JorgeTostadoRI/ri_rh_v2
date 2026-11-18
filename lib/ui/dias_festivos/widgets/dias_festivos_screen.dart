@@ -120,7 +120,7 @@ class _DiasFestivosScreenState extends State<DiasFestivosScreen> {
     final dateFormat = DateFormat.yMMMMd();
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.rh.fondo,
       floatingActionButton: ListenableBuilder(
         listenable: widget.viewmodel,
         builder: (context, _) {
@@ -207,7 +207,7 @@ class _DiasFestivosScreenState extends State<DiasFestivosScreen> {
                     itemBuilder: (context, index) {
                       final diaFestivo = diasFestivos[index];
                       return ListTile(
-                        tileColor: Colors.white,
+                        tileColor: context.rh.superficie,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -230,7 +230,7 @@ class _DiasFestivosScreenState extends State<DiasFestivosScreen> {
                             ? IconButton(
                                 icon: Icon(
                                   LucideIcons.trash2,
-                                  color: errorColor,
+                                  color: context.rh.error,
                                 ),
                                 onPressed: () => _handleDelete(diaFestivo),
                               )

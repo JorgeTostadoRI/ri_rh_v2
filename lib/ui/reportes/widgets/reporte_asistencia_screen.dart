@@ -108,8 +108,8 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                 builder: (context, _) {
                   return OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: headingTextColor,
+                      backgroundColor: context.rh.superficie,
+                      foregroundColor: context.rh.titulo,
                       iconColor: primaryColor,
                     ),
                     onPressed: () async {
@@ -146,7 +146,7 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                       value: widget.viewmodel.employeeCount.toString(),
                       subtitle: 'en el reporte',
                       icon: ColorIcon(
-                        backgroundColor: statusWarningBgColor,
+                        backgroundColor: context.rh.avisoFondo,
                         iconColor: primaryColor,
                         icon: LucideIcons.usersRound,
                       ),
@@ -156,8 +156,8 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                       value: widget.viewmodel.entriesCount.toString(),
                       subtitle: 'entradas totales',
                       icon: ColorIcon(
-                        backgroundColor: statusSuccessBgColor,
-                        iconColor: statusSuccessColor,
+                        backgroundColor: context.rh.exitoFondo,
+                        iconColor: context.rh.exitoTexto,
                         icon: LucideIcons.circleCheckBig,
                       ),
                     ),
@@ -166,8 +166,8 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                       value: widget.viewmodel.absenceCount.toString(),
                       subtitle: 'acumuladas',
                       icon: ColorIcon(
-                        backgroundColor: statusFailureBgColor,
-                        iconColor: statusFailureColor,
+                        backgroundColor: context.rh.falloFondo,
+                        iconColor: context.rh.falloTexto,
                         icon: LucideIcons.userRoundX,
                       ),
                     ),
@@ -176,8 +176,8 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                       value: widget.viewmodel.minutesLateSum.toString(),
                       subtitle: 'acumulados',
                       icon: ColorIcon(
-                        backgroundColor: statusFailureBgColor,
-                        iconColor: statusFailureColor,
+                        backgroundColor: context.rh.falloFondo,
+                        iconColor: context.rh.falloTexto,
                         icon: LucideIcons.trendingDown,
                       ),
                     ),
@@ -263,7 +263,7 @@ class _ReporteAsistenciaScreenState extends State<ReporteAsistenciaScreen> {
                         decoration: InputDecoration(
                           hintText: 'Buscar empleado por nombre',
                           prefixIcon: Icon(LucideIcons.search),
-                          prefixIconColor: const Color(0xFFC4A47A),
+                          prefixIconColor: context.rh.etiquetaSuave,
                         ),
                         onChanged: (value) => _employeeSearchDebouncer.run(
                           () => setState(() => _employeeSearchQuery = value),

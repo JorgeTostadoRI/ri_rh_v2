@@ -56,7 +56,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
     return AlertDialog(
       constraints: BoxConstraints(maxWidth: 384, maxHeight: 384),
       contentPadding: EdgeInsets.all(32),
-      backgroundColor: Colors.white,
+      backgroundColor: context.rh.superficie,
       content: ListenableBuilder(
         listenable: Listenable.merge([widget.viewmodel, widget.viewmodel.login]),
         builder: (context, _) {
@@ -68,7 +68,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: backgroundColor,
+                    color: context.rh.fondo,
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Icon(
@@ -81,7 +81,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                 Text(
                   'Verificación de identidad',
                   style: TextStyle(
-                    color: headingTextColor,
+                    color: context.rh.titulo,
                     fontSize: 20,
                     fontWeight: .w900,
                     height: 1.4,
@@ -90,7 +90,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                 Text(
                   'No hay conexión con el escaner, conecta el escaner y reinicia la aplicación',
                   style: TextStyle(
-                    color: labelTextColor,
+                    color: context.rh.etiqueta,
                     fontSize: 14,
                     height: 1.4
                   ),
@@ -121,7 +121,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: backgroundColor,
+                  color: context.rh.fondo,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: verifying
@@ -139,7 +139,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
               Text(
                 'Verificación de identidad',
                 style: TextStyle(
-                  color: headingTextColor,
+                  color: context.rh.titulo,
                   fontSize: 20,
                   fontWeight: .w900,
                   height: 1.4,
@@ -150,7 +150,7 @@ class _VerifyIdentityDialogState extends State<VerifyIdentityDialog> {
                     ? 'Verificando tu huella, espera un momento...'
                     : 'Coloca tu dedo en el lector de huella digital para confirmar y enviar tu solicitud',
                 style: TextStyle(
-                  color: labelTextColor,
+                  color: context.rh.etiqueta,
                   fontSize: 14,
                   height: 1.4
                 ),

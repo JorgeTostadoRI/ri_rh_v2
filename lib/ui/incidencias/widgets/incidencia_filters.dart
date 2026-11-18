@@ -40,9 +40,9 @@ class _IncidenciaFiltersState extends State<IncidenciaFilters> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: BoxBorder.fromBorderSide(BorderSide(
-          color: borderColor,
+          color: context.rh.borde,
           width: 0.8,
         )),
         borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -309,7 +309,7 @@ class __UsersDialogState extends State<_UsersDialog> {
                 decoration: InputDecoration(
                   hintText: 'Buscar por nombre',
                   prefixIcon: Icon(LucideIcons.search),
-                  prefixIconColor: const Color(0xFFC4A47A),
+                  prefixIconColor: context.rh.etiquetaSuave,
                 ),
                 onChanged: (value) => setState(() => _searchQuery = value),
               ),

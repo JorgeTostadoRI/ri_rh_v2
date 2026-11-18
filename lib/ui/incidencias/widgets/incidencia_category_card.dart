@@ -28,7 +28,7 @@ class IncidenciaCategoryCard extends StatefulWidget {
 class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
   bool _hovering = false;
 
-  Color get borderColor => _hovering ? widget.color : Color(0xFFF5E8D8);
+  Color get borderColor => _hovering ? widget.color : context.rh.borde;
   double get iconScale => _hovering ? 1.1 : 1.0;
 
   @override
@@ -48,7 +48,7 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
             duration: const Duration(milliseconds: 200),
             padding: EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.rh.superficie,
               border: BoxBorder.all(color: borderColor),
               borderRadius: BorderRadius.circular(20),
             ),
@@ -63,7 +63,7 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: widget.bg,
+                      color: context.rh.tinte(widget.bg, widget.color),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(widget.icon, color: widget.color)
@@ -74,14 +74,14 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
                   widget.category.label,
                   style: TextTheme.of(context).titleMedium?.copyWith(
                     fontWeight: .w700,
-                    color: headingTextColor,
+                    color: context.rh.titulo,
                   ),
                   textAlign: .center,
                 ),
                 Text(
                   widget.description,
                   style: TextTheme.of(context).labelMedium?.copyWith(
-                    color: labelTextColor,
+                    color: context.rh.etiqueta,
                   ),
                   textAlign: .center,
                 ),
@@ -103,8 +103,8 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: BoxBorder.all(color: Color(0xFFF5E8D8)),
+          color: context.rh.superficie,
+          border: BoxBorder.all(color: context.rh.borde),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -114,7 +114,7 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: widget.bg,
+                color: context.rh.tinte(widget.bg, widget.color),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(widget.icon, color: widget.color),
@@ -127,13 +127,13 @@ class _IncidenciaCategoryCardState extends State<IncidenciaCategoryCard> {
                     widget.category.label,
                     style: TextTheme.of(context).titleMedium?.copyWith(
                       fontWeight: .w700,
-                      color: headingTextColor,
+                      color: context.rh.titulo,
                     ),
                   ),
                   Text(
                     widget.description,
                     style: TextTheme.of(context).labelMedium?.copyWith(
-                      color: labelTextColor,
+                      color: context.rh.etiqueta,
                     ),
                   ),
                 ],

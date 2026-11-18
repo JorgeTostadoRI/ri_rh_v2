@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 
 class EmpleadoStatusChip extends StatelessWidget {
@@ -11,19 +12,19 @@ class EmpleadoStatusChip extends StatelessWidget {
   final EmpleadoEstatus status;
   final bool porAbandono;
 
-  Color get backgroundColor {
+  Color _fondo(RhColores c) {
     return switch (status) {
-      EmpleadoEstatus.activo => const Color(0xFFDCFCE7),
-      EmpleadoEstatus.procesoFiniquito => const Color(0xFFFFEDD4),
-      EmpleadoEstatus.finiquitado => const Color(0xFFFFE2E2),
+      EmpleadoEstatus.activo => c.exitoFondo,
+      EmpleadoEstatus.procesoFiniquito => c.avisoFondo,
+      EmpleadoEstatus.finiquitado => c.falloFondo,
     };
   }
 
-  Color get textColor {
+  Color _texto(RhColores c) {
     return switch (status) {
-      EmpleadoEstatus.activo => const Color(0xFF00A63E),
-      EmpleadoEstatus.procesoFiniquito => const Color(0xFFF54900),
-      EmpleadoEstatus.finiquitado => const Color(0xFFE7000B),
+      EmpleadoEstatus.activo => c.exitoTexto,
+      EmpleadoEstatus.procesoFiniquito => c.avisoTexto,
+      EmpleadoEstatus.finiquitado => c.falloTexto,
     };
   }
 
@@ -38,7 +39,7 @@ class EmpleadoStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      backgroundColor: backgroundColor,
+      backgroundColor: _fondo(context.rh),
       side: BorderSide.none,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
@@ -49,7 +50,7 @@ class EmpleadoStatusChip extends StatelessWidget {
           fontSize: 10,
           fontWeight: .w900,
           height: 1.5,
-          color: textColor,
+          color: _texto(context.rh),
         ),
       )
     );

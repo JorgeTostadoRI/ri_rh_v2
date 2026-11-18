@@ -27,10 +27,10 @@ class IndividualAttendanceTable extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFAF5),
+        color: context.rh.superficieAlterna,
         borderRadius: BorderRadius.circular(20),
         border: Border.fromBorderSide(BorderSide(
-          color: borderColor,
+          color: context.rh.borde,
           width: 0.8,
         ))
       ),
@@ -51,7 +51,7 @@ class IndividualAttendanceTable extends StatelessWidget {
           ),
           DataTable(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.rh.superficie,
             ),
             columns: [
               DataColumn(label: Text('FECHA')),
@@ -106,7 +106,7 @@ class IndividualAttendanceTable extends StatelessWidget {
                       DataCell(
                         Text(
                           '0 min',
-                          style: TextStyle(color: errorColor, fontWeight: .w700),
+                          style: TextStyle(color: context.rh.error, fontWeight: .w700),
                         ),
                       ),
                     ],
@@ -120,7 +120,7 @@ class IndividualAttendanceTable extends StatelessWidget {
                     DataCell(
                       Text(
                         '${attendance.minutesLate} min',
-                        style: TextStyle(color: errorColor, fontWeight: .w700),
+                        style: TextStyle(color: context.rh.error, fontWeight: .w700),
                       ),
                     ),
                   ],

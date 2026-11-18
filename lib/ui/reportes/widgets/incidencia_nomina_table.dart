@@ -45,7 +45,7 @@ class IncidenciaNominaTable extends StatelessWidget {
     final textTheme = TextTheme.of(context);
     final yMd = DateFormat.yMd('en_US');
 
-    Color? rowColor(int index) => index.isOdd ? const Color(0xFFFFFAF5) : Colors.white;
+    Color? rowColor(int index) => index.isOdd ? context.rh.superficieAlterna : context.rh.superficie;
 
     // Columna EMPLEADO congelada -- se queda fija mientras el resto de la
     // tabla se desliza horizontalmente, ver FrozenColumnTableWrapper.
@@ -137,7 +137,7 @@ class IncidenciaNominaTable extends StatelessWidget {
                 children: [
                   Text(
                     '${item.minutesLate} min',
-                    style: TextStyle(color: errorColor, fontWeight: .w700),
+                    style: TextStyle(color: context.rh.error, fontWeight: .w700),
                   ),
                   if (_puedeEditarAgregados && onEditMinutosRetardo != null)
                     IconButton(
@@ -224,7 +224,7 @@ class _CodigoChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: borderColor, width: 0.8),
+        border: Border.all(color: context.rh.borde, width: 0.8),
       ),
       child: Text(
         codigo,

@@ -21,7 +21,7 @@ SnackBar errorSnackBar(BuildContext context, String message, {Object? error}) {
             title: Text('Detalle de Error'),
             content: Text(
               error.toString(),
-              style: TextStyle(color: errorColor),
+              style: TextStyle(color: context.rh.error),
             ),
           );
         }

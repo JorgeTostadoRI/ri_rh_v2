@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/ui/core/ui/document_picker_row.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
@@ -77,7 +78,7 @@ class _IniciarContratacionPracticanteDialogState extends State<IniciarContrataci
                 Text(
                   'Se le mandará a ${widget.nombre} el link para completar su contratación como empleado. '
                   'Ya irá prellenado con lo que tenemos de su expediente; solo completará lo que falte.',
-                  style: TextStyle(color: Colors.grey[700]),
+                  style: TextStyle(color: context.rh.segun(claro: Colors.grey[700]!, oscuro: Colors.grey[400]!)),
                 ),
                 TextFormField(
                   controller: _correo,

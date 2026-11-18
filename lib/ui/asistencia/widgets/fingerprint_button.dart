@@ -84,15 +84,15 @@ class _IconBuilder extends StatelessWidget {
         padding: EdgeInsets.all(48),
         decoration: BoxDecoration(
           border: BoxBorder.all(
-            color: Color(0xFF52C41A),
+            color: context.rh.exito,
             width: 1.6,
           ),
           gradient: LinearGradient(
             begin: .centerLeft,
             end: .centerRight,
             colors: [
-              Color(0xFFD4EDDA),
-              Color(0xFFC3E6CB),
+              context.rh.segun(claro: Color(0xFFD4EDDA), oscuro: Color(0xFF173222)),
+              context.rh.segun(claro: Color(0xFFC3E6CB), oscuro: Color(0xFF1C3B28)),
             ],
           ),
           borderRadius: BorderRadius.circular(15),
@@ -105,15 +105,15 @@ class _IconBuilder extends StatelessWidget {
         padding: EdgeInsets.all(48),
         decoration: BoxDecoration(
           border: BoxBorder.all(
-            color: errorColor,
+            color: context.rh.error,
             width: 1.6,
           ),
           gradient: LinearGradient(
             begin: .centerLeft,
             end: .centerRight,
             colors: [
-              Color(0xFFFFF8F0),
-              backgroundColor,
+              context.rh.segun(claro: Color(0xFFFFF8F0), oscuro: Color(0xFF241B13)),
+              context.rh.fondo,
             ],
           ),
           borderRadius: BorderRadius.circular(15),
@@ -126,15 +126,15 @@ class _IconBuilder extends StatelessWidget {
       padding: EdgeInsets.all(48),
       decoration: BoxDecoration(
         border: BoxBorder.all(
-          color: Color(0xFFFDDEB0),
+          color: context.rh.bordeAcento,
           width: 1.6,
         ),
         gradient: LinearGradient(
           begin: .centerLeft,
           end: .centerRight,
           colors: [
-            Color(0xFFFFF8F0),
-            Color(0xFFFFF0DC),
+            context.rh.segun(claro: Color(0xFFFFF8F0), oscuro: Color(0xFF241B13)),
+            context.rh.fondo,
           ],
         ),
         borderRadius: BorderRadius.circular(15),
@@ -162,7 +162,7 @@ class _LabelBuilder extends StatelessWidget {
     if (scanFingerprint.error) {
       return Text(
         'No se identifico tu huella, prueba con el dedo $fingerName',
-        style: baseStyle?.copyWith(color: errorColor),
+        style: baseStyle?.copyWith(color: context.rh.error),
         textAlign: .center,
       );
     }
@@ -176,7 +176,7 @@ class _LabelBuilder extends StatelessWidget {
     else if (register.error) {
       return Text(
         'No se completó el registro, intente de nuevo',
-        style: baseStyle?.copyWith(color: errorColor),
+        style: baseStyle?.copyWith(color: context.rh.error),
         textAlign: .center,
       );
     }
@@ -188,14 +188,14 @@ class _LabelBuilder extends StatelessWidget {
           AsistenciaType.entryFromLunch => '¡Entrada registrada exitosamente!',
           AsistenciaType.exit => '¡Salida registrada exitosamente!',
         },
-        style: baseStyle?.copyWith(color: successColor),
+        style: baseStyle?.copyWith(color: context.rh.exito),
         textAlign: .center,
       );
     }
 
     return Text(
       'Toca el sensor para registrar',
-      style: baseStyle?.copyWith(color: const Color(0xFFC4A47A)),
+      style: baseStyle?.copyWith(color: context.rh.etiquetaSuave),
       textAlign: .center,
     );
   }

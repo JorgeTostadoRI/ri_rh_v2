@@ -70,7 +70,7 @@ class JefeField extends StatelessWidget {
                       );
                     },
                   ),
-                  child: Icon(LucideIcons.pen, color: labelTextColor),
+                  child: Icon(LucideIcons.pen, color: context.rh.etiqueta),
                 ),
               ),
       ),

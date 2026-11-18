@@ -98,7 +98,7 @@ class PracticanteHuellasScreen extends StatelessWidget {
                   showBackButton: true,
                 ),
                 Card(
-                  color: Colors.white,
+                  color: context.rh.superficie,
                   child: Padding(
                     padding: EdgeInsets.all(24),
                     child: Column(
@@ -178,14 +178,14 @@ class _SignatureCard extends StatelessWidget {
 
     if (!viewmodel.practicante.base.hasSignature) {
       return Card(
-        color: Colors.white,
+        color: context.rh.superficie,
         child: Padding(
           padding: EdgeInsets.all(8),
           child: Column(
             mainAxisSize: .min,
             children: [
               ListTile(
-                leading: Icon(LucideIcons.circleAlert, color: statusWarningColor),
+                leading: Icon(LucideIcons.circleAlert, color: context.rh.avisoTexto),
                 title: Text('Se requieren acciones', style: textTheme.headlineSmall),
                 subtitle: Text('Este practicante no tiene capturada huella para firma de incidencias.')
               ),
@@ -219,11 +219,11 @@ class _SignatureCard extends StatelessWidget {
     }
 
     return Card(
-      color: Colors.white,
+      color: context.rh.superficie,
       child: Padding(
         padding: EdgeInsets.all(8),
         child: ListTile(
-          leading: Icon(LucideIcons.circleCheck, color: statusSuccessColor),
+          leading: Icon(LucideIcons.circleCheck, color: context.rh.exitoTexto),
           title: Text('Firma para incidencias registrada', style: textTheme.headlineSmall),
         ),
       ),

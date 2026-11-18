@@ -111,7 +111,7 @@ class _TimeFormFieldState extends State<TimeFormField> {
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
             onTap: _pickerHandler,
-            child: Icon(LucideIcons.clock, color: labelTextColor),
+            child: Icon(LucideIcons.clock, color: context.rh.etiqueta),
           ),
         ),
       ),

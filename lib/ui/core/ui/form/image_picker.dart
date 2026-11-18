@@ -30,8 +30,8 @@ class _ImagePickerState extends State<ImagePicker> {
   bool _hovering = false;
 
   double get _scale => _hovering ? 1.1 : 1;
-  Color get _borderColor => _hovering ? primaryColor : borderColor;
-  Color get _fillColor => _hovering ? inputFillColor.withAlpha(20) : inputFillColor;
+  Color get _borderColor => _hovering ? primaryColor : context.rh.borde;
+  Color get _fillColor => _hovering ? context.rh.relleno.withAlpha(20) : context.rh.relleno;
   double get _opacity => _hovering ? 1 : 0;
 
   Future<void> selectFileHandler() async {
@@ -81,7 +81,7 @@ class _ImagePickerState extends State<ImagePicker> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.rh.superficie,
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: [
                     BoxShadow(
@@ -161,8 +161,8 @@ class _ImagePickerState extends State<ImagePicker> {
             Material(
               shape: const CircleBorder(),
               child: Ink(
-                decoration: const ShapeDecoration(
-                  color: Colors.white,
+                decoration: ShapeDecoration(
+                  color: context.rh.superficie,
                   shape: CircleBorder(),
                 ),
                 child: IconButton(

@@ -388,7 +388,7 @@ class _VacantesScreenState extends State<VacantesScreen> {
     final dateFormat = DateFormat.yMMMMd();
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.rh.fondo,
       floatingActionButton: ListenableBuilder(
         listenable: widget.viewmodel,
         builder: (context, _) {
@@ -514,7 +514,7 @@ class _VacantesScreenState extends State<VacantesScreen> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: context.rh.superficie,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(
@@ -579,7 +579,7 @@ class _VacantesScreenState extends State<VacantesScreen> {
                               Container(
                                 margin: const EdgeInsets.only(top: 4),
                                 decoration: BoxDecoration(
-                                  color: backgroundColor.withValues(alpha: 0.4),
+                                  color: context.rh.fondo.withValues(alpha: 0.4),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -683,7 +683,7 @@ class _EvaluacionPendienteChip extends StatelessWidget {
     return ActionChip(
       avatar: const Icon(Icons.warning_amber_rounded, size: 16, color: Colors.orange),
       label: const Text('Evaluación pendiente'),
-      backgroundColor: const Color(0xFFFFF7ED),
+      backgroundColor: context.rh.acentoSuave,
       onPressed: onPressed,
     );
   }
@@ -708,7 +708,7 @@ class _PracticantesPorEvaluar extends StatelessWidget {
         if (items.isEmpty) return const SizedBox.shrink();
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+          decoration: BoxDecoration(color: context.rh.superficie, borderRadius: BorderRadius.circular(20)),
           child: Column(
             crossAxisAlignment: .start,
             spacing: 4,
@@ -735,7 +735,7 @@ class _PracticantesPorEvaluar extends StatelessWidget {
                             Text(item.nombreCompleto, overflow: .ellipsis),
                             Text(
                               '${item.tipo} · ${item.puesto} · termina el ${_fecha.format(item.fechaTerminacion)}',
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A)),
+                              style: TextStyle(fontSize: 11, color: context.rh.etiqueta),
                               overflow: .ellipsis,
                             ),
                           ],
@@ -780,7 +780,7 @@ Widget _itemMovil(BuildContext context, PracticantePorEvaluarItem item) {
                   Text(item.nombreCompleto),
                   Text(
                     '${item.tipo} · ${item.puesto} · termina el ${_PracticantesPorEvaluar._fecha.format(item.fechaTerminacion)}',
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A)),
+                    style: TextStyle(fontSize: 11, color: context.rh.etiqueta),
                   ),
                 ],
               ),
@@ -918,8 +918,8 @@ class _CandidatoRow extends StatelessWidget {
     ];
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.rh.superficie, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: .start,
@@ -964,7 +964,7 @@ class _CandidatoRow extends StatelessWidget {
                       'Contratado',
                     ],
                   ),
-                  Text(_label(), style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+                  Text(_label(), style: TextStyle(fontSize: 11, color: context.rh.etiqueta)),
                 ],
               ),
             ),
@@ -1000,8 +1000,8 @@ class _CandidatoRow extends StatelessWidget {
         (candidato.estado == CandidatoEstado.iniciado || candidato.estado == CandidatoEstado.expirado);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.rh.superficie, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: .start,
@@ -1073,7 +1073,7 @@ class _CandidatoRow extends StatelessWidget {
                       'Contratado',
                     ],
                   ),
-                  Text(_label(), style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+                  Text(_label(), style: TextStyle(fontSize: 11, color: context.rh.etiqueta)),
                 ],
               ),
             ),

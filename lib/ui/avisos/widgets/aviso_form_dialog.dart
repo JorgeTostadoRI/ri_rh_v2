@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/avisos/aviso.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:ri_rh_v2/ui/core/ui/form/image_picker.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
 
@@ -79,7 +80,7 @@ class _AvisoFormDialogState extends State<AvisoFormDialog> {
         child: Container(
           padding: EdgeInsets.all(movil ? 20 : 32),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.rh.superficie,
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(

@@ -93,17 +93,17 @@ class _PracticanteRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (etiqueta, color, fondo) = switch (item.etapa) {
-      EtapaSeguimientoPracticante.enCurso => ('En curso', labelTextColor, inputFillColor),
+      EtapaSeguimientoPracticante.enCurso => ('En curso', context.rh.etiqueta, context.rh.relleno),
       EtapaSeguimientoPracticante.evaluacionPendiente => (
         item.solicitudEstatus == 'retroalimentacion' ? 'Evaluación regresada al jefe' : 'Evaluación pendiente',
-        statusWarningColor,
-        statusWarningBgColor,
+        context.rh.avisoTexto,
+        context.rh.avisoFondo,
       ),
-      EtapaSeguimientoPracticante.contratar => ('Contratar como empleado', statusSuccessColor, statusSuccessBgColor),
+      EtapaSeguimientoPracticante.contratar => ('Contratar como empleado', context.rh.exitoTexto, context.rh.exitoFondo),
       EtapaSeguimientoPracticante.terminar => (
         item.tipo == 'Residente' ? 'Termina su residencia' : 'Termina sus prácticas',
-        statusFailureColor,
-        statusFailureBgColor,
+        context.rh.falloTexto,
+        context.rh.falloFondo,
       ),
     };
 
@@ -121,7 +121,7 @@ class _PracticanteRow extends StatelessWidget {
             'Motivo: ${item.evaluacionMotivo}',
     };
 
-    const secundario = TextStyle(fontSize: 12, color: labelTextColor);
+    final secundario = TextStyle(fontSize: 12, color: context.rh.etiqueta);
 
     final columnas = <Expanded>[
       Expanded(
@@ -169,8 +169,8 @@ class _PracticanteRow extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.rh.superficie, width: 1)),
       ),
       // Navegador de celular: los 3 bloques uno debajo de otro (en columnas
       // quedaban de ~90, 60 y 120 px, casi todo cortado).

@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:ri_rh_v2/data/repositories/vacantes/vacantes_repository.dart';
 import 'package:ri_rh_v2/domain/models/vacantes/candidato_detalle.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
@@ -76,12 +77,12 @@ class _CompletarAltaCardState extends State<CompletarAltaCard> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FDF4),
+              color: context.rh.exitoSuave,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
+            child: Text(
               'Ya se dio de alta a este candidato.',
-              style: TextStyle(color: Color(0xFF008236), fontWeight: .w700),
+              style: TextStyle(color: context.rh.exitoFuerte, fontWeight: .w700),
             ),
           ),
           Align(

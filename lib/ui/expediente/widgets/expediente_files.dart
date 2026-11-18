@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/domain/models/base_empleado/base_empleado.dart';
@@ -123,34 +124,25 @@ class _FileDisplay extends StatelessWidget {
   final String name;
   final String? url;
 
-  static const uploadedDecoration = BoxDecoration(
-    color: Color(0xFFF0FDF4),
+  static BoxDecoration uploadedDecoration(RhColores c) => BoxDecoration(
+    color: c.exitoSuave,
     border: Border.fromBorderSide(BorderSide(
-      color: Color(0xFFDCFCE7),
+      color: c.exitoFondo,
       width: 0.8,
     )),
-    borderRadius: BorderRadius.all(Radius.circular(20)),
+    borderRadius: const BorderRadius.all(Radius.circular(20)),
   );
 
-  static const notUploadedDecoration = BoxDecoration(
-    color: Color(0xFFFDF6EE),
-    borderRadius: BorderRadius.all(Radius.circular(20)),
+  static BoxDecoration notUploadedDecoration(RhColores c) => BoxDecoration(
+    color: c.superficieTenue,
+    borderRadius: const BorderRadius.all(Radius.circular(20)),
   );
 
-  TextStyle getLabelStyle(bool uploaded) {
-    if (uploaded) {
-      return const TextStyle(
-        fontSize: 11,
-        fontWeight: .w700,
-        color: Color(0xFF008236),
-        height: 1.5,
-      );
-    }
-
-    return const TextStyle(
+  TextStyle getLabelStyle(RhColores c, bool uploaded) {
+    return TextStyle(
       fontSize: 11,
       fontWeight: .w700,
-      color: Color(0xFF9A7B5A),
+      color: uploaded ? c.exitoFuerte : c.etiqueta,
       height: 1.5,
     );
   }
@@ -161,7 +153,7 @@ class _FileDisplay extends StatelessWidget {
     final uploaded = url != null;
 
     return Container(
-      decoration: uploaded ? uploadedDecoration : notUploadedDecoration,
+      decoration: uploaded ? uploadedDecoration(context.rh) : notUploadedDecoration(context.rh),
       padding: const EdgeInsets.all(12),
       child: Row(
         mainAxisAlignment: .spaceBetween,
@@ -169,7 +161,7 @@ class _FileDisplay extends StatelessWidget {
           Flexible(
             child: Text(
               name,
-              style: getLabelStyle(uploaded),
+              style: getLabelStyle(context.rh, uploaded),
               overflow: .ellipsis,
             ),
           ),
@@ -182,7 +174,7 @@ class _FileDisplay extends StatelessWidget {
               },
               icon: Icon(
                 LucideIcons.download,
-                color: Color(0xFF008236),
+                color: context.rh.exitoFuerte,
                 size: 14,
               ),
             ),

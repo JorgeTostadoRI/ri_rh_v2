@@ -168,7 +168,7 @@ class _FechaTerminacionField extends StatelessWidget {
       initialValue: fecha != null ? DateFormat('dd/MM/yy').format(fecha) : 'Sin asignar',
       decoration: InputDecoration(
         labelText: 'FECHA DE TERMINACIÓN',
-        prefixIcon: falta ? Icon(LucideIcons.triangleAlert, color: statusWarningColor) : null,
+        prefixIcon: falta ? Icon(LucideIcons.triangleAlert, color: context.rh.avisoTexto) : null,
         suffixIcon: fecha == null && viewmodel.esRH
             ? Padding(
                 padding: const EdgeInsets.only(right: 8),

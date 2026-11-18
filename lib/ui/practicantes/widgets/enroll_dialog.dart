@@ -59,7 +59,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
     return AlertDialog(
       constraints: BoxConstraints(maxWidth: 384, maxHeight: 384),
       contentPadding: EdgeInsets.all(32),
-      backgroundColor: Colors.white,
+      backgroundColor: context.rh.superficie,
       content: Column(
         spacing: 24,
         mainAxisSize: .min,
@@ -68,7 +68,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: backgroundColor,
+              color: context.rh.fondo,
               borderRadius: BorderRadius.circular(50),
             ),
             child: Icon(
@@ -80,7 +80,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
           Text(
             'Escaneo de Huella',
             style: TextStyle(
-              color: headingTextColor,
+              color: context.rh.titulo,
               fontSize: 20,
               fontWeight: .w900,
               height: 1.4,
@@ -100,12 +100,12 @@ class _EnrollDialogState extends State<EnrollDialog> {
                   children: [
                     Text(
                       widget.viewmodel.capture.result.toString(),
-                      style: TextStyle(color: errorColor),
+                      style: TextStyle(color: context.rh.error),
                     ),
                     Text(
                       'Ha ocurrido un error con la captura, por favor vuelva a intentarlo.',
                       style: TextStyle(
-                        color: labelTextColor,
+                        color: context.rh.etiqueta,
                         fontSize: 14,
                         height: 1.4
                       ),
@@ -120,12 +120,12 @@ class _EnrollDialogState extends State<EnrollDialog> {
                   children: [
                     Text(
                       widget.viewmodel.enroll.result.toString(),
-                      style: TextStyle(color: errorColor),
+                      style: TextStyle(color: context.rh.error),
                     ),
                     Text(
                       'Ha ocurrido un error con el registro, por favor vuelva a intentarlo.',
                       style: TextStyle(
-                        color: labelTextColor,
+                        color: context.rh.etiqueta,
                         fontSize: 14,
                         height: 1.4
                       ),
@@ -137,7 +137,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
                 return Text(
                   'Registrando la huella, espere un momento...',
                   style: TextStyle(
-                    color: labelTextColor,
+                    color: context.rh.etiqueta,
                     fontSize: 14,
                     height: 1.4
                   ),
@@ -147,7 +147,7 @@ class _EnrollDialogState extends State<EnrollDialog> {
                 return Text(
                   'Se registró la huella exitosamente.',
                   style: TextStyle(
-                    color: labelTextColor,
+                    color: context.rh.etiqueta,
                     fontSize: 14,
                     height: 1.4
                   ),
@@ -193,13 +193,13 @@ class _EnrollmentStatusIcon extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: success ? statusSuccessBgColor : backgroundColor,
+        color: success ? context.rh.exitoFondo : context.rh.fondo,
         shape: BoxShape.circle,
       ),
       child: Icon(
         LucideIcons.fingerprintPattern,
         size: 20,
-        color: success ? statusSuccessColor : primaryColor,
+        color: success ? context.rh.exitoTexto : primaryColor,
       ),
     );
   }

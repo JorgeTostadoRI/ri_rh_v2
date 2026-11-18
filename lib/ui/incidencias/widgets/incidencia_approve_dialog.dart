@@ -135,18 +135,18 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: statusWarningBgColor,
+                  color: context.rh.avisoFondo,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   crossAxisAlignment: .start,
                   children: [
-                    Icon(LucideIcons.shieldCheck, color: statusWarningColor),
+                    Icon(LucideIcons.shieldCheck, color: context.rh.avisoTexto),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Estás aprobando este permiso como responsable de autorizar goce de sueldo. Verifica que efectivamente deba ser con goce antes de aprobar.',
-                        style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
+                        style: textTheme.bodyMedium?.copyWith(color: context.rh.avisoTexto),
                       ),
                     ),
                   ],
@@ -161,18 +161,18 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: statusWarningBgColor,
+                  color: context.rh.avisoFondo,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   crossAxisAlignment: .start,
                   children: [
-                    Icon(LucideIcons.clockAlert, color: statusWarningColor),
+                    Icon(LucideIcons.clockAlert, color: context.rh.avisoTexto),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'El horario de la Hora por hora ya empezó. Lo esperado es aprobarla antes de que la persona cheque; aun así puedes aprobarla.',
-                        style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
+                        style: textTheme.bodyMedium?.copyWith(color: context.rh.avisoTexto),
                       ),
                     ),
                   ],
@@ -194,13 +194,13 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: statusWarningBgColor,
+                  color: context.rh.avisoFondo,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   crossAxisAlignment: .start,
                   children: [
-                    Icon(LucideIcons.triangleAlert, color: statusWarningColor),
+                    Icon(LucideIcons.triangleAlert, color: context.rh.avisoTexto),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -211,18 +211,18 @@ class _IncidenciaApproveDialogState extends State<IncidenciaApproveDialog> {
                             _tituloAlertaChecador(incidencia),
                             style: textTheme.bodyMedium?.copyWith(
                               fontWeight: .w700,
-                              color: statusWarningColor,
+                              color: context.rh.avisoTexto,
                             ),
                           ),
                           Text.rich(
                             TextSpan(children: mensajeAlertaSpans(incidencia.checadorDiscrepancy!.message)),
-                            style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
+                            style: textTheme.bodyMedium?.copyWith(color: context.rh.avisoTexto),
                           ),
                           Text(
                             incidencia.checadorDiscrepancy!.detalleDePago
                               ? 'Esto no impide aprobar; en nómina se pagan solo las horas que respalda el checador.'
                               : 'Esto no impide aprobar la solicitud, es solo informativo.',
-                            style: textTheme.labelMedium?.copyWith(color: statusWarningColor),
+                            style: textTheme.labelMedium?.copyWith(color: context.rh.avisoTexto),
                           ),
                         ],
                       ),

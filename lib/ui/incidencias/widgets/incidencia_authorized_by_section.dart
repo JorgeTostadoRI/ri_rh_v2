@@ -55,7 +55,7 @@ class _AuthorizerRow extends StatelessWidget {
             nombre ?? 'Pendiente',
             style: textTheme.bodyMedium?.copyWith(
               fontWeight: nombre != null ? .w700 : .w400,
-              color: nombre != null ? headingTextColor : labelTextColor,
+              color: nombre != null ? context.rh.titulo : context.rh.etiqueta,
             ),
           ),
         ],

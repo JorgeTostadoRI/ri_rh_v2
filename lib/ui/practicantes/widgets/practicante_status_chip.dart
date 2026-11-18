@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 
 class PracticanteStatusChip extends StatelessWidget {
@@ -11,19 +12,19 @@ class PracticanteStatusChip extends StatelessWidget {
   final StatusPracticante status;
   final bool porAbandono;
 
-  Color get backgroundColor {
+  Color _fondo(RhColores c) {
     return switch (status) {
-      StatusPracticante.alta => const Color(0xFFDCFCE7),
-      StatusPracticante.procesoBaja => const Color(0xFFFFEDD4),
-      StatusPracticante.baja => const Color(0xFFFFE2E2),
+      StatusPracticante.alta => c.exitoFondo,
+      StatusPracticante.procesoBaja => c.avisoFondo,
+      StatusPracticante.baja => c.falloFondo,
     };
   }
 
-  Color get textColor {
+  Color _texto(RhColores c) {
     return switch (status) {
-      StatusPracticante.alta => const Color(0xFF00A63E),
-      StatusPracticante.procesoBaja => const Color(0xFFF54900),
-      StatusPracticante.baja => const Color(0xFFE7000B),
+      StatusPracticante.alta => c.exitoTexto,
+      StatusPracticante.procesoBaja => c.avisoTexto,
+      StatusPracticante.baja => c.falloTexto,
     };
   }
 
@@ -38,7 +39,7 @@ class PracticanteStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      backgroundColor: backgroundColor,
+      backgroundColor: _fondo(context.rh),
       side: BorderSide.none,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
@@ -49,7 +50,7 @@ class PracticanteStatusChip extends StatelessWidget {
           fontSize: 10,
           fontWeight: .w900,
           height: 1.5,
-          color: textColor,
+          color: _texto(context.rh),
         ),
       )
     );

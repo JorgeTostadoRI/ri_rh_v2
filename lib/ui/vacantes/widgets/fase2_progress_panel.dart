@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/ui/core/ui/step_timeline.dart';
 import 'package:ri_rh_v2/ui/empleados/viewmodels/altas_imss_viewmodel.dart';
@@ -175,10 +176,10 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
     Fase2Stage.bajaIniciada => 'No se renueva -- pasa a proceso de finiquito el día que vence su periodo',
   };
 
-  static const Widget _procesoCompletadoChip = Chip(
-    avatar: Icon(Icons.check_circle, size: 16, color: Color(0xFF008236)),
-    label: Text('Proceso completado'),
-    backgroundColor: Color(0xFFF0FDF4),
+  static Widget _procesoCompletadoChip(RhColores c) => Chip(
+    avatar: Icon(Icons.check_circle, size: 16, color: c.exitoFuerte),
+    label: const Text('Proceso completado'),
+    backgroundColor: c.exitoSuave,
   );
 
   /// Lo único que se muestra junto al `StepTimeline`, según el paso actual
@@ -209,7 +210,7 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
             item.evaluacionRespuesta == EvaluacionRespuesta.renovar
                 ? 'El jefe recomendó renovar'
                 : 'El jefe recomendó no renovar: ${item.evaluacionMotivoNoRenovacion}',
-            style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A)),
+            style: TextStyle(fontSize: 11, color: context.rh.etiqueta),
           ),
           if (widget.mostrarAcciones)
             ListenableBuilder(
@@ -225,14 +226,14 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
       case Fase2Stage.contratoFirmado:
         // Renovó y ya se archivó el contrato definitivo -- no queda nada
         // más por hacer para este empleado.
-        return const [_procesoCompletadoChip];
+        return [_procesoCompletadoChip(context.rh)];
 
       case Fase2Stage.bajaIniciada:
-        return const [
+        return [
           Chip(
-            avatar: Icon(Icons.person_off_outlined, size: 16, color: Color(0xFF9A3412)),
-            label: Text('No se renueva'),
-            backgroundColor: Color(0xFFFFF7ED),
+            avatar: Icon(Icons.person_off_outlined, size: 16, color: context.rh.segun(claro: const Color(0xFF9A3412), oscuro: const Color(0xFFFF9254))),
+            label: const Text('No se renueva'),
+            backgroundColor: context.rh.acentoSuave,
           ),
         ];
 
@@ -242,7 +243,7 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
         // todo su seguimiento. Para "determinado" (4 pasos) es solo un
         // paso intermedio (le sigue la evaluación), nada que mostrar aquí
         // todavía.
-        return item.fase2TotalSteps == 2 ? const [_procesoCompletadoChip] : const [];
+        return item.fase2TotalSteps == 2 ? [_procesoCompletadoChip(context.rh)] : const [];
 
       case Fase2Stage.pendienteEnvio:
         return const [];
@@ -264,14 +265,14 @@ class _Fase2ProgressPanelState extends State<Fase2ProgressPanel> {
           stepLabels: _fase2StepLabels(item.fase2TotalSteps, item.evaluacionRespuesta),
           color: Colors.blue,
         ),
-        Text(_estadoTexto(item), style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+        Text(_estadoTexto(item), style: TextStyle(fontSize: 11, color: context.rh.etiqueta)),
         // En "no se renueva" sí se muestra: es el día en que pasa a proceso
         // de finiquito.
         if (item.fechaVencimientoPeriodo != null &&
             item.fase2Stage != Fase2Stage.contratoFirmado)
           Text(
             'Vence el ${item.fechaVencimientoPeriodo!.toShortIsoString()}',
-            style: const TextStyle(fontSize: 11, color: Color(0xFF9A7B5A)),
+            style: TextStyle(fontSize: 11, color: context.rh.etiqueta),
           ),
         ..._accionInline(item),
       ],

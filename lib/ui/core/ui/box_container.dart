@@ -16,10 +16,10 @@ class BoxContainer extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.rh.superficie,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(
-          color: borderColor,
+          color: context.rh.borde,
           width: 0.8,
         ),
         boxShadow: [

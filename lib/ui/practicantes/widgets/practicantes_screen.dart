@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
@@ -101,7 +102,7 @@ class _PracticantesScreenState extends State<PracticantesScreen> {
             TextField(
               decoration: InputDecoration(
                 prefixIcon: Icon(LucideIcons.search),
-                prefixIconColor: const Color(0xFFC4A47A),
+                prefixIconColor: context.rh.etiquetaSuave,
               ),
               controller: _search,
             ),

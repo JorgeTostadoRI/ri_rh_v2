@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 
 enum StatusChipType {
   success,
@@ -18,24 +19,27 @@ class StatusChip extends StatelessWidget {
   final String label;
   final MouseCursor? mouseCursor;
 
-  Color get bgColor {
+  Color _bgColor(RhColores c) {
     return switch (type) {
-      StatusChipType.success => const Color(0xFFDCFCE7),
-      StatusChipType.warning => const Color(0xFFFFEDD4),
-      StatusChipType.failure => const Color(0xFFFFE2E2),
+      StatusChipType.success => c.exitoFondo,
+      StatusChipType.warning => c.avisoFondo,
+      StatusChipType.failure => c.falloFondo,
     };
   }
 
-  Color get textColor {
+  Color _textColor(RhColores c) {
     return switch (type) {
-      StatusChipType.success => const Color(0xFF00A63E),
-      StatusChipType.warning => const Color(0xFFF54900),
-      StatusChipType.failure => const Color(0xFFE7000B),
+      StatusChipType.success => c.exitoTexto,
+      StatusChipType.warning => c.avisoTexto,
+      StatusChipType.failure => c.falloTexto,
     };
   }
 
   @override
   Widget build(BuildContext context) {
+    final c = context.rh;
+    final bgColor = _bgColor(c);
+    final textColor = _textColor(c);
     return Chip(
       backgroundColor: bgColor,
       side: BorderSide.none,

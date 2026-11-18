@@ -28,12 +28,11 @@ class CollapsibleSidebar extends StatefulWidget {
 }
 
 class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
-  final Color backgroundColor = Colors.white;
-  final Color dividerColor = Color(0xFFF5E8D8);
   bool isCollapsed = false;
 
   @override
   Widget build(BuildContext context) {
+    final c = context.rh;
     final auth = context.watch<AuthRepository>();
     final isAuthenticated = auth.isAuthenticated;
     final isRH = auth.isRH;
@@ -47,7 +46,7 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       width: isCollapsed ? 70 : 240,
-      color: backgroundColor,
+      color: c.superficie,
       child: _desplazable(Column(
         children: [
           const SizedBox(height: 20),
@@ -118,16 +117,17 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
                     child: Text(
                       'Recursos Humanos',
                       style: TextTheme.of(context).titleSmall?.copyWith(
-                        color: Color(0xFF9A7B5A),
+                        color: c.etiqueta,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                  if (modoOscuroDisponible) const _BotonModoOscuro(),
                 ]
               ],
             ),
           ),
-          Divider(color: dividerColor),
+          Divider(color: c.borde),
           // Navigation Items
           FutureBuilder(
             future: isRH,
@@ -252,8 +252,8 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
             alignment: Alignment.center,
             padding: EdgeInsets.zero,
             style: IconButton.styleFrom(
-              backgroundColor: backgroundColor,
-              side: BorderSide(color: Color(0xFFFDDEB0)),
+              backgroundColor: c.superficie,
+              side: BorderSide(color: c.bordeAcento),
             ),
             onPressed: () => setState(() => isCollapsed = !isCollapsed),
           ),
@@ -281,6 +281,24 @@ class _CollapsibleSidebarState extends State<CollapsibleSidebar> {
   }
 }
 
+/// Prende y apaga el modo oscuro. Solo existe corriendo en debug (ver
+/// modoOscuroDisponible); en web y Windows compiladas no aparece.
+class _BotonModoOscuro extends StatelessWidget {
+  const _BotonModoOscuro();
+
+  @override
+  Widget build(BuildContext context) {
+    final oscuro = Theme.of(context).brightness == Brightness.dark;
+
+    return IconButton(
+      tooltip: oscuro ? 'Tema claro (solo debug)' : 'Modo oscuro (solo debug)',
+      icon: Icon(oscuro ? LucideIcons.sun : LucideIcons.moon, size: 18, color: primaryColor),
+      visualDensity: VisualDensity.compact,
+      onPressed: () => context.read<AppThemeProvider>().toggleBrightness(!oscuro),
+    );
+  }
+}
+
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
@@ -304,14 +322,15 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = GoRouterState.of(context);
     final fullPath = state.fullPath ?? '';
-    final Color textColor = Color(0xFF9A7B5A);
+    final c = context.rh;
+    final Color textColor = c.etiqueta;
     // needed this so I can display the Routes.home as selected if you are either at home or login screen
     final selected = strictMatch
       ? (fullPath == route || fullPath == alternativeRoute)
       : fullPath.startsWith(route);
 
     return Material(
-      color: Colors.white,
+      color: c.superficie,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
         child: ListTile(
@@ -330,7 +349,7 @@ class _NavItem extends StatelessWidget {
                 ),
           trailing: isCollapsed ? null : trailing,
           selected: selected,
-          tileColor: Colors.white,
+          tileColor: c.superficie,
           selectedTileColor: primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),

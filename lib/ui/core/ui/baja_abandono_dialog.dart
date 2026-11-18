@@ -220,10 +220,10 @@ class _BajaAbandonoDialogState extends State<BajaAbandonoDialog> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFDEBEB),
+                color: context.rh.errorFondo,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(revision.motivo, style: TextStyle(color: errorColor)),
+              child: Text(revision.motivo, style: TextStyle(color: context.rh.error)),
             )
           else ...[
             const Divider(),

@@ -71,7 +71,8 @@ Dio _dioClient() {
 
 List<SingleChildWidget> get _sharedProviders {
   return [
-    // Siempre tema claro (ver AppThemeProvider.toggleBrightness).
+    // Tema claro siempre, salvo el modo oscuro de prueba en debug (ver
+    // modoOscuroDisponible).
     ChangeNotifierProvider(create: (_) => AppThemeProvider()),
     Provider(create: (_) => DeviceAuthService()),
     Provider(create: (_) => getFileDownloadService(

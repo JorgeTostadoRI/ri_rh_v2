@@ -25,7 +25,7 @@ class FieldSwitcher extends StatelessWidget {
 
   bool get _centrar => expandir || porRenglon != null;
 
-  Widget option(int index, String label) {
+  Widget option(RhColores c, int index, String label) {
     final selected = index == selectedIndex;
 
     return InkWell(
@@ -36,20 +36,20 @@ class FieldSwitcher extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: _centrar ? 8 : 20),
         alignment: _centrar ? Alignment.center : null,
         decoration: BoxDecoration(
-          color: selected ? Colors.white : Color(0xFFF5EDE0),
+          color: selected ? c.superficie : c.pista,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
           label,
-          style: optionTextStyle(selected),
+          style: optionTextStyle(c, selected),
           textAlign: _centrar ? TextAlign.center : null,
         ),
       ),
     );
   }
 
-  TextStyle optionTextStyle(bool selected) {
-    final baseColor = Color(0xFF9A7B5A);
+  TextStyle optionTextStyle(RhColores c, bool selected) {
+    final baseColor = c.etiqueta;
     return TextStyle(
       fontSize: 14,
       fontWeight: .w700,
@@ -59,26 +59,27 @@ class FieldSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.rh;
     return Container(
       padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Color(0xFFF5EDE0),
+        color: c.pista,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: porRenglon != null ? _renglones() : Row(
+      child: porRenglon != null ? _renglones(c) : Row(
         spacing: 4,
         children: [
           for (final (index, label) in options.indexed)
             if (expandir)
-              Expanded(child: option(index, label))
+              Expanded(child: option(c, index, label))
             else
-              option(index, label)
+              option(c, index, label)
         ],
       ),
     );
   }
 
-  Widget _renglones() {
+  Widget _renglones(RhColores c) {
     final n = porRenglon!;
     return Column(
       spacing: 4,
@@ -88,7 +89,7 @@ class FieldSwitcher extends StatelessWidget {
             spacing: 4,
             children: [
               for (var j = i; j < i + n; j++)
-                Expanded(child: j < options.length ? option(j, options[j]) : const SizedBox.shrink()),
+                Expanded(child: j < options.length ? option(c, j, options[j]) : const SizedBox.shrink()),
             ],
           ),
       ],

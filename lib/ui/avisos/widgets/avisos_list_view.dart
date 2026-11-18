@@ -47,7 +47,7 @@ class AvisosListView extends StatelessWidget {
               return Text(
                 'Avisos para el ${formatter.format(viewmodel.focusedDay)}',
                 style: TextStyle(
-                  color: headingTextColor,
+                  color: context.rh.titulo,
                   fontFamily: 'Inter',
                   fontSize: 20,
                   fontWeight: .w700,

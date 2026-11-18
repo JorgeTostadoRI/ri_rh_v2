@@ -60,9 +60,9 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       width: 200,
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: inputFillColor,
+        color: context.rh.relleno,
         borderRadius: BorderRadius.circular(16),
-        border: BoxBorder.all(color: borderColor, width: 0.8),
+        border: BoxBorder.all(color: context.rh.borde, width: 0.8),
       ),
       child: Row(
         spacing: 12,
@@ -73,7 +73,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
             child: Text(
               file.name,
               style: TextStyle(
-                color: Color(0xFF2D1E0F),
+                color: context.rh.titulo,
                 fontSize: 12,
                 fontWeight: .w600,
                 height: 1.3,
@@ -83,7 +83,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
           ),
           InkWell(
             onTap: () => _viewmodel.removeFile(index),
-            child: Icon(LucideIcons.x, color: errorColor, size: 20),
+            child: Icon(LucideIcons.x, color: context.rh.error, size: 20),
           ),
         ],
       ),
@@ -402,7 +402,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       child: Container(
         padding: EdgeInsets.all(movil ? 16 : 32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.rh.superficie,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(

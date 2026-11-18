@@ -45,7 +45,7 @@ class IncidenciaTiempoPorTiempoSection extends StatelessWidget {
                   Icon(
                     _respaldada(horaPorHora) ? LucideIcons.circleCheck : LucideIcons.circleAlert,
                     size: 16,
-                    color: _respaldada(horaPorHora) ? statusSuccessColor : statusWarningColor,
+                    color: _respaldada(horaPorHora) ? context.rh.exitoTexto : context.rh.avisoTexto,
                   ),
                   Expanded(
                     child: Text(
@@ -62,19 +62,19 @@ class IncidenciaTiempoPorTiempoSection extends StatelessWidget {
               margin: const EdgeInsets.only(top: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: statusWarningBgColor,
+                color: context.rh.avisoFondo,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 crossAxisAlignment: .start,
                 children: [
-                  Icon(LucideIcons.triangleAlert, color: statusWarningColor),
+                  Icon(LucideIcons.triangleAlert, color: context.rh.avisoTexto),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Alguna Hora por hora todavía no está aprobada o no tiene checada que la respalde. '
                       'Revísalas antes de aprobar el permiso; puedes aprobarlo de todos modos.',
-                      style: textTheme.bodyMedium?.copyWith(color: statusWarningColor),
+                      style: textTheme.bodyMedium?.copyWith(color: context.rh.avisoTexto),
                     ),
                   ),
                 ],

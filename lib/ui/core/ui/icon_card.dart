@@ -17,7 +17,7 @@ class IconCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: context.rh.superficie,
       child: Container(
         // En navegador de celular un poco menos, para que quepan los campos.
         padding: EdgeInsets.all(esNavegadorMovil ? 16 : 24),
@@ -60,7 +60,7 @@ class _IconContainer extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
+        color: context.rh.acentoSuave,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Icon(

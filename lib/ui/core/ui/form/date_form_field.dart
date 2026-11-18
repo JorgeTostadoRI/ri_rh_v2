@@ -163,7 +163,7 @@ class _DateFormFieldState extends State<DateFormField> {
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: _pickerHandler,
-              child: Icon(LucideIcons.calendar, color: labelTextColor),
+              child: Icon(LucideIcons.calendar, color: context.rh.etiqueta),
             ),
           ),
       ),

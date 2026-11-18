@@ -178,7 +178,7 @@ class _CandidatoRevisionScreenState extends State<CandidatoRevisionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.rh.fondo,
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(esNavegadorMovil ? 16 : 40),
@@ -279,22 +279,22 @@ class _DatosPersonalesSection extends StatelessWidget {
           icon: Icons.person_outline,
           title: 'Datos personales',
           children: [
-            _campo('Nombre completo', '${candidato.nombres} ${candidato.apellidoPaterno} ${candidato.apellidoMaterno}'),
-            _campo('Correo', candidato.correo),
-            _campo('Teléfono', candidato.telefono),
-            _campo('CURP', candidato.curp),
-            _campo('RFC', candidato.rfc),
-            _campo('Número de Seguro Social', candidato.numeroSeguroSocial),
-            _campo('CLABE interbancaria', candidato.clabeInterbancaria),
-            _campo('Escolaridad', candidato.escolaridad),
-            _campo(
+            _campo(context, 'Nombre completo', '${candidato.nombres} ${candidato.apellidoPaterno} ${candidato.apellidoMaterno}'),
+            _campo(context, 'Correo', candidato.correo),
+            _campo(context, 'Teléfono', candidato.telefono),
+            _campo(context, 'CURP', candidato.curp),
+            _campo(context, 'RFC', candidato.rfc),
+            _campo(context, 'Número de Seguro Social', candidato.numeroSeguroSocial),
+            _campo(context, 'CLABE interbancaria', candidato.clabeInterbancaria),
+            _campo(context, 'Escolaridad', candidato.escolaridad),
+            _campo(context, 
               'Fecha de nacimiento',
               candidato.fechaNacimiento != null ? candidato.fechaNacimiento!.toShortIsoString() : '',
             ),
-            _campo('Nacionalidad', candidato.nacionalidad),
-            _campo('Sexo', _etiquetaChoice(CandidatoChoices.sexo, candidato.sexo)),
-            _campo('Estado civil', _etiquetaChoice(CandidatoChoices.estadoCivil, candidato.estadoCivil)),
-            _campo(
+            _campo(context, 'Nacionalidad', candidato.nacionalidad),
+            _campo(context, 'Sexo', _etiquetaChoice(CandidatoChoices.sexo, candidato.sexo)),
+            _campo(context, 'Estado civil', _etiquetaChoice(CandidatoChoices.estadoCivil, candidato.estadoCivil)),
+            _campo(context, 
               'Contacto de emergencia',
               '${candidato.contactoEmergenciaNombre} (${candidato.contactoEmergenciaTelefono})',
             ),
@@ -304,7 +304,7 @@ class _DatosPersonalesSection extends StatelessWidget {
           icon: Icons.home_outlined,
           title: 'Domicilio',
           children: [
-            _campo(
+            _campo(context, 
               'Domicilio',
               '${candidato.direccionCalle} ${candidato.direccionNumero}, ${candidato.direccionFraccionamiento}, '
               'C.P. ${candidato.direccionCodigoPostal}, ${candidato.direccionMunicipio}, '
@@ -318,20 +318,20 @@ class _DatosPersonalesSection extends StatelessWidget {
           children: candidato.beneficiarios.isEmpty
               ? [const Text('No se designaron beneficiarios.')]
               : candidato.beneficiarios
-                  .map((b) => _campo('${b.nombreCompleto} (${b.parentesco})', '${b.direccion} — ${b.porcentaje}%'))
+                  .map((b) => _campo(context, '${b.nombreCompleto} (${b.parentesco})', '${b.direccion} — ${b.porcentaje}%'))
                   .toList(),
         ),
       ],
     );
   }
 
-  Widget _campo(String label, String value) {
+  Widget _campo(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, fontWeight: .w700, color: Color(0xFF9A7B5A))),
+          Text(label, style: TextStyle(fontSize: 11, fontWeight: .w700, color: context.rh.etiqueta)),
           Text(value.isEmpty ? '—' : value),
         ],
       ),
@@ -378,8 +378,8 @@ class _DocumentosSection extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: subido ? const Color(0xFFF0FDF4) : const Color(0xFFFDF6EE),
-        border: subido ? Border.fromBorderSide(BorderSide(color: const Color(0xFFDCFCE7), width: 0.8)) : null,
+        color: subido ? context.rh.exitoSuave : context.rh.superficieTenue,
+        border: subido ? Border.fromBorderSide(BorderSide(color: context.rh.exitoFondo, width: 0.8)) : null,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(12),
@@ -392,14 +392,14 @@ class _DocumentosSection extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: .w700,
-                color: subido ? const Color(0xFF008236) : const Color(0xFF9A7B5A),
+                color: subido ? context.rh.exitoFuerte : context.rh.etiqueta,
               ),
             ),
           ),
           if (subido)
             IconButton(
               onPressed: () => _abrir(context, url),
-              icon: const Icon(Icons.open_in_new, size: 16, color: Color(0xFF008236)),
+              icon: Icon(Icons.open_in_new, size: 16, color: context.rh.exitoFuerte),
               tooltip: 'Ver documento',
             ),
         ],
@@ -417,23 +417,24 @@ class _AvisoSinVerificacionIA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const boldStyle = TextStyle(fontWeight: .w800, color: Color(0xFF92400E));
-    const normalStyle = TextStyle(color: Color(0xFF92400E));
+    final ambar = context.rh.segun(claro: const Color(0xFF92400E), oscuro: const Color(0xFFFCD34D));
+    final boldStyle = TextStyle(fontWeight: .w800, color: ambar);
+    final normalStyle = TextStyle(color: ambar);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFEF3C7),
-        border: Border.all(color: const Color(0xFFFCD34D)),
+        color: context.rh.segun(claro: const Color(0xFFFEF3C7), oscuro: const Color(0xFF3A2C0E)),
+        border: Border.all(color: context.rh.segun(claro: const Color(0xFFFCD34D), oscuro: const Color(0xFF6B5418))),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         crossAxisAlignment: .start,
         spacing: 12,
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Color(0xFF92400E)),
+          Icon(Icons.warning_amber_rounded, color: ambar),
           Expanded(
             child: RichText(
-              text: const TextSpan(
+              text: TextSpan(
                 style: normalStyle,
                 children: [
                   TextSpan(text: 'AVISO', style: boldStyle),

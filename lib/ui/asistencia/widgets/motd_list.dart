@@ -52,14 +52,14 @@ class MotdList extends StatelessWidget {
               const SizedBox(height: 8),
               for (final motd in viewmodel.motds)
                 Card(
-                  color: Colors.white,
+                  color: context.rh.superficie,
                   child: ListTile(
                     contentPadding: EdgeInsets.all(12),
                     leading: Container(
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: backgroundColor,
+                        color: context.rh.fondo,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(LucideIcons.info, color: primaryColor),

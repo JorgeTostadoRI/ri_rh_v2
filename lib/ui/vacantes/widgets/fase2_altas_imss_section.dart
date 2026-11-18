@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:provider/provider.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
@@ -102,19 +103,19 @@ class _PendienteDeEnvioRow extends StatelessWidget {
   final AltasImssViewmodel viewmodel;
 
   /// Navegador de celular: de arriba a abajo (en una fila no cabe).
-  Widget _buildMovil() {
+  Widget _buildMovil(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.rh.superficie, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: .start,
         spacing: 2,
         children: [
           Text(item.nombreCompleto),
-          Text(item.puesto, style: const TextStyle(color: Color(0xFF9A7B5A))),
-          const Text('Se incluirá en el envío del viernes', style: TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+          Text(item.puesto, style: TextStyle(color: context.rh.etiqueta)),
+          Text('Se incluirá en el envío del viernes', style: TextStyle(fontSize: 11, color: context.rh.etiqueta)),
           Align(
             alignment: Alignment.centerRight,
             child: ListenableBuilder(
@@ -133,11 +134,11 @@ class _PendienteDeEnvioRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (esNavegadorMovil) return _buildMovil();
+    if (esNavegadorMovil) return _buildMovil(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.rh.superficie, width: 1)),
       ),
       child: Row(
         children: [
@@ -147,9 +148,9 @@ class _PendienteDeEnvioRow extends StatelessWidget {
           ),
           Expanded(
             flex: 2,
-            child: Text(item.puesto, style: const TextStyle(color: Color(0xFF9A7B5A)), overflow: .ellipsis),
+            child: Text(item.puesto, style: TextStyle(color: context.rh.etiqueta), overflow: .ellipsis),
           ),
-          const Text('Se incluirá en el envío del viernes', style: TextStyle(fontSize: 11, color: Color(0xFF9A7B5A))),
+          Text('Se incluirá en el envío del viernes', style: TextStyle(fontSize: 11, color: context.rh.etiqueta)),
           ListenableBuilder(
             listenable: viewmodel.vistaPrevia,
             builder: (context, _) => TextButton.icon(

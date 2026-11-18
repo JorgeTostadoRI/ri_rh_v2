@@ -32,7 +32,7 @@ class GeneralAttendanceTable extends StatelessWidget {
     final textTheme = TextTheme.of(context);
     final yMd = DateFormat.yMd('en_US');
 
-    Color? rowColor(int index) => index.isOdd ? const Color(0xFFFFFAF5) : Colors.white;
+    Color? rowColor(int index) => index.isOdd ? context.rh.superficieAlterna : context.rh.superficie;
 
     // Columna EMPLEADO congelada -- se queda fija mientras el resto de la
     // tabla se desliza horizontalmente, ver FrozenColumnTableWrapper.
@@ -151,7 +151,7 @@ class GeneralAttendanceTable extends StatelessWidget {
                 }
               ),
               DataCell(
-                Text('${item.totalMinutesLate} min', style: TextStyle(color: errorColor, fontWeight: .w700)),
+                Text('${item.totalMinutesLate} min', style: TextStyle(color: context.rh.error, fontWeight: .w700)),
               ),
             ],
           );
