@@ -21,7 +21,7 @@ class NotFoundScreen extends StatelessWidget {
               '404',
               style: TextTheme.of(context).displayLarge?.copyWith(
                 fontWeight: .w900,
-                color: headingTextColor,
+                color: context.rh.titulo,
               ),
             ),
             const SizedBox(height: 20),
@@ -29,7 +29,7 @@ class NotFoundScreen extends StatelessWidget {
               message,
               style: TextTheme.of(context).bodyLarge?.copyWith(
                 fontWeight: .w500,
-                color: labelTextColor,
+                color: context.rh.etiqueta,
               ),
             ),
           ],

@@ -548,13 +548,13 @@ class _CameraDialogState extends State<_CameraDialog> {
       return Container(
         width: width,
         height: height,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border.fromBorderSide(BorderSide(
-            color: borderColor,
+            color: context.rh.borde,
             width: 0.8,
           )),
           borderRadius: BorderRadius.all(Radius.circular(20)),
-          color: Colors.white,
+          color: context.rh.superficie,
         ),
         child: Center(child: CircularProgressIndicator(color: primaryColor)),
       );

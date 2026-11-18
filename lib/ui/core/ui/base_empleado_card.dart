@@ -32,7 +32,7 @@ class BaseEmpleadoCard extends StatelessWidget {
       isLabelVisible: hasPendingActions,
       label: const Text('!'),
       child: Card(
-        color: Colors.white,
+        color: context.rh.superficie,
         margin: EdgeInsets.zero,
         child: Container(
           padding: const EdgeInsets.all(24),
@@ -113,8 +113,8 @@ class BaseEmpleadoCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 24),
                 decoration: BoxDecoration(
                   border: BoxBorder.fromLTRB(
-                    top: const BorderSide(
-                      color: Color(0xFFF5E8D8),
+                    top: BorderSide(
+                      color: context.rh.borde,
                       width: 0.8,
                     ),
                   ),
@@ -165,7 +165,7 @@ class BaseEmpleadoCard extends StatelessWidget {
       isLabelVisible: hasPendingActions,
       label: const Text('!'),
       child: Card(
-        color: Colors.white,
+        color: context.rh.superficie,
         margin: EdgeInsets.zero,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -228,8 +228,8 @@ class BaseEmpleadoCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 16),
                 decoration: BoxDecoration(
                   border: BoxBorder.fromLTRB(
-                    top: const BorderSide(
-                      color: Color(0xFFF5E8D8),
+                    top: BorderSide(
+                      color: context.rh.borde,
                       width: 0.8,
                     ),
                   ),
@@ -293,7 +293,7 @@ class _AttributeLabel extends StatelessWidget {
             Icon(icon, color: primaryColor, size: 14),
             Text(
               value,
-              style: TextTheme.of(context).titleMedium?.copyWith(fontWeight: .w900, color: headingTextColor),
+              style: TextTheme.of(context).titleMedium?.copyWith(fontWeight: .w900, color: context.rh.titulo),
             ),
           ],
         ),

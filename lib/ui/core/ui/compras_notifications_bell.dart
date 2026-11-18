@@ -49,8 +49,8 @@ class ComprasNotificationsBell extends StatelessWidget {
       data: IconButtonThemeData(
         style: IconButton.styleFrom(
           foregroundColor: primaryColor,
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFFDDEB0)),
+          backgroundColor: context.rh.superficie,
+          side: BorderSide(color: context.rh.bordeAcento),
         ),
       ),
       child: BadgeTheme(

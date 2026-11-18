@@ -47,7 +47,7 @@ class _ClockState extends State<Clock> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.rh.superficie,
           borderRadius: BorderRadius.circular(15),
         ),
         child: Column(
@@ -69,7 +69,7 @@ class _ClockState extends State<Clock> {
             Text(
               formatter.format(DateTime.now()),
               style: TextTheme.of(context).bodyMedium?.copyWith(
-                color: labelTextColor,
+                color: context.rh.etiqueta,
                 fontWeight: .w500,
               ),
             ),

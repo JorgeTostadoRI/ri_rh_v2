@@ -30,7 +30,7 @@ class HandCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: context.rh.superficie,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

@@ -129,9 +129,9 @@ class _PendingReviewNotification extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               decoration: BoxDecoration(
-                color: statusFailureBgColor,
+                color: context.rh.falloFondo,
                 border: Border.fromBorderSide(BorderSide(
-                  color: const Color(0xFFF5CFA0),
+                  color: context.rh.segun(claro: const Color(0xFFF5CFA0), oscuro: const Color(0xFF5A3F22)),
                   width: 0.8,
                 )),
                 borderRadius: BorderRadius.circular(20),
@@ -154,9 +154,9 @@ class _PendingReviewNotification extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 250, 231, 207),
+              color: context.rh.segun(claro: const Color.fromARGB(255, 250, 231, 207), oscuro: const Color(0xFF2E2116)),
               border: Border.fromBorderSide(BorderSide(
-                color: const Color(0xFFF5CFA0),
+                color: context.rh.segun(claro: const Color(0xFFF5CFA0), oscuro: const Color(0xFF5A3F22)),
                 width: 0.8,
               )),
               borderRadius: BorderRadius.circular(20),
@@ -177,7 +177,7 @@ class _PendingReviewNotification extends StatelessWidget {
                           icon: LucideIcons.clock,
                           width: 36,
                           height: 36,
-                          backgroundColor:const Color(0xFFFDDCB0),
+                          backgroundColor:context.rh.segun(claro: const Color(0xFFFDDCB0), oscuro: const Color(0xFF3A2614)),
                           shape: BoxShape.circle,
                         ),
                         _textoBanner(Text.rich(
@@ -238,9 +238,9 @@ class _MyIncidenciasBanner extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: context.rh.fondo,
           border: Border.fromBorderSide(BorderSide(
-            color: borderColor,
+            color: context.rh.borde,
             width: 0.8,
           )),
           borderRadius: BorderRadius.circular(20),
@@ -252,7 +252,7 @@ class _MyIncidenciasBanner extends StatelessWidget {
               icon: LucideIcons.listChecks,
               width: 36,
               height: 36,
-              backgroundColor: const Color(0xFFF5E8D8),
+              backgroundColor: context.rh.borde,
               shape: BoxShape.circle,
             ),
             _textoBanner(Text(

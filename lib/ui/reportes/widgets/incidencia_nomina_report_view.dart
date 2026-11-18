@@ -206,8 +206,8 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
             final botones = [
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: headingTextColor,
+                    backgroundColor: context.rh.superficie,
+                    foregroundColor: context.rh.titulo,
                     iconColor: primaryColor,
                   ),
                   onPressed: () async {
@@ -330,7 +330,7 @@ class _IncidenciaNominaReportViewState extends State<IncidenciaNominaReportView>
                   decoration: InputDecoration(
                     hintText: 'Buscar empleado por nombre',
                     prefixIcon: Icon(LucideIcons.search),
-                    prefixIconColor: const Color(0xFFC4A47A),
+                    prefixIconColor: context.rh.etiquetaSuave,
                   ),
                   onChanged: (value) => _searchDebouncer.run(
                     () => setState(() => _searchQuery = value),

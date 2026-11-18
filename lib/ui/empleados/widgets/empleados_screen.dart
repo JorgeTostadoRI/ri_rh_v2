@@ -102,7 +102,7 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
             TextField(
               decoration: InputDecoration(
                 prefixIcon: Icon(LucideIcons.search),
-                prefixIconColor: const Color(0xFFC4A47A),
+                prefixIconColor: context.rh.etiquetaSuave,
               ),
               controller: _search,
             ),
@@ -124,7 +124,7 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                         Text(
                           widget.viewmodel.load.result.toString(),
                           style: TextStyle(
-                            color: errorColor,
+                            color: context.rh.error,
                           ),
                         ),
                         ElevatedButton.icon(

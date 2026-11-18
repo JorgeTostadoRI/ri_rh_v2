@@ -12,7 +12,8 @@ class AppBackButton extends StatefulWidget {
 class _BackButtonState extends State<AppBackButton> {
   bool _hovering = false;
 
-  Color get buttonColor => _hovering ? Colors.white70 : backgroundColor;
+  // Al pasar el mouse: la superficie al 70% (en claro, Colors.white70).
+  Color get buttonColor => _hovering ? context.rh.superficie.withAlpha(0xB3) : context.rh.fondo;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +30,14 @@ class _BackButtonState extends State<AppBackButton> {
           decoration: BoxDecoration(
             color: buttonColor,
             border: Border.all(
-              color: Color(0xFFF5E8D8),
+              color: context.rh.borde,
               width: 0.8,
             ),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
             LucideIcons.arrowLeft,
-            color: Color(0xFF9A7B5A),
+            color: context.rh.etiqueta,
           ),
         ),
       ),

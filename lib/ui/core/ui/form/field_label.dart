@@ -16,7 +16,7 @@ class FieldLabel extends StatelessWidget {
     final fieldLabelStyle = TextTheme.of(context).labelLarge?.copyWith(
       fontSize: 18,
       fontWeight: .w700,
-      color: headingTextColor,
+      color: context.rh.titulo,
     );
     final requiredFieldStyle = TextTheme.of(context).labelLarge?.copyWith(
       fontSize: 18,

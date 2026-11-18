@@ -25,7 +25,7 @@ class AvisoCard extends StatefulWidget {
 class _AvisoCardState extends State<AvisoCard> {
   bool _hovering = false;
   
-  Color get _bgColor => _hovering ? Colors.white : const Color(0xFFFDF6EE);
+  Color get _bgColor => _hovering ? context.rh.superficie : context.rh.segun(claro: const Color(0xFFFDF6EE), oscuro: const Color(0xFF1E160F));
 
   String _sanitizeUrl(String url) {
     if (kDebugMode) return url;
@@ -43,7 +43,7 @@ class _AvisoCardState extends State<AvisoCard> {
           color: _bgColor,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: borderColor,
+            color: context.rh.borde,
             width: 0.8,
           ),
         ),
@@ -69,7 +69,7 @@ class _AvisoCardState extends State<AvisoCard> {
                   child: Text(
                     widget.aviso.content,
                     style: TextStyle(
-                      color: headingTextColor,
+                      color: context.rh.titulo,
                       fontSize: 14,
                       fontWeight: .w700,
                       height: 1.625,

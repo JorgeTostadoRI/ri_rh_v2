@@ -26,7 +26,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
         duration: widget.controller.animationDuration,
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         decoration: BoxDecoration(
-          color: selected ? Colors.white : Color(0xFFF5EDE0),
+          color: selected ? context.rh.superficie : context.rh.pista,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
@@ -38,7 +38,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
   }
 
   TextStyle optionTextStyle(bool selected) {
-    final baseColor = Color(0xFF9A7B5A);
+    final baseColor = context.rh.etiqueta;
     return TextStyle(
       fontSize: 14,
       fontWeight: .w700,
@@ -51,7 +51,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
     return Container(
       padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Color(0xFFF5EDE0),
+        color: context.rh.pista,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

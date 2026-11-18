@@ -19,7 +19,7 @@ class MainScaffold extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.rh.fondo,
       body: Row(
         children: [
           CollapsibleSidebar(),
@@ -70,9 +70,9 @@ class _MobileScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.rh.fondo,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.rh.superficie,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -81,18 +81,18 @@ class _MobileScaffold extends StatelessWidget {
         title: Text(
           'Recursos Humanos',
           style: TextTheme.of(context).titleSmall?.copyWith(
-            color: const Color(0xFF9A7B5A),
+            color: context.rh.etiqueta,
             fontWeight: FontWeight.bold,
           ),
         ),
-        shape: const Border(bottom: BorderSide(color: Color(0xFFF5E8D8))),
+        shape: Border(bottom: BorderSide(color: context.rh.borde)),
         // Avisos de requisiciones y órdenes, a la derecha de la barra.
         actions: const [ComprasNotificationsBell(), SizedBox(width: 8)],
       ),
       drawer: Builder(
         builder: (drawerContext) => Drawer(
           width: 240,
-          backgroundColor: Colors.white,
+          backgroundColor: context.rh.superficie,
           shape: const RoundedRectangleBorder(),
           child: SafeArea(
             child: CollapsibleSidebar(

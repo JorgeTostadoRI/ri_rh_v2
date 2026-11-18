@@ -221,11 +221,11 @@ class _IncidenciaListTile extends StatelessWidget {
     if (esNavegadorMovil) return _buildMovil(context);
 
     return ListTile(
-      tileColor: Colors.white,
+      tileColor: context.rh.superficie,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      leading: _iconoEstado,
+      leading: _iconoEstado(context.rh),
       trailing: StepTimeline(
         length: incidencia.totalApprovalSteps,
         currentStep: incidencia.approvalStepIndex,
@@ -258,23 +258,23 @@ class _IncidenciaListTile extends StatelessWidget {
   }
 
   /// Ícono de estado, con el triangulito si hay alerta del checador.
-  Widget get _iconoEstado => Stack(
+  Widget _iconoEstado(RhColores c) => Stack(
     clipBehavior: Clip.none,
     children: [
       switch(incidencia.state!) {
         IncidenciaState.pending => ColorIcon(
           icon: LucideIcons.clock,
-          backgroundColor: statusWarningBgColor,
+          backgroundColor: c.avisoFondo,
         ),
         IncidenciaState.rejected => ColorIcon(
           icon: LucideIcons.x,
-          backgroundColor: statusFailureBgColor,
-          iconColor: statusFailureColor,
+          backgroundColor: c.falloFondo,
+          iconColor: c.falloTexto,
         ),
         IncidenciaState.approved => ColorIcon(
           icon: LucideIcons.circleCheckBig,
-          backgroundColor: statusSuccessBgColor,
-          iconColor: statusSuccessColor,
+          backgroundColor: c.exitoFondo,
+          iconColor: c.exitoTexto,
         ),
       },
       if (incidencia.checadorDiscrepancy?.isSuspicious ?? false)
@@ -285,8 +285,8 @@ class _IncidenciaListTile extends StatelessWidget {
             message: incidencia.checadorDiscrepancy!.message,
             child: Container(
               padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(color: Colors.white, shape: .circle),
-              child: Icon(LucideIcons.triangleAlert, color: statusWarningColor, size: 16),
+              decoration: BoxDecoration(color: c.superficie, shape: .circle),
+              child: Icon(LucideIcons.triangleAlert, color: c.avisoTexto, size: 16),
             ),
           ),
         ),
@@ -327,7 +327,7 @@ class _IncidenciaListTile extends StatelessWidget {
     final textTheme = TextTheme.of(context);
 
     return Material(
-      color: Colors.white,
+      color: context.rh.superficie,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -341,7 +341,7 @@ class _IncidenciaListTile extends StatelessWidget {
               Row(
                 spacing: 12,
                 children: [
-                  _iconoEstado,
+                  _iconoEstado(context.rh),
                   Expanded(
                     child: Text(
                       '${incidencia.categoryName} para ${incidencia.solicitor!.nombre} en ${_formatStartEndDates(incidencia)}',
@@ -413,7 +413,7 @@ class _IncidenciasReviewList extends StatelessWidget {
                 Text('No se pudieron cargar las incidencias.'),
                 Text(
                   viewmodel.load.result.toString(),
-                  style: TextStyle(color: errorColor),
+                  style: TextStyle(color: context.rh.error),
                 ),
                 ElevatedButton.icon(
                   onPressed: () => viewmodel.load.execute(),
@@ -433,7 +433,7 @@ class _IncidenciasReviewList extends StatelessWidget {
                 Icon(
                   LucideIcons.partyPopper,
                   size: 60,
-                  color: statusSuccessColor,
+                  color: context.rh.exitoTexto,
                 ),
                 Text('No tienes incidencias por revisar', style: textTheme.headlineSmall),
               ],
@@ -491,7 +491,7 @@ class _IncidenciasHistory extends StatelessWidget {
                 Text('No se pudieron cargar las incidencias.'),
                 Text(
                   viewmodel.load.result.toString(),
-                  style: TextStyle(color: errorColor),
+                  style: TextStyle(color: context.rh.error),
                 ),
                 ElevatedButton.icon(
                   onPressed: () => viewmodel.load.execute(),

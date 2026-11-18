@@ -339,7 +339,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                           Text(
                             '¡Bienvenido!',
                             style: TextTheme.of(context).displayLarge?.copyWith(
-                              color: headingTextColor,
+                              color: context.rh.titulo,
                               fontSize: 72,
                               fontWeight: .w900,
                             ),
@@ -361,10 +361,10 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                           begin: .topCenter,
                           end: .bottomCenter,
                           colors: [
-                            Color(0xFFFDDEB0).withAlpha(0),
-                            Color(0xFFFDDEB0),
-                            Color(0xFFFDDEB0),
-                            Color(0xFFFDDEB0).withAlpha(0),
+                            context.rh.bordeAcento.withAlpha(0),
+                            context.rh.bordeAcento,
+                            context.rh.bordeAcento,
+                            context.rh.bordeAcento.withAlpha(0),
                           ],
                           stops: [0, 0.3, 0.7, 1],
                         ),
@@ -388,7 +388,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                                 Text(
                                   'Registra tu entrada',
                                   style: TextTheme.of(context).bodyMedium?.copyWith(
-                                    color: headingTextColor,
+                                    color: context.rh.titulo,
                                     fontSize: 24,
                                     fontWeight: .w700,
                                   ),
@@ -397,7 +397,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                                 Text(
                                   'con tu huella y foto',
                                   style: TextTheme.of(context).bodyMedium?.copyWith(
-                                    color: labelTextColor,
+                                    color: context.rh.etiqueta,
                                     fontWeight: .w500,
                                   ),
                                   textAlign: .center,
@@ -409,14 +409,14 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
                             ),
                             Text(
                               'Si tienes problemas con el registro, contacta a Recursos Humanos.',
-                              style: TextTheme.of(context).bodySmall?.copyWith(color: Color(0xFFC4A47A)),
+                              style: TextTheme.of(context).bodySmall?.copyWith(color: context.rh.etiquetaSuave),
                               textAlign: .center,
                             ),
                             if (kIsWeb)
                               Text.rich(
                                 TextSpan(
                                   style: TextTheme.of(context).bodySmall?.copyWith(
-                                    color: Color(0xFFC4A47A),
+                                    color: context.rh.etiquetaSuave,
                                   ),
                                   children: [
                                     const TextSpan(
@@ -475,7 +475,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
           Text(
             '¡Bienvenido!',
             style: textTheme.displayLarge?.copyWith(
-              color: headingTextColor,
+              color: context.rh.titulo,
               fontSize: 40,
               fontWeight: .w900,
             ),
@@ -499,7 +499,7 @@ class _AsistenciaScreenState extends State<AsistenciaScreen> {
           const SizedBox(height: 8),
           Text(
             'Solo para posiciones remotas. Si tienes problemas con el registro, contacta a Recursos Humanos.',
-            style: textTheme.bodySmall?.copyWith(color: Color(0xFFC4A47A)),
+            style: textTheme.bodySmall?.copyWith(color: context.rh.etiquetaSuave),
           ),
           MotdList(viewmodel: _viewmodel),
         ],

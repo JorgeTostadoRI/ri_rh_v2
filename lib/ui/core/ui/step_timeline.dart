@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 
 class StepTimeline extends StatelessWidget {
   const StepTimeline({
@@ -22,6 +23,7 @@ class StepTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inactivo = context.rh.inactivo;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -38,7 +40,7 @@ class StepTimeline extends StatelessWidget {
                 height: 14,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isCompleted ? color : Colors.grey[300],
+                  color: isCompleted ? color : inactivo,
                   border: isCurrent
                       ? Border.all(color: color, width: 1.5)
                       : null,
@@ -66,7 +68,7 @@ class StepTimeline extends StatelessWidget {
                 width: 12,
                 child: Container(
                   height: 1.5,
-                  color: isCompleted ? color : Colors.grey[300],
+                  color: isCompleted ? color : inactivo,
                 ),
               );
             }

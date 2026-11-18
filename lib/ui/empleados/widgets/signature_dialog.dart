@@ -70,7 +70,7 @@ class _SignatureDialogState extends State<SignatureDialog> {
                 Text('Se encontró un error al intentar guardar la firma'),
                 Text(
                   widget.viewmodel.addSignature.result.toString(),
-                  style: TextStyle(color: errorColor),
+                  style: TextStyle(color: context.rh.error),
                 ),
               ],
             ),
@@ -95,7 +95,7 @@ class _SignatureDialogState extends State<SignatureDialog> {
                     height: 375,
                     decoration: BoxDecoration(
                       border: Border.fromBorderSide(BorderSide(
-                        color: labelTextColor,
+                        color: context.rh.etiqueta,
                         width: 0.8,
                       )),
                       borderRadius: BorderRadius.circular(20),

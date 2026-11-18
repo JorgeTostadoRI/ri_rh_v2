@@ -214,11 +214,11 @@ class _MiIncidenciaTile extends StatelessWidget {
     if (esNavegadorMovil) return _buildMovil(context);
 
     return ListTile(
-      tileColor: Colors.white,
+      tileColor: context.rh.superficie,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      leading: _iconoEstado,
+      leading: _iconoEstado(context.rh),
       trailing: StepTimeline(
         length: incidencia.totalApprovalSteps,
         currentStep: incidencia.approvalStepIndex,
@@ -237,20 +237,20 @@ class _MiIncidenciaTile extends StatelessWidget {
     );
   }
 
-  Widget get _iconoEstado => switch (incidencia.state!) {
+  Widget _iconoEstado(RhColores c) => switch (incidencia.state!) {
     IncidenciaState.pending => ColorIcon(
       icon: LucideIcons.clock,
-      backgroundColor: statusWarningBgColor,
+      backgroundColor: c.avisoFondo,
     ),
     IncidenciaState.rejected => ColorIcon(
       icon: LucideIcons.x,
-      backgroundColor: statusFailureBgColor,
-      iconColor: statusFailureColor,
+      backgroundColor: c.falloFondo,
+      iconColor: c.falloTexto,
     ),
     IncidenciaState.approved => ColorIcon(
       icon: LucideIcons.circleCheckBig,
-      backgroundColor: statusSuccessBgColor,
-      iconColor: statusSuccessColor,
+      backgroundColor: c.exitoFondo,
+      iconColor: c.exitoTexto,
     ),
   };
 
@@ -271,7 +271,7 @@ class _MiIncidenciaTile extends StatelessWidget {
     final textTheme = TextTheme.of(context);
 
     return Material(
-      color: Colors.white,
+      color: context.rh.superficie,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -285,7 +285,7 @@ class _MiIncidenciaTile extends StatelessWidget {
               Row(
                 spacing: 12,
                 children: [
-                  _iconoEstado,
+                  _iconoEstado(context.rh),
                   Expanded(
                     child: Text(
                       '${incidencia.categoryName} en ${_formatStartEndDates(incidencia)}',

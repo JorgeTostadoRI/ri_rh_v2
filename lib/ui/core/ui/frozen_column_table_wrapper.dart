@@ -36,9 +36,9 @@ class _FrozenColumnTableWrapperState extends State<FrozenColumnTableWrapper> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFAF5),
+        color: context.rh.superficieAlterna,
         borderRadius: BorderRadius.circular(20),
-        border: Border.fromBorderSide(BorderSide(color: borderColor, width: 0.8)),
+        border: Border.fromBorderSide(BorderSide(color: context.rh.borde, width: 0.8)),
       ),
       clipBehavior: Clip.antiAlias,
       child: IntrinsicHeight(
@@ -46,7 +46,7 @@ class _FrozenColumnTableWrapperState extends State<FrozenColumnTableWrapper> {
           crossAxisAlignment: .stretch,
           children: [
             widget.frozenColumn,
-            Container(width: 0.8, color: borderColor),
+            Container(width: 0.8, color: context.rh.borde),
             Expanded(
               child: Scrollbar(
                 controller: _scrollController,

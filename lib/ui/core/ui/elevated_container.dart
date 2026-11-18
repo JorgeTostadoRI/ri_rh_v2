@@ -14,10 +14,10 @@ class ElevatedContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.rh.superficie,
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: const Border.fromBorderSide(BorderSide(
-          color: borderColor,
+        border: Border.fromBorderSide(BorderSide(
+          color: context.rh.borde,
           width: 0.8,
         )),
         boxShadow: const [

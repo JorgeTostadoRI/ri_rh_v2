@@ -464,7 +464,7 @@ class _CustomDayRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: borderColor, width: 0.8),
+        border: Border.all(color: context.rh.borde, width: 0.8),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

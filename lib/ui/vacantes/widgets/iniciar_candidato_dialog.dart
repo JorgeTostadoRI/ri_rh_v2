@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/ui/core/ui/document_picker_row.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
@@ -102,7 +103,7 @@ class _IniciarCandidatoDialogState extends State<IniciarCandidatoDialog> {
                   Text(
                     'Quedan ${widget.vacantesDisponibles} vacante(s) por cubrir en esta solicitud. '
                     'Llena las que vayas a iniciar ahora; las demás las puedes dejar vacías.',
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: TextStyle(color: context.rh.segun(claro: Colors.grey[700]!, oscuro: Colors.grey[400]!)),
                   ),
                 if (_errorGeneral != null)
                   Text(_errorGeneral!, style: TextStyle(color: Theme.of(context).colorScheme.error)),

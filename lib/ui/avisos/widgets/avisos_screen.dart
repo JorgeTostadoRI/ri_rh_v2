@@ -107,7 +107,7 @@ class _AvisosScreenState extends State<AvisosScreen> {
     final movil = esNavegadorMovil;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: context.rh.fondo,
       floatingActionButton: ListenableBuilder(
         listenable: widget.viewmodel,
         builder: (context, _) {
@@ -144,10 +144,10 @@ class _AvisosScreenState extends State<AvisosScreen> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.rh.superficie,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: borderColor,
+                        color: context.rh.borde,
                         width: 0.8,
                       ),
                       boxShadow: [

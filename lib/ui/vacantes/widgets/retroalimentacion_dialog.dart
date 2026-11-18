@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
 
@@ -44,7 +45,7 @@ class _RetroalimentacionDialogState extends State<RetroalimentacionDialog> {
             children: [
               Text(
                 'Se le regresará la evaluación de ${widget.nombre} a su jefe para que la corrija y la vuelva a mandar.',
-                style: TextStyle(color: Colors.grey[700]),
+                style: TextStyle(color: context.rh.segun(claro: Colors.grey[700]!, oscuro: Colors.grey[400]!)),
               ),
               TextFormField(
                 controller: _comentario,

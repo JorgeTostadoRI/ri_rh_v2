@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/rh_colores.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
 
 class DeleteFingerprintDialog extends StatelessWidget {
@@ -11,7 +12,7 @@ class DeleteFingerprintDialog extends StatelessWidget {
       insetPadding: esNavegadorMovil
           ? const EdgeInsets.symmetric(horizontal: 16, vertical: 24)
           : null,
-      backgroundColor: Colors.white,
+      backgroundColor: context.rh.superficie,
       title: Text('Confimar Eliminación'),
       content: Text('¿Estás seguro de eliminar esta huella?\n'
         'Esta acción no se podrá revertir, pero podrás escanear la huella nuevamente.'),

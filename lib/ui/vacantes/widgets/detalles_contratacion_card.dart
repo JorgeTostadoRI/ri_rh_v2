@@ -308,13 +308,13 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
+                color: context.rh.exitoSuave,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'Contrato solicitado el ${widget.candidato.contratoSolicitadoEn!.toShortIsoString()}',
-                style: const TextStyle(
-                  color: Color(0xFF008236),
+                style: TextStyle(
+                  color: context.rh.exitoFuerte,
                   fontWeight: .w700,
                 ),
               ),
@@ -558,7 +558,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
                         : widget.candidato.puestoResponsabilidades,
                     readOnly: true,
                     maxLines: null,
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: TextStyle(color: context.rh.segun(claro: Colors.grey[700]!, oscuro: Colors.grey[400]!)),
                     decoration: const InputDecoration(
                       labelText: 'Funciones (responsabilidades del puesto)',
                       helperText:
@@ -596,8 +596,8 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
               ? null
               : _rechazar,
           style: OutlinedButton.styleFrom(
-            foregroundColor: errorColor,
-            side: BorderSide(color: errorColor),
+            foregroundColor: context.rh.error,
+            side: BorderSide(color: context.rh.error),
           ),
           icon: const Icon(Icons.block),
           label: const Text('Rechazar documentación'),
@@ -733,7 +733,7 @@ class _DetallesContratacionCardState extends State<DetallesContratacionCard> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: borderColor),
+        border: Border.all(color: context.rh.borde),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

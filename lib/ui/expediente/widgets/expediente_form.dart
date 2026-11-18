@@ -169,7 +169,7 @@ class _ExpedienteFormState extends State<ExpedienteForm> {
                 readOnly: widget.readOnly,
                 controller: _salario,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(LucideIcons.dollarSign, color: labelTextColor),
+                  prefixIcon: Icon(LucideIcons.dollarSign, color: context.rh.etiqueta),
                   labelText: 'SALARIO DIARIO',
                 ),
               ),

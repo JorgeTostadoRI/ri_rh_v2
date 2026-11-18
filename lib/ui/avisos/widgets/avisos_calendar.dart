@@ -27,7 +27,7 @@ class AvisosCalendar extends StatelessWidget {
               Text(
                 'Calendario de Avisos',
                 style: TextStyle(
-                  color: headingTextColor,
+                  color: context.rh.titulo,
                   fontFamily: 'Inter',
                   fontSize: 18,
                   fontWeight: .w700,
@@ -48,36 +48,36 @@ class AvisosCalendar extends StatelessWidget {
                 headerStyle: HeaderStyle(
                   formatButtonVisible: false,
                   titleTextStyle: TextStyle(
-                    color: headingTextColor,
+                    color: context.rh.titulo,
                     fontFamily: 'Inter',
                     fontSize: 18,
                     fontWeight: .w700,
                     height: 1.5,
                   ),
-                  leftChevronIcon: Icon(LucideIcons.chevronLeft, color: headingTextColor),
-                  rightChevronIcon: Icon(LucideIcons.chevronRight, color: headingTextColor),
+                  leftChevronIcon: Icon(LucideIcons.chevronLeft, color: context.rh.titulo),
+                  rightChevronIcon: Icon(LucideIcons.chevronRight, color: context.rh.titulo),
                 ),
                 calendarStyle: CalendarStyle(
                   todayDecoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.rh.superficie,
                     shape: BoxShape.circle,
                   ),
-                  todayTextStyle: TextStyle(fontWeight: .w700, color: headingTextColor),
+                  todayTextStyle: TextStyle(fontWeight: .w700, color: context.rh.titulo),
                   selectedDecoration: BoxDecoration(
                     color: primaryColor,
                     shape: BoxShape.circle,
                   ),
                   selectedTextStyle: TextStyle(fontFamily: 'Inter', color: Colors.white),
-                  defaultTextStyle: TextStyle(fontFamily: 'Inter', fontWeight: .w400, color: headingTextColor),
+                  defaultTextStyle: TextStyle(fontFamily: 'Inter', fontWeight: .w400, color: context.rh.titulo),
                 ),
                 daysOfWeekStyle: DaysOfWeekStyle(
                   weekdayStyle: TextStyle(
-                    color: labelTextColor,
+                    color: context.rh.etiqueta,
                     fontFamily: 'Inter',
                     fontWeight: .w700,
                   ),
                   weekendStyle: TextStyle(
-                    color: labelTextColor,
+                    color: context.rh.etiqueta,
                     fontFamily: 'Inter',
                     fontWeight: .w700,
                   ),
