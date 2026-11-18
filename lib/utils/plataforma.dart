@@ -25,6 +25,10 @@ bool get esWeb => debugEsWeb ?? kIsWeb;
 @visibleForTesting
 bool? debugEsWeb;
 
+/// `true` solo en la app de escritorio de Windows (nunca en el navegador, ni
+/// siquiera abierto desde Windows).
+bool get esAppWindows => !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
+
 @visibleForTesting
 bool esNavegadorMovilPara({required bool esWeb, required TargetPlatform plataforma}) =>
     esWeb && (plataforma == TargetPlatform.android || plataforma == TargetPlatform.iOS);

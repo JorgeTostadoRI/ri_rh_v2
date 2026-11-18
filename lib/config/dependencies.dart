@@ -49,10 +49,12 @@ import 'package:ri_rh_v2/data/services/local/finger_scan/finger_scan_service_fac
 import 'package:ri_rh_v2/data/services/local/local_data_service.dart';
 import 'package:ri_rh_v2/data/services/logger/app_logger.dart';
 import 'package:ri_rh_v2/data/services/shared_preferences_service.dart';
+import 'package:ri_rh_v2/data/services/ventana/ventana_service.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/auth_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/notification_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/pantalla_completa_viewmodel.dart';
 
 Dio _dioClient() {
   const apiUrl = String.fromEnvironment('api_url', defaultValue: 'http://localhost:8000');
@@ -74,6 +76,11 @@ List<SingleChildWidget> get _sharedProviders {
     // Tema claro siempre, salvo el modo oscuro de prueba en debug (ver
     // modoOscuroDisponible).
     ChangeNotifierProvider(create: (_) => AppThemeProvider()),
+    // App de Windows: F11 / Esc para pantalla completa (en web no hace nada).
+    ChangeNotifierProvider(
+      lazy: false,
+      create: (_) => PantallaCompletaViewmodel(ventana: VentanaServiceWindows())..iniciar(),
+    ),
     Provider(create: (_) => DeviceAuthService()),
     Provider(create: (_) => getFileDownloadService(
       dioFactory: _dioClient,
