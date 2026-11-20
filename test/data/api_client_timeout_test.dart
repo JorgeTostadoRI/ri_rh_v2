@@ -54,12 +54,12 @@ void main() {
     );
   });
 
-  test('enviar una incidencia espera hasta 3 minutos (subir el video)', () async {
+  test('enviar una incidencia espera hasta 2 minutos (subir el video)', () async {
     final resultado = await api.postIncidencia(_incidencia());
 
     expect(resultado, isA<Ok<IncidenciaApiModel>>());
-    expect(servidor.recibida!.sendTimeout, const Duration(minutes: 3));
-    expect(servidor.recibida!.receiveTimeout, const Duration(minutes: 3));
+    expect(servidor.recibida!.sendTimeout, const Duration(minutes: 2));
+    expect(servidor.recibida!.receiveTimeout, const Duration(minutes: 2));
   });
 
   for (final tipo in [

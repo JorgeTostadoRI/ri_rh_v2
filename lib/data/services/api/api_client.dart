@@ -272,7 +272,7 @@ class ApiClient {
   /// 60 s que con datos móviles tarda más que el límite normal de la app; en
   /// el navegador dio corta TODA la solicitud (subida incluida) a
   /// connectTimeout + receiveTimeout, así que con 15 + 15 s se cancelaba.
-  static const tiempoEnvioIncidencia = Duration(minutes: 3);
+  static const tiempoEnvioIncidencia = Duration(minutes: 2);
 
   Future<Result<IncidenciaApiModel>> postIncidencia(IncidenciaApiModel incidencia) async {
     final dio = _dioFactory();

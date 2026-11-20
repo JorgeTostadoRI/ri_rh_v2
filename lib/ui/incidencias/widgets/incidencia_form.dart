@@ -129,7 +129,9 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     return true;
   }
 
-  Future<void> _submitForm() async {
+  /// [reintento]: el envio anterior se corto por tiempo (ver
+  /// [_ofrecerReintento]); se revisa antes que no se haya guardado ya.
+  Future<void> _submitForm({bool reintento = false}) async {
     if (_formKey.currentState!.validate()) {
       final isRemoteWeb = _isRemoteWeb;
       if (kIsWeb && !isRemoteWeb) {
@@ -167,7 +169,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         }
       }
 
-      final result = await _viewmodel.submitData(widget.category);
+      final result = await _viewmodel.submitData(widget.category, reintento: reintento);
       switch (result) {
         case Error():
           _handleSubmitError(result.error);
@@ -177,7 +179,10 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Incidencia creada'),
+            content: Text(switch (result.value) {
+              EnvioIncidencia.enviada => 'Incidencia creada',
+              EnvioIncidencia.yaRegistrada => 'Tu solicitud sí se registró',
+            }),
           ),
         );
 
@@ -286,9 +291,7 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     }
 
     if (e is ApiException && e.tiempoAgotado) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        errorSnackBar(context, 'El envío tardó demasiado. Revisa tu conexión e inténtalo de nuevo.'),
-      );
+      _ofrecerReintento();
       return;
     }
 
@@ -306,6 +309,30 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     ScaffoldMessenger.of(context).showSnackBar(
       errorSnackBar(context, 'Ha ocurrido un error', error: e),
     );
+  }
+
+  /// El envio se corto por tardar demasiado (ej. el video con mala señal).
+  /// Lo capturado sigue en el formulario: "Reintentar" lo vuelve a mandar
+  /// sin tener que llenarlo ni grabar de nuevo.
+  Future<void> _ofrecerReintento() async {
+    final reintentar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('No se pudo enviar'),
+        content: Text('El envío tardó demasiado, posiblemente por la conexión.'),
+        actions: [
+          TextButton(
+            onPressed: () => context.pop(false),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => context.pop(true),
+            child: Text('Reintentar'),
+          ),
+        ],
+      ),
+    );
+    if (reintentar == true && mounted) await _submitForm(reintento: true);
   }
 
   /// Permiso, Vacaciones y Hora por hora no se piden para dias anteriores (el

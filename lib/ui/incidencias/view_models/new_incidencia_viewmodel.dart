@@ -14,10 +14,21 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
+
+/// Como termino un envio exitoso de [NewIncidenciaViewmodel.submitData].
+enum EnvioIncidencia {
+  /// Se creo la incidencia.
+  enviada,
+
+  /// Era un reintento y la incidencia ya se habia guardado en el intento
+  /// anterior; no se volvio a enviar.
+  yaRegistrada,
+}
 
 class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginController {
   NewIncidenciaViewmodel({
@@ -186,7 +197,12 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
   }
 
   /// Should only be called once the form has been validated and the user is authenticated
-  Future<Result<void>> submitData(IncidenciaCategory category) async {
+  ///
+  /// Con [reintento] (el envio anterior se corto por tiempo) primero revisa
+  /// si esa solicitud alcanzo a guardarse: el corte pudo llegar despues de
+  /// que el servidor la registro, y reenviarla la duplicaria. Si ya existe
+  /// no se reenvia y regresa [EnvioIncidencia.yaRegistrada].
+  Future<Result<EnvioIncidencia>> submitData(IncidenciaCategory category, {bool reintento = false}) async {
     late final DateTime start;
     late final DateTime end;
 
@@ -221,7 +237,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
       videoFile: _video,
       horasPorHoraRefs: category == IncidenciaCategory.permiso && pagaConTiempoPorTiempo ? _horasPorHoraRefs : null,
     );
-    final incidenciaResult = await _incidenciasRepository.createIncidencia(incidencia);
+    final incidenciaResult = await _enviar(incidencia, user.id, reintento: reintento);
     switch (incidenciaResult) {
       case Ok():
         break;
@@ -237,6 +253,47 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     // siguiente pantalla nunca alcance a ver la sesion de esta persona.
     if (!kIsWeb) await _authRepository.logout();
     return incidenciaResult;
+  }
+
+  Future<Result<EnvioIncidencia>> _enviar(Incidencia incidencia, int userId, {required bool reintento}) async {
+    if (reintento) {
+      final yaRegistrada = await _yaRegistrada(incidencia, userId);
+      switch (yaRegistrada) {
+        case Error():
+          // Sin poder confirmarlo no se reenvia: podria duplicarla.
+          return Result.error(yaRegistrada.error);
+        case Ok():
+          if (yaRegistrada.value) return const Result.ok(EnvioIncidencia.yaRegistrada);
+      }
+    }
+
+    final creada = await _incidenciasRepository.createIncidencia(incidencia);
+    return switch (creada) {
+      Ok() => const Result.ok(EnvioIncidencia.enviada),
+      Error() => Result.error(creada.error),
+    };
+  }
+
+  /// Si [incidencia] ya esta guardada: de la misma persona, mismo tipo y
+  /// mismas fecha y hora de inicio y fin, sin rechazar.
+  Future<Result<bool>> _yaRegistrada(Incidencia incidencia, int userId) async {
+    final dia = DateTime(incidencia.start.year, incidencia.start.month, incidencia.start.day);
+    final result = await _incidenciasRepository.getIncidencias(
+      query: IncidenciaQuery(
+        categories: [incidencia.category],
+        solicitores: [userId],
+        startRange: DateTimeRange(start: dia, end: dia),
+      ),
+    );
+    return switch (result) {
+      Error() => Result.error(result.error),
+      Ok() => Result.ok(result.value.any((guardada) =>
+        guardada.solicitor?.id == userId &&
+        guardada.category == incidencia.category &&
+        guardada.state != IncidenciaState.rejected &&
+        guardada.start.isAtSameMomentAs(incidencia.start) &&
+        guardada.end.isAtSameMomentAs(incidencia.end))),
+    };
   }
 
   Future<Result<void>> _login(Uint8List template) async {
