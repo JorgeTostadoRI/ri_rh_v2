@@ -161,6 +161,24 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         if (!authenticated) return;
       }
 
+      if (reintento) {
+        // Antes de pedir nada mas: si el intento anterior si se guardo, sus
+        // Hora por hora ya quedaron ligadas y no podria volver a elegirlas.
+        final yaSeRegistro = await _viewmodel.yaSeRegistro(widget.category);
+        switch (yaSeRegistro) {
+          case Error():
+            // Sin poder confirmarlo no se reenvia: podria duplicarla.
+            await _viewmodel.cancelSubmit();
+            if (mounted) _handleSubmitError(yaSeRegistro.error);
+            return;
+          case Ok(value: true):
+            await _viewmodel.cancelSubmit();
+            _terminarEnvio('Tu solicitud sí se registró');
+            return;
+          case Ok():
+        }
+      }
+
       if (widget.category == IncidenciaCategory.permiso && _viewmodel.pagaConTiempoPorTiempo) {
         final elegido = await _chooseHorasPorHora();
         if (!elegido) {
@@ -169,26 +187,26 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         }
       }
 
-      final result = await _viewmodel.submitData(widget.category, reintento: reintento);
+      final result = await _viewmodel.submitData(widget.category);
       switch (result) {
         case Error():
           _handleSubmitError(result.error);
           return;
         case Ok():
       }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(switch (result.value) {
-              EnvioIncidencia.enviada => 'Incidencia creada',
-              EnvioIncidencia.yaRegistrada => 'Tu solicitud sí se registró',
-            }),
-          ),
-        );
-
-        context.go(Routes.incidencias);
-      }
+      _terminarEnvio('Incidencia creada');
     }
+  }
+
+  void _terminarEnvio(String mensaje) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensaje),
+      ),
+    );
+
+    context.go(Routes.incidencias);
   }
 
   /// Permiso por tiempo por tiempo: con el usuario ya identificado, elige

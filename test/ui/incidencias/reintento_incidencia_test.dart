@@ -110,20 +110,20 @@ Incidencia _guardada({
 );
 
 void main() {
-  test('un envío normal se manda sin revisar antes', () async {
+  test('enviar no revisa antes si ya existe (solo se revisa al reintentar)', () async {
     final servidor = _Incidencias();
     final resultado = await _formulario(servidor).submitData(IncidenciaCategory.falta);
 
-    expect((resultado as Ok<EnvioIncidencia>).value, EnvioIncidencia.enviada);
+    expect(resultado, isA<Ok<void>>());
     expect(servidor.enviadas, 1);
     expect(servidor.consulta, isNull);
   });
 
-  test('reintento: si el intento anterior sí se guardó, no la duplica', () async {
+  test('si el intento anterior sí se guardó, lo reconoce', () async {
     final servidor = _Incidencias()..guardadas = [_guardada()];
-    final resultado = await _formulario(servidor).submitData(IncidenciaCategory.falta, reintento: true);
+    final resultado = await _formulario(servidor).yaSeRegistro(IncidenciaCategory.falta);
 
-    expect((resultado as Ok<EnvioIncidencia>).value, EnvioIncidencia.yaRegistrada);
+    expect((resultado as Ok<bool>).value, isTrue);
     expect(servidor.enviadas, 0);
     // Solo busca las suyas, de ese tipo y de ese día.
     expect(servidor.consulta!.solicitores, [_josue.id]);
@@ -131,15 +131,14 @@ void main() {
     expect(servidor.consulta!.startRange!.start, DateTime(2026, 11, 19));
   });
 
-  test('reintento: si no se había guardado, la envía', () async {
+  test('si no se había guardado, no la reconoce', () async {
     final servidor = _Incidencias();
-    final resultado = await _formulario(servidor).submitData(IncidenciaCategory.falta, reintento: true);
+    final resultado = await _formulario(servidor).yaSeRegistro(IncidenciaCategory.falta);
 
-    expect((resultado as Ok<EnvioIncidencia>).value, EnvioIncidencia.enviada);
-    expect(servidor.enviadas, 1);
+    expect((resultado as Ok<bool>).value, isFalse);
   });
 
-  test('reintento: otra parecida (otro tipo, otra hora, otra persona o rechazada) no cuenta como la misma', () async {
+  test('otra parecida (otro tipo, otra hora, otra persona o rechazada) no cuenta como la misma', () async {
     final servidor = _Incidencias()
       ..guardadas = [
         _guardada(category: IncidenciaCategory.permiso),
@@ -147,18 +146,37 @@ void main() {
         _guardada(solicitor: _persona(2)),
         _guardada(state: IncidenciaState.rejected),
       ];
-    final resultado = await _formulario(servidor).submitData(IncidenciaCategory.falta, reintento: true);
+    final resultado = await _formulario(servidor).yaSeRegistro(IncidenciaCategory.falta);
 
-    expect((resultado as Ok<EnvioIncidencia>).value, EnvioIncidencia.enviada);
-    expect(servidor.enviadas, 1);
+    expect((resultado as Ok<bool>).value, isFalse);
   });
 
-  test('reintento: si no se puede confirmar, no la reenvía (podría duplicarla)', () async {
+  test('un permiso de día completo guardado se reconoce (00:00 a 23:59)', () async {
+    final servidor = _Incidencias()
+      ..guardadas = [
+        Incidencia(
+          id: 5,
+          solicitor: _josue,
+          category: IncidenciaCategory.permiso,
+          state: IncidenciaState.pending,
+          start: DateTime(2026, 11, 19).toUtc(),
+          end: DateTime(2026, 11, 19, 23, 59).toUtc(),
+          reason: 'trámite',
+          files: const [],
+        ),
+      ];
+    final formulario = _formulario(servidor)..initDateOption(IncidenciaDateOption.DATE_RANGE);
+    final resultado = await formulario.yaSeRegistro(IncidenciaCategory.permiso);
+
+    expect((resultado as Ok<bool>).value, isTrue);
+  });
+
+  test('si no se puede confirmar, regresa el error (el formulario no la reenvía)', () async {
     final servidor = _Incidencias()
       ..fallaAlConsultar = const ApiException('tiempo', 0, tiempoAgotado: true);
-    final resultado = await _formulario(servidor).submitData(IncidenciaCategory.falta, reintento: true);
+    final resultado = await _formulario(servidor).yaSeRegistro(IncidenciaCategory.falta);
 
-    final error = (resultado as Error<EnvioIncidencia>).error;
+    final error = (resultado as Error<bool>).error;
     expect(error, isA<ApiException>().having((e) => e.tiempoAgotado, 'tiempoAgotado', isTrue));
     expect(servidor.enviadas, 0);
   });

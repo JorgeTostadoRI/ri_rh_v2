@@ -20,16 +20,6 @@ import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 
-/// Como termino un envio exitoso de [NewIncidenciaViewmodel.submitData].
-enum EnvioIncidencia {
-  /// Se creo la incidencia.
-  enviada,
-
-  /// Era un reintento y la incidencia ya se habia guardado en el intento
-  /// anterior; no se volvio a enviar.
-  yaRegistrada,
-}
-
 class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginController {
   NewIncidenciaViewmodel({
     required this._log,
@@ -196,13 +186,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     notifyListeners();
   }
 
-  /// Should only be called once the form has been validated and the user is authenticated
-  ///
-  /// Con [reintento] (el envio anterior se corto por tiempo) primero revisa
-  /// si esa solicitud alcanzo a guardarse: el corte pudo llegar despues de
-  /// que el servidor la registro, y reenviarla la duplicaria. Si ya existe
-  /// no se reenvia y regresa [EnvioIncidencia.yaRegistrada].
-  Future<Result<EnvioIncidencia>> submitData(IncidenciaCategory category, {bool reintento = false}) async {
+  /// Inicio y fin capturados; null si el fin no es posterior al inicio.
+  ({DateTime start, DateTime end})? _rango() {
     late final DateTime start;
     late final DateTime end;
 
@@ -215,10 +200,49 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
         end = _constructDate(_startDate!, _endTime!);
     }
 
-    final comparison = end.compareTo(start);
-    if (comparison == -1 || comparison == 0) {
+    if (!end.isAfter(start)) return null;
+    return (start: start, end: end);
+  }
+
+  /// Si la solicitud capturada ya esta guardada (misma persona, tipo, inicio
+  /// y fin, sin rechazar). Al reintentar un envio que se corto por tiempo:
+  /// el corte pudo llegar despues de que el servidor la registro, y
+  /// reenviarla la duplicaria. Se revisa antes de pedir nada mas (ej. las
+  /// Hora por hora de un permiso, que ya quedaron ligadas a la guardada).
+  ///
+  /// Con el usuario ya identificado; no cierra su sesion (ver [cancelSubmit]).
+  Future<Result<bool>> yaSeRegistro(IncidenciaCategory category) async {
+    final rango = _rango();
+    final user = _authRepository.getCurrentUser();
+    // Sin rango valido no pudo guardarse; submitData explica el error.
+    if (rango == null || user == null) return const Result.ok(false);
+
+    final dia = DateTime(rango.start.year, rango.start.month, rango.start.day);
+    final result = await _incidenciasRepository.getIncidencias(
+      query: IncidenciaQuery(
+        categories: [category],
+        solicitores: [user.id],
+        startRange: DateTimeRange(start: dia, end: dia),
+      ),
+    );
+    return switch (result) {
+      Error() => Result.error(result.error),
+      Ok() => Result.ok(result.value.any((guardada) =>
+        guardada.solicitor?.id == user.id &&
+        guardada.category == category &&
+        guardada.state != IncidenciaState.rejected &&
+        guardada.start.isAtSameMomentAs(rango.start) &&
+        guardada.end.isAtSameMomentAs(rango.end))),
+    };
+  }
+
+  /// Should only be called once the form has been validated and the user is authenticated
+  Future<Result<void>> submitData(IncidenciaCategory category) async {
+    final rango = _rango();
+    if (rango == null) {
       return Result.error(InvalidForm('La fecha solicitada es inválida, recuerda usar formato de 24h'));
     }
+    final (:start, :end) = rango;
 
     final user = _authRepository.getCurrentUser();
 
@@ -237,7 +261,7 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
       videoFile: _video,
       horasPorHoraRefs: category == IncidenciaCategory.permiso && pagaConTiempoPorTiempo ? _horasPorHoraRefs : null,
     );
-    final incidenciaResult = await _enviar(incidencia, user.id, reintento: reintento);
+    final incidenciaResult = await _incidenciasRepository.createIncidencia(incidencia);
     switch (incidenciaResult) {
       case Ok():
         break;
@@ -253,47 +277,6 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     // siguiente pantalla nunca alcance a ver la sesion de esta persona.
     if (!kIsWeb) await _authRepository.logout();
     return incidenciaResult;
-  }
-
-  Future<Result<EnvioIncidencia>> _enviar(Incidencia incidencia, int userId, {required bool reintento}) async {
-    if (reintento) {
-      final yaRegistrada = await _yaRegistrada(incidencia, userId);
-      switch (yaRegistrada) {
-        case Error():
-          // Sin poder confirmarlo no se reenvia: podria duplicarla.
-          return Result.error(yaRegistrada.error);
-        case Ok():
-          if (yaRegistrada.value) return const Result.ok(EnvioIncidencia.yaRegistrada);
-      }
-    }
-
-    final creada = await _incidenciasRepository.createIncidencia(incidencia);
-    return switch (creada) {
-      Ok() => const Result.ok(EnvioIncidencia.enviada),
-      Error() => Result.error(creada.error),
-    };
-  }
-
-  /// Si [incidencia] ya esta guardada: de la misma persona, mismo tipo y
-  /// mismas fecha y hora de inicio y fin, sin rechazar.
-  Future<Result<bool>> _yaRegistrada(Incidencia incidencia, int userId) async {
-    final dia = DateTime(incidencia.start.year, incidencia.start.month, incidencia.start.day);
-    final result = await _incidenciasRepository.getIncidencias(
-      query: IncidenciaQuery(
-        categories: [incidencia.category],
-        solicitores: [userId],
-        startRange: DateTimeRange(start: dia, end: dia),
-      ),
-    );
-    return switch (result) {
-      Error() => Result.error(result.error),
-      Ok() => Result.ok(result.value.any((guardada) =>
-        guardada.solicitor?.id == userId &&
-        guardada.category == incidencia.category &&
-        guardada.state != IncidenciaState.rejected &&
-        guardada.start.isAtSameMomentAs(incidencia.start) &&
-        guardada.end.isAtSameMomentAs(incidencia.end))),
-    };
   }
 
   Future<Result<void>> _login(Uint8List template) async {
