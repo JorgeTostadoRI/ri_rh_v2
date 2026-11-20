@@ -285,6 +285,13 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       return;
     }
 
+    if (e is ApiException && e.tiempoAgotado) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        errorSnackBar(context, 'El envío tardó demasiado. Revisa tu conexión e inténtalo de nuevo.'),
+      );
+      return;
+    }
+
     // Permiso, Vacaciones, Hora por hora y Horas extra: el backend explica por
     // que no se puede (dia anterior, se traslapa con el horario, Hora por
     // hora ya ligada, etc.) -- se muestra tal cual.
