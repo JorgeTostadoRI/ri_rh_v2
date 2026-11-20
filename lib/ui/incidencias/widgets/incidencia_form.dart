@@ -129,7 +129,9 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     return true;
   }
 
-  Future<void> _submitForm() async {
+  /// [reintento]: el envio anterior se corto por tiempo (ver
+  /// [_ofrecerReintento]); se revisa antes que no se haya guardado ya.
+  Future<void> _submitForm({bool reintento = false}) async {
     if (_formKey.currentState!.validate()) {
       final isRemoteWeb = _isRemoteWeb;
       if (kIsWeb && !isRemoteWeb) {
@@ -159,6 +161,24 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
         if (!authenticated) return;
       }
 
+      if (reintento) {
+        // Antes de pedir nada mas: si el intento anterior si se guardo, sus
+        // Hora por hora ya quedaron ligadas y no podria volver a elegirlas.
+        final yaSeRegistro = await _viewmodel.yaSeRegistro(widget.category);
+        switch (yaSeRegistro) {
+          case Error():
+            // Sin poder confirmarlo no se reenvia: podria duplicarla.
+            await _viewmodel.cancelSubmit();
+            if (mounted) _handleSubmitError(yaSeRegistro.error);
+            return;
+          case Ok(value: true):
+            await _viewmodel.cancelSubmit();
+            _terminarEnvio('Tu solicitud sí se registró');
+            return;
+          case Ok():
+        }
+      }
+
       if (widget.category == IncidenciaCategory.permiso && _viewmodel.pagaConTiempoPorTiempo) {
         final elegido = await _chooseHorasPorHora();
         if (!elegido) {
@@ -174,16 +194,19 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
           return;
         case Ok():
       }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Incidencia creada'),
-          ),
-        );
-
-        context.go(Routes.incidencias);
-      }
+      _terminarEnvio('Incidencia creada');
     }
+  }
+
+  void _terminarEnvio(String mensaje) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensaje),
+      ),
+    );
+
+    context.go(Routes.incidencias);
   }
 
   /// Permiso por tiempo por tiempo: con el usuario ya identificado, elige
@@ -285,6 +308,11 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       return;
     }
 
+    if (e is ApiException && e.tiempoAgotado) {
+      _ofrecerReintento();
+      return;
+    }
+
     // Permiso, Vacaciones, Hora por hora y Horas extra: el backend explica por
     // que no se puede (dia anterior, se traslapa con el horario, Hora por
     // hora ya ligada, etc.) -- se muestra tal cual.
@@ -299,6 +327,30 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
     ScaffoldMessenger.of(context).showSnackBar(
       errorSnackBar(context, 'Ha ocurrido un error', error: e),
     );
+  }
+
+  /// El envio se corto por tardar demasiado (ej. el video con mala señal).
+  /// Lo capturado sigue en el formulario: "Reintentar" lo vuelve a mandar
+  /// sin tener que llenarlo ni grabar de nuevo.
+  Future<void> _ofrecerReintento() async {
+    final reintentar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('No se pudo enviar'),
+        content: Text('El envío tardó demasiado, posiblemente por la conexión.'),
+        actions: [
+          TextButton(
+            onPressed: () => context.pop(false),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => context.pop(true),
+            child: Text('Reintentar'),
+          ),
+        ],
+      ),
+    );
+    if (reintentar == true && mounted) await _submitForm(reintento: true);
   }
 
   /// Permiso, Vacaciones y Hora por hora no se piden para dias anteriores (el

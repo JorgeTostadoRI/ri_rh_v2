@@ -14,6 +14,7 @@ import 'package:ri_rh_v2/domain/models/incidencias/incidencia.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_date_option.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/incidencia_file.dart';
 import 'package:ri_rh_v2/domain/models/incidencias/hora_por_hora_resumen.dart';
+import 'package:ri_rh_v2/domain/models/query/incidencia/incidencia_query.dart';
 import 'package:ri_rh_v2/domain/models/user/user.dart';
 import 'package:ri_rh_v2/ui/incidencias/view_models/fingerprint_login_controller.dart';
 import 'package:ri_rh_v2/utils/command.dart';
@@ -185,8 +186,8 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
     notifyListeners();
   }
 
-  /// Should only be called once the form has been validated and the user is authenticated
-  Future<Result<void>> submitData(IncidenciaCategory category) async {
+  /// Inicio y fin capturados; null si el fin no es posterior al inicio.
+  ({DateTime start, DateTime end})? _rango() {
     late final DateTime start;
     late final DateTime end;
 
@@ -199,10 +200,49 @@ class NewIncidenciaViewmodel extends ChangeNotifier implements FingerprintLoginC
         end = _constructDate(_startDate!, _endTime!);
     }
 
-    final comparison = end.compareTo(start);
-    if (comparison == -1 || comparison == 0) {
+    if (!end.isAfter(start)) return null;
+    return (start: start, end: end);
+  }
+
+  /// Si la solicitud capturada ya esta guardada (misma persona, tipo, inicio
+  /// y fin, sin rechazar). Al reintentar un envio que se corto por tiempo:
+  /// el corte pudo llegar despues de que el servidor la registro, y
+  /// reenviarla la duplicaria. Se revisa antes de pedir nada mas (ej. las
+  /// Hora por hora de un permiso, que ya quedaron ligadas a la guardada).
+  ///
+  /// Con el usuario ya identificado; no cierra su sesion (ver [cancelSubmit]).
+  Future<Result<bool>> yaSeRegistro(IncidenciaCategory category) async {
+    final rango = _rango();
+    final user = _authRepository.getCurrentUser();
+    // Sin rango valido no pudo guardarse; submitData explica el error.
+    if (rango == null || user == null) return const Result.ok(false);
+
+    final dia = DateTime(rango.start.year, rango.start.month, rango.start.day);
+    final result = await _incidenciasRepository.getIncidencias(
+      query: IncidenciaQuery(
+        categories: [category],
+        solicitores: [user.id],
+        startRange: DateTimeRange(start: dia, end: dia),
+      ),
+    );
+    return switch (result) {
+      Error() => Result.error(result.error),
+      Ok() => Result.ok(result.value.any((guardada) =>
+        guardada.solicitor?.id == user.id &&
+        guardada.category == category &&
+        guardada.state != IncidenciaState.rejected &&
+        guardada.start.isAtSameMomentAs(rango.start) &&
+        guardada.end.isAtSameMomentAs(rango.end))),
+    };
+  }
+
+  /// Should only be called once the form has been validated and the user is authenticated
+  Future<Result<void>> submitData(IncidenciaCategory category) async {
+    final rango = _rango();
+    if (rango == null) {
       return Result.error(InvalidForm('La fecha solicitada es inválida, recuerda usar formato de 24h'));
     }
+    final (:start, :end) = rango;
 
     final user = _authRepository.getCurrentUser();
 

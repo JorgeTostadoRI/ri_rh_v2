@@ -268,6 +268,12 @@ class ApiClient {
     }
   }
 
+  /// Límite para enviar una incidencia. Los remotos mandan un video de hasta
+  /// 60 s que con datos móviles tarda más que el límite normal de la app; en
+  /// el navegador dio corta TODA la solicitud (subida incluida) a
+  /// connectTimeout + receiveTimeout, así que con 15 + 15 s se cancelaba.
+  static const tiempoEnvioIncidencia = Duration(minutes: 2);
+
   Future<Result<IncidenciaApiModel>> postIncidencia(IncidenciaApiModel incidencia) async {
     final dio = _dioFactory();
     try {
@@ -301,6 +307,10 @@ class ApiClient {
       final response = await dio.post(
         '/api/rh/$category/',
         data: formData,
+        options: Options(
+          sendTimeout: tiempoEnvioIncidencia,
+          receiveTimeout: tiempoEnvioIncidencia,
+        ),
       );
       final result = IncidenciaApiModel.fromJson(response.data);
       return Result.ok(result);
@@ -2111,6 +2121,9 @@ class ApiException implements Exception {
   /// Cuerpo JSON de la respuesta de error, para leer campos extra que manda
   /// el backend junto con [errorCode] (ej. `hora_permitida` en `early_entry`).
   final Map<String, dynamic>? data;
+  /// La solicitud se canceló por tardar demasiado (al conectar, al enviar o
+  /// al esperar la respuesta), normalmente por mala conexión.
+  final bool tiempoAgotado;
 
   const ApiException(
     this.message,
@@ -2118,6 +2131,7 @@ class ApiException implements Exception {
     {
       this.errorCode,
       this.data,
+      this.tiempoAgotado = false,
     }
   );
 
@@ -2148,6 +2162,11 @@ class ApiException implements Exception {
       e.response?.statusCode ?? 0,
       errorCode: errorCode,
       data: data,
+      tiempoAgotado: const {
+        DioExceptionType.connectionTimeout,
+        DioExceptionType.sendTimeout,
+        DioExceptionType.receiveTimeout,
+      }.contains(e.type),
     );
   }
 }
