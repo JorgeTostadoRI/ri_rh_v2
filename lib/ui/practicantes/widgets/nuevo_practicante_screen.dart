@@ -109,6 +109,16 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
     for (final (key, _) in _documentFields) key: null,
   };
 
+  /// Ya se intentó dar de alta con documentos faltantes: se marcan en rojo.
+  /// Los 9 son obligatorios (2109); el backend valida lo mismo
+  /// (DOCUMENTOS_ALTA_PRACTICANTE en ri_rh/serializers/practicantes.py).
+  bool _mostrarFaltantes = false;
+
+  List<String> get _documentosFaltantes => [
+    for (final (key, label) in _documentFields)
+      if (_files[key] == null) label,
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -243,6 +253,14 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
       );
       return;
     }
+    final faltantes = _documentosFaltantes;
+    if (faltantes.isNotEmpty) {
+      setState(() => _mostrarFaltantes = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Falta adjuntar: ${faltantes.join(', ')}.')),
+      );
+      return;
+    }
 
     final params = PracticanteCreateParams(
       nombreCompleto: _nombreCompleto.text.trim(),
@@ -327,6 +345,7 @@ class _NuevoPracticanteScreenState extends State<NuevoPracticanteScreen> {
       label: label,
       file: _files[key],
       onPick: () => _pickFile(key),
+      faltante: _mostrarFaltantes && _files[key] == null,
     );
   }
 
