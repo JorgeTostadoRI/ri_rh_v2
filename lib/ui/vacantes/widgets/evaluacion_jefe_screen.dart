@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ri_rh_v2/data/repositories/empleados/empleados_repository.dart';
+import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/core/ui/page_header.dart';
 import 'package:ri_rh_v2/ui/vacantes/viewmodels/evaluacion_jefe_viewmodel.dart';
 import 'package:ri_rh_v2/utils/datetime_extensions.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
+import 'package:ri_rh_v2/utils/result.dart';
 
 /// Actividad 16: pantalla donde el jefe directo contesta la evaluación de
 /// un empleado con contrato "determinado" que está por vencer -- a la que
@@ -42,10 +44,17 @@ class _EvaluacionJefeScreenState extends State<EvaluacionJefeScreen> {
 
   void _onResponder() {
     if (widget.viewmodel.responder.error) {
-      final error = widget.viewmodel.responder.result;
+      final result = widget.viewmodel.responder.result;
       widget.viewmodel.responder.clearResult();
+      // El backend explica en `detail` qué pasó (ej. que el correo a las
+      // abogadas no salió y hay que reintentar) -- se muestra tal cual.
+      final mensaje = switch (result) {
+        Error(error: ApiException(data: {'detail': final String detalle})) => detalle,
+        Error(:final error) => 'No se pudo enviar la respuesta: $error',
+        _ => 'No se pudo enviar la respuesta',
+      };
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo enviar la respuesta: $error')),
+        SnackBar(content: Text(mensaje)),
       );
     }
   }
