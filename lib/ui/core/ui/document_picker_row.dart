@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 
 /// A labeled row for attaching an optional document: shows the label (and
 /// the picked file's name once attached), and a button to pick/replace it.
@@ -9,6 +10,10 @@ import 'package:flutter/material.dart';
 /// [onView] is optional: when provided, shows an extra "Ver" button to
 /// preview/open the current document (ya sea el archivo recién elegido o
 /// uno ya subido antes) sin afectar las pantallas que no lo necesitan.
+///
+/// [faltante]: es obligatorio y no se adjuntó al intentar guardar -- el
+/// nombre se muestra en rojo. Por default no cambia nada (ej. los diálogos
+/// de reclutamiento no lo usan).
 class DocumentPickerRow extends StatelessWidget {
   const DocumentPickerRow({
     super.key,
@@ -17,6 +22,7 @@ class DocumentPickerRow extends StatelessWidget {
     required this.onPick,
     this.enabled = true,
     this.onView,
+    this.faltante = false,
   });
 
   final String label;
@@ -24,6 +30,7 @@ class DocumentPickerRow extends StatelessWidget {
   final VoidCallback onPick;
   final bool enabled;
   final VoidCallback? onView;
+  final bool faltante;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +39,10 @@ class DocumentPickerRow extends StatelessWidget {
         Expanded(
           child: Text(
             file == null ? label : '$label — ${file!.name}',
-            style: TextStyle(fontWeight: file == null ? .normal : .w700),
+            style: TextStyle(
+              fontWeight: file == null ? .normal : .w700,
+              color: faltante ? context.rh.error : null,
+            ),
           ),
         ),
         if (onView != null)

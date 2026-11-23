@@ -57,6 +57,12 @@ final _documentFields = [
   for (final (_, fields) in _documentSections) ...fields,
 ];
 
+/// Únicos documentos que no hacen falta para dar de alta (2109): Alta IMSS
+/// se tramita después. El aviso de retención Infonavit solo si hay monto de
+/// retención (ver _esObligatorio). El backend valida lo mismo
+/// (DOCUMENTOS_ALTA_EMPLEADO en ri_rh/serializers/empleados.py).
+const _documentosOpcionales = {'altaImss'};
+
 class NuevoEmpleadoScreen extends StatefulWidget {
   const NuevoEmpleadoScreen({
     super.key,
@@ -98,6 +104,22 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
   final Map<String, PlatformFile?> _files = {
     for (final (key, _) in _documentFields) key: null,
   };
+
+  /// Ya se intentó dar de alta con documentos faltantes: se marcan en rojo.
+  bool _mostrarFaltantes = false;
+
+  bool _esObligatorio(String key) {
+    if (_documentosOpcionales.contains(key)) return false;
+    if (key == 'avisoRetencionInfonavit') {
+      return (_parseDecimal(_montoRetencionInfonavit.text) ?? 0) > 0;
+    }
+    return true;
+  }
+
+  List<String> get _documentosFaltantes => [
+    for (final (key, label) in _documentFields)
+      if (_esObligatorio(key) && _files[key] == null) label,
+  ];
 
   @override
   void initState() {
@@ -290,6 +312,14 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
       );
       return;
     }
+    final faltantes = _documentosFaltantes;
+    if (faltantes.isNotEmpty) {
+      setState(() => _mostrarFaltantes = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Falta adjuntar: ${faltantes.join(', ')}.')),
+      );
+      return;
+    }
 
     final params = EmpleadoCreateParams(
       nombreCompleto: _nombreCompleto.text.trim(),
@@ -382,6 +412,7 @@ class _NuevoEmpleadoScreenState extends State<NuevoEmpleadoScreen> {
       label: label,
       file: _files[key],
       onPick: () => _pickFile(key),
+      faltante: _mostrarFaltantes && _esObligatorio(key) && _files[key] == null,
     );
   }
 
