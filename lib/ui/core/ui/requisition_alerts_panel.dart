@@ -13,6 +13,10 @@ import 'package:url_launcher/url_launcher.dart';
 /// autocontenido: consulta `/api/messages/`, permite marcar como leído,
 /// eliminar y abrir la requisición, orden de compra o solicitud de almacén
 /// correspondiente en el frontend de Compras.
+///
+/// El aviso se abre en una pestaña nueva (web) o en el navegador externo
+/// (escritorio/móvil). Si el navegador bloquea la pestaña y se recibió
+/// [RequisitionAlertsButton.onOpen], se navega dentro de la app como respaldo.
 class RequisitionAlertsButton extends StatefulWidget {
   const RequisitionAlertsButton({
     super.key,
@@ -21,7 +25,6 @@ class RequisitionAlertsButton extends StatefulWidget {
     required this.comprasUrl,
     this.tooltip = 'Avisos de requisiciones y órdenes',
     this.onOpen,
-    this.preferInApp = false,
   });
 
   final String apiBaseUrl;
@@ -32,7 +35,6 @@ class RequisitionAlertsButton extends StatefulWidget {
 
   final String tooltip;
   final Future<void> Function(String tipo, int id)? onOpen;
-  final bool preferInApp;
 
   @override
   State<RequisitionAlertsButton> createState() =>
@@ -106,7 +108,6 @@ class _RequisitionAlertsButtonState extends State<RequisitionAlertsButton> {
       readToken: widget.readToken,
       comprasUrl: widget.comprasUrl,
       onOpen: widget.onOpen,
-      preferInApp: widget.preferInApp,
     );
 
     if (mounted) await _refreshUnread();
@@ -133,7 +134,6 @@ Future<void> showRequisitionAlertsPanel(
   required Future<String?> Function() readToken,
   required String comprasUrl,
   Future<void> Function(String tipo, int id)? onOpen,
-  bool preferInApp = false,
 }) {
   final width = math.min(MediaQuery.sizeOf(context).width * 0.92, 440.0);
   final height = math.min(MediaQuery.sizeOf(context).height * 0.7, 460.0);
@@ -150,7 +150,6 @@ Future<void> showRequisitionAlertsPanel(
           readToken: readToken,
           comprasUrl: comprasUrl,
           onOpen: onOpen,
-          preferInApp: preferInApp,
         ),
       ),
     ),
@@ -164,35 +163,47 @@ class RequisitionAlertsPanel extends StatefulWidget {
     required this.readToken,
     required this.comprasUrl,
     this.onOpen,
-    this.preferInApp = false,
   });
 
   final String apiBaseUrl;
   final Future<String?> Function() readToken;
   final String comprasUrl;
 
-  /// Navegación interna opcional. Se usa como respaldo si no se puede abrir
-  /// una pestaña nueva (por ejemplo en desarrollo local).
+  /// Navegación interna opcional. Se usa como respaldo cuando el navegador
+  /// bloquea la pestaña nueva o cuando no hay URL del frontend de Compras
+  /// (por ejemplo en escritorio/móvil o en desarrollo local).
   final Future<void> Function(String tipo, int id)? onOpen;
-
-  /// Si es true, navega dentro de la app antes de intentar una pestaña nueva.
-  final bool preferInApp;
 
   @override
   State<RequisitionAlertsPanel> createState() => _RequisitionAlertsPanelState();
 }
 
-class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
+class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel>
+    with SingleTickerProviderStateMixin {
+  static const int _limitePorTab = 200;
+
   bool _isLoading = true;
   bool _hasError = false;
-  List<_Alerta> _alertas = [];
+  List<_Alerta> _noLeidas = [];
+  List<_Alerta> _leidas = [];
+  int _unread = 0;
+  bool _hayMasNoLeidas = false;
+  bool _hayMasLeidas = false;
+  late final TabController _tabController;
 
   String get _base => widget.apiBaseUrl.replaceFirst(RegExp(r'/+$'), '');
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<String?> _token() => widget.readToken();
@@ -217,17 +228,35 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
           receiveTimeout: const Duration(seconds: 10),
         ),
       );
-      final response = await dio.get(
-        '$_base/api/messages/?tipo=mensaje',
-        options: Options(headers: {'Authorization': 'Token $token'}),
-      );
-      final items = response.data is List ? response.data as List : const [];
+      final headers = {'Authorization': 'Token $token'};
+      final respuestas = await Future.wait([
+        dio.get(
+          '$_base/api/messages/?tipo=mensaje&leido=false&limit=$_limitePorTab',
+          options: Options(headers: headers),
+        ),
+        dio.get(
+          '$_base/api/messages/?tipo=mensaje&leido=true&limit=$_limitePorTab',
+          options: Options(headers: headers),
+        ),
+        dio.get(
+          '$_base/api/messages/no-leidos/',
+          options: Options(headers: headers),
+        ),
+      ]);
+      final noLeidasRaw =
+          respuestas[0].data is List ? respuestas[0].data as List : const [];
+      final leidasRaw =
+          respuestas[1].data is List ? respuestas[1].data as List : const [];
+      final contador = respuestas[2].data is Map
+          ? Map<String, dynamic>.from(respuestas[2].data as Map)
+          : <String, dynamic>{};
       if (!mounted) return;
       setState(() {
-        _alertas = items
-            .whereType<Map>()
-            .map((item) => _Alerta.fromJson(Map<String, dynamic>.from(item)))
-            .toList();
+        _noLeidas = _parseAlertas(noLeidasRaw);
+        _leidas = _parseAlertas(leidasRaw);
+        _hayMasNoLeidas = noLeidasRaw.length >= _limitePorTab;
+        _hayMasLeidas = leidasRaw.length >= _limitePorTab;
+        _unread = (contador['count'] as num?)?.toInt() ?? _noLeidas.length;
         _isLoading = false;
       });
     } catch (_) {
@@ -239,6 +268,27 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
     } finally {
       dio?.close();
     }
+  }
+
+  List<_Alerta> _parseAlertas(List items) {
+    return items
+        .whereType<Map>()
+        .map((item) => _Alerta.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
+  }
+
+  void _moverALeidas(_Alerta alerta) {
+    if (!mounted) return;
+    final estabaSinLeer = _noLeidas.any((item) => item.id == alerta.id);
+    setState(() {
+      _noLeidas = _noLeidas.where((item) => item.id != alerta.id).toList();
+      alerta.leido = true;
+      if (!_leidas.any((item) => item.id == alerta.id)) {
+        _leidas.insert(0, alerta);
+        if (_leidas.length > _limitePorTab) _leidas.removeLast();
+      }
+      if (estabaSinLeer && _unread > 0) _unread -= 1;
+    });
   }
 
   Future<bool> _marcarLeido(_Alerta alerta) async {
@@ -284,7 +334,10 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
       );
       if (!mounted) return;
       setState(() {
-        _alertas = _alertas.where((item) => item.id != alerta.id).toList();
+        final estabaSinLeer = _noLeidas.any((item) => item.id == alerta.id);
+        _noLeidas = _noLeidas.where((item) => item.id != alerta.id).toList();
+        _leidas = _leidas.where((item) => item.id != alerta.id).toList();
+        if (estabaSinLeer && _unread > 0) _unread -= 1;
       });
     } catch (_) {
       // Se conserva para reintentar.
@@ -298,7 +351,10 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
       context: context,
       builder: (builder) => AlertDialog(
         title: const Text('Eliminar avisos'),
-        content: const Text('¿Estás seguro de eliminar todos los avisos?'),
+        content: const Text(
+          '¿Eliminar todos los avisos de requisiciones y órdenes? '
+          'Esta acción no se puede deshacer.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(builder, false),
@@ -324,16 +380,71 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
           receiveTimeout: const Duration(seconds: 10),
         ),
       );
-      for (final alerta in List.of(_alertas)) {
-        await dio.delete(
-          '$_base/api/messages/${alerta.id}/',
-          options: Options(headers: {'Authorization': 'Token $token'}),
-        );
-      }
+      await dio.delete(
+        '$_base/api/messages/eliminar-todos/',
+        options: Options(headers: {'Authorization': 'Token $token'}),
+      );
       if (!mounted) return;
-      setState(() => _alertas = []);
+      setState(() {
+        _noLeidas = [];
+        _leidas = [];
+        _unread = 0;
+        _hayMasNoLeidas = false;
+        _hayMasLeidas = false;
+      });
     } catch (_) {
       if (mounted) await _load();
+    } finally {
+      dio?.close();
+    }
+  }
+
+  Future<void> _marcarTodosLeidos() async {
+    if (_unread == 0) return;
+
+    final token = await _token();
+    if (token == null || token.isEmpty) return;
+
+    Dio? dio;
+    try {
+      dio = Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      );
+      await dio.post(
+        '$_base/api/messages/marcar-todos-leidos/',
+        options: Options(headers: {'Authorization': 'Token $token'}),
+      );
+      if (!mounted) return;
+      setState(() {
+        final ahoraLeidas = _noLeidas.map((alerta) {
+          alerta.leido = true;
+          return alerta;
+        }).toList();
+        _leidas = [...ahoraLeidas, ..._leidas];
+        if (_leidas.length > _limitePorTab) {
+          _leidas = _leidas.take(_limitePorTab).toList();
+        }
+        _noLeidas = [];
+        _unread = 0;
+        _hayMasNoLeidas = false;
+      });
+      _tabController.animateTo(1);
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(content: Text('Avisos marcados como leídos.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(
+            content: Text('No se pudieron marcar los avisos como leídos.'),
+          ),
+        );
+      }
     } finally {
       dio?.close();
     }
@@ -370,52 +481,76 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
     }
   }
 
+  /// Marca el aviso como leído en la lista y sincroniza con el backend sin
+  /// bloquear al usuario (se usa cuando ya se abrió la pestaña nueva).
+  void _marcarLeidaLocal(_Alerta alerta) {
+    _moverALeidas(alerta);
+    unawaited(_marcarLeido(alerta));
+  }
+
+  /// Abre el destino del aviso en una pestaña nueva (web) o en el navegador
+  /// externo. Debe invocarse desde el gesto del usuario: si se espera una
+  /// petición antes, el navegador bloquea la pestaña emergente.
+  Future<bool> _abrirEnPestana(_Alerta alerta) async {
+    final url = _urlAbrir(alerta);
+    if (url.isEmpty) return false;
+
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+
+    try {
+      return kIsWeb
+          ? await launchUrl(uri, webOnlyWindowName: '_blank')
+          : await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      // Sin navegador disponible: se intenta la navegación interna.
+      return false;
+    }
+  }
+
+  void _avisarBloqueo() {
+    if (!mounted) return;
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      const SnackBar(
+        content: Text(
+          'No se pudo abrir la pestaña. Permite las ventanas emergentes '
+          'para este sitio.',
+        ),
+      ),
+    );
+  }
+
   Future<void> _abrir(_Alerta alerta) async {
+    // Web: la pestaña se abre dentro del gesto del usuario, antes de cualquier
+    // espera, para que el navegador no la bloquee.
+    if (kIsWeb && await _abrirEnPestana(alerta)) {
+      _marcarLeidaLocal(alerta);
+      return;
+    }
+
     await _marcarLeido(alerta);
     if (!mounted) return;
-    setState(() {
-      final index = _alertas.indexWhere((item) => item.id == alerta.id);
-      if (index != -1) _alertas[index].leido = true;
-    });
+    _moverALeidas(alerta);
 
     final referenciaId = alerta.referenciaId;
     if (referenciaId == null) return;
 
-    if (widget.preferInApp && widget.onOpen != null) {
+    if (widget.onOpen != null) {
       await _navegarInterno(alerta.referenciaTipo, referenciaId);
       return;
     }
 
-    final url = _urlAbrir(alerta);
-    if (url.isNotEmpty) {
-      final uri = Uri.tryParse(url);
-      if (uri != null) {
-        try {
-          final opened = kIsWeb
-              ? await launchUrl(uri, webOnlyWindowName: '_blank')
-              : await launchUrl(
-                  uri,
-                  mode: LaunchMode.externalApplication,
-                );
-          if (opened) return;
-        } catch (_) {
-          // Sin navegador disponible: se intenta la navegación interna.
-        }
-      }
-    }
-
-    if (widget.onOpen != null) {
-      await _navegarInterno(alerta.referenciaTipo, referenciaId);
+    // En web un segundo intento después de la espera ya no tiene el gesto del
+    // usuario, así que el navegador lo bloquearía de nuevo.
+    if (kIsWeb || !await _abrirEnPestana(alerta)) {
+      _avisarBloqueo();
     }
   }
 
   Future<void> _openMessage(_Alerta alerta) async {
     final leido = await _marcarLeido(alerta);
     if (leido && mounted) {
-      setState(() {
-        final index = _alertas.indexWhere((item) => item.id == alerta.id);
-        if (index != -1) _alertas[index].leido = true;
-      });
+      _moverALeidas(alerta);
     }
     if (!mounted) return;
 
@@ -461,19 +596,6 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
               icon: const Icon(Icons.open_in_new, size: 16),
               label: Text(_etiquetaAbrir(alerta)),
             ),
-          if (widget.onOpen != null &&
-              !widget.preferInApp &&
-              alerta.referenciaId != null)
-            TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                _navegarInterno(
-                  alerta.referenciaTipo,
-                  alerta.referenciaId!,
-                );
-              },
-              child: const Text('Abrir aquí'),
-            ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cerrar'),
@@ -494,10 +616,8 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final unread = _alertas.where((item) => !item.leido).length;
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
@@ -514,12 +634,13 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
                       'Avisos de requisiciones y órdenes',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    if (unread > 0 && !_hasError)
+                    if (_unread > 0 && !_hasError)
                       Text(
-                        '$unread sin leer',
+                        '$_unread sin leer',
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: scheme.primary,
                           fontWeight: FontWeight.w600,
@@ -527,6 +648,13 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
                       ),
                   ],
                 ),
+              ),
+              IconButton(
+                tooltip: 'Marcar todos como leídos',
+                visualDensity: VisualDensity.compact,
+                onPressed:
+                    _isLoading || _unread == 0 ? null : _marcarTodosLeidos,
+                icon: const Icon(Icons.done_all, size: 18),
               ),
               IconButton(
                 tooltip: 'Actualizar avisos',
@@ -537,20 +665,53 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
               IconButton(
                 tooltip: 'Eliminar todos los avisos',
                 visualDensity: VisualDensity.compact,
-                onPressed: _alertas.isEmpty ? null : _confirmarEliminarTodos,
+                onPressed: _noLeidas.isEmpty && _leidas.isEmpty
+                    ? null
+                    : _confirmarEliminarTodos,
                 icon: const Icon(Icons.delete_outline, size: 18),
               ),
             ],
           ),
         ),
+        TabBar(
+          controller: _tabController,
+          labelStyle: theme.textTheme.labelMedium,
+          tabs: [
+            Tab(text: _unread > 0 ? 'Sin leer ($_unread)' : 'Sin leer'),
+            const Tab(text: 'Leídas'),
+          ],
+        ),
         const Divider(height: 1),
-        Flexible(child: _buildBody(theme)),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildLista(
+                theme,
+                _noLeidas,
+                vacio: 'No tienes avisos sin leer.',
+                hayMas: _hayMasNoLeidas,
+              ),
+              _buildLista(
+                theme,
+                _leidas,
+                vacio: 'Todavía no hay avisos leídos.',
+                hayMas: _hayMasLeidas,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
-    if (_isLoading && _alertas.isEmpty) {
+  Widget _buildLista(
+    ThemeData theme,
+    List<_Alerta> alertas, {
+    required String vacio,
+    required bool hayMas,
+  }) {
+    if (_isLoading && _noLeidas.isEmpty && _leidas.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
         child: Center(
@@ -583,102 +744,124 @@ class _RequisitionAlertsPanelState extends State<RequisitionAlertsPanel> {
       );
     }
 
-    if (_alertas.isEmpty) {
+    if (alertas.isEmpty) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         child: Text(
-          'No tienes avisos por ahora.',
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          vacio,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       );
     }
 
     final scheme = theme.colorScheme;
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      shrinkWrap: true,
-      itemCount: _alertas.length,
-      separatorBuilder: (context, index) => Divider(
-        height: 1,
-        indent: 16,
-        endIndent: 16,
-        color: scheme.outlineVariant.withValues(alpha: 0.5),
-      ),
-      itemBuilder: (context, index) {
-        final alerta = _alertas[index];
-        final title = alerta.titulo.trim().isNotEmpty ? alerta.titulo : 'Aviso';
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            itemCount: alertas.length,
+            separatorBuilder: (context, index) => Divider(
+              height: 1,
+              indent: 16,
+              endIndent: 16,
+              color: scheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+            itemBuilder: (context, index) {
+              final alerta = alertas[index];
+              final title =
+                  alerta.titulo.trim().isNotEmpty ? alerta.titulo : 'Aviso';
 
-        return InkWell(
-          onTap: () => _openMessage(alerta),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.only(top: 5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color:
-                        alerta.leido ? scheme.outlineVariant : scheme.primary,
+              return InkWell(
+                onTap: () => _openMessage(alerta),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight:
-                              alerta.leido ? FontWeight.w500 : FontWeight.w700,
+                      Container(
+                        width: 8,
+                        height: 8,
+                        margin: const EdgeInsets.only(top: 5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: alerta.leido
+                              ? scheme.outlineVariant
+                              : scheme.primary,
                         ),
                       ),
-                      if (alerta.mensaje.trim().isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          alerta.mensaje,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                          ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontWeight: alerta.leido
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
+                              ),
+                            ),
+                            if (alerta.mensaje.trim().isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                alerta.mensaje,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                            if (alerta.de != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                'De: ${alerta.de}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
-                      if (alerta.de != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          'De: ${alerta.de}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                          ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat('dd/MM HH:mm').format(alerta.createdAt),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          fontSize: 10,
                         ),
-                      ],
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  DateFormat('dd/MM HH:mm').format(alerta.createdAt),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
+              );
+            },
+          ),
+        ),
+        if (hayMas)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: Text(
+              'Mostrando los $_limitePorTab más recientes.',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
             ),
           ),
-        );
-      },
+      ],
     );
   }
 }
@@ -705,12 +888,18 @@ class _Alerta {
 
     if (referenciaTipo.isEmpty || referenciaId == null) {
       final text = '${json['title'] ?? ''} ${json['message'] ?? ''}';
-      final rc = RegExp(r'RC[_\s#-]*(\d+)', caseSensitive: false)
-          .firstMatch(text);
-      final oc = RegExp(r'OC[_\s#-]*(\d+)', caseSensitive: false)
-          .firstMatch(text);
-      final sol = RegExp(r'SOL[_\s#-]*(\d+)', caseSensitive: false)
-          .firstMatch(text);
+      final rc = RegExp(
+        r'RC[_\s#-]*(\d+)',
+        caseSensitive: false,
+      ).firstMatch(text);
+      final oc = RegExp(
+        r'OC[_\s#-]*(\d+)',
+        caseSensitive: false,
+      ).firstMatch(text);
+      final sol = RegExp(
+        r'SOL[_\s#-]*(\d+)',
+        caseSensitive: false,
+      ).firstMatch(text);
       if (sol != null) {
         referenciaTipo = 'solicitud_almacen';
         referenciaId = int.tryParse(sol.group(1)!);
