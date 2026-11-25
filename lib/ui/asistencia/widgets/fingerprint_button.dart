@@ -5,6 +5,7 @@ import 'package:ri_rh_v2/config/assets.dart';
 import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/routing/routes.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/asistencia_viewmodel.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/mensaje_registro.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/utils/command.dart';
 import 'package:ri_rh_v2/utils/result.dart';
@@ -182,12 +183,7 @@ class _LabelBuilder extends StatelessWidget {
     }
     else if (register.completed) {
       return Text(
-        switch ((register.result! as Ok<Asistencia>).value.type!) {
-          AsistenciaType.entry => '¡Entrada registrada exitosamente!',
-          AsistenciaType.exitToLunch => '¡Salida registrada exitosamente!',
-          AsistenciaType.entryFromLunch => '¡Entrada registrada exitosamente!',
-          AsistenciaType.exit => '¡Salida registrada exitosamente!',
-        },
+        mensajeRegistro((register.result! as Ok<Asistencia>).value.type),
         style: baseStyle?.copyWith(color: context.rh.exito),
         textAlign: .center,
       );

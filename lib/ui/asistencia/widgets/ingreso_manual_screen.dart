@@ -8,9 +8,11 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:ri_rh_v2/config/app_error.dart';
 import 'package:ri_rh_v2/data/services/api/api_client.dart';
 import 'package:ri_rh_v2/data/services/api/api_error_codes.dart';
+import 'package:ri_rh_v2/domain/models/asistencia/asistencia.dart';
 import 'package:ri_rh_v2/ui/asistencia/view_models/ingreso_manual_viewmodel.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/entrada_temprana_dialog.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/falta_no_reportada_dialog.dart';
+import 'package:ri_rh_v2/ui/asistencia/widgets/mensaje_registro.dart';
 import 'package:ri_rh_v2/ui/asistencia/widgets/registros_completos_dialog.dart';
 import 'package:ri_rh_v2/ui/core/themes/app_theme_provider.dart';
 import 'package:ri_rh_v2/ui/core/ui/command_button.dart';
@@ -283,10 +285,10 @@ class _IngresoManualScreenState extends State<IngresoManualScreen> {
 
   Future<void> _onRegister() async {
     if (_viewmodel.register.completed) {
-      final asistencia = (_viewmodel.register.result as result.Ok).value;
+      final asistencia = (_viewmodel.register.result as result.Ok<Asistencia>).value;
       _viewmodel.register.clearResult();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Se registró tu asistencia')),
+        SnackBar(content: Text(mensajeRegistro(asistencia.type))),
       );
 
       final faltaNoReportada = asistencia.faltaNoReportada;
