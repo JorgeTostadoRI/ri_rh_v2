@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,10 @@ class DocumentHoverPreview extends StatefulWidget {
   static const _gap = 12.0;
   static const _margin = 16.0;
   static const _maxHeight = 900.0;
-  static const _minWidth = 320.0;
+
+  /// Si la hoja se vería más angosta que esto, mejor no se muestra (para eso
+  /// está el botón de "Ver documento").
+  static const _minPageWidth = 160.0;
 
   /// Lo que ocupa la tarjeta además de la página: relleno, nombre del
   /// documento y el "1 de N páginas".
@@ -44,16 +48,60 @@ class DocumentHoverPreview extends StatefulWidget {
   /// Proporción ancho/alto de una hoja carta.
   static const _letterRatio = 8.5 / 11;
 
-  /// Tamaño de la tarjeta: casi todo el alto de la ventana (hasta
-  /// [_maxHeight]) y el ancho de una hoja carta de ese alto, para que el texto
-  /// del documento se alcance a leer. Si a los lados no cabe tan ancha, se
-  /// angosta hasta lo que haya (sin bajar de [_minWidth]).
+  /// Dónde va la tarjeta, sin encimarse nunca sobre el documento [anchor]
+  /// (su nombre y sus botones de ver y descargar).
+  ///
+  /// Prueba a la izquierda, a la derecha, abajo y arriba del documento, y se
+  /// queda con el lugar donde la hoja se ve más grande (a la izquierda si
+  /// empatan). En cada lugar usa todo el alto que haya (hasta [_maxHeight]) en
+  /// proporción de hoja carta, para que el texto se alcance a leer.
+  ///
+  /// Regresa `null` si en ningún lado cabe una vista útil.
   @visibleForTesting
-  static Size previewSize(Size screen, {required double availableWidth}) {
-    final height = (screen.height - 2 * _margin).clamp(0.0, _maxHeight);
+  static Rect? previewRect(Size screen, Rect anchor) {
+    const m = _margin;
+    const g = _gap;
+
+    double clampY(double y, double h) => y.clamp(m, math.max(m, screen.height - m - h));
+    double clampX(double x, double w) => x.clamp(m, math.max(m, screen.width - m - w));
+
+    final fullWidth = screen.width - 2 * m;
+    final fullHeight = screen.height - 2 * m;
+
+    final candidates = <Rect?>[
+      // Izquierda
+      _fit(anchor.left - g - m, fullHeight, (s) => Rect.fromLTWH(
+        anchor.left - g - s.width, clampY(anchor.center.dy - s.height / 2, s.height), s.width, s.height)),
+      // Derecha
+      _fit(screen.width - m - anchor.right - g, fullHeight, (s) => Rect.fromLTWH(
+        anchor.right + g, clampY(anchor.center.dy - s.height / 2, s.height), s.width, s.height)),
+      // Abajo
+      _fit(fullWidth, screen.height - m - anchor.bottom - g, (s) => Rect.fromLTWH(
+        clampX(anchor.center.dx - s.width / 2, s.width), anchor.bottom + g, s.width, s.height)),
+      // Arriba
+      _fit(fullWidth, anchor.top - g - m, (s) => Rect.fromLTWH(
+        clampX(anchor.center.dx - s.width / 2, s.width), anchor.top - g - s.height, s.width, s.height)),
+    ];
+
+    Rect? best;
+    for (final rect in candidates) {
+      if (rect == null) continue;
+      if (best == null || rect.width > best.width) best = rect;
+    }
+    if (best == null || best.width - _chromeWidth < _minPageWidth) return null;
+    return best;
+  }
+
+  /// La tarjeta más grande con proporción de hoja carta que cabe en
+  /// [maxWidth] × [maxHeight], ya acomodada con [place].
+  static Rect? _fit(double maxWidth, double maxHeight, Rect Function(Size) place) {
+    var height = math.min(maxHeight, _maxHeight);
+    if (maxWidth <= _chromeWidth || height <= _chromeHeight) return null;
     final idealWidth = (height - _chromeHeight) * _letterRatio + _chromeWidth;
-    final maxWidth = availableWidth < _minWidth ? screen.width - 2 * _margin : availableWidth;
-    return Size(idealWidth.clamp(0.0, maxWidth.clamp(0.0, double.infinity)), height);
+    final width = math.min(idealWidth, maxWidth);
+    // Si quedó más angosta, tampoco tiene caso que sea tan alta.
+    height = math.min(height, (width - _chromeWidth) / _letterRatio + _chromeHeight);
+    return place(Size(width, height));
   }
 
   @override
@@ -77,7 +125,7 @@ class _DocumentHoverPreviewState extends State<DocumentHoverPreview> {
     });
   }
 
-  void _onExit(PointerExitEvent _) {
+  void _hide() {
     _timer?.cancel();
     if (_portal.isShowing) _portal.hide();
   }
@@ -89,10 +137,14 @@ class _DocumentHoverPreviewState extends State<DocumentHoverPreview> {
     return OverlayPortal(
       controller: _portal,
       overlayChildBuilder: _buildOverlay,
-      child: MouseRegion(
-        onEnter: _onEnter,
-        onExit: _onExit,
-        child: widget.child,
+      // Al hacer clic (abrir el visor o descargar) se quita la vista previa.
+      child: Listener(
+        onPointerDown: (_) => _hide(),
+        child: MouseRegion(
+          onEnter: _onEnter,
+          onExit: (_) => _hide(),
+          child: widget.child,
+        ),
       ),
     );
   }
@@ -102,36 +154,12 @@ class _DocumentHoverPreviewState extends State<DocumentHoverPreview> {
     if (box == null || !box.attached) return const SizedBox.shrink();
 
     final screen = MediaQuery.sizeOf(overlayContext);
-    final rect = box.localToGlobal(Offset.zero) & box.size;
-    const gap = DocumentHoverPreview._gap;
-    const margin = DocumentHoverPreview._margin;
+    final anchor = box.localToGlobal(Offset.zero) & box.size;
+    final rect = DocumentHoverPreview.previewRect(screen, anchor);
+    if (rect == null) return const SizedBox.shrink();
 
-    final spaceLeft = rect.left - gap - margin;
-    final spaceRight = screen.width - margin - rect.right - gap;
-    final size = DocumentHoverPreview.previewSize(
-      screen,
-      availableWidth: spaceLeft > spaceRight ? spaceLeft : spaceRight,
-    );
-    final w = size.width;
-    final h = size.height;
-
-    // A la izquierda del documento; si no cabe, a la derecha; si tampoco,
-    // pegada a la orilla de la pantalla.
-    double left = rect.left - gap - w;
-    if (left < margin) {
-      left = rect.right + gap;
-      if (left + w > screen.width - margin) {
-        left = (screen.width - w - margin).clamp(margin, double.infinity);
-      }
-    }
-    final maxTop = (screen.height - h - margin).clamp(margin, double.infinity);
-    final top = (rect.center.dy - h / 2).clamp(margin, maxTop);
-
-    return Positioned(
-      left: left,
-      top: top,
-      width: w,
-      height: h,
+    return Positioned.fromRect(
+      rect: rect,
       // Solo se ve; no estorba al mouse.
       child: IgnorePointer(
         child: DocumentPreviewCard(
@@ -213,7 +241,7 @@ class _DocumentPreviewCardState extends State<DocumentPreviewCard> {
                     );
                   }
                   return switch (result) {
-                    Error<FilePreview>() => const _PreviewMessage(
+                    Error<FilePreview>() => const DocumentPreviewMessage(
                         icon: LucideIcons.fileX,
                         text: 'No se pudo cargar la vista previa',
                       ),
@@ -238,7 +266,7 @@ class _PreviewContent extends StatelessWidget {
   final FilePreview preview;
   final String sourceName;
 
-  static const _error = _PreviewMessage(
+  static const _error = DocumentPreviewMessage(
     icon: LucideIcons.fileX,
     text: 'No se pudo mostrar el archivo',
   );
@@ -288,7 +316,7 @@ class _PreviewContent extends StatelessWidget {
           },
         );
       case FilePreviewType.unsupported:
-        return const _PreviewMessage(
+        return const DocumentPreviewMessage(
           icon: LucideIcons.fileQuestionMark,
           text: 'No hay vista previa para este tipo de archivo',
         );
@@ -296,8 +324,8 @@ class _PreviewContent extends StatelessWidget {
   }
 }
 
-class _PreviewMessage extends StatelessWidget {
-  const _PreviewMessage({required this.icon, required this.text});
+class DocumentPreviewMessage extends StatelessWidget {
+  const DocumentPreviewMessage({super.key, required this.icon, required this.text});
 
   final IconData icon;
   final String text;
