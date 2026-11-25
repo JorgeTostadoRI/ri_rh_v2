@@ -9,6 +9,7 @@ import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/file_preview_viewmodel.dart';
 import 'package:ri_rh_v2/ui/expediente/widgets/document_preview.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/document_viewer_dialog.dart';
 
 class ExpedienteFiles extends StatefulWidget {
   const ExpedienteFiles({
@@ -163,6 +164,20 @@ class _FileDisplay extends StatelessWidget {
     final downloadViewmodel = context.read<DownloadViewmodel>();
     final uploaded = url != null;
 
+    void download() {
+      final filename = url!.split('/').last;
+      final params = DownloadFileParams(filename: filename, url: url!);
+      downloadViewmodel.downloadFile.execute(params);
+    }
+
+    void openViewer() => showDocumentViewer(
+      context,
+      name: name,
+      url: url!,
+      viewmodel: preview,
+      onDownload: download,
+    );
+
     final tile = Container(
       decoration: uploaded ? uploadedDecoration(context.rh) : notUploadedDecoration(context.rh),
       padding: const EdgeInsets.all(12),
@@ -177,17 +192,28 @@ class _FileDisplay extends StatelessWidget {
             ),
           ),
           if (uploaded)
-            IconButton(
-              onPressed: () {
-                final filename = url!.split('/').last;
-                final params = DownloadFileParams(filename: filename, url: url!);
-                downloadViewmodel.downloadFile.execute(params);
-              },
-              icon: Icon(
-                LucideIcons.download,
-                color: context.rh.exitoFuerte,
-                size: 14,
-              ),
+            Row(
+              mainAxisSize: .min,
+              children: [
+                IconButton(
+                  tooltip: 'Ver documento',
+                  onPressed: openViewer,
+                  icon: Icon(
+                    LucideIcons.eye,
+                    color: context.rh.exitoFuerte,
+                    size: 14,
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Descargar',
+                  onPressed: download,
+                  icon: Icon(
+                    LucideIcons.download,
+                    color: context.rh.exitoFuerte,
+                    size: 14,
+                  ),
+                ),
+              ],
             ),
         ],
       ),
@@ -198,7 +224,16 @@ class _FileDisplay extends StatelessWidget {
       name: name,
       url: url!,
       viewmodel: preview,
-      child: tile,
+      // Además del botón del ojo, clic en el documento (o toque en el
+      // celular) también lo abre en grande.
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: openViewer,
+          child: tile,
+        ),
+      ),
     );
   }
 }
