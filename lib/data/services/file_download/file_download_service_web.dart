@@ -48,6 +48,27 @@ class FileDownloadServiceImpl extends FileDownloadService {
     }
   }
 
+  @override
+  Future<Result<Uint8List>> fetchFile({required String url}) async {
+    try {
+      final response = await _dioFactory().get<List<int>>(
+        _sanitizeUrl(url),
+        options: Options(responseType: ResponseType.bytes),
+      );
+      final data = response.data;
+      if (data == null) {
+        return Result.error(Exception('El archivo llegó vacío'));
+      }
+      return Result.ok(Uint8List.fromList(data));
+    } on DioException catch (e) {
+      return Result.error(e);
+    } on Exception catch (e) {
+      return Result.error(e);
+    } catch (e) {
+      return Result.error(Exception('$e'));
+    }
+  }
+
   String _sanitizeUrl(String originalUrl) {
     if (kDebugMode) {
       return originalUrl;

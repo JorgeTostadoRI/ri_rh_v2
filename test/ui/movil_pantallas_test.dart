@@ -632,6 +632,8 @@ Future<void> _abrir(
       Provider<ReportesRepository>.value(value: _Reportes()),
       Provider<DiasFestivosRepository>.value(value: _Festivos()),
       Provider<SignatureRepository>.value(value: _NoUsadoFirmas()),
+      // Como en la app: el expediente lo usa para las vistas previas.
+      Provider<FileDownloadService>.value(value: _NoUsadoDescargas()),
       ChangeNotifierProvider(create: (_) => DownloadViewmodel(log: _Log(), fileDownloadService: _NoUsadoDescargas())),
       ChangeNotifierProvider(create: (_) => AuthViewmodel(authRepository: auth)),
       ChangeNotifierProvider.value(

@@ -7,6 +7,8 @@ import 'package:ri_rh_v2/domain/models/empleados/empleado.dart';
 import 'package:ri_rh_v2/domain/models/practicante/practicante.dart';
 import 'package:ri_rh_v2/ui/core/ui/icon_card.dart';
 import 'package:ri_rh_v2/ui/core/viewmodels/download_viewmodel.dart';
+import 'package:ri_rh_v2/ui/core/viewmodels/file_preview_viewmodel.dart';
+import 'package:ri_rh_v2/ui/expediente/widgets/document_preview.dart';
 
 class ExpedienteFiles extends StatefulWidget {
   const ExpedienteFiles({
@@ -26,11 +28,18 @@ class ExpedienteFiles extends StatefulWidget {
 
 class _ExpedienteFilesState extends State<ExpedienteFiles> {
   late final DownloadViewmodel _downloadViewmodel;
+  // Vive lo mismo que el expediente: cada archivo se baja una vez para la
+  // vista previa y se reutiliza al volver a pasar el mouse.
+  late final FilePreviewViewmodel _previewViewmodel;
 
   @override
   void initState() {
     super.initState();
     _downloadViewmodel = context.read<DownloadViewmodel>();
+    _previewViewmodel = FilePreviewViewmodel(
+      log: context.read(),
+      fileDownloadService: context.read(),
+    );
     _downloadViewmodel.downloadFile.addListener(_onDownload);
   }
 
@@ -53,31 +62,31 @@ class _ExpedienteFilesState extends State<ExpedienteFiles> {
       icon: LucideIcons.fileText,
       title: 'Documentación',
       children: [
-        _FileDisplay(name: 'INE/Identificación', url: widget.files.ineUrl),
-        _FileDisplay(name: 'Acta de nacimiento', url: widget.files.actaNacimientoUrl),
-        _FileDisplay(name: 'CURP', url: widget.files.curpUrl),
-        _FileDisplay(name: 'NSS', url: widget.files.nssUrl),
-        _FileDisplay(name: 'Curriculum Vitae', url: widget.files.cvUrl),
-        _FileDisplay(name: 'Comprobante de domicilio', url: widget.files.domicilioUrl),
-        _FileDisplay(name: 'Cuenta Bancaria', url: widget.files.estadoCuentaUrl),
+        _FileDisplay(name: 'INE/Identificación', url: widget.files.ineUrl, preview: _previewViewmodel),
+        _FileDisplay(name: 'Acta de nacimiento', url: widget.files.actaNacimientoUrl, preview: _previewViewmodel),
+        _FileDisplay(name: 'CURP', url: widget.files.curpUrl, preview: _previewViewmodel),
+        _FileDisplay(name: 'NSS', url: widget.files.nssUrl, preview: _previewViewmodel),
+        _FileDisplay(name: 'Curriculum Vitae', url: widget.files.cvUrl, preview: _previewViewmodel),
+        _FileDisplay(name: 'Comprobante de domicilio', url: widget.files.domicilioUrl, preview: _previewViewmodel),
+        _FileDisplay(name: 'Cuenta Bancaria', url: widget.files.estadoCuentaUrl, preview: _previewViewmodel),
         if (widget.altaEmpleo != null)
           ...[
-            _FileDisplay(name: 'RFC', url: widget.altaEmpleo!.constanciaSituacionFiscalUrl),
-            _FileDisplay(name: 'Alta IMSS', url: widget.altaEmpleo!.altaImssUrl),
-            _FileDisplay(name: 'Aviso de Retención Infonavit', url: widget.altaEmpleo!.avisoInfonavitUrl),
-            _FileDisplay(name: 'Constancia de estudio', url: widget.altaEmpleo!.constanciaEstudioUrl),
-            _FileDisplay(name: 'Constancia de antecedentes penales', url: widget.altaEmpleo!.cartaNoAntecedentesPenalesUrl),
-            _FileDisplay(name: 'Contrato Laboral', url: widget.altaEmpleo!.contratoLaboralUrl),
-            _FileDisplay(name: 'Carta Oferta', url: widget.altaEmpleo!.cartaOfertaUrl),
-            _FileDisplay(name: 'Examen Médico', url: widget.altaEmpleo!.examenMedicoUrl),
-            _FileDisplay(name: 'Carta de Recomendación (1)', url: widget.altaEmpleo!.cartaRecomendacion1Url),
-            _FileDisplay(name: 'Carta de Recomendación (2)', url: widget.altaEmpleo!.cartaRecomendacion2Url),
-            _FileDisplay(name: 'Carta de Recomendación (3)', url: widget.altaEmpleo!.cartaRecomendacion3Url),
+            _FileDisplay(name: 'RFC', url: widget.altaEmpleo!.constanciaSituacionFiscalUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Alta IMSS', url: widget.altaEmpleo!.altaImssUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Aviso de Retención Infonavit', url: widget.altaEmpleo!.avisoInfonavitUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Constancia de estudio', url: widget.altaEmpleo!.constanciaEstudioUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Constancia de antecedentes penales', url: widget.altaEmpleo!.cartaNoAntecedentesPenalesUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Contrato Laboral', url: widget.altaEmpleo!.contratoLaboralUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Carta Oferta', url: widget.altaEmpleo!.cartaOfertaUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Examen Médico', url: widget.altaEmpleo!.examenMedicoUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Carta de Recomendación (1)', url: widget.altaEmpleo!.cartaRecomendacion1Url, preview: _previewViewmodel),
+            _FileDisplay(name: 'Carta de Recomendación (2)', url: widget.altaEmpleo!.cartaRecomendacion2Url, preview: _previewViewmodel),
+            _FileDisplay(name: 'Carta de Recomendación (3)', url: widget.altaEmpleo!.cartaRecomendacion3Url, preview: _previewViewmodel),
           ],
         if (widget.altaPracticante != null)
           ...[
-            _FileDisplay(name: 'RFC', url: widget.altaPracticante!.rfcUrl),
-            _FileDisplay(name: 'Carta Presentación', url: widget.altaPracticante!.cartaPresentacionUrl),
+            _FileDisplay(name: 'RFC', url: widget.altaPracticante!.rfcUrl, preview: _previewViewmodel),
+            _FileDisplay(name: 'Carta Presentación', url: widget.altaPracticante!.cartaPresentacionUrl, preview: _previewViewmodel),
           ],
       ],
     );
@@ -119,10 +128,12 @@ class _FileDisplay extends StatelessWidget {
   const _FileDisplay({
     required this.name,
     required this.url,
+    required this.preview,
   });
 
   final String name;
   final String? url;
+  final FilePreviewViewmodel preview;
 
   static BoxDecoration uploadedDecoration(RhColores c) => BoxDecoration(
     color: c.exitoSuave,
@@ -152,7 +163,7 @@ class _FileDisplay extends StatelessWidget {
     final downloadViewmodel = context.read<DownloadViewmodel>();
     final uploaded = url != null;
 
-    return Container(
+    final tile = Container(
       decoration: uploaded ? uploadedDecoration(context.rh) : notUploadedDecoration(context.rh),
       padding: const EdgeInsets.all(12),
       child: Row(
@@ -180,6 +191,14 @@ class _FileDisplay extends StatelessWidget {
             ),
         ],
       ),
+    );
+
+    if (!uploaded) return tile;
+    return DocumentHoverPreview(
+      name: name,
+      url: url!,
+      viewmodel: preview,
+      child: tile,
     );
   }
 }
