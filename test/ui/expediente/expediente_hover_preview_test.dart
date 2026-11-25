@@ -29,33 +29,52 @@ class _SinRed extends FileDownloadService {
       const Result.ok(null);
 }
 
-Future<_SinRed> _montar(WidgetTester tester) async {
-  tester.view.physicalSize = const Size(1400, 1000);
+/// [menuLateral]: como en la app, la pantalla va dentro de un Navigator
+/// propio (el ShellRoute) a la derecha del menú, que tiene su propia capa de
+/// overlays corrida ese ancho.
+Future<_SinRed> _montar(
+  WidgetTester tester, {
+  Size pantalla = const Size(1400, 1000),
+  double? menuLateral,
+}) async {
+  tester.view.physicalSize = pantalla;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
   final service = _SinRed();
   final log = AppLogger(loggers: const []);
+  const expediente = Scaffold(
+    body: Align(
+      alignment: Alignment.topRight,
+      child: SizedBox(
+        width: 360,
+        child: SingleChildScrollView(
+          child: ExpedienteFiles(
+            files: BaseEmpleadoFiles(ineUrl: 'https://x/media/ine.pdf'),
+          ),
+        ),
+      ),
+    ),
+  );
   await tester.pumpWidget(MultiProvider(
     providers: [
       Provider<AppLogger>.value(value: log),
       Provider<FileDownloadService>.value(value: service),
       ChangeNotifierProvider(create: (_) => DownloadViewmodel(log: log, fileDownloadService: service)),
     ],
-    child: const MaterialApp(
-      home: Scaffold(
-        body: Align(
-          alignment: Alignment.topRight,
-          child: SizedBox(
-            width: 360,
-            child: SingleChildScrollView(
-              child: ExpedienteFiles(
-                files: BaseEmpleadoFiles(ineUrl: 'https://x/media/ine.pdf'),
-              ),
+    child: MaterialApp(
+      home: menuLateral == null
+          ? expediente
+          : Row(
+              children: [
+                SizedBox(width: menuLateral),
+                Expanded(
+                  child: Navigator(
+                    onGenerateRoute: (_) => MaterialPageRoute<void>(builder: (_) => expediente),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
-      ),
     ),
   ));
   return service;
@@ -147,6 +166,28 @@ void main() {
     await tester.pump();
     expect(find.byType(DocumentPreviewCard), findsNothing);
   });
+
+  for (final pantalla in const [Size(1366, 768), Size(1280, 720), Size(1630, 910), Size(1920, 1080)]) {
+    testWidgets('con el menú lateral ($pantalla) la vista previa no tapa el nombre ni los botones', (tester) async {
+      await _montar(tester, pantalla: pantalla, menuLateral: 290);
+      await _mouseSobre(tester, find.text('INE/Identificación'));
+      await tester.pump(DocumentHoverPreview.hoverDelay);
+      await tester.pump();
+
+      final tarjeta = tester.getRect(find.byType(DocumentPreviewCard));
+      for (final parte in [
+        find.text('INE/Identificación').first,
+        find.byTooltip('Ver documento'),
+        find.byTooltip('Descargar'),
+      ]) {
+        expect(tarjeta.overlaps(tester.getRect(parte)), isFalse, reason: '$parte tapado por $tarjeta');
+      }
+      // Y no se sale de la pantalla.
+      expect((Offset.zero & pantalla).contains(tarjeta.topLeft), isTrue);
+      expect(tarjeta.right, lessThanOrEqualTo(pantalla.width));
+      expect(tarjeta.bottom, lessThanOrEqualTo(pantalla.height));
+    });
+  }
 
   testWidgets('si solo pasa por encima rápido, no sale nada', (tester) async {
     final service = await _montar(tester);

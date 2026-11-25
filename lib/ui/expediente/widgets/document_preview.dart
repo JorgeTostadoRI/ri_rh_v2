@@ -134,7 +134,10 @@ class _DocumentHoverPreviewState extends State<DocumentHoverPreview> {
   Widget build(BuildContext context) {
     if (esNavegadorMovil) return widget.child;
 
+    // En la capa de toda la ventana (no la del área de contenido a la derecha
+    // del menú), para poder usar todo el espacio.
     return OverlayPortal(
+      overlayLocation: OverlayChildLocation.rootOverlay,
       controller: _portal,
       overlayChildBuilder: _buildOverlay,
       // Al hacer clic (abrir el visor o descargar) se quita la vista previa.
@@ -151,11 +154,17 @@ class _DocumentHoverPreviewState extends State<DocumentHoverPreview> {
 
   Widget _buildOverlay(BuildContext overlayContext) {
     final box = context.findRenderObject() as RenderBox?;
-    if (box == null || !box.attached) return const SizedBox.shrink();
+    final overlayBox = Overlay.maybeOf(context, rootOverlay: true)?.context.findRenderObject() as RenderBox?;
+    if (box == null || !box.attached || overlayBox == null || !overlayBox.hasSize) {
+      return const SizedBox.shrink();
+    }
 
-    final screen = MediaQuery.sizeOf(overlayContext);
-    final anchor = box.localToGlobal(Offset.zero) & box.size;
-    final rect = DocumentHoverPreview.previewRect(screen, anchor);
+    // Todo se mide contra la capa donde se dibuja la tarjeta: si se midiera
+    // contra la ventana y la capa empezara más a la derecha (por ejemplo,
+    // después del menú lateral), la tarjeta quedaría corrida encima del
+    // documento y sus botones.
+    final anchor = box.localToGlobal(Offset.zero, ancestor: overlayBox) & box.size;
+    final rect = DocumentHoverPreview.previewRect(overlayBox.size, anchor);
     if (rect == null) return const SizedBox.shrink();
 
     return Positioned.fromRect(
