@@ -184,8 +184,8 @@ class _LabelBuilder extends StatelessWidget {
       return Text(
         switch ((register.result! as Ok<Asistencia>).value.type!) {
           AsistenciaType.entry => '¡Entrada registrada exitosamente!',
-          AsistenciaType.exitToLunch => '¡Salida registrada exitosamente!',
-          AsistenciaType.entryFromLunch => '¡Entrada registrada exitosamente!',
+          AsistenciaType.exitToLunch => '¡Salida a comer registrada!',
+          AsistenciaType.entryFromLunch => '¡Regreso de comer registrado!',
           AsistenciaType.exit => '¡Salida registrada exitosamente!',
         },
         style: baseStyle?.copyWith(color: context.rh.exito),
