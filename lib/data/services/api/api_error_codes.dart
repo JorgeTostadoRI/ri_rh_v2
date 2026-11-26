@@ -3,6 +3,8 @@ abstract final class ApiErrorCodes {
   static const earlyEntry = 'early_entry';
   static const noHorario = 'no_horario';
   static const noJefe = 'no_jefe';
+  /// Empleado o practicante no remoto sin firma registrada para incidencias.
+  static const noFirma = 'no_firma';
   static const faltaNoReportada = 'falta_no_reportada';
   /// Usuario desactivado (empleado en proceso de finiquito/finiquitado o
   /// practicante en proceso de baja/baja) al checar con huella.

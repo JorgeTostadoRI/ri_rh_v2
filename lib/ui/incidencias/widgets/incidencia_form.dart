@@ -23,6 +23,27 @@ import 'package:ri_rh_v2/ui/core/ui/form/time_form_field.dart';
 import 'package:ri_rh_v2/utils/result.dart';
 import 'package:ri_rh_v2/utils/plataforma.dart';
 
+/// Errores al enviar que solo RH puede resolver: no se crea la incidencia y
+/// se explica en una ventana (el formulario se queda lleno).
+@visibleForTesting
+({String titulo, String mensaje})? avisoDeRH(Exception e) {
+  if (e is! ApiException) return null;
+  return switch (e.errorCode) {
+    ApiErrorCodes.noJefe => (
+      titulo: 'Jefe directo no asignado',
+      mensaje: 'No cuentas con un jefe directo asignado. '
+          'Contacta al departamento de Recursos Humanos para que te asignen uno.',
+    ),
+    // Empleado o practicante no remoto sin firma para incidencias.
+    ApiErrorCodes.noFirma => (
+      titulo: 'Firma no registrada',
+      mensaje: 'No tienes registrada tu firma para incidencias. '
+          'Acude al departamento de Recursos Humanos para que la capturen.',
+    ),
+    _ => null,
+  };
+}
+
 const _fieldMargin = 32.0;
 const _labelMargin = 16.0;
 
@@ -286,25 +307,9 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
       return;
     }
 
-    if (e is ApiException && e.errorCode == ApiErrorCodes.noJefe) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Jefe directo no asignado'),
-            content: Text(
-              'No cuentas con un jefe directo asignado. '
-              'Contacta al departamento de Recursos Humanos para que te asignen uno.'
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () => context.pop(),
-                child: Text('Entendido'),
-              ),
-            ],
-          );
-        }
-      );
+    final aviso = avisoDeRH(e);
+    if (aviso != null) {
+      _avisoDeRH(aviso.titulo, aviso.mensaje);
       return;
     }
 
@@ -326,6 +331,25 @@ class _IncidenciaFormState extends State<IncidenciaForm> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       errorSnackBar(context, 'Ha ocurrido un error', error: e),
+    );
+  }
+
+  /// Algo que solo RH puede resolver (asignar jefe, capturar la firma).
+  void _avisoDeRH(String titulo, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(titulo),
+          content: Text(mensaje),
+          actions: [
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: Text('Entendido'),
+            ),
+          ],
+        );
+      }
     );
   }
 
